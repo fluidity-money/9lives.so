@@ -41,3 +41,6 @@ models:
   Referrer:
     model:
       - github.com/fluidity-money/9lives.so/lib/types/referrer.Referrer
+  Odds:
+    model:
+      - github.com/fluidity-money/9lives.so/lib/types.Odds

@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"io"
 	"time"
 )
 
@@ -23,7 +24,8 @@ type (
 		TotalVolume       int                   `json:"totalVolume"`
 		InvestmentAmounts InvestmentAmountsList `json:"investmentAmounts" gorm:"type:jsonb"`
 		LiquidityVested   int                   `json:"liquidityVested"`
-		Shares            CampaignShares        `json:"shares"`
+		Shares            CampaignShares        `json:"shares" gorm:"type:jsonb"`
+		Odds              Odds                  `json:"odds" gorm:"type:jsonb"`
 	}
 
 	CommentInput struct {
@@ -339,7 +341,7 @@ func (ai InvestmentAmounts) Value() (driver.Value, error) {
 	return JSONMarshal(ai)
 }
 
-func (ai InvestmentAmounts) Scan(value interface{}) error {
+func (ai *InvestmentAmounts) Scan(value interface{}) error {
 	return JSONUnmarshal(value, ai)
 }
 
@@ -363,7 +365,7 @@ func (cs CampaignShare) Value() (driver.Value, error) {
 	return JSONMarshal(cs)
 }
 
-func (cs CampaignShare) Scan(value interface{}) error {
+func (cs *CampaignShare) Scan(value interface{}) error {
 	return JSONUnmarshal(value, cs)
 }
 
@@ -377,4 +379,33 @@ func (css *CampaignShares) Scan(value interface{}) error {
 
 type Frontpage struct {
 	Campaigns []Campaign `json:"campaigns"`
+}
+
+type Odds map[string]string
+
+func (o Odds) MarshalGQL(w io.Writer) {
+	_ = json.NewEncoder(w).Encode(o)
+}
+
+func (o *Odds) UnmarshalGQL(v interface{}) error {
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("Odds must be a map[string]string")
+	}
+
+	res := make(map[string]string)
+	for k, val := range m {
+		res[k] = fmt.Sprint(val)
+	}
+
+	*o = res
+	return nil
+}
+
+func (o Odds) Value() (driver.Value, error) {
+	return JSONMarshal(o)
+}
+
+func (o *Odds) Scan(value interface{}) error {
+	return JSONUnmarshal(value, o)
 }

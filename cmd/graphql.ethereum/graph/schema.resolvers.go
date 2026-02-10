@@ -1220,9 +1220,11 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 		campaigns = MockGraphCampaigns()
 		return campaigns, nil
 	}
-	selectClause := "nc.*,nead.shares AS shares"
+	selectClause := "nc.*,nead.shares AS shares,nmods.odds AS odds"
 	fromClause := " FROM ninelives_campaigns_1 AS nc "
-	joinClause := "LEFT JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' "
+	joinClause := `LEFT JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' 
+	LEFT JOIN (SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
+	`
 	whereClause := "WHERE shown = TRUE"
 	orderClause := ""
 	args := []interface{}{}
@@ -2133,3 +2135,16 @@ type positionResolver struct{ *Resolver }
 type priceEventResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type settingsResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *campaignResolver) Odds(ctx context.Context, obj *types.Campaign) (types.Odds, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("campaign is nil")
+	}
+	return obj.Odds, nil
+}

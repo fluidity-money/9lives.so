@@ -1,4 +1,4 @@
-
+scalar Odds
 type Query {
   """
   Campaign List that can be filtered according to categories
@@ -753,6 +753,11 @@ type Campaign {
   Price metadata if this is a short-term market.
   """
   priceMetadata: PriceMetadata
+
+  """
+  It return shares invested to the outcomes for dppm markets only
+  """
+  odds: Odds
 }
 
 """

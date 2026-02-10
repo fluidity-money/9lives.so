@@ -94,6 +94,7 @@ type ComplexityRoot struct {
 		IsDppm            func(childComplexity int) int
 		LiquidityVested   func(childComplexity int) int
 		Name              func(childComplexity int) int
+		Odds              func(childComplexity int) int
 		OracleDescription func(childComplexity int) int
 		OracleUrls        func(childComplexity int) int
 		Outcomes          func(childComplexity int) int
@@ -589,6 +590,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Campaign.Name(childComplexity), true
+
+	case "Campaign.odds":
+		if e.complexity.Campaign.Odds == nil {
+			break
+		}
+
+		return e.complexity.Campaign.Odds(childComplexity), true
 
 	case "Campaign.oracleDescription":
 		if e.complexity.Campaign.OracleDescription == nil {
@@ -3580,6 +3588,8 @@ func (ec *executionContext) fieldContext_Activity_campaignContent(_ context.Cont
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -4828,6 +4838,47 @@ func (ec *executionContext) fieldContext_Campaign_priceMetadata(_ context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Campaign_odds(ctx context.Context, field graphql.CollectedField, obj *types.Campaign) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Campaign_odds(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Odds, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(types.Odds)
+	fc.Result = res
+	return ec.marshalOOdds2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOdds(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Campaign_odds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Campaign",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Odds does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CampaignShare_shares(ctx context.Context, field graphql.CollectedField, obj *types.CampaignShare) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CampaignShare_shares(ctx, field)
 	if err != nil {
@@ -5315,6 +5366,8 @@ func (ec *executionContext) fieldContext_Claim_content(_ context.Context, field 
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -6073,6 +6126,8 @@ func (ec *executionContext) fieldContext_LP_campaign(_ context.Context, field gr
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -7189,6 +7244,8 @@ func (ec *executionContext) fieldContext_Position_content(_ context.Context, fie
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -7648,6 +7705,8 @@ func (ec *executionContext) fieldContext_Query_campaigns(ctx context.Context, fi
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -7754,6 +7813,8 @@ func (ec *executionContext) fieldContext_Query_campaignById(ctx context.Context,
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -8603,6 +8664,8 @@ func (ec *executionContext) fieldContext_Query_featuredCampaign(ctx context.Cont
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -9010,6 +9073,8 @@ func (ec *executionContext) fieldContext_Query_campaignBySymbol(ctx context.Cont
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -9119,6 +9184,8 @@ func (ec *executionContext) fieldContext_Query_timebasedCampaigns(ctx context.Co
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -9696,6 +9763,8 @@ func (ec *executionContext) fieldContext_UnclaimedCampaign_campaign(_ context.Co
 				return ec.fieldContext_Campaign_shares(ctx, field)
 			case "priceMetadata":
 				return ec.fieldContext_Campaign_priceMetadata(ctx, field)
+			case "odds":
+				return ec.fieldContext_Campaign_odds(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Campaign", field.Name)
 		},
@@ -12778,6 +12847,8 @@ func (ec *executionContext) _Campaign(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "odds":
+			out.Values[i] = ec._Campaign_odds(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -16328,6 +16399,22 @@ func (ec *executionContext) marshalOInvestmentAmounts2ᚖgithubᚗcomᚋfluidity
 		return graphql.Null
 	}
 	return ec._InvestmentAmounts(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOOdds2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOdds(ctx context.Context, v interface{}) (types.Odds, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res types.Odds
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOOdds2githubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐOdds(ctx context.Context, sel ast.SelectionSet, v types.Odds) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalOPnl2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐPnl(ctx context.Context, sel ast.SelectionSet, v *types.Pnl) graphql.Marshaler {
