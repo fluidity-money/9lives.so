@@ -44,5 +44,6 @@ export default function usePositionHistory(
       }));
       return results;
     },
+    staleTime: 4000,
   });
 }
