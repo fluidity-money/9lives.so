@@ -312,6 +312,7 @@ const appSchema = z.object({
   weekDuration: z.number(),
   hasuraMaxQueryItem: z.number(),
   betaTesterWallets: z.array(z.string()),
+  feeCommision: z.number(),
 });
 const requiredChains = Object.values(farcasterChains).map(
   (chain) => `eip155:${chain.id}`,
@@ -353,6 +354,7 @@ const appVars = appSchema.safeParse({
   weekDuration: 60 * 60 * 24 * 7 * 1000,
   hasuraMaxQueryItem: 3600,
   betaTesterWallets,
+  feeCommision: 0.014,
 });
 
 if (!appVars.success) {

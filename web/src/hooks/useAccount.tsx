@@ -285,7 +285,7 @@ export default function useAccount({
                   outcomeId,
                   type: "buy" as const,
                   txHash: "0x",
-                  fromAmount: Number(amount),
+                  fromAmount: Number(amount) * (1 - config.feeCommision),
                   toAmount: 0,
                 },
               ];

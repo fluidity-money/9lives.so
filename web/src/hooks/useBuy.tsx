@@ -158,7 +158,7 @@ const useBuy = ({
                   outcomeId,
                   type: "buy",
                   txHash: "0x",
-                  fromAmount: Number(amount),
+                  fromAmount: Number(amount) * (1 - config.feeCommision),
                   toAmount: 0,
                 },
               ];
