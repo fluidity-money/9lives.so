@@ -18,4 +18,3 @@ export \
 	SPN_5_MIN_DPPM_CREATOR=0xec25431845d1a1ead0bfc613210d76cef225e68c
 
 make -B $@
-README.md
