@@ -7,6 +7,7 @@ import BSC from "#/images/chains/bsc.svg";
 import POL from "#/images/chains/polygon.svg";
 import BASE from "#/images/chains/base.svg";
 import AVAX from "#/images/chains/avalanche.svg";
+import MEGAETH from "#/images/chains/megaeth.svg";
 import { defineChain } from "@reown/appkit/networks";
 import {
   mainnet,
@@ -16,6 +17,7 @@ import {
   polygon,
   bsc,
   avalanche,
+  megaeth,
 } from "@reown/appkit/networks";
 
 const superpositionTestnet = defineChain({
@@ -61,6 +63,7 @@ const farcasterList = {
   polygon: { ...polygon, icon: POL },
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
+  megaeth: { ...megaeth, icon: MEGAETH },
 } as const;
 const chainList = {
   arbitrum: { ...arbitrum, icon: ARB },
@@ -71,6 +74,7 @@ const chainList = {
   polygon: { ...polygon, icon: POL },
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
+  megaeth: { ...megaeth, icon: MEGAETH },
 };
 export const chainIdToEid: Record<number, number> = {
   [superposition.id]: 30327,
