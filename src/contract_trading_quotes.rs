@@ -73,11 +73,11 @@ impl StorageTrading {
     }
 
     #[allow(non_snake_case)]
-    pub fn dppm_payoff_for_all_58633_B_6_E(&mut self, recipient: Address) -> R<(U256, U256)> {
+    pub fn dppm_payoff_for_all_58633_B_6_E(&mut self, _recipient: Address) -> R<(U256, U256)> {
         #[cfg(feature = "trading-backend-dppm")]
         return {
             let s = match msg_sender() {
-                CLAIMANT_HELPER => recipient,
+                CLAIMANT_HELPER => _recipient,
                 s => s,
             };
             Ok((
@@ -85,13 +85,13 @@ impl StorageTrading {
                     s,
                     self.outcome_list.get(0).unwrap(),
                     U256::MAX,
-                    recipient,
+                    _recipient,
                 )?,
                 self.internal_dppm_payoff(
                     s,
                     self.outcome_list.get(1).unwrap(),
                     U256::MAX,
-                    recipient,
+                    _recipient,
                 )?,
             ))
         };

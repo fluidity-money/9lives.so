@@ -61,6 +61,23 @@ impl StorageTrading {
         return self.internal_amm_mint(outcome, value, recipient);
     }
 
+    #[allow(non_snake_case)]
+    pub fn mint_schedule_claim_C_8_A_5591_F(
+        &mut self,
+        outcome: FixedBytes<8>,
+        value: U256,
+        referrer: Address,
+        recipient: Address,
+    ) -> R<U256> {
+        #[cfg(feature = "trading-backend-amm")]
+        return Err(Error::DPPMOnly);
+        #[cfg(not(feature = "trading-backend-amm"))]
+        {
+            self.scheduled_payouts.push(recipient);
+            self.mint_8_A_059_B_6_E(outcome, value, referrer, recipient)
+        }
+    }
+
     /// Burn, preventing us from blowing past and below the amounts given.
     /// Can optionally burn shares as well by way of estimation.
     // Returns the shares burned, and the fUSDC being returned.

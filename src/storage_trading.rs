@@ -153,6 +153,12 @@ pub struct StorageTrading {
 
     /// Internal accounting of token balances.
     pub erc20_balance_of: StorageMap<FixedBytes<8>, StorageMap<Address, StorageU256>>,
+
+    /// Scheduled payouts on the market conclusion:
+    pub scheduled_payouts: StorageVec<StorageAddress>,
+
+    /// Scheduled payouts that were processed:
+    pub scheduled_payout_processed: StorageU32,
 }
 
 // Storage accessors to simplify lookup.
@@ -182,10 +188,10 @@ impl StorageTrading {
         amt: U256,
     ) -> Result<(), Error> {
         let bal = self.erc20_balance_of.getter(id).get(spender);
-        self.erc20_balance_of
-            .setter(id)
-            .setter(spender)
-            .set(bal.checked_sub(amt).ok_or(Error::CheckedSubOverflow(bal, amt))?);
+        self.erc20_balance_of.setter(id).setter(spender).set(
+            bal.checked_sub(amt)
+                .ok_or(Error::CheckedSubOverflow(bal, amt))?,
+        );
         Ok(())
     }
 }

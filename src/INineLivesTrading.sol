@@ -45,6 +45,20 @@ interface INineLivesTrading {
         address recipient
     ) external returns (uint256);
 
+    /// @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
+    /// classic approval based on the deadline argument (if set to 0, assumes approval)
+    function mintScheduleClaimC8A5591F(
+        bytes8 outcome,
+        uint256 value,
+        address referrer,
+        address recipient
+    ) external returns (uint256);
+
+    function claimScheduledExcess(
+        uint256 from,
+        uint256 until
+    ) external returns (uint256);
+
     /// @notice Burn some shares by inverting the AMM function using the
     /// fUSDC amount, or the shares, depending on the shouldEstimateShares
     /// argument. Returns the burned shares, and the fusdc returned.

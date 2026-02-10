@@ -589,6 +589,9 @@ pub enum Error {
 
     /// The caller is not the dppm creator
     NotDppmCreator,
+
+    /// DPPM only!
+    DPPMOnly,
 }
 
 #[cfg(any(

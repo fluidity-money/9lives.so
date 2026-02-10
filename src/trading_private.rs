@@ -16,6 +16,8 @@ use bobcat_features::BOBCAT_FEATURES;
 
 use alloc::vec::Vec;
 
+use core::cmp::min;
+
 // CalcFees, determined by the contract state.
 #[derive(Debug, PartialEq, Clone)]
 pub struct CalcFees {
@@ -108,9 +110,33 @@ impl StorageTrading {
                 amount: fees,
             });
             vault_call::repay(VAULT_ADDR, fees)?;
-            // Temporary migration to use the new Vault location:
-
         }
+        let payouts_collected =
+            u32::from_le_bytes(self.scheduled_payout_processed.get().to_le_bytes()) as usize;
+        let payouts_remaining = min(
+            payouts_collected + self.scheduled_payouts.len(),
+            MAXIMUM_SCHEDULED_PAYOYUTS_ONE_GO,
+        );
+        for i in payouts_collected..payouts_remaining {
+            let recipient = self.scheduled_payouts.get(i).unwrap();
+            if self.is_dppm() {
+                self.internal_dppm_payoff(
+                    recipient,
+                    self.outcome_list.get(0).unwrap(),
+                    U256::MAX,
+                    recipient,
+                )?;
+                self.internal_dppm_payoff(
+                    recipient,
+                    self.outcome_list.get(1).unwrap(),
+                    U256::MAX,
+                    recipient,
+                )?;
+            } else {
+                // Not implemented here!
+            }
+        }
+        self.scheduled_payout_processed.set(U32::from(payouts_remaining));
         self.is_shutdown.set(true);
         Ok(U256::ZERO)
     }
