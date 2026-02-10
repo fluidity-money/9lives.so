@@ -25,6 +25,8 @@ var websocketUpgrader = websocket.Upgrader{
 // to the websocket.
 func Endpoint(endpoint string, handler func(string, url.Values, <-chan []byte, chan<- []byte, chan<- error, <-chan bool)) {
 	http.HandleFunc(endpoint, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
 		websocketConn, err := websocketUpgrader.Upgrade(w, r, nil)
 		if err != nil {
 			slog.Error("failed to handle a websocket upgrade",
