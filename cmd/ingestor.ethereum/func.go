@@ -106,7 +106,7 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 type IngestorArgs struct {
 	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
 	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
-	PunkDomainsTld, Paymaster                       ethCommon.Address
+	PunkDomainsTld, Paymaster, Vault                ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -638,13 +638,14 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isSudoswap       = r.SudoswapFactory == emitterAddr
 		isPunkDomainsTld = r.PunkDomainsTld == emitterAddr
 		isPaymaster      = r.Paymaster == emitterAddr
+		isVault          = r.Vault == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
 		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld,
-		isPaymaster:
+		isPaymaster, isVault:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to

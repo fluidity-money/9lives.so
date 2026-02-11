@@ -30,7 +30,7 @@ const (
 	DefaultPaginationBlockCountMax = 10_000
 
 	// DefaultPaginationPollWait to wait between polls.
-	DefaultPaginationPollWait = 1 // Seconds
+	DefaultPaginationPollWait = 3 // Seconds
 )
 
 func main() {
@@ -71,6 +71,7 @@ func main() {
 			PunkDomainsTld: ethCommon.HexToAddress(config.PunkDomainsTld),
 			SudoswapFactory: ethCommon.HexToAddress(config.SudoswapFactoryAddress),
 			Paymaster: ethCommon.HexToAddress(config.PaymasterAddress),
+			Vault: ethCommon.HexToAddress(config.VaultAddress),
 		},
 	)
 }
