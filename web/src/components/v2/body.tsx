@@ -16,6 +16,7 @@ import config from "@/config";
 import SimpleSubHeader from "./subheader";
 import useSharePrices from "@/hooks/useSharePrices";
 import ChartPointsIndicator from "./chartPointsIndicator";
+import getDppmPrices from "@/utils/getDppmPrices";
 
 export default function SimpleBody({
   symbol,
@@ -34,10 +35,7 @@ export default function SimpleBody({
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
-  const { data: sharePrices, isLoading: pricesLoading } = useSharePrices({
-    tradingAddr: data.poolAddress as `0x${string}`,
-    outcomeIds: data.outcomes.map((o) => o.identifier as `0x${string}`),
-  });
+  const sharePrices = getDppmPrices(campaignData.odds);
   const chance = (index: number) =>
     (Number(sharePrices ? sharePrices[index].price : 0.5) * 100).toFixed(0);
   const yesChance = chance(1);
@@ -68,7 +66,7 @@ export default function SimpleBody({
 
           <SimpleSubHeader campaignData={campaignData} />
         </div>
-        <SimpleChance isLoading={pricesLoading} yes={yesChance} no={noChance} />
+        <SimpleChance yes={yesChance} no={noChance} />
         <PriceChartWrapper simple={true} campaignData={data} />
         <SimplePositions
           openModal={() => setIsBuyDialogOpen(true)}
