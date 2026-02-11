@@ -1350,11 +1350,15 @@ SELECT
     		     FROM ninelives_events_liquidity_removed nelr
     		     WHERE emitter_addr = nc.content->>'poolAddress'), 0
     		)
-		) AS liquidity_vested
+		) AS liquidity_vested,
+		nmods.odds
 		FROM
 			ninelives_campaigns_1 nc
 		LEFT JOIN
         campaign_investments ci ON nc.id = ci.campaign_id
+		LEFT JOIN (
+		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
+		) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
 		WHERE
 			nc.id = ? AND shown`, id, id).Scan(&c).Error
 	if err != nil {
