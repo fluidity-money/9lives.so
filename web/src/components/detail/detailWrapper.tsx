@@ -18,6 +18,8 @@ import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import PriceChartWrapper from "../charts/assetPriceChartWrapper";
 import { useWSForWinner } from "@/hooks/useWSForWinner";
 import TimingGate from "../timingGate";
+import getAmmPrices from "@/utils/getAmmPrices";
+import getDppmPrices from "@/utils/getDppmPrices";
 
 export default function DetailWrapper({
   initialData,
@@ -43,11 +45,11 @@ export default function DetailWrapper({
       data.outcomes[0].identifier,
     state: "buy",
   });
-  const outcomeIds = data.outcomes.map((o) => o.identifier as `0x${string}`);
-  const { data: sharePrices } = useSharePrices({
-    tradingAddr: data.poolAddress as `0x${string}`,
-    outcomeIds,
-  });
+  const ammPrices = Object.entries(getAmmPrices(data.shares) ?? {}).map(
+    ([k, v]) => ({ id: k, price: v }),
+  );
+  const dppmPrices = getDppmPrices(data.odds);
+  const sharePrices = data.isDppm ? dppmPrices : ammPrices;
   const isConcluded = Boolean(data.winner);
 
   return (
