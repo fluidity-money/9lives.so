@@ -527,6 +527,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = events.UnpackSeedLiquidityAdded(topic1)
 		table = "ninelives_events_seed_liquidity_added"
 		logEvent("SeedLiquidityAdded")
+		fromTrading = true
 	case paymaster.TopicPaymasterPaidFor:
 		a, err = paymaster.UnpackPaymasterPaidFor(topic1, topic2, topic3, data)
 		table = "ninelives_events_paymaster_paid_for"
