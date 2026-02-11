@@ -30,7 +30,7 @@ const (
 	DefaultPaginationBlockCountMax = 10_000
 
 	// DefaultPaginationPollWait to wait between polls.
-	DefaultPaginationPollWait = 3 // Seconds
+	DefaultPaginationPollWait = 5 // Seconds
 )
 
 func main() {
