@@ -666,6 +666,7 @@ export const requestSimpleMarket = (symbol: string, period: string) =>
     categories: true,
     identifier: true,
     starting: true,
+    odds: true,
     ending: true,
     poolAddress: true,
     outcomes: {

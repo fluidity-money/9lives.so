@@ -1,15 +1,10 @@
 "use client";
 
-import useSharePrices from "@/hooks/useSharePrices";
 import { SimpleCampaignDetail } from "@/types";
+import getDppmPrices from "@/utils/getDppmPrices";
 
 export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
-  const { data: sharePrices, isLoading } = useSharePrices({
-    tradingAddr: data.poolAddress as `0x${string}`,
-    outcomeIds: data.outcomes.map((o) => o.identifier as `0x${string}`),
-  });
-
-  if (isLoading) return <div className="skeleton h-5 w-full" />;
+  const sharePrices = getDppmPrices(data.odds);
 
   return (
     <div className="flex flex-row items-center gap-1">
