@@ -742,6 +742,7 @@ export const requestTimebasedCampaigns = (
     oracleDescription: true,
     oracleUrls: true,
     settlement: true,
+    odds: true,
     poolAddress: true,
     isDppm: true,
     priceMetadata: {
