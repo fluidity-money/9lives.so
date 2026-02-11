@@ -40,7 +40,7 @@ const ID = $$Scalar.ID;
 //
 //
 
-// None of your ScalarCustoms have custom scalars.
+const Odds = "Odds";
 
 //
 //
@@ -266,6 +266,9 @@ const Campaign: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     },
     priceMetadata: {
       // nt: PriceMetadata, <-- Assigned later to avoid potential circular dependency.
+    },
+    odds: {
+      nt: Odds,
     },
   },
 };
@@ -1112,6 +1115,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Int,
     Boolean,
     ID,
+    Odds,
     PaymasterOperation,
     Modification,
     SettlementType,

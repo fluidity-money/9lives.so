@@ -1921,6 +1921,7 @@ export namespace Schema {
       isDppm: Campaign.isDppm;
       shares: Campaign.shares;
       priceMetadata: Campaign.priceMetadata;
+      odds: Campaign.odds;
     };
   }
 
@@ -2197,6 +2198,16 @@ export namespace Schema {
       arguments: {};
       inlineType: [0];
       namedType: $$NamedTypes.$$PriceMetadata;
+    }
+
+    /**
+     * It return shares invested to the outcomes for dppm markets only
+     */
+    export interface odds extends $.OutputField {
+      name: "odds";
+      arguments: {};
+      inlineType: [0];
+      namedType: $$NamedTypes.$$Odds;
     }
   }
 
@@ -3124,6 +3135,12 @@ export namespace Schema {
   //
   //
 
+  //                                                Odds
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export type Odds = $$Scalar.Odds;
+
   //
   //
   //
@@ -3219,6 +3236,7 @@ export namespace Schema {
     export type $$Modification = Modification;
     export type $$SettlementType = SettlementType;
     export type $$ActivityType = ActivityType;
+    export type $$Odds = Odds;
     export type $$String = String;
     export type $$Int = Int;
     export type $$Boolean = Boolean;
@@ -3309,8 +3327,9 @@ export interface Schema<
   };
   unions: {};
   interfaces: {};
-  scalarNamesUnion: "String" | "Int" | "Boolean" | "ID";
+  scalarNamesUnion: "Odds" | "String" | "Int" | "Boolean" | "ID";
   scalars: {
+    Odds: Schema.Odds;
     String: Schema.String;
     Int: Schema.Int;
     Boolean: Schema.Boolean;

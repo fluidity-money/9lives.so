@@ -3981,6 +3981,14 @@ export interface Campaign<
   priceMetadata?:
     | Campaign.priceMetadata$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Campaign.priceMetadata<_$Scalars>>;
+  /**
+   *
+   * Select the `odds` field on the `Campaign` object. Its type is `Odds` (a `ScalarCustom` kind of type).
+   *
+   */
+  odds?:
+    | Campaign.odds$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Campaign.odds<_$Scalars>>;
 
   /**
    *
@@ -4765,6 +4773,35 @@ export namespace Campaign {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<priceMetadata$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type odds<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | odds$SelectionSet<_$Scalars>;
+
+  export interface odds$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `odds` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type odds$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | odds$SelectionSet<_$Scalars>
+  >;
 }
 
 //                                           CampaignShare
