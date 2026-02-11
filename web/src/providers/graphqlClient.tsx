@@ -43,6 +43,7 @@ export const requestCampaignList = (filterParams: CampaignFilters) =>
     settlement: true,
     poolAddress: true,
     isDppm: true,
+    odds: true,
     priceMetadata: {
       baseAsset: true,
       priceTargetForUp: true,

@@ -5,11 +5,13 @@ import { Outcome } from "@/types";
 import { useRouter } from "next/navigation";
 import getAmmPrices from "@/utils/getAmmPrices";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
+import getDppmPrice from "@/utils/getDppmPrice";
 interface CampaignItemOutcomesProps {
   campaignId: string;
   outcomes: Outcome[];
   isYesNo: boolean;
   isDppm: boolean;
+  odds: Record<string, string> | null;
   isConcluded: boolean;
   shares: ({
     shares: string;
@@ -21,12 +23,21 @@ export default function CampaignItemOutcomes({
   outcomes,
   shares,
   isYesNo,
+  odds,
   isConcluded,
   isDppm,
 }: CampaignItemOutcomesProps) {
   const router = useRouter();
   const prices = useMemo(() => getAmmPrices(shares), [shares]);
-  const yesPrice = prices?.get(outcomes[0].identifier) ?? 0.5;
+  const otherPrices = getDppmPrice(odds);
+  const yesPrice =
+    (isDppm
+      ? otherPrices.find(
+          (op) =>
+            op.identifier ===
+            outcomes.find((o) => o.name === "Yes")?.identifier,
+        )?.price
+      : prices?.get(outcomes[0].identifier)) ?? 0.5;
   const isOddsEnabled = useFeatureFlag("display odds on campaign items");
   if (isConcluded)
     return (
