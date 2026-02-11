@@ -474,6 +474,7 @@ export const requestFeaturedCampaigns = (
     picture: true,
     oracleDescription: true,
     oracleUrls: true,
+    odds: true,
     settlement: true,
     isDppm: true,
     priceMetadata: {
