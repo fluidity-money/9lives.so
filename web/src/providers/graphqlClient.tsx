@@ -244,6 +244,11 @@ export const requestUserParticipated = (
       isDpm: true,
       isDppm: true,
       identifier: true,
+      odds: true,
+      shares: {
+        identifier: true,
+        shares: true,
+      },
       starting: true,
       ending: true,
       totalVolume: true,

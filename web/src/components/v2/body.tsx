@@ -14,7 +14,6 @@ import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import Image from "next/image";
 import config from "@/config";
 import SimpleSubHeader from "./subheader";
-import useSharePrices from "@/hooks/useSharePrices";
 import ChartPointsIndicator from "./chartPointsIndicator";
 import getDppmPrices from "@/utils/getDppmPrices";
 

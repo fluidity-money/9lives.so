@@ -1,12 +1,13 @@
 "use client";
 
 import usePositions from "@/hooks/usePositions";
-import useSharePrices from "@/hooks/useSharePrices";
 import PositionRow from "./positionRow";
 import usePositionHistory from "@/hooks/usePositionsHistory";
 import Placeholder from "../tablePlaceholder";
 import { Outcome, ParticipatedCampaign } from "@/types";
 import { useAppKitAccount } from "@reown/appkit/react";
+import getDppmPrices from "@/utils/getDppmPrices";
+import getAmmPrices from "@/utils/getAmmPrices";
 
 export default function PositionsGroup({
   content,
@@ -31,11 +32,11 @@ export default function PositionsGroup({
     address: account.address,
     isDpm: content?.isDpm,
   });
-  const { data: sharePrices } = useSharePrices({
-    tradingAddr: content.poolAddress as `0x${string}`,
-    outcomeIds: content.outcomes.map((o) => o.identifier) as `0x${string}`[],
-    enabled: !content.winner,
-  });
+  const dppmPrices = getDppmPrices(content.odds);
+  const ammPrices = Object.entries(getAmmPrices(content.shares) ?? {}).map(
+    ([k, v]) => ({ id: k, price: v }),
+  );
+  const sharePrices = content.isDppm ? dppmPrices : ammPrices;
   const { data: positionsHistory } = usePositionHistory(
     account?.address,
     positions?.map((p) => p.id),

@@ -5,7 +5,6 @@ import DetailOutcomeTable from "./detailOutcomeTable";
 import DetailCall2Action from "./detailAction";
 import { SelectedOutcome } from "../../types";
 import { useState } from "react";
-import useSharePrices from "@/hooks/useSharePrices";
 import DetailInfo from "./detailInfo";
 import { useSearchParams } from "next/navigation";
 import AssetScene from "../user/assetScene";
