@@ -1954,26 +1954,26 @@ func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []str
 		return nil, fmt.Errorf("failed to marshal categories: %w", err)
 	}
 	query := `
-	SELECT DISTINCT ON (content->'priceMetadata'->>'baseAsset')
-		id,
-		content,
-		created_at,
-		updated_at,
+	SELECT DISTINCT ON (nc.content->'priceMetadata'->>'baseAsset')
+		nc.id,
+		nc.content,
+		nc.created_at,
+		nc.updated_at,
 		nmods.odds
 	FROM ninelives_campaigns_1 as nc
 	LEFT JOIN (
 		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
 	) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
-	WHERE content->'categories' @> ?::jsonb
-	AND (content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
+	WHERE nc.content->'categories' @> ?::jsonb
+	AND (nc.content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
 	`
 	args := []interface{}{string(jsonCategories)}
 	if len(tokens) > 0 {
-		query += "AND content->'priceMetadata'->>'baseAsset' = ANY(?) "
+		query += "AND nc.content->'priceMetadata'->>'baseAsset' = ANY(?) "
 		args = append(args, pq.Array(tokens))
 	}
 	query += `
-	ORDER BY content->'priceMetadata'->>'baseAsset', created_at DESC;
+	ORDER BY nc.content->'priceMetadata'->>'baseAsset', nc.created_at DESC;
 	`
 	err = r.DB.Raw(query, args...).Scan(&campaigns).Error
 	if err != nil {
