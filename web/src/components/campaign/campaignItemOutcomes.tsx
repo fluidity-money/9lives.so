@@ -34,8 +34,7 @@ export default function CampaignItemOutcomes({
     (isDppm
       ? otherPrices.find(
           (op) =>
-            op.identifier ===
-            outcomes.find((o) => o.name === "Yes")?.identifier,
+            op.identifier === outcomes.find((o) => o.name === "Up")?.identifier,
         )?.price
       : prices?.get(outcomes[0].identifier)) ?? 0.5;
   const isOddsEnabled = useFeatureFlag("display odds on campaign items");

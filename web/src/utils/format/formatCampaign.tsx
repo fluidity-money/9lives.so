@@ -53,6 +53,7 @@ export function formatCampaign(ro: RawCampaign): Campaign {
     description: ro.description,
     isDppm: ro.isDppm,
     priceMetadata: formatPriceMetadata(ro.priceMetadata),
+    odds: ro.odds,
     winner: ro.winner ?? null,
     picture: ro.picture ?? null,
     oracleDescription: ro.oracleDescription ?? null,

@@ -7,9 +7,18 @@ import { CampaignFilters, OutcomeInput, RawPricePoint } from "@/types";
 import config from "@/config";
 import { maxUint256 } from "viem";
 
-const graph9Lives = Lives9.create().transport({
-  url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
-});
+const graph9Lives = Lives9.create()
+  .scalar("Odds", {
+    decode(value) {
+      return JSON.parse(value) as Record<string, string>;
+    },
+    encode(value) {
+      return JSON.stringify(value);
+    },
+  })
+  .transport({
+    url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
+  });
 const graph9LivesSubs = Graffle.create().transport({
   url: appConfig.NEXT_PUBLIC_WS_URL.replace("wss", "https"),
 });
@@ -189,6 +198,7 @@ export const requestCampaignById = (id: string) =>
     oracleUrls: true,
     settlement: true,
     poolAddress: true,
+    odds: true,
     isDpm: true,
     creator: {
       address: true,

@@ -18,7 +18,7 @@ export default function CampaignBody({ data }: { data: Campaign }) {
           isConcluded={Boolean(data.winner)}
           isYesNo={data.isYesNo}
           isDppm={data.isDppm}
-          odds={data.odds && JSON.parse(data.odds)}
+          odds={data.odds}
           campaignId={data.identifier}
           shares={data.shares}
           outcomes={data.outcomes}
