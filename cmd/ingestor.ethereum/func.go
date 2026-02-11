@@ -232,6 +232,10 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorAr
 		setup.Exitf("failed to get latest block number: %v", err)
 	}
 	to = min(latestBlockNo, to)
+	if from == to {
+		slog.Debug("skipping since the to and from are the same", "from", from, "to", to)
+		return
+	}
 	logs, err := c.FilterLogs(context.Background(), ethereum.FilterQuery{
 		FromBlock: new(big.Int).SetUint64(from),
 		ToBlock:   new(big.Int).SetUint64(to),
