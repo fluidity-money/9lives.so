@@ -297,7 +297,7 @@ type (
 	EventDppmClawback struct {
 		Event
 
-		Recipient       Address `json:"recipient"`
+		Recipient     Address `json:"recipient"`
 		FusdcClawback Number  `json:"fusdc_clawback"`
 	}
 
@@ -305,16 +305,22 @@ type (
 		Event
 
 		Supplier Address `json:"supplier"`
-		ForAddr Address `json:"for_addr"`
-		Amount Number `json:"amount"`
+		ForAddr  Address `json:"for_addr"`
+		Amount   Number  `json:"amount"`
 	}
 
 	EventDebtRepaid struct {
 		Event
 
 		Repayer Address `json:"repayer"`
-		Surplus Number `json:"surplus"`
-		Deficit Number `json:"deficit"`
+		Surplus Number  `json:"surplus"`
+		Deficit Number  `json:"deficit"`
+	}
+
+	EventSeedLiquidityAdded struct {
+		Event
+
+		FusdcAmt Number `json:"fusdc_amt"`
 	}
 )
 

@@ -55,6 +55,7 @@ var (
 	TopicNinetailsLoserPayoff            = abi.Events["NinetailsLoserPayoff"].ID
 	TopicDppmClawback                    = abi.Events["DppmClawback"].ID
 	TopicDebtRepaid                      = abi.Events["DebtRepaid"].ID
+	TopicSeedLiquidityAdded              = abi.Events["SeedLiquidityAdded"].ID
 )
 
 func UnpackNewTrading2(topic1, topic2, topic3 ethCommon.Hash, b []byte) (*events.EventNewTrading2, string, error) {
@@ -478,6 +479,12 @@ func UnpackDebtRepaid(topic1, topic2, topic3 ethCommon.Hash) (*events.EventDebtR
 		Repayer: hashToAddr(topic1),
 		Surplus: hashToNumber(topic2),
 		Deficit: hashToNumber(topic3),
+	}, nil
+}
+
+func UnpackSeedLiquidityAdded(topic1 ethCommon.Hash) (*events.EventSeedLiquidityAdded, error) {
+	return &events.EventSeedLiquidityAdded{
+		FusdcAmt: hashToNumber(topic1),
 	}, nil
 }
 

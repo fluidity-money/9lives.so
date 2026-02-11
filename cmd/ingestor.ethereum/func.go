@@ -69,6 +69,9 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	events.TopicNinetailsCumulativeWinnerPayoff,
 	events.TopicNinetailsLoserPayoff,
 	events.TopicDppmClawback,
+	events.TopicDebtRepaid,
+	events.TopicSeedLiquidityAdded,
+	// Paymaster
 	paymaster.TopicPaymasterPaidFor,
 	paymaster.TopicStargateBridged,
 	// Lifi
@@ -516,6 +519,14 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		table = "ninelives_events_dppm_clawback"
 		logEvent("DppmClawback")
 		fromTrading = true
+	case events.TopicDebtRepaid:
+		a, err = events.UnpackDebtRepaid(topic1, topic2, topic3)
+		table = "ninelives_events_debt_repaid"
+		logEvent("DebtRepaid")
+	case events.TopicSeedLiquidityAdded:
+		a, err = events.UnpackSeedLiquidityAdded(topic1)
+		table = "ninelives_events_seed_liquidity_added"
+		logEvent("SeedLiquidityAdded")
 	case paymaster.TopicPaymasterPaidFor:
 		a, err = paymaster.UnpackPaymasterPaidFor(topic1, topic2, topic3, data)
 		table = "ninelives_events_paymaster_paid_for"
