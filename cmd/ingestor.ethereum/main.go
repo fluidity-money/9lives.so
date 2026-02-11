@@ -71,7 +71,7 @@ func main() {
 			PunkDomainsTld: ethCommon.HexToAddress(config.PunkDomainsTld),
 			SudoswapFactory: ethCommon.HexToAddress(config.SudoswapFactoryAddress),
 			Paymaster: ethCommon.HexToAddress(config.PaymasterAddress),
-			Vault: ethCommon.HexToAddress(config.VaultAddress),
+			Vault: ethCommon.HexToAddress("0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14"),
 		},
 	)
 }

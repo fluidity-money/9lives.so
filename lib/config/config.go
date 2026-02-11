@@ -27,7 +27,7 @@ type C struct {
 	LifiDiamondAddress, PaymasterAddress    string
 	LayerzeroEndpointAddress, DineroAddress string
 	SudoswapFactoryAddress, PunkDomainsTld  string
-	PriceResolverAddress, VaultAddress      string
+	PriceResolverAddress                    string
 	ChainId                                 int
 }
 
