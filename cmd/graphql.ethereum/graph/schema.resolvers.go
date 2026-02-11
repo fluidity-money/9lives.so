@@ -1911,8 +1911,11 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string, cat
 	var campaign types.Campaign
 	categoryJSON, _ := json.Marshal(category)
 	err := r.DB.Raw(`
-	SELECT *
-	FROM ninelives_campaigns_1
+	SELECT nc.*, nmods.odds
+	FROM ninelives_campaigns_1 AS nc
+	LEFT JOIN (
+		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
+	) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
 	WHERE content->'priceMetadata'->>'baseAsset' = ?
 	AND content->'categories' @> ?
 	AND EXTRACT(EPOCH FROM NOW()) BETWEEN (content->>'starting')::numeric AND (content->>'ending')::numeric
@@ -1923,8 +1926,11 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string, cat
 	}
 	if campaign.ID == "" {
 		err = r.DB.Raw(`
-			SELECT *
-			FROM ninelives_campaigns_1
+			SELECT nc.*, nmods.odds
+			FROM ninelives_campaigns_1 as nc
+			LEFT JOIN (
+			SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
+			) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
 			WHERE content->'priceMetadata'->>'baseAsset' = ?
 			AND content->'categories' @> ?
 			AND (content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
@@ -1952,8 +1958,12 @@ func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []str
 		id,
 		content,
 		created_at,
-		updated_at
-	FROM ninelives_campaigns_1
+		updated_at,
+		nmods.odds
+	FROM ninelives_campaigns_1 as nc
+	LEFT JOIN (
+		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
+	) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
 	WHERE content->'categories' @> ?::jsonb
 	AND (content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
 	`
