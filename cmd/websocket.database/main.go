@@ -98,7 +98,7 @@ func main() {
 		Slot: cdcSlot.Config{
 			Name:                        "websocket_slot",
 			CreateIfNotExists:           true,
-			SlotActivityCheckerInterval: 100,
+			SlotActivityCheckerInterval: 1000,
 		},
 	}
 	broadcast := websocket.NewBroadcast[TableContent]()
