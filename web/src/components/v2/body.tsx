@@ -39,13 +39,19 @@ export default function SimpleBody({
     dppmPrices.length === 2
       ? getDppmPrices(campaignData.odds)
       : [
-          { id: campaignData.outcomes[0], price: 0.5 },
-          { id: campaignData.outcomes[1], price: 0.5 },
+          { id: campaignData.outcomes[0].identifier, price: 0.5 },
+          { id: campaignData.outcomes[1].identifier, price: 0.5 },
         ];
-  const chance = (index: number) =>
-    (Number(sharePrices[index].price) * 100).toFixed(0);
-  const yesChance = chance(1);
-  const noChance = chance(0);
+  const id = (outcomeName: "Up" | "Down") =>
+    campaignData.outcomes.find((o) => o.name === outcomeName)?.identifier;
+  const chance = (outcomeName: "Up" | "Down") =>
+    (
+      Number(
+        sharePrices.find((sp) => sp.id === id(outcomeName))?.price ?? 0.5,
+      ) * 100
+    ).toFixed(0);
+  const yesChance = chance("Up");
+  const noChance = chance("Down");
   return (
     <>
       <div className="rounded-xl border border-neutral-400 bg-2white p-4">
