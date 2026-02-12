@@ -86,7 +86,7 @@ const useWithdraw = () => {
             throw new Error("You dont have enough USDC.");
           }
 
-          if (chainIdToEid[chainId]) {
+          if (!chainIdToEid[chainId]) {
             throw new Error("Chain eid is not supported on LayerZero.");
           }
 
