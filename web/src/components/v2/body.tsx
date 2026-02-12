@@ -28,22 +28,21 @@ export default function SimpleBody({
   const { data } = useQuery<SimpleCampaignDetail>({
     queryKey: ["simpleCampaign", campaignData.priceMetadata.baseAsset, period],
     initialData: campaignData,
-    staleTime: 0,
-    refetchOnMount: true,
+    staleTime: 5000,
   });
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
-  const dppmPrices = getDppmPrices(campaignData.odds);
+  const dppmPrices = getDppmPrices(data.odds);
   const sharePrices =
     dppmPrices.length === 2
-      ? getDppmPrices(campaignData.odds)
+      ? getDppmPrices(data.odds)
       : [
-          { id: campaignData.outcomes[0].identifier, price: 0.5 },
-          { id: campaignData.outcomes[1].identifier, price: 0.5 },
+          { id: data.outcomes[0].identifier, price: 0.5 },
+          { id: data.outcomes[1].identifier, price: 0.5 },
         ];
   const id = (outcomeName: "Up" | "Down") =>
-    campaignData.outcomes.find((o) => o.name === outcomeName)?.identifier;
+    data.outcomes.find((o) => o.name === outcomeName)?.identifier;
   const chance = (outcomeName: "Up" | "Down") =>
     (
       Number(
@@ -70,13 +69,13 @@ export default function SimpleBody({
                 {data.priceMetadata?.baseAsset.toUpperCase()}
               </h1>
               <ChartPointsIndicator
-                starting={campaignData.starting}
-                ending={campaignData.ending}
+                starting={data.starting}
+                ending={data.ending}
               />
             </div>
           </div>
 
-          <SimpleSubHeader campaignData={campaignData} />
+          <SimpleSubHeader campaignData={data} />
         </div>
         <SimpleChance yes={yesChance} no={noChance} />
         <PriceChartWrapper simple={true} campaignData={data} />
