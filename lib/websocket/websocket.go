@@ -37,8 +37,8 @@ func Endpoint(endpoint string, handler func(string, url.Values, <-chan []byte, c
 		defer websocketConn.Close()
 		ipAddress := r.RemoteAddr
 		var (
-			messages                   = make(chan []byte, 1)
-			replies                    = make(chan []byte, 1)
+			messages                   = make(chan []byte, 1000)
+			replies                    = make(chan []byte, 1000)
 			chanShutdownWriter         = make(chan bool)
 			chanHandlerRequestShutdown = make(chan error)
 			chanHandlerShutdown        = make(chan bool)

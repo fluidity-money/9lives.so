@@ -75,9 +75,10 @@ func main() {
 		port = 5432
 	}
 	go func() {
-		t := time.NewTimer(1 * time.Minute)
+		t := time.NewTicker(1 * time.Minute)
 		for range t.C {
 			heartbeat.Pulse()
+			t.Reset()
 		}
 	}()
 	cfg := cdcConfig.Config{
@@ -136,7 +137,7 @@ func main() {
 		}
 	}()
 	tableFilter := makeTableFilter()
-	encodingChan := make(chan TableContent)
+	encodingChan := make(chan TableContent, 1000)
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go func() {
 			for t := range encodingChan {
@@ -180,7 +181,7 @@ func main() {
 			replies <-chan []byte, outgoing chan<- []byte,
 			shutdown chan<- error, requestShutdown <-chan bool,
 		) {
-			sink := make(chan TableContent)
+			sink := make(chan TableContent, 64)
 			cookie := broadcast.Subscribe(sink)
 			filterRules := make(map[string]map[string]*FilterConstraint)
 			filterRulesSet := make(map[string]bool)
