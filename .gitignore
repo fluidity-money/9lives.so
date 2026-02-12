@@ -16,3 +16,4 @@ insert-env.*
 foundry.lock
 *.wasm-opt
 *.wat
+websocket.database
