@@ -1,7 +1,7 @@
 import * as childProcess from "child_process";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { withPostHogConfig } from "@posthog/nextjs-config";
+// import { withPostHogConfig } from "@posthog/nextjs-config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,11 +42,12 @@ const nextConfig = {
   },
 };
 
-export default withPostHogConfig(nextConfig, {
+// export default withPostHogConfig(nextConfig, {
   // personalApiKey: process.env.POSTHOG_API_KEY,
   // envId: process.env.POSTHOG_ENV_ID,
   // sourcemaps: {
   //   enabled: true,
   //   deleteAfterUpload: true,
   // },
-})
+// })
+export default nextConfig;
