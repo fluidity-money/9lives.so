@@ -27,6 +27,7 @@ async function fetchPositions({
     const res = await publicClient.readContract({
       ...config.contracts.lens,
       functionName: "balancesForAllDpm",
+      account: address as `0x${string}`,
       args: [
         [
           {
