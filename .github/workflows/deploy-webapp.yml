@@ -30,7 +30,8 @@ jobs:
       NEXT_PUBLIC_POSTHOG_HOST: "https://events.9lives.so/"
       NEXT_PUBLIC_WS_URL: "wss://superposition-main.hasura.app/v1/graphql"
       NEXT_PUBLIC_CHAIN: "mainnet"
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+      POSTHOG_ENV_ID: ${{secrets.POSTHOG_ENV_ID }}
       NEXT_PUBLIC_SNITCH_ENDPOINT: "https://snitch-superposition-so.stellate.sh"
       NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: "0xD77ae359A5A12F04c4ABFE7D5B511E0990CE6F6C"
       NEXT_PUBLIC_BUY_HELPER2_ADDR: "0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c"

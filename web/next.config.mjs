@@ -1,6 +1,7 @@
 import * as childProcess from "child_process";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { withPostHogConfig } from "@posthog/nextjs-config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,7 +20,7 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   async redirects() {
     return [
-       {
+      {
         source: '/',
         destination: '/campaign/btc/hourly',
         permanent: false,
@@ -41,4 +42,11 @@ const nextConfig = {
   },
 };
 
-export default nextConfig
+export default withPostHogConfig(nextConfig, {
+  personalApiKey: process.env.POSTHOG_API_KEY,
+  envId: process.env.POSTHOG_ENV_ID,
+  sourcemaps: {
+    enabled: true,
+    deleteAfterUpload: true,
+  },
+})
