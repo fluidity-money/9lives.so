@@ -34,9 +34,16 @@ export default function SimpleBody({
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
-  const sharePrices = getDppmPrices(campaignData.odds);
+  const dppmPrices = getDppmPrices(campaignData.odds);
+  const sharePrices =
+    dppmPrices.length === 2
+      ? getDppmPrices(campaignData.odds)
+      : [
+          { id: campaignData.outcomes[0], price: 0.5 },
+          { id: campaignData.outcomes[1], price: 0.5 },
+        ];
   const chance = (index: number) =>
-    (Number(sharePrices ? sharePrices[index].price : 0.5) * 100).toFixed(0);
+    (Number(sharePrices[index].price) * 100).toFixed(0);
   const yesChance = chance(1);
   const noChance = chance(0);
   return (
