@@ -32,7 +32,7 @@ import (
 const EnvListenAddr = "SPN_LISTEN_ADDR"
 
 // PrivateSnapshotLookback to buffer in the service.
-const PrivateSnapshotLookback = 1000
+const PrivateSnapshotLookback = 4000
 
 type TableContent struct {
 	Table            string           `json:"table"`
@@ -75,10 +75,10 @@ func main() {
 		port = 5432
 	}
 	go func() {
-		t := time.NewTicker(1 * time.Minute)
+		t := time.NewTicker(time.Minute)
 		for range t.C {
 			heartbeat.Pulse()
-			t.Reset()
+			t.Reset(time.Minute)
 		}
 	}()
 	cfg := cdcConfig.Config{
@@ -98,7 +98,7 @@ func main() {
 		Slot: cdcSlot.Config{
 			Name:                        "websocket_slot",
 			CreateIfNotExists:           true,
-			SlotActivityCheckerInterval: 1000,
+			SlotActivityCheckerInterval: 500,
 		},
 	}
 	broadcast := websocket.NewBroadcast[TableContent]()
@@ -108,7 +108,7 @@ func main() {
 		broadcast.Subscribe(bufferMsgsChan)
 		buffer := make(map[string]struct {
 			i     int
-			items [1000]map[string]any
+			items [4000]map[string]any
 		})
 		for {
 			select {
