@@ -14,8 +14,8 @@ const DeadlinePong = 3 * time.Minute
 
 // websocketUpgrader used in every endpoint in this codebase.
 var websocketUpgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+	ReadBufferSize:  4096,
+	WriteBufferSize: 4096,
 
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
@@ -37,8 +37,8 @@ func Endpoint(endpoint string, handler func(string, url.Values, <-chan []byte, c
 		defer websocketConn.Close()
 		ipAddress := r.RemoteAddr
 		var (
-			messages                   = make(chan []byte, 1)
-			replies                    = make(chan []byte, 1)
+			messages                   = make(chan []byte, 64)
+			replies                    = make(chan []byte, 8)
 			chanShutdownWriter         = make(chan bool)
 			chanHandlerRequestShutdown = make(chan error)
 			chanHandlerShutdown        = make(chan bool)

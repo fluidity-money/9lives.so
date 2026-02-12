@@ -75,7 +75,8 @@ func main() {
 		port = 5432
 	}
 	go func() {
-		t := time.NewTimer(1 * time.Minute)
+		t := time.NewTicker(1 * time.Minute)
+		defer t.Stop()
 		for range t.C {
 			heartbeat.Pulse()
 		}
@@ -103,7 +104,7 @@ func main() {
 	broadcast := websocket.NewBroadcast[TableContent]()
 	dumpChan := make(chan chan []TableContent)
 	go func() {
-		bufferMsgsChan := make(chan TableContent)
+		bufferMsgsChan := make(chan TableContent, 64)
 		broadcast.Subscribe(bufferMsgsChan)
 		buffer := make(map[string]struct {
 			i     int
@@ -136,7 +137,7 @@ func main() {
 		}
 	}()
 	tableFilter := makeTableFilter()
-	encodingChan := make(chan TableContent)
+	encodingChan := make(chan TableContent, 256)
 	for i := 0; i < runtime.NumCPU(); i++ {
 		go func() {
 			for t := range encodingChan {
@@ -180,7 +181,7 @@ func main() {
 			replies <-chan []byte, outgoing chan<- []byte,
 			shutdown chan<- error, requestShutdown <-chan bool,
 		) {
-			sink := make(chan TableContent)
+			sink := make(chan TableContent, 64)
 			cookie := broadcast.Subscribe(sink)
 			filterRules := make(map[string]map[string]*FilterConstraint)
 			filterRulesSet := make(map[string]bool)
@@ -199,7 +200,14 @@ func main() {
 							}
 						}
 					}
-					outgoing <- m.encoded
+					select {
+					case outgoing <- m.encoded:
+					default:
+						slog.Debug("dropped outbound message (outgoing channel full)",
+							"ip", ipAddr,
+							"table", m.Table,
+						)
+					}
 				// We need a sink for all messages here:
 				case msg := <-replies:
 					var req struct {
