@@ -25,9 +25,9 @@ type (
 // up the server that handles new subscriptions.
 func NewBroadcast[A any]() *Broadcast[A] {
 	var (
-		broadcastRequests      = make(chan A)
-		subscriptionRequests   = make(chan registration[A])
-		unsubscriptionRequests = make(chan uint64)
+		broadcastRequests      = make(chan A, 1000)
+		subscriptionRequests   = make(chan registration[A], 1000)
+		unsubscriptionRequests = make(chan uint64, 1000)
 		shutdownRequests       = make(chan bool)
 	)
 	broadcast := Broadcast[A]{

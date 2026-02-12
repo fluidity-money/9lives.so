@@ -14,8 +14,8 @@ const DeadlinePong = 3 * time.Minute
 
 // websocketUpgrader used in every endpoint in this codebase.
 var websocketUpgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+	ReadBufferSize:  4096,
+	WriteBufferSize: 4096,
 
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
