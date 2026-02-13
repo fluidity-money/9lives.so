@@ -19,6 +19,10 @@ createAppKit({
     url: config.metadata.metadataBase.href,
     icons: [destinationChain.icon],
   },
+  chainImages: {
+    [destinationChain.id]: destinationChain.icon.src,
+    [otherChains.megaeth.id]: otherChains.megaeth.icon.src,
+  },
   features: {
     analytics: true,
   },
