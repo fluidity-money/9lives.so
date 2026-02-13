@@ -17,7 +17,7 @@ createAppKit({
     name: config.metadata.title,
     description: config.metadata.description,
     url: config.metadata.metadataBase.href,
-    icons: [destinationChain.icon],
+    icons: [destinationChain.icon.src],
   },
   chainImages: {
     [destinationChain.id]: destinationChain.icon.src,
