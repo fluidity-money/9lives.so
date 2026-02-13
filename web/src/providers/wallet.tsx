@@ -22,6 +22,11 @@ createAppKit({
   features: {
     analytics: true,
   },
+  tokens: {
+    [`eip155:${destinationChain.id}`]: {
+      address: config.NEXT_PUBLIC_FUSDC_ADDR,
+    },
+  },
   themeMode: "light",
 });
 
