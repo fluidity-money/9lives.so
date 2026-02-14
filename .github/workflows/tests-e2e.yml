@@ -57,6 +57,7 @@ jobs:
           FORKNET_URL: ${{ secrets.FORKNET_URL }}
           FORKNET_SECRET: ${{ secrets.FORKNET_SECRET }}
           TESTER_PRIVATE_KEY: ${{ secrets.TESTER_PRIVATE_KEY }}
+          POSTHOG_ENV_ID: ${{ secrets.POSTHOG_ENV_ID }}
         run: pnpm test:e2e
 
       - uses: actions/upload-artifact@v4
