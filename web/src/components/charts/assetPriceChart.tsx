@@ -281,7 +281,7 @@ export default function AssetPriceChart({
         />
         <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
         <Tooltip
-          labelFormatter={(ts: number) => {
+          labelFormatter={(ts) => {
             const date = new Date(ts);
             return date.toLocaleString("default", {
               day: "numeric",

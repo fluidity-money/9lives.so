@@ -133,7 +133,7 @@ export default function PriceChart({
           tickFormatter={formatFn}
         />
         <Tooltip
-          labelFormatter={(ts: number) => {
+          labelFormatter={(ts) => {
             const date = new Date(ts * 1000);
             return date.toLocaleString("default", {
               day: "numeric",
