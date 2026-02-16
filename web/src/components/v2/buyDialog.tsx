@@ -288,12 +288,6 @@ export default function SimpleBuyDialog({
           ]}
         />
         <div className="flex items-center justify-between gap-2">
-          <ChainSelectorDropdown
-            variant="small"
-            handleNetworkChange={handleNetworkChange}
-            selectedChainId={fromChain}
-            isInMiniApp={isInMiniApp}
-          />
           <AssetSelector
             tokens={tokens}
             variant="small"
@@ -302,6 +296,12 @@ export default function SimpleBuyDialog({
             fromToken={fromToken}
             fromChain={fromChain}
             setValue={handleTokenChange}
+          />
+          <ChainSelectorDropdown
+            variant="small"
+            handleNetworkChange={handleNetworkChange}
+            selectedChainId={fromChain}
+            isInMiniApp={isInMiniApp}
           />
         </div>
 
