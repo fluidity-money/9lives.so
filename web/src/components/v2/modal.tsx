@@ -55,7 +55,7 @@ export default function Modal({
               <DialogPanel
                 className={combineClass(
                   boxContainerClass ?? "max-w-3xl",
-                  "relative w-full rounded-2xl border-neutral-400 bg-2white p-6 md:border md:shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)]",
+                  "relative w-full rounded-2xl border-neutral-300 bg-2white p-6 md:border md:shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)]",
                 )}
               >
                 {displayClose ? <CloseButton close={closeModal} /> : null}

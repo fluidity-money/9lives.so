@@ -297,6 +297,7 @@ export default function SimpleBuyDialog({
             fromChain={fromChain}
             setValue={handleTokenChange}
           />
+          <span className="text-xs font-bold text-neutral-400">ON</span>
           <ChainSelectorDropdown
             variant="small"
             handleNetworkChange={handleNetworkChange}
@@ -304,7 +305,12 @@ export default function SimpleBuyDialog({
             isInMiniApp={isInMiniApp}
           />
         </div>
-
+        <p
+          className={combineClass(
+            outcomeIdx === 1 ? "text-green-600" : "text-red-600",
+            "text-center text-xl font-bold",
+          )}
+        >{`${chance}% Chance`}</p>
         <div className="flex flex-1 flex-col justify-center space-y-1 text-center">
           <p
             className={combineClass(
