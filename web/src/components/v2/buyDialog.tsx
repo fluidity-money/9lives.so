@@ -278,12 +278,12 @@ export default function SimpleBuyDialog({
             {
               title: "Buy Yes",
               callback: () => setOutcomeIdx(1),
-              textColor: "text-green-700",
+              textColor: "text-green-600 font-bold",
             },
             {
               title: "Buy No",
               callback: () => setOutcomeIdx(0),
-              textColor: "text-red-700",
+              textColor: "text-red-600 font-bold",
             },
           ]}
         />
