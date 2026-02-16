@@ -408,19 +408,19 @@ export default function SimpleBuyDialog({
         <div className={combineClass(usdValue > 0 ? "visible" : "invisible")}>
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
-              <div className="text-xs font-semibold text-neutral-400">
+              <div className="text-xs font-bold text-neutral-400">
                 If Correct Win:
               </div>
-              <div className="text-3xl font-medium text-green-600">
+              <div className="text-xl font-bold text-green-600">
                 <span className="text-neutral-400">+</span> $
                 {+(shares + boost).toFixed(2)}
               </div>
             </div>
             <div className="flex flex-col justify-end gap-1">
-              <div className="text-xs font-semibold text-neutral-400">
+              <div className="text-xs font-bold text-neutral-400">
                 If Incorrect Win:
               </div>
-              <div className="text-3xl font-medium text-green-600">
+              <div className="text-xl font-bold text-green-600">
                 <span className="text-neutral-400">+</span> $
                 {+refund.toFixed(2)}
               </div>

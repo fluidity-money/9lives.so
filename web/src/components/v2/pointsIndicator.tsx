@@ -28,13 +28,9 @@ export default function PointsIndicator({
   if (!points || (variant === "default" && !usdValue)) return null;
 
   return (
-    <div className="flex items-center justify-center rounded-lg bg-green-100 px-1 py-3 shadow-[inset_1px_1px_2px_0px_rgba(34,197,94,0.50)]">
-      <span className="text-sm font-medium text-2black">
-        💎 Earn{" "}
-        <span className="text-green-600">
-          +{(usdValue! * points).toFixed(2)}
-        </span>{" "}
-        9Lives Points 💎
+    <div className="flex items-center justify-center rounded-lg border border-purple-600 bg-purple-200 px-1 py-3">
+      <span className="text-sm font-bold text-purple-600">
+        💎 Earn +{(usdValue! * points).toFixed(2)} 9Lives Points 💎
       </span>
     </div>
   );
