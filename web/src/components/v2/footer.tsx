@@ -50,7 +50,7 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
     href={item.page}
     target="_blank"
     rel="noopener noreferrer"
-    className="font-chicago text-neutral-800 hover:underline"
+    className="text-sm font-bold text-2black hover:underline"
   >
     {item.title}
   </Link>
