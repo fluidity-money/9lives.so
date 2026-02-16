@@ -10,6 +10,7 @@ import KAG from "#/images/tokens/kag.png";
 import ETH from "#/images/tokens/eth.svg";
 import SOL from "#/images/tokens/sol.svg";
 import CVX from "#/images/tokens/cvx.png";
+import SPY from "#/images/tokens/spy.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -218,6 +219,19 @@ const simpleMarkets = {
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
     listed: false,
+  },
+  spy: {
+    slug: "spy",
+    logo: SPY,
+    title: "S&P 500 (SPY)",
+    tabTitle: "SPY",
+    decimals: 2,
+    periods: ["15mins"],
+    openDays: stockMarketOpenDaysUS,
+    openHours: stockMarketOpenHoursUS,
+    closeDays: stockMarketCloseDaysUS,
+    tz: "America/New_York",
+    listed: true,
   },
 } as const;
 const betaTesterWallets = [
