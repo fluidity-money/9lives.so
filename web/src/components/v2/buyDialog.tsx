@@ -378,27 +378,27 @@ export default function SimpleBuyDialog({
           </div>
           <div className="flex gap-1">
             <Button
-              size={"xsmall"}
+              size={"small"}
               title={"10%"}
               className={"flex-auto"}
               onClick={() => setToShare(0.1)}
             />
             <Button
-              size={"xsmall"}
+              size={"small"}
               title={"25%"}
               className={"flex-auto"}
               onClick={() => setToShare(0.25)}
             />
             <Button
               title={"50%"}
-              size={"xsmall"}
+              size={"small"}
               className={"flex-auto"}
               onClick={() => setToShare(0.5)}
             />
             <Button
               disabled={!account}
               title="MAX"
-              size={"xsmall"}
+              size={"small"}
               className={"flex-auto"}
               onClick={() => setToShare(1)}
             />
