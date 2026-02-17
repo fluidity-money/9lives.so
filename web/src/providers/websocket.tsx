@@ -18,7 +18,7 @@ import {
 } from "@/utils/format/formatActions";
 
 export const wsClient = createClient({
-  url: config.NEXT_PUBLIC_WS_URL,
+  url: config.NEXT_PUBLIC_HASURA_URL,
   connectionParams: {},
 });
 const subTenLatestCreate = `
