@@ -45,7 +45,7 @@ export default function ReactQueryProvider({
           SimpleMarketKey,
           SimpleMarketPeriod,
         ];
-        const data = await requestSimpleMarket(symbol, period);
+        const data = await requestSimpleMarket(symbol, period, true);
         return formatSimpleCampaignDetail(data);
       },
     });

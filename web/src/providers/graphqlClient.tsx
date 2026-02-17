@@ -662,34 +662,42 @@ export const requestPriceChanges = (poolAddress: string) =>
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
 
-export const requestSimpleMarket = (symbol: string, period: string) =>
-  graph9Lives.query.campaignBySymbol({
-    $: {
-      symbol: symbol.toUpperCase(),
-      category: period[0].toUpperCase() + period.slice(1).toLowerCase(),
-    },
-    categories: true,
-    identifier: true,
-    starting: true,
-    odds: true,
-    ending: true,
-    poolAddress: true,
-    outcomes: {
+export const requestSimpleMarket = (
+  symbol: string,
+  period: string,
+  noCache: boolean = false,
+) =>
+  graph9Lives
+    .transport({
+      headers: noCache ? { "9lives-bypass-cache": "1" } : undefined,
+    })
+    .query.campaignBySymbol({
+      $: {
+        symbol: symbol.toUpperCase(),
+        category: period[0].toUpperCase() + period.slice(1).toLowerCase(),
+      },
+      categories: true,
       identifier: true,
+      starting: true,
+      odds: true,
+      ending: true,
+      poolAddress: true,
+      outcomes: {
+        identifier: true,
+        name: true,
+        picture: true,
+        share: { address: true },
+      },
+      totalVolume: true,
+      creator: { address: true },
+      winner: true,
+      investmentAmounts: { usdc: true, share: true, id: true },
+      priceMetadata: {
+        baseAsset: true,
+        priceTargetForUp: true,
+      },
       name: true,
-      picture: true,
-      share: { address: true },
-    },
-    totalVolume: true,
-    creator: { address: true },
-    winner: true,
-    investmentAmounts: { usdc: true, share: true, id: true },
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-    name: true,
-  });
+    });
 
 export const requestAssetPrices = (
   symbol: string,
