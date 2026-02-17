@@ -231,7 +231,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
-    listed: false,
+    listed: true,
   },
 } as const;
 const betaTesterWallets = [
