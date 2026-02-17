@@ -18,14 +18,21 @@ const button = cva("text-2black disabled:opacity-40", {
       xsmall: "rounded-full px-2 py-1 text-[9px]",
       small: "rounded-xl px-2 py-1 text-sm",
       medium: "rounded-xl p-3 text-sm",
-      large: "rounded-2xl px-4 py-3 text-base",
+      large: "rounded-2xl px-4 py-3",
     },
   },
   defaultVariants: {
     size: "medium",
     intent: "cta",
   },
-  compoundVariants: [],
+  compoundVariants: [
+    { intent: "cta", size: "large", className: "text-base" },
+    {
+      intent: ["yes", "no", "reward", "inverted"],
+      size: "large",
+      className: "text-xl",
+    },
+  ],
 });
 
 export interface ButtonProps
