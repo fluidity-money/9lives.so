@@ -232,7 +232,7 @@ type ComplexityRoot struct {
 		ReferrersForAddress       func(childComplexity int, address string) int
 		SuggestedHeadlines        func(childComplexity int) int
 		TimebasedCampaigns        func(childComplexity int, categories []string, tokens []string) int
-		TotalPnL                  func(childComplexity int, address string) int
+		TotalPnL                  func(childComplexity int, address string, fromTs *int, untilTs *int) int
 		UnclaimedCampaigns        func(childComplexity int, address string, token *string) int
 		UserActivity              func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
 		UserClaims                func(childComplexity int, address string, campaignID *string, page *int, pageSize *int) int
@@ -356,7 +356,7 @@ type QueryResolver interface {
 	TimebasedCampaigns(ctx context.Context, categories []string, tokens []string) ([]*types.Campaign, error)
 	UnclaimedCampaigns(ctx context.Context, address string, token *string) ([]*types.UnclaimedCampaign, error)
 	Assets(ctx context.Context) ([]types.Asset, error)
-	TotalPnL(ctx context.Context, address string) (*types.Pnl, error)
+	TotalPnL(ctx context.Context, address string, fromTs *int, untilTs *int) (*types.Pnl, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -1315,7 +1315,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.TotalPnL(childComplexity, args["address"].(string)), true
+		return e.complexity.Query.TotalPnL(childComplexity, args["address"].(string), args["fromTs"].(*int), args["untilTs"].(*int)), true
 
 	case "Query.unclaimedCampaigns":
 		if e.complexity.Query.UnclaimedCampaigns == nil {
@@ -2589,6 +2589,24 @@ func (ec *executionContext) field_Query_totalPnL_args(ctx context.Context, rawAr
 		}
 	}
 	args["address"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["fromTs"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromTs"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["fromTs"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["untilTs"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("untilTs"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["untilTs"] = arg2
 	return args, nil
 }
 
@@ -9329,7 +9347,7 @@ func (ec *executionContext) _Query_totalPnL(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TotalPnL(rctx, fc.Args["address"].(string))
+		return ec.resolvers.Query().TotalPnL(rctx, fc.Args["address"].(string), fc.Args["fromTs"].(*int), fc.Args["untilTs"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

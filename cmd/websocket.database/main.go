@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -28,8 +27,16 @@ import (
 	cdcSlot "github.com/Trendyol/go-pq-cdc/pq/slot"
 )
 
-// EnvListenAddr to listen the HTTP server on.
-const EnvListenAddr = "SPN_LISTEN_ADDR"
+const (
+	// EnvListenAddr to listen the HTTP server on.
+	EnvListenAddr = "SPN_LISTEN_ADDR"
+
+	// EnvPublicationName to use as the publication name.
+	EnvPublicationName = "SPN_PUBLICATION_NAME"
+
+	// EnvPublicationSlot to use as the publication slot.
+	EnvPublicationSlot = "SPN_PUBLICATION_SLOT"
+)
 
 // PrivateSnapshotLookback to buffer in the service.
 const PrivateSnapshotLookback = 4000
@@ -89,14 +96,17 @@ func main() {
 		Port:     port,
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
-			Name:              "websocket_publication",
+			Name:              os.Getenv(EnvPublicationName),
 			Operations: cdcPublication.Operations{
 				cdcPublication.OperationInsert,
 			},
 			Tables: tables,
 		},
+		Metric: cdcConfig.MetricConfig{
+			Port: 8081,
+		},
 		Slot: cdcSlot.Config{
-			Name:                        "websocket_slot",
+			Name:                        os.Getenv(EnvPublicationSlot),
 			CreateIfNotExists:           true,
 			SlotActivityCheckerInterval: 1000,
 		},
@@ -104,7 +114,7 @@ func main() {
 	broadcast := websocket.NewBroadcast[TableContent]()
 	dumpChan := make(chan chan []TableContent)
 	go func() {
-		bufferMsgsChan := make(chan TableContent)
+		bufferMsgsChan := make(chan TableContent, 1000)
 		broadcast.Subscribe(bufferMsgsChan)
 		buffer := make(map[string]struct {
 			i     int
@@ -137,19 +147,6 @@ func main() {
 		}
 	}()
 	tableFilter := makeTableFilter()
-	encodingChan := make(chan TableContent, 1000)
-	for i := 0; i < runtime.NumCPU(); i++ {
-		go func() {
-			for t := range encodingChan {
-				e, err := json.Marshal(t)
-				if err != nil {
-					log.Fatalf("failed to encode: %v", err)
-				}
-				t.encoded = e
-				broadcast.Broadcast(t)
-			}
-		}()
-	}
 	connector, err := cdc.NewConnector(ctx, cfg, func(ctx *cdcReplication.ListenerContext) {
 		msg, isInsert := ctx.Message.(*cdcFormat.Insert)
 		if err := ctx.Ack(); err != nil {
@@ -170,7 +167,13 @@ func main() {
 				o[k] = msg.Decoded[k]
 			}
 		}
-		encodingChan <- TableContent{msg.TableName, o, nil, nil, nil}
+		m := TableContent{msg.TableName, o, nil, nil, nil}
+		e, err := json.Marshal(m)
+		if err != nil {
+			log.Fatalf("failed to encode: %v", err)
+		}
+		m.encoded = e
+		broadcast.Broadcast(m)
 	})
 	if err != nil {
 		setup.Exitf("error opening connector: %v", err)
@@ -263,10 +266,12 @@ func main() {
 										filteredItems = append(filteredItems, item)
 									}
 								}
-								filteredSnapshot = append(filteredSnapshot, TableContent{
-									Table:    tableContent.Table,
-									Snapshot: filteredItems,
-								})
+								if len(filteredItems) > 0 {
+									filteredSnapshot = append(filteredSnapshot, TableContent{
+										Table:    tableContent.Table,
+										Snapshot: filteredItems,
+									})
+								}
 							}
 							snapshot, err := json.Marshal(TableContent{
 								SnapshotToplevel: filteredSnapshot,
@@ -300,10 +305,8 @@ func main() {
 			broadcast.Unsubscribe(cookie)
 			shutdown <- err
 		})
-		setup.Exitf("bind: %v", http.ListenAndServeTLS(
+		setup.Exitf("bind: %v", http.ListenAndServe(
 			os.Getenv(EnvListenAddr),
-			"/etc/ssl/certs/ssl-cert-snakeoil.pem",
-			"/etc/ssl/private/ssl-cert-snakeoil.key",
 			nil,
 		))
 	}()

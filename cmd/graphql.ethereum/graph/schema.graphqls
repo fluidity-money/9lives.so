@@ -114,14 +114,14 @@ type Query {
   unclaimedCampaigns(address:String!,token:String): [UnclaimedCampaign]!
 
   """
-  Returns assets ordered by volume invested 
+  Returns assets ordered by volume invested
   """
   assets: [Asset!]!
 
   """
   Returns user's total profit and loss of all time
   """
-  totalPnL(address:String!): Pnl
+  totalPnL(address:String!, fromTs: Int, untilTs: Int): Pnl
 }
 
 type Pnl {

@@ -1222,8 +1222,8 @@ func (r *queryResolver) Campaigns(ctx context.Context, category []string, orderB
 	}
 	selectClause := "nc.*,nead.shares AS shares,nmods.odds AS odds"
 	fromClause := " FROM ninelives_campaigns_1 AS nc "
-	joinClause := `LEFT JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress' 
-	LEFT JOIN (SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
+	joinClause := `LEFT JOIN (SELECT DISTINCT ON (emitter_addr) * FROM ninelives_events_amm_details ORDER BY emitter_addr, created_by DESC) AS nead on nead.emitter_addr = nc.content->>'poolAddress'
+	LEFT JOIN (SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC) AS nmods on nmods.pool_address = nc.content->>'poolAddress'
 	`
 	whereClause := "WHERE shown = TRUE"
 	orderClause := ""
@@ -1358,7 +1358,7 @@ SELECT
         campaign_investments ci ON nc.id = ci.campaign_id
 		LEFT JOIN (
 		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
-		) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
+		) AS nmods on nmods.pool_address = nc.content->>'poolAddress'
 		WHERE
 			nc.id = ? AND shown`, id, id).Scan(&c).Error
 	if err != nil {
@@ -1428,9 +1428,9 @@ func (r *queryResolver) UserParticipatedCampaigns(ctx context.Context, address s
 		pageSizeNum = *pageSize
 	}
 	err := r.DB.Raw(`
-	select nc.id as campaign_id, nc."content" 
-	from ninelives_payoff_unused_1 npu 
-	join ninelives_campaigns_1 nc 
+	select nc.id as campaign_id, nc."content"
+	from ninelives_payoff_unused_1 npu
+	join ninelives_campaigns_1 nc
 	on nc."content" ->>'poolAddress' = npu.pool_address
 	where npu.spender  = ?
 	and npu.was_spent = false
@@ -1915,7 +1915,7 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string, cat
 	FROM ninelives_campaigns_1 AS nc
 	LEFT JOIN (
 		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
-	) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
+	) AS nmods on nmods.pool_address = nc.content->>'poolAddress'
 	WHERE content->'priceMetadata'->>'baseAsset' = ?
 	AND content->'categories' @> ?
 	AND EXTRACT(EPOCH FROM NOW()) BETWEEN (content->>'starting')::numeric AND (content->>'ending')::numeric
@@ -1930,7 +1930,7 @@ func (r *queryResolver) CampaignBySymbol(ctx context.Context, symbol string, cat
 			FROM ninelives_campaigns_1 as nc
 			LEFT JOIN (
 			SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
-			) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
+			) AS nmods on nmods.pool_address = nc.content->>'poolAddress'
 			WHERE content->'priceMetadata'->>'baseAsset' = ?
 			AND content->'categories' @> ?
 			AND (content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
@@ -1963,7 +1963,7 @@ func (r *queryResolver) TimebasedCampaigns(ctx context.Context, categories []str
 	FROM ninelives_campaigns_1 as nc
 	LEFT JOIN (
 		SELECT DISTINCT ON (pool_address) * FROM ninelives_market_odds_snapshot_1 ORDER BY pool_address, created_by DESC
-	) AS nmods on nmods.pool_address = nc.content->>'poolAddress' 
+	) AS nmods on nmods.pool_address = nc.content->>'poolAddress'
 	WHERE nc.content->'categories' @> ?::jsonb
 	AND (nc.content->>'starting')::numeric <= EXTRACT(EPOCH FROM NOW())
 	`
@@ -2043,58 +2043,74 @@ func (r *queryResolver) Assets(ctx context.Context) ([]types.Asset, error) {
 }
 
 // TotalPnL is the resolver for the totalPnL field.
-func (r *queryResolver) TotalPnL(ctx context.Context, address string) (*types.Pnl, error) {
+func (r *queryResolver) TotalPnL(ctx context.Context, address string, fromTs *int, untilTs *int) (*types.Pnl, error) {
 	var pnl types.Pnl
 	address = strings.ToLower(address)
-	err := r.DB.Raw(`
+	var (
+		from = time.Unix(1, 1)
+		until = time.Now()
+	)
+	if fromTs != nil {
+		from = time.Unix(int64(*fromTs), 0)
+	}
+	if untilTs != nil {
+		until = time.Unix(int64(*untilTs), 0)
+	}
+	q := `
 WITH payoff AS (
-    SELECT
-        emitter_addr,
-        SUM(fusdc_received) AS fusdc_received
-    FROM ninelives_events_payoff_activated
-    WHERE recipient = ?
-    GROUP BY emitter_addr
+	SELECT
+		emitter_addr,
+		SUM(fusdc_received) AS fusdc_received
+	FROM ninelives_events_payoff_activated
+	WHERE recipient = $3
+	  AND created_by >= $1
+	  AND created_by < $2
+	GROUP BY emitter_addr
 ),
 loser_payoff AS (
-    SELECT
-        emitter_addr,
-        SUM(fusdc_received) AS fusdc_received
-    FROM ninelives_events_ninetails_loser_payoff
-    WHERE recipient = ?
-    GROUP BY emitter_addr
+	SELECT
+		emitter_addr,
+		SUM(fusdc_received) AS fusdc_received
+	FROM ninelives_events_ninetails_loser_payoff
+	WHERE recipient = $3
+	  AND created_by >= $1
+	  AND created_by < $2
+	GROUP BY emitter_addr
 ),
 spent AS (
-    SELECT
-        emitter_addr,
-         SUM(
-            CASE
-                WHEN type = 'buy'  THEN from_amount
-                WHEN type = 'sell' THEN -to_amount
-            END
-        ) AS fusdc_spent
-    FROM ninelives_buys_and_sells_1
-    WHERE recipient = ?
-    GROUP BY emitter_addr
+	SELECT
+		emitter_addr,
+		 SUM(
+			CASE
+				WHEN type = 'buy'  THEN from_amount
+				WHEN type = 'sell' THEN -to_amount
+			END
+		) AS fusdc_spent
+	FROM ninelives_buys_and_sells_1
+	WHERE recipient = $3
+	  AND created_by >= $1
+	  AND created_by < $2
+	GROUP BY emitter_addr
 ),
 all_emitters AS (
-    SELECT emitter_addr FROM payoff
-    UNION
-    SELECT emitter_addr FROM loser_payoff
-    UNION
-    SELECT emitter_addr FROM spent
+	SELECT emitter_addr FROM payoff
+	UNION
+	SELECT emitter_addr FROM loser_payoff
+	UNION
+	SELECT emitter_addr FROM spent
 )
 SELECT
-    SUM(
-        COALESCE(p.fusdc_received, 0)
-      + COALESCE(l.fusdc_received, 0)
-      - COALESCE(s.fusdc_spent, 0)
-    ) AS total_pnl,
-    COALESCE(SUM(s.fusdc_spent), 0) AS volume
+	SUM(
+		COALESCE(p.fusdc_received, 0)
+	  + COALESCE(l.fusdc_received, 0)
+	  - COALESCE(s.fusdc_spent, 0)
+	) AS total_pnl,
+	COALESCE(SUM(s.fusdc_spent), 0) AS volume
 FROM all_emitters e
 LEFT JOIN payoff p ON p.emitter_addr = e.emitter_addr
 LEFT JOIN loser_payoff l ON l.emitter_addr = e.emitter_addr
-LEFT JOIN spent s ON s.emitter_addr = e.emitter_addr;
-	`, address, address, address).Scan(&pnl).Error
+LEFT JOIN spent s ON s.emitter_addr = e.emitter_addr`
+	err := r.DB.Raw(q, from, until, address).Scan(&pnl).Error
 	if err != nil {
 		return nil, fmt.Errorf("error getting pnl: %w", err)
 	}
