@@ -28,7 +28,8 @@ jobs:
       NEXT_PUBLIC_MEOW_DOMAINS_ADDR: "0x4087fb91A1fBdef05761C02714335D232a2Bf3a1"
       NEXT_PUBLIC_POSTHOG_KEY: "phc_wFN8nVjgKYNURCUsE7MEFUdAjgKE6aDC01AAEXLUGyt"
       NEXT_PUBLIC_POSTHOG_HOST: "https://events.9lives.so/"
-      NEXT_PUBLIC_WS_URL: "wss://superposition-main.hasura.app/v1/graphql"
+      NEXT_PUBLIC_WS_URL: "wss://websocket.9lives.so"
+      NEXT_PUBLIC_HASURA_URL: "https://superposition-main.hasura.app/v1/graphql"
       NEXT_PUBLIC_CHAIN: "mainnet"
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
       POSTHOG_ENV_ID: ${{ secrets.POSTHOG_ENV_ID }}

@@ -20,7 +20,7 @@ const graph9Lives = Lives9.create()
     url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
   });
 const graph9LivesSubs = Graffle.create().transport({
-  url: appConfig.NEXT_PUBLIC_WS_URL.replace("wss", "https"),
+  url: appConfig.NEXT_PUBLIC_HASURA_URL,
 });
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,

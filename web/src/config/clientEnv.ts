@@ -63,6 +63,10 @@ const clientEnvSchema = z.object({
    */
   NEXT_PUBLIC_SARP_SIGNALLER_ADDR: z.string().length(42),
   /**
+   * Hasura url
+   */
+  NEXT_PUBLIC_HASURA_URL: z.string().url(),
+  /**
    * Websocket url
    */
   NEXT_PUBLIC_WS_URL: z.string().url(),
@@ -122,6 +126,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_BEAUTY_ADDR: process.env.NEXT_PUBLIC_BEAUTY_ADDR,
   NEXT_PUBLIC_MEOW_DOMAINS_ADDR: process.env.NEXT_PUBLIC_MEOW_DOMAINS_ADDR,
   NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+  NEXT_PUBLIC_HASURA_URL: process.env.NEXT_PUBLIC_HASURA_URL,
   NEXT_PUBLIC_CHAIN: process.env.NEXT_PUBLIC_CHAIN,
   NEXT_PUBLIC_SARP_SIGNALLER_ADDR: process.env.NEXT_PUBLIC_SARP_SIGNALLER_ADDR,
   NEXT_PUBLIC_SNITCH_ENDPOINT: process.env.NEXT_PUBLIC_SNITCH_ENDPOINT,

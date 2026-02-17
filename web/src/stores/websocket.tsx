@@ -1,3 +1,4 @@
+import config from "@/config";
 import { create } from "zustand";
 
 type WSListener = (msg: unknown) => void;
@@ -17,7 +18,7 @@ export const useWebSocketStore = create<WSState>((set, get) => ({
   connect: () => {
     if (get().ws) return;
 
-    const ws = new WebSocket("wss://websocket.9lives.so");
+    const ws = new WebSocket(config.NEXT_PUBLIC_WS_URL);
 
     ws.onopen = () => {
       console.log("WS opened");
