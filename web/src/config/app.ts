@@ -223,7 +223,7 @@ const simpleMarkets = {
   spy: {
     slug: "spy",
     logo: SPY,
-    title: "S&P 500 (SPY)",
+    title: "SPY",
     tabTitle: "SPY",
     decimals: 2,
     periods: ["15mins"],
