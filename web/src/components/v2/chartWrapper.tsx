@@ -31,7 +31,10 @@ export default function PriceChartWrapper({
     },
   });
   const assetPrices = data?.pages.flatMap((c) => c);
-
+  const totalVolume = campaignData.odds
+    ? Object.values(campaignData.odds).reduce((acc, v) => acc + Number(v), 0)
+    : "0";
+  const formattedVolume = formatFusdc(totalVolume, 2);
   useEffect(() => {
     if (hasNextPage && assetPrices?.length) {
       fetchNextPage();
@@ -45,7 +48,7 @@ export default function PriceChartWrapper({
     <div className="relative">
       <AssetPriceChartMask simple={simple} campaignData={campaignData} />
       <AssetPriceChart
-        volume={formatFusdc(campaignData.totalVolume ?? 0, 2)}
+        volume={formattedVolume}
         starting={starting}
         ending={ending}
         symbol={symbol}
