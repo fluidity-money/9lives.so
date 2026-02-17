@@ -12,7 +12,7 @@ const button = cva("text-2black disabled:opacity-40", {
       no: "bg-red-400 font-bold text-red-700",
       cta: "bg-2black text-2white",
       reward: "border border-yellow-400 bg-yellow-200",
-      inverted: "border border-2black/70 bg-2white",
+      inverted: "border border-neutral-400 bg-2white",
     },
     size: {
       xsmall: "rounded-full px-2 py-1 text-[9px]",
