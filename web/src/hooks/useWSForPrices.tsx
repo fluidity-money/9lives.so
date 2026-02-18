@@ -87,7 +87,8 @@ export function useWSForPrices({
                   ),
                   id: i.id,
                   timestamp: new Date(i.created_by).getTime(),
-                })),
+                }))
+                .sort((a, b) => a.timestamp - b.timestamp),
           );
           return;
         }
