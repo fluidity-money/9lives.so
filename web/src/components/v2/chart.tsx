@@ -31,7 +31,6 @@ export default function AssetPriceChart({
   assetPrices: PricePoint[];
 }) {
   const chartHeight = 300;
-  useWSForPrices({ asset: symbol, ending, starting });
   if (assetPrices.length < 1) {
     return <div className="skeleton w-full" style={{ height: chartHeight }} />;
   }
@@ -55,8 +54,6 @@ export default function AssetPriceChart({
   const minY = basePrice - simpleDiff;
   const maxY = basePrice + simpleDiff;
   const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
-  const remainingMs = Math.max(0, ending - latestTimestamp);
-  const totalSeconds = Math.floor(remainingMs / 1000);
   const formatFn = (ts: number) => {
     const date = new Date(ts);
     switch (true) {

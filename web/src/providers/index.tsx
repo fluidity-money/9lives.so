@@ -8,7 +8,7 @@ import ReferralHandler from "./referralHandler";
 import { Suspense } from "react";
 import FarcasterProvider from "./farcaster";
 import RelayProvider from "./relay";
-import { WebSocketProvider as WS9Lives } from "./websocket9lives";
+// import { WebSocketProvider as WS9Lives } from "./websocket9lives";
 export default function Providers({
   children,
   cookies,
@@ -29,7 +29,9 @@ export default function Providers({
           <ReferralHandler />
         </Suspense>
         <PostHogProvider>
-          <WS9Lives>{children}</WS9Lives>
+          {/* <WS9Lives> */}
+          {children}
+          {/* </WS9Lives> */}
         </PostHogProvider>
       </ReactQueryProvider>
     </WalletProvider>

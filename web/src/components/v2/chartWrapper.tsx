@@ -1,5 +1,5 @@
 import { PricePoint, SimpleCampaignDetail } from "@/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import AssetPriceChartMask from "./chartMask";
 import AssetPriceChart from "./chart";
 import { useEffect } from "react";
@@ -7,6 +7,7 @@ import config from "@/config";
 import { useWSForNextMarket } from "@/hooks/useWSForNextMarket";
 import LiveTrades from "./trades";
 import formatFusdc from "@/utils/format/formatUsdc";
+import { useWSForPrices } from "@/hooks/useWSForPrices";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -19,29 +20,22 @@ export default function PriceChartWrapper({
   const starting = campaignData.starting;
   const ending = campaignData.ending;
   useWSForNextMarket(campaignData, simple);
-  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery<
-    PricePoint[]
-  >({
+  useWSForPrices({ asset: symbol, ending, starting });
+  const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.length < config.hasuraMaxQueryItem) return undefined;
-      if (typeof lastPageParam !== "number") return undefined;
-      return lastPageParam + 1;
+    queryFn: async () => {
+      throw new Error(
+        "This function should be called. This query is being updated by websocket.",
+      );
     },
+    enabled: false,
   });
-  const assetPrices = data?.pages.flatMap((c) => c);
   const totalVolume = campaignData.odds
     ? Object.values(campaignData.odds).reduce((acc, v) => acc + Number(v), 0)
     : "0";
   const formattedVolume = formatFusdc(totalVolume, 2);
-  useEffect(() => {
-    if (hasNextPage && assetPrices?.length) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, assetPrices?.length, fetchNextPage]);
 
-  if (!assetPrices || !data || isLoading)
+  if (!assetPrices || 1 > assetPrices.length || isLoading)
     return <div className="skeleton" style={{ height: 320 }} />;
 
   return (

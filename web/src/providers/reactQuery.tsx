@@ -25,18 +25,6 @@ export default function ReactQueryProvider({
         return await res.json();
       },
     });
-    type AssetPriceKey = [string, SimpleMarketKey, number, number];
-    client.setQueryDefaults<PricePoint[]>(["assetPrices"], {
-      queryFn: async ({ queryKey, pageParam }) => {
-        const [, symbol, starting, ending] = queryKey as AssetPriceKey;
-        return await getAndFormatAssetPrices({
-          symbol,
-          starting,
-          ending,
-          page: pageParam as number,
-        });
-      },
-    });
 
     client.setQueryDefaults<SimpleCampaignDetail>(["simpleCampaign"], {
       queryFn: async ({ queryKey }) => {
