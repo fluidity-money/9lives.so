@@ -77,11 +77,10 @@ export function useWSForPrices({
             ["assetPrices", asset, starting, ending],
             () =>
               msg
-                .snapshot_toplevel![0].snapshot.filter(
-                  (i) =>
-                    new Date(i.created_by).getTime() >= starting &&
-                    ending >= new Date(i.created_by).getTime(),
-                )
+                .snapshot_toplevel![0].snapshot.filter((i) => {
+                  const ts = new Date(i.created_by).getTime();
+                  return ts >= starting && ending >= ts;
+                })
                 .map((i) => ({
                   price: Number(
                     i.amount.toFixed(config.simpleMarkets[asset].decimals),
