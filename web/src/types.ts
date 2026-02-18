@@ -7,7 +7,6 @@ import {
   requestComments,
   requestPriceChanges,
   requestSimpleMarket,
-  requestAssetPrices,
   requestUserParticipated,
   requestUnclaimedCampaigns,
   request9LivesPoints,
@@ -253,7 +252,6 @@ export type RawPricePoint = {
   created_by: string;
 };
 export type PricePoint = { id: number; price: number; timestamp: number };
-export type RawAssetPrices = Awaited<ReturnType<typeof requestAssetPrices>>;
 export type PayoffResponse = {
   dppmFusdc: bigint;
   ninetailsLoserFusd: bigint;

@@ -19,9 +19,6 @@ const graph9Lives = Lives9.create()
   .transport({
     url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
   });
-const graph9LivesSubs = Graffle.create().transport({
-  url: appConfig.NEXT_PUBLIC_HASURA_URL,
-});
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
 });
@@ -141,50 +138,6 @@ export const requestCreateCampaign = (params: {
     },
   });
 export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();
-
-export const requestBuysAndSells = (limit?: number) =>
-  graph9LivesSubs
-    .gql(
-      `
-    query {
-      ninelives_buys_and_sells_1(limit:  ${limit ?? 10}, order_by: {created_by: desc}, where: {campaign_content: {_is_null: false}, shown: {_eq: true}}) {
-        to_amount
-        to_symbol
-        transaction_hash
-        recipient
-        spender
-        block_hash
-        block_number
-        outcome_id
-        campaign_id
-        created_by
-        emitter_addr
-        from_amount
-        from_symbol
-        type
-        total_volume
-        campaign_content
-      }
-    }
-  `,
-    )
-    .send();
-
-export const requestCreations = (limit?: number) =>
-  graph9LivesSubs
-    .gql(
-      `
-    query {
-      ninelives_campaigns_1(limit: ${limit ?? 10}, order_by: {created_at: desc}) {
-       id
-       created_at
-       content
-       updated_at
-      }
-    }
-    `,
-    )
-    .send();
 
 export const requestCampaignById = (id: string) =>
   graph9Lives.query.campaignById({
@@ -698,50 +651,6 @@ export const requestSimpleMarket = (
       },
       name: true,
     });
-
-export const requestAssetPrices = (
-  symbol: string,
-  starting: string,
-  ending: string,
-  page: number = 0,
-  pageSize: number = config.hasuraMaxQueryItem,
-) =>
-  graph9LivesSubs
-    .gql(
-      `
-query {
-  oracles_ninelives_prices_2(limit: ${pageSize}, offset: ${page * pageSize}, order_by: {created_by: asc}, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
-    id
-    amount
-    created_by
-  }
-}
-`,
-    )
-    .send() as Promise<{
-    oracles_ninelives_prices_2: RawPricePoint[];
-  }> | null;
-
-export const requestFinalPrice = (
-  symbol: string,
-  starting: string,
-  ending: string,
-) =>
-  graph9LivesSubs
-    .gql(
-      `
-query {
-  oracles_ninelives_prices_2(order_by: {created_by: desc}, limit:1, where: {created_by: {_gte: "${starting}", _lte: "${ending}"} base: {_eq: "${symbol.toUpperCase()}"}}) {
-    id
-    amount
-    created_by
-  }
-}
-`,
-    )
-    .send() as Promise<{
-    oracles_ninelives_prices_2: RawPricePoint[];
-  }> | null;
 
 export const requestTimebasedCampaigns = (
   categories: string[],

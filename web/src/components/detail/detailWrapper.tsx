@@ -67,7 +67,7 @@ export default function DetailWrapper({
         {data.isDppm && data.priceMetadata ? (
           <PriceChartWrapper
             campaignData={data as SimpleCampaignDetail}
-            simple={false}
+            simple={true}
           />
         ) : (
           <PriceChart

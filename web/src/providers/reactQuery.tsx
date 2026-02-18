@@ -2,12 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import appConfig from "@/config";
 import {
-  PricePoint,
   SimpleCampaignDetail,
   SimpleMarketKey,
   SimpleMarketPeriod,
 } from "@/types";
-import getAndFormatAssetPrices from "@/utils/getAndFormatAssetPrices";
 import { requestSimpleMarket } from "./graphqlClient";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 export default function ReactQueryProvider({

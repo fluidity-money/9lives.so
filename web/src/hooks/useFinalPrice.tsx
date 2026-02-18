@@ -1,6 +1,5 @@
-import { requestFinalPrice } from "@/providers/graphqlClient";
-import { SimpleMarketKey } from "@/types";
-import { formatAssetPrices } from "@/utils/format/formatAssetPrice";
+import config from "@/config";
+import { PricePoint, RawPricePoint, SimpleMarketKey } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useFinalPrice({
@@ -12,17 +11,25 @@ export default function useFinalPrice({
   ending: number;
   starting: number;
 }) {
-  return useQuery({
-    queryKey: ["finalPrice", symbol, starting, ending],
+  return useQuery<RawPricePoint[], Error, PricePoint>({
+    queryKey: ["assetPrices", symbol, starting, ending],
     queryFn: async () => {
-      if (!symbol) return null;
-      return await requestFinalPrice(
-        symbol,
-        new Date(starting).toISOString(),
-        new Date(ending).toISOString(),
+      throw new Error(
+        "This function should be called. This query is being updated by websocket.",
       );
     },
-    select: (data) => formatAssetPrices(data, symbol!)[0],
-    enabled: !!symbol,
+    select: (data) => {
+      if (!symbol) {
+        return { price: 0, id: 0, timestamp: 0 };
+      }
+      return {
+        price: Number(
+          data[0].amount.toFixed(config.simpleMarkets[symbol].decimals),
+        ),
+        id: data[0].id,
+        timestamp: new Date(data[0].created_by).getTime(),
+      };
+    },
+    enabled: false,
   });
 }

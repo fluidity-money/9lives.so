@@ -1,8 +1,7 @@
 "use client";
+import { SimpleMarketKey } from "@/types";
 import { HeaderBox } from "./detailHeaderBox";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { PricePoint } from "@/types";
-import config from "@/config";
+import useFinalPrice from "@/hooks/useFinalPrice";
 
 export default function DetailCurrentPriceBox({
   symbol,
@@ -10,30 +9,24 @@ export default function DetailCurrentPriceBox({
   ending,
   isEnded,
 }: {
-  symbol: string;
+  symbol: SimpleMarketKey;
   ending: number;
   starting: number;
   isEnded: boolean;
 }) {
-  const { data, isLoading } = useInfiniteQuery<PricePoint[]>({
-    queryKey: ["assetPrices", symbol, starting, ending],
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (lastPage.length < config.hasuraMaxQueryItem) return undefined;
-      if (typeof lastPageParam !== "number") return undefined;
-      return lastPageParam + 1;
-    },
+  const { data: finalPrice, isLoading } = useFinalPrice({
+    symbol,
+    starting,
+    ending,
   });
-  const assetPrices = data?.pages.flatMap((c) => c);
-  const latestPrice = assetPrices?.[assetPrices.length - 1]?.price;
 
-  if (isLoading || !latestPrice)
+  if (isLoading || !finalPrice)
     return <div className="skeleton h-[47px] flex-1 md:h-[66px]" />;
 
   return (
     <HeaderBox
       title={isEnded ? "Final Price" : "Current Price"}
-      value={`$${latestPrice}`}
+      value={`$${finalPrice}`}
     />
   );
 }

@@ -30,7 +30,6 @@ export default function AssetPriceChart({
   assetPrices: PricePoint[];
 }) {
   const chartHeight = simple ? 300 : 320;
-  useWSForPrices({ asset: symbol, ending, starting });
   if (assetPrices.length < 1) {
     return <div className="skeleton w-full" style={{ height: chartHeight }} />;
   }

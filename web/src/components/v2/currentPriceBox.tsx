@@ -1,8 +1,7 @@
 "use client";
+import { SimpleMarketKey } from "@/types";
 import { HeaderBox } from "./headerBox";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { PricePoint } from "@/types";
-import config from "@/config";
+import useFinalPrice from "@/hooks/useFinalPrice";
 
 export default function DetailCurrentPriceBox({
   symbol,
@@ -10,30 +9,24 @@ export default function DetailCurrentPriceBox({
   ending,
   isEnded,
 }: {
-  symbol: string;
+  symbol: SimpleMarketKey;
   ending: number;
   starting: number;
   isEnded: boolean;
 }) {
-  const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
-    queryKey: ["assetPrices", symbol, starting, ending],
-
-    queryFn: async () => {
-      throw new Error(
-        "This function should be called. This query is being updated by websocket.",
-      );
-    },
-    enabled: false,
+  const { data: finalPrice, isLoading } = useFinalPrice({
+    symbol,
+    starting,
+    ending,
   });
-  const latestPrice = assetPrices?.[assetPrices.length - 1]?.price;
 
-  if (isLoading || !latestPrice)
+  if (isLoading || !finalPrice)
     return <div className="skeleton h-[47px] flex-1 md:h-[66px]" />;
 
   return (
     <HeaderBox
       title={isEnded ? "Final" : "Current"}
-      value={`$${Number(latestPrice).toFixed(2)}`}
+      value={`$${Number(finalPrice).toFixed(2)}`}
     />
   );
 }
