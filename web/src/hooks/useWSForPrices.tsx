@@ -69,10 +69,26 @@ export function useWSForPrices({
       try {
         const msg: WSMessage = JSON.parse(raw.data);
 
-        if (msg.table === "" && msg.snapshot_toplevel) {
-          console.log(
-            "Snapshot count",
-            msg.snapshot_toplevel[0].snapshot.length,
+        if (
+          msg.snapshot_toplevel &&
+          msg.snapshot_toplevel[0].table === "oracles_ninelives_prices_2"
+        ) {
+          queryClient.setQueryData<PricePoint[] | undefined>(
+            ["assetPrices", asset, starting, ending],
+            () =>
+              msg
+                .snapshot_toplevel![0].snapshot.filter(
+                  (i) =>
+                    new Date(i.created_by).getTime() >= starting &&
+                    ending >= new Date(i.created_by).getTime(),
+                )
+                .map((i) => ({
+                  price: Number(
+                    i.amount.toFixed(config.simpleMarkets[asset].decimals),
+                  ),
+                  id: i.id,
+                  timestamp: new Date(i.created_by).getTime(),
+                })),
           );
           return;
         }
