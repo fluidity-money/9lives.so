@@ -47,8 +47,8 @@ export function useWSForTrades(id: string, poolAddress: string) {
             } as Trade;
             if (data) {
               if (data.length >= 4) {
-                const [_, ...rest] = data;
-                return [newTrade, ...rest];
+                const sliced = data.slice(0, -1);
+                return [newTrade, ...sliced];
               } else {
                 return [newTrade, ...data];
               }
