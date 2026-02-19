@@ -276,7 +276,7 @@ export default function DetailBuyAction({
             ? {
                 baseAsset: data.priceMetadata.baseAsset,
                 priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-                priceOnBuy: currentPrice?.price,
+                priceOnBuy: currentPrice,
                 volumeOnBuy: data.totalVolume,
                 minuteOnBuy: Number(
                   new Date().toLocaleString("en-US", {
@@ -296,7 +296,7 @@ export default function DetailBuyAction({
             ? {
                 baseAsset: data.priceMetadata.baseAsset,
                 priceTargetForUp: Number(data.priceMetadata.priceTargetForUp),
-                priceOnBuy: currentPrice?.price,
+                priceOnBuy: currentPrice,
                 volumeOnBuy: data.totalVolume,
                 minuteOnBuy: Number(
                   new Date().toLocaleString("en-US", {

@@ -164,7 +164,7 @@ export default function SimplePositions({
           {positions.map((p) => (
             <PositionItem
               isConcluded={!!winnerOutcome}
-              isPriceAbove={finalPrice ? finalPrice.price > basePrice : false}
+              isPriceAbove={finalPrice ? finalPrice > basePrice : false}
               key={p.id}
               position={p}
               address={account.address}

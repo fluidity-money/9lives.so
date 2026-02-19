@@ -19,15 +19,15 @@ export default function useDppmRewards({
   outcomes: Outcome[];
   singleOutcomeId?: string;
 }) {
-  const { data: finalPricePoint } = useFinalPrice({
+  const { data: finalPrice } = useFinalPrice({
     symbol: priceMetadata?.baseAsset,
     starting,
     ending,
   });
   const isPriceAbove =
-    !!finalPricePoint &&
+    !!finalPrice &&
     !!priceMetadata &&
-    finalPricePoint.price > +priceMetadata.priceTargetForUp;
+    finalPrice > +priceMetadata.priceTargetForUp;
   const {
     data: [{ identifier: downId, ...down }, { identifier: upId, ...up }],
   } = useDppmShareEstimationAll({
