@@ -1,6 +1,5 @@
 "use client";
 import config from "@/config";
-import { useWSForPrices } from "@/hooks/useWSForPrices";
 import { PricePoint, SimpleMarketKey } from "@/types";
 import {
   ComposedChart,
