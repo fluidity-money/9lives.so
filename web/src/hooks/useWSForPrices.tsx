@@ -31,7 +31,6 @@ export function useWSForPrices({
     const ws = new WebSocket(config.NEXT_PUBLIC_WS_URL);
 
     ws.onopen = () => {
-      console.log("WS opened", asset);
       ws.send(
         JSON.stringify({
           ask_for_snapshot: [
@@ -121,7 +120,6 @@ export function useWSForPrices({
     };
 
     return () => {
-      console.log("WS closed", asset);
       ws.close();
     };
   }, [asset, starting, ending, queryClient]);
