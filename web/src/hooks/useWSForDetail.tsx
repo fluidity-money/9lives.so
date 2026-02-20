@@ -3,6 +3,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import {
+  CampaignDetail,
   PricePoint,
   RawPricePoint,
   SimpleCampaignDetail,
@@ -228,6 +229,73 @@ export function useWSForDetail({
               }
               return [newTrade];
             },
+          );
+
+          queryClient.setQueryData<CampaignDetail>(
+            ["campaign", msg.content.campaign_id],
+            (data) =>
+              ({
+                ...data,
+                investmentAmounts: data?.investmentAmounts.map((ia) =>
+                  ia?.id === `0x${msg.content.outcome_id}`
+                    ? {
+                        ...ia,
+                        usdc: ia.usdc + msg.content.from_amount,
+                      }
+                    : ia,
+                ),
+                odds: {
+                  ...data?.odds,
+                  [msg.content.outcome_id]:
+                    data?.odds?.[msg.content.outcome_id] +
+                    msg.content.from_amount,
+                },
+              }) as CampaignDetail,
+          );
+
+          queryClient.setQueryData<CampaignDetail>(
+            ["campaign", msg.content.campaign_id],
+            (data) =>
+              ({
+                ...data,
+                investmentAmounts: data?.investmentAmounts.map((ia) =>
+                  ia?.id === `0x${msg.content.outcome_id}`
+                    ? {
+                        ...ia,
+                        usdc: ia.usdc + msg.content.from_amount,
+                      }
+                    : ia,
+                ),
+                odds: {
+                  ...data?.odds,
+                  [msg.content.outcome_id]:
+                    data?.odds?.[msg.content.outcome_id] +
+                    msg.content.from_amount,
+                },
+              }) as CampaignDetail,
+          );
+
+          const period = getPeriodOfCampaign(previousData);
+          queryClient.setQueryData<SimpleCampaignDetail>(
+            ["simpleCampaign", previousData.priceMetadata.baseAsset, period],
+            (data) =>
+              ({
+                ...data,
+                investmentAmounts: data?.investmentAmounts.map((ia) =>
+                  ia?.id === `0x${msg.content.outcome_id}`
+                    ? {
+                        ...ia,
+                        usdc: ia.usdc + msg.content.from_amount,
+                      }
+                    : ia,
+                ),
+                odds: {
+                  ...data?.odds,
+                  [msg.content.outcome_id]:
+                    data?.odds?.[msg.content.outcome_id] +
+                    msg.content.from_amount,
+                },
+              }) as SimpleCampaignDetail,
           );
         }
       } catch (e) {
