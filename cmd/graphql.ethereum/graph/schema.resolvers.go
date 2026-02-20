@@ -2047,7 +2047,7 @@ func (r *queryResolver) TotalPnL(ctx context.Context, address string, fromTs *in
 	var pnl types.Pnl
 	address = strings.ToLower(address)
 	var (
-		from = time.Unix(1, 1)
+		from  = time.Unix(1, 1)
 		until = time.Now()
 	)
 	if fromTs != nil {
@@ -2115,6 +2115,25 @@ LEFT JOIN spent s ON s.emitter_addr = e.emitter_addr`
 		return nil, fmt.Errorf("error getting pnl: %w", err)
 	}
 	return &pnl, nil
+}
+
+// GetFinalPrice is the resolver for the getFinalPrice field.
+func (r *queryResolver) GetFinalPrice(ctx context.Context, symbol string, ending int) (string, error) {
+	var finalPrice string
+	symbol = strings.ToUpper(symbol)
+	endingTime := time.Unix(int64(ending), 0)
+	err := r.DB.Raw(`
+	select amount
+	from oracles_ninelives_prices_2
+	where base = ?
+	and created_by >= ?
+	order by created_by desc
+	limit 1
+	`, symbol, endingTime).Scan(&finalPrice).Error
+	if err != nil {
+		return "NaN", err
+	}
+	return finalPrice, nil
 }
 
 // Refererr is the resolver for the refererr field.

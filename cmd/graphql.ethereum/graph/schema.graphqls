@@ -122,6 +122,11 @@ type Query {
   Returns user's total profit and loss of all time
   """
   totalPnL(address:String!, fromTs: Int, untilTs: Int): Pnl
+
+  """
+  Returns final price point for campaign based on ending timestamp
+  """
+  getFinalPrice(symbol:String!, ending: Int!): String!
 }
 
 type Pnl {
