@@ -3,11 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import AssetPriceChartMask from "./assetPriceChartMask";
 import AssetPriceChart from "./assetPriceChart";
 import { useState } from "react";
-import { useWSForNextMarket } from "@/hooks/useWSForNextMarket";
-import { EVENTS, track } from "@/utils/analytics";
-import Button from "../themed/button";
 import LiveTrades from "../trades";
-import { useWSForPrices } from "@/hooks/useWSForPrices";
+import { useWSForDetail } from "@/hooks/useWSForDetail";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -19,8 +16,13 @@ export default function PriceChartWrapper({
   const symbol = campaignData.priceMetadata.baseAsset;
   const starting = campaignData.starting;
   const ending = campaignData.ending;
-  useWSForNextMarket(campaignData, simple);
-  useWSForPrices({ asset: symbol, ending, starting });
+  useWSForDetail({
+    asset: symbol,
+    starting,
+    ending,
+    previousData: campaignData,
+    simple,
+  });
   const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
     queryFn: async () => {
