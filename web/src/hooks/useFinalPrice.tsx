@@ -12,7 +12,7 @@ export default function useFinalPrice({
   ending: number;
   starting: number;
 }) {
-  const [isEnded, setIsEnded] = useState(false);
+  const [isEnded, setIsEnded] = useState<boolean>();
 
   useEffect(() => {
     setIsEnded(Date.now() > ending);
@@ -32,7 +32,7 @@ export default function useFinalPrice({
         "This function should be called. This query is being updated by websocket.",
       );
     },
-    enabled: isEnded,
+    enabled: isEnded && !!symbol,
   });
   const finalPrice = assetPrices?.[assetPrices.length - 1]?.price;
 

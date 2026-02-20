@@ -23,7 +23,7 @@ function SimpleRewardItem({
     React.SetStateAction<{ id: string; reward: number }[]>
   >;
 }) {
-  const { totalRewards } = useDppmRewards({
+  const { totalRewards, isLoading } = useDppmRewards({
     tradingAddr: data.poolAddress,
     priceMetadata: data.priceMetadata,
     starting: data.starting,
@@ -56,14 +56,16 @@ function SimpleRewardItem({
       <td className={bodyClasses}>${data.totalSpent}</td>
       <td className={bodyClasses}>${+totalRewards.toFixed(2)}</td>
       <td className={bodyClasses}>
-        <span
-          className={combineClass(
-            "self-start text-nowrap p-0.5 font-chicago text-xs",
-            PnL >= 0 ? "bg-9green" : "bg-9red",
-          )}
-        >
-          {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
-        </span>
+        {isLoading ? null : (
+          <span
+            className={combineClass(
+              "self-start text-nowrap p-0.5 font-chicago text-xs",
+              PnL >= 0 ? "bg-9green" : "bg-9red",
+            )}
+          >
+            {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
+          </span>
+        )}
       </td>
     </tr>
   );

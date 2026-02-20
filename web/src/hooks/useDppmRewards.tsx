@@ -19,7 +19,7 @@ export default function useDppmRewards({
   outcomes: Outcome[];
   singleOutcomeId?: string;
 }) {
-  const { data: finalPrice } = useFinalPrice({
+  const { data: finalPrice, isLoading } = useFinalPrice({
     symbol: priceMetadata?.baseAsset,
     starting,
     ending,
@@ -48,5 +48,10 @@ export default function useDppmRewards({
     };
   }
   const totalRewards = Object.values(results).reduce((acc, v) => acc + v);
-  return { hasAnyRewards: totalRewards > BigInt(0), totalRewards, results };
+  return {
+    hasAnyRewards: totalRewards > BigInt(0),
+    totalRewards,
+    results,
+    isLoading,
+  };
 }
