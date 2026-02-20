@@ -34,7 +34,7 @@ export default function useDppmRewards({
   } = useDppmShareEstimationAll({
     tradingAddr,
     address,
-    enabled: !!priceMetadata,
+    enabled: !priceLoading && !!finalPrice && !!priceMetadata,
     isPriceAbove,
     outcomes,
   });
