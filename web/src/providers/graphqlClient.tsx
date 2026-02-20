@@ -1,10 +1,8 @@
 import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
-import { Graffle } from "graffle";
 import { Points } from "@/graffle/points/__";
 import { Accounts } from "@/graffle/accounts/__";
-import { CampaignFilters, OutcomeInput, RawPricePoint } from "@/types";
-import config from "@/config";
+import { CampaignFilters, OutcomeInput, SimpleMarketKey } from "@/types";
 import { maxUint256 } from "viem";
 
 const graph9Lives = Lives9.create()
@@ -844,3 +842,8 @@ export const ninelivesClaimAll = async ({
 
 export const requestTotalPnL = async (address: string) =>
   graph9Lives.query.totalPnL({ $: { address }, totalPnl: true, volume: true });
+
+export const requestFinalPrice = async (
+  symbol: SimpleMarketKey,
+  ending: number,
+) => graph9Lives.query.getFinalPrice({ $: { symbol, ending } });
