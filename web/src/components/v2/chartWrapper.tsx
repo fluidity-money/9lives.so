@@ -53,10 +53,7 @@ export default function PriceChartWrapper({
         id={campaignData.identifier}
       />
       <div className="absolute bottom-4 left-px z-[9] md:left-[-51px]">
-        <LiveTrades
-          campaignId={campaignData.identifier}
-          poolAddress={campaignData.poolAddress}
-        />
+        <LiveTrades campaignId={campaignData.identifier} />
       </div>
     </div>
   );
