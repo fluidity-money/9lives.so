@@ -84,7 +84,11 @@ export default function PositionRow({
     tradingAddr: campaignContent.poolAddress as `0x${string}`,
     address: account.address,
   });
-  const { totalRewards, results: dppmRewards } = useDppmRewards({
+  const {
+    totalRewards,
+    results: dppmRewards,
+    isLoading,
+  } = useDppmRewards({
     tradingAddr: campaignContent.poolAddress,
     address: account.address,
     priceMetadata: campaignContent.priceMetadata,
@@ -298,33 +302,40 @@ export default function PositionRow({
         <td>
           {isWinner && reward ? (
             <div className="flex flex-col gap-2 py-2 pr-2">
-              <span
-                className={combineClass(
-                  "self-start p-0.5 font-chicago text-xs",
-                  reward - +formatFusdc(historicalValue, 2) >= 0
-                    ? "bg-9green"
-                    : "bg-9red",
-                )}
-              >
-                {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"} $
-                {Math.abs(reward - +formatFusdc(historicalValue, 2)).toFixed(2)}
-              </span>
-              <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
-                {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"}
-                {Math.abs(
-                  ((reward - +formatFusdc(historicalValue, 2)) /
-                    +formatFusdc(historicalValue, 6)) *
-                    100,
-                ).toFixed(2)}
-                {"%"}
-              </span>
-              <div className="flex items-center gap-1 self-start bg-9yellow p-0.5">
-                <Image src={UsdIcon} alt="" width={20} />
-                <span className="font-chicago text-xs">
-                  {" "}
-                  ${reward.toFixed(2)}
-                </span>
-              </div>
+              {isLoading ? null : (
+                <>
+                  <span
+                    className={combineClass(
+                      "self-start p-0.5 font-chicago text-xs",
+                      reward - +formatFusdc(historicalValue, 2) >= 0
+                        ? "bg-9green"
+                        : "bg-9red",
+                    )}
+                  >
+                    {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"}{" "}
+                    $
+                    {Math.abs(
+                      reward - +formatFusdc(historicalValue, 2),
+                    ).toFixed(2)}
+                  </span>
+                  <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                    {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"}
+                    {Math.abs(
+                      ((reward - +formatFusdc(historicalValue, 2)) /
+                        +formatFusdc(historicalValue, 6)) *
+                        100,
+                    ).toFixed(2)}
+                    {"%"}
+                  </span>
+                  <div className="flex items-center gap-1 self-start bg-9yellow p-0.5">
+                    <Image src={UsdIcon} alt="" width={20} />
+                    <span className="font-chicago text-xs">
+                      {" "}
+                      ${reward.toFixed(2)}
+                    </span>
+                  </div>
+                </>
+              )}
               {detailPage ? null : (
                 <Button
                   title={isClaiming ? "Claiming..." : "Claim Reward"}
@@ -364,29 +375,35 @@ export default function PositionRow({
           <td>
             {campaignContent.isDppm ? (
               <div>
-                {!detailPage ? (
-                  <p className="flex flex-col items-start gap-0.5 text-wrap font-chicago text-xs">
-                    <span>
-                      <span className="font-geneva text-[#808080]">
-                        Reward:
-                      </span>{" "}
-                      ${dppmRewards.dppmFusdc}
-                    </span>
-                    <span>
-                      <span className="font-geneva text-[#808080]">Bonus:</span>{" "}
-                      ${dppmRewards.ninetailsWinnerFusdc}
-                    </span>
-                    <span>
-                      <span className="font-geneva text-[#808080]">
-                        Refund:
-                      </span>{" "}
-                      ${dppmRewards.ninetailsLoserFusd}
-                    </span>
-                  </p>
-                ) : (
-                  <span className="font-chicago text-xs">
-                    ${totalRewards.toFixed(2)}
-                  </span>
+                {isLoading ? null : (
+                  <>
+                    {!detailPage ? (
+                      <p className="flex flex-col items-start gap-0.5 text-wrap font-chicago text-xs">
+                        <span>
+                          <span className="font-geneva text-[#808080]">
+                            Reward:
+                          </span>{" "}
+                          ${dppmRewards.dppmFusdc}
+                        </span>
+                        <span>
+                          <span className="font-geneva text-[#808080]">
+                            Bonus:
+                          </span>{" "}
+                          ${dppmRewards.ninetailsWinnerFusdc}
+                        </span>
+                        <span>
+                          <span className="font-geneva text-[#808080]">
+                            Refund:
+                          </span>{" "}
+                          ${dppmRewards.ninetailsLoserFusd}
+                        </span>
+                      </p>
+                    ) : (
+                      <span className="font-chicago text-xs">
+                        ${totalRewards.toFixed(2)}
+                      </span>
+                    )}
+                  </>
                 )}
                 {!campaignContent.winner ? (
                   <span className="self-start bg-9yellow p-0.5 font-chicago text-xs">

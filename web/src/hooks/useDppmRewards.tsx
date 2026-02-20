@@ -19,7 +19,7 @@ export default function useDppmRewards({
   outcomes: Outcome[];
   singleOutcomeId?: string;
 }) {
-  const { data: finalPrice, isLoading } = useFinalPrice({
+  const { data: finalPrice, isLoading: priceLoading } = useFinalPrice({
     symbol: priceMetadata?.baseAsset,
     starting,
     ending,
@@ -30,6 +30,7 @@ export default function useDppmRewards({
     finalPrice > +priceMetadata.priceTargetForUp;
   const {
     data: [{ identifier: downId, ...down }, { identifier: upId, ...up }],
+    isLoading: dppmLoading,
   } = useDppmShareEstimationAll({
     tradingAddr,
     address,
@@ -52,6 +53,6 @@ export default function useDppmRewards({
     hasAnyRewards: totalRewards > BigInt(0),
     totalRewards,
     results,
-    isLoading,
+    isLoading: priceLoading || dppmLoading,
   };
 }
