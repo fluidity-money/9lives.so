@@ -236,7 +236,7 @@ export function useWSForDetail({
             (data) =>
               ({
                 ...data,
-                investmentAmounts: data?.investmentAmounts.map((ia) =>
+                investmentAmounts: data?.investmentAmounts?.map((ia) =>
                   ia?.id === `0x${msg.content.outcome_id}`
                     ? {
                         ...ia,
@@ -244,12 +244,14 @@ export function useWSForDetail({
                       }
                     : ia,
                 ),
-                odds: {
-                  ...data?.odds,
-                  [msg.content.outcome_id]:
-                    data?.odds?.[msg.content.outcome_id] +
-                    msg.content.from_amount,
-                },
+                odds: data?.odds
+                  ? {
+                      ...data?.odds,
+                      [msg.content.outcome_id]:
+                        data?.odds?.[msg.content.outcome_id] +
+                        msg.content.from_amount,
+                    }
+                  : undefined,
               }) as CampaignDetail,
           );
 
@@ -258,7 +260,7 @@ export function useWSForDetail({
             (data) =>
               ({
                 ...data,
-                investmentAmounts: data?.investmentAmounts.map((ia) =>
+                investmentAmounts: data?.investmentAmounts?.map((ia) =>
                   ia?.id === `0x${msg.content.outcome_id}`
                     ? {
                         ...ia,
@@ -266,12 +268,14 @@ export function useWSForDetail({
                       }
                     : ia,
                 ),
-                odds: {
-                  ...data?.odds,
-                  [msg.content.outcome_id]:
-                    data?.odds?.[msg.content.outcome_id] +
-                    msg.content.from_amount,
-                },
+                odds: data?.odds
+                  ? {
+                      ...data?.odds,
+                      [msg.content.outcome_id]:
+                        data?.odds?.[msg.content.outcome_id] +
+                        msg.content.from_amount,
+                    }
+                  : undefined,
               }) as CampaignDetail,
           );
 
