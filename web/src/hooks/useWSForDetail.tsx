@@ -7,10 +7,12 @@ import {
   RawPricePoint,
   SimpleCampaignDetail,
   SimpleMarketKey,
+  Trade,
 } from "@/types";
 import config from "@/config";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 type Snapshot<TableName, Content> = {
   table: "";
@@ -32,14 +34,25 @@ type PriceMessage = MessageBase<
   "oracles_ninelives_prices_2",
   RawPricePoint & { base: string }
 >;
-type NewCampaignMessage = MessageBase<
+type CampaignMessage = MessageBase<
   "ninelives_campaigns_1",
   {
     id: string;
     content: Omit<SimpleCampaignDetail, "identifier">;
   }
 >;
-type Message = PriceMessage | NewCampaignMessage | PriceSnapshot;
+type TradeMessage = MessageBase<
+  "ninelives_buys_and_sells_1",
+  {
+    from_amount: string;
+    outcome_id: string;
+    emitter_addr: string;
+    campaign_id: string;
+    transaction_hash: string;
+    created_by: string;
+  }
+>;
+type Message = PriceMessage | CampaignMessage | PriceSnapshot | TradeMessage;
 export function useWSForDetail({
   asset,
   starting,
@@ -90,6 +103,15 @@ export function useWSForDetail({
               ],
             },
             { table: "ninelives_campaigns_1" },
+            {
+              table: "ninelives_buys_and_sells_1",
+              fields: [
+                {
+                  name: "emitter_addr",
+                  filter_constraints: { et: previousData.poolAddress },
+                },
+              ],
+            },
           ],
         }),
       );
@@ -181,6 +203,31 @@ export function useWSForDetail({
                 nextData,
               ),
             timeleft,
+          );
+
+          return;
+        }
+
+        if (msg.table === "ninelives_buys_and_sells_1") {
+          queryClient.setQueryData<Trade[]>(
+            ["campaignTrades", msg.content.campaign_id],
+            (data) => {
+              const newTrade = {
+                amount: formatFusdc(msg.content.from_amount),
+                txHash: msg.content.transaction_hash,
+                outcomeId: `0x${msg.content.outcome_id}`,
+                createdAt: msg.content.created_by,
+              } as Trade;
+              if (data) {
+                if (data.length >= 4) {
+                  const sliced = data.slice(0, 3);
+                  return [newTrade, ...sliced];
+                } else {
+                  return [newTrade, ...data];
+                }
+              }
+              return [newTrade];
+            },
           );
         }
       } catch (e) {

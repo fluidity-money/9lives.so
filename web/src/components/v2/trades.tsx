@@ -1,15 +1,7 @@
-import { useWSForTrades } from "@/hooks/useWSForTrades";
 import { Trade } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
-export default function LiveTrades({
-  campaignId,
-  poolAddress,
-}: {
-  campaignId: string;
-  poolAddress: string;
-}) {
-  useWSForTrades(campaignId, poolAddress);
+export default function LiveTrades({ campaignId }: { campaignId: string }) {
   const { data } = useQuery<Trade[]>({
     queryKey: ["campaignTrades", campaignId],
     initialData: [],
