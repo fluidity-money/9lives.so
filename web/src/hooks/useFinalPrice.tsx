@@ -19,7 +19,7 @@ export default function useFinalPrice({
     },
     enabled: false,
   });
-  const finalPrice = assetPrices?.[assetPrices.length - 1].price;
+  const finalPrice = assetPrices?.[assetPrices.length - 1]?.price;
 
   return { data: finalPrice, isLoading };
 }
