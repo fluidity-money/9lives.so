@@ -5,6 +5,7 @@ import {
   requestCampaignList,
   requestPriceChanges,
 } from "@/providers/graphqlClient";
+import { PriceEvent } from "@/types";
 import { formatCampaignDetail } from "@/utils/format/formatCampaign";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -37,7 +38,10 @@ export default async function DetailPage({ params }: { params: Params }) {
   const response = await requestCampaignById(id);
   if (!response) notFound();
   const campaign = formatCampaignDetail(response);
-  const priceEvents = await requestPriceChanges(response.poolAddress);
+  let priceEvents: PriceEvent[] = [];
+  if (!campaign.isDppm && !campaign.isDpm) {
+    priceEvents = await requestPriceChanges(response.poolAddress);
+  }
 
   return (
     <Suspense>
