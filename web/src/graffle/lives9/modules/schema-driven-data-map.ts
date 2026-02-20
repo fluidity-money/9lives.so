@@ -700,8 +700,28 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
           nt: String,
           it: [1],
         },
+        fromTs: {
+          nt: Int,
+          it: [0],
+        },
+        untilTs: {
+          nt: Int,
+          it: [0],
+        },
       },
       // nt: Pnl, <-- Assigned later to avoid potential circular dependency.
+    },
+    getFinalPrice: {
+      a: {
+        symbol: {
+          nt: String,
+          it: [1],
+        },
+        ending: {
+          nt: Int,
+          it: [1],
+        },
+      },
     },
   },
 };

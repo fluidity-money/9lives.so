@@ -53,6 +53,7 @@ export namespace Schema {
       unclaimedCampaigns: Query.unclaimedCampaigns;
       assets: Query.assets;
       totalPnL: Query.totalPnL;
+      getFinalPrice: Query.getFinalPrice;
     };
   }
 
@@ -583,9 +584,44 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
+        fromTs: {
+          kind: "InputField";
+          name: "fromTs";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
+        untilTs: {
+          kind: "InputField";
+          name: "untilTs";
+          inlineType: [0];
+          namedType: $$NamedTypes.$$Int;
+        };
       };
       inlineType: [0];
       namedType: $$NamedTypes.$$Pnl;
+    }
+
+    /**
+     * Returns final price point for campaign based on ending timestamp
+     */
+    export interface getFinalPrice extends $.OutputField {
+      name: "getFinalPrice";
+      arguments: {
+        symbol: {
+          kind: "InputField";
+          name: "symbol";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        ending: {
+          kind: "InputField";
+          name: "ending";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
   }
 
