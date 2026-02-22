@@ -17,7 +17,7 @@ export default function V2Promotion() {
         className="max-w-[300px]"
       >
         <p className="mb-4 text-center font-chicago text-xs">
-          9lives have a new version for you to improve your experience.
+          9lives has a new version for you to improve your experience.
           <br />
           <br />
           Try and check it now.
