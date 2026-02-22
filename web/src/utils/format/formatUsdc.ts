@@ -6,6 +6,6 @@ export default function formatFusdc(
   digits = 0,
 ) {
   return Number(
-    formatUnits(BigInt(amount), config.contracts.decimals.fusdc),
+    formatUnits(BigInt(Math.trunc(Number(amount))), config.contracts.decimals.fusdc),
   ).toFixed(digits);
 }
