@@ -42,7 +42,7 @@ function PositionItem({
   const { data: positionsHistory } = usePositionHistory(address, [position.id]);
   const cost = Number(
     formatFusdc(
-      positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0,
+      Number(positionsHistory?.reduce((acc, v) => acc + v.fromAmount, 0) ?? 0),
       2,
     ),
   );
