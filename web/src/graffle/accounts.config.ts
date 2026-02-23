@@ -5,9 +5,7 @@ export default Generator.configure({
   nameNamespace: "Accounts",
   schema: {
     type: "url",
-    url: new URL(
-      "https://accounts.superposition.so/",
-    ),
+    url: new URL("https://accounts.superposition.so/"),
     options: {},
   },
   importFormat: "noExtension",
