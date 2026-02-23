@@ -367,3 +367,13 @@ export type TradeMessage = MessageBase<
     created_by: string;
   }
 >;
+
+export type WinnerMessage = MessageBase<
+  "ninelives_events_outcome_decided",
+  {
+    created_by: string;
+    transaction_hash: string;
+    emitter_addr: string;
+    identifier: string;
+  }
+>;

@@ -1,37 +1,39 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useContext } from "react";
-import { CampaignDetail } from "@/types";
-import { useWebSocketStore } from "@/stores/websocket";
-
-type WSMessage = {
-  table: "ninelives_events_outcome_decided";
-  content: {
-    created_by: string;
-    transaction_hash: string;
-    emitter_addr: string;
-    identifier: string;
-  };
-};
+import { useEffect } from "react";
+import { CampaignDetail, WinnerMessage } from "@/types";
+import config from "@/config";
 
 export function useWSForWinner(id: string, poolAddress: string) {
   const queryClient = useQueryClient();
-  const subscribe = useWebSocketStore((s) => s.subscribe);
 
   useEffect(() => {
     if (!queryClient) return;
 
-    const offMessage = subscribe((raw) => {
-      try {
-        const msg = raw as WSMessage;
+    const ws = new WebSocket(config.NEXT_PUBLIC_WS_URL);
 
-        if (
-          msg.table !== "ninelives_events_outcome_decided" ||
-          msg.content.emitter_addr !== poolAddress
-        ) {
-          return;
-        }
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          add: [
+            {
+              table: "ninelives_events_outcome_decided",
+              fields: [
+                {
+                  name: "emitter_addr",
+                  filter_constraints: { et: poolAddress },
+                },
+              ],
+            },
+          ],
+        }),
+      );
+    };
+
+    ws.onmessage = (raw: MessageEvent<string>) => {
+      try {
+        const msg: WinnerMessage = JSON.parse(raw.data);
 
         queryClient.setQueryData<CampaignDetail>(
           ["campaign", id],
@@ -44,10 +46,10 @@ export function useWSForWinner(id: string, poolAddress: string) {
       } catch (e) {
         console.error("invalid ws payload", e);
       }
-    });
+    };
 
     return () => {
-      offMessage();
+      ws.close();
     };
-  }, [poolAddress, id, queryClient, subscribe]);
+  }, [poolAddress, id, queryClient]);
 }
