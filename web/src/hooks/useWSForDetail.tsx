@@ -240,7 +240,7 @@ export function useWSForDetail({
                   ia?.id === `0x${msg.content.outcome_id}`
                     ? {
                         ...ia,
-                        usdc: ia.usdc + msg.content.from_amount,
+                        usdc: ia.usdc + Number(msg.content.from_amount),
                       }
                     : ia,
                 ),
@@ -248,32 +248,8 @@ export function useWSForDetail({
                   ? {
                       ...data?.odds,
                       [msg.content.outcome_id]:
-                        data?.odds?.[msg.content.outcome_id] +
-                        msg.content.from_amount,
-                    }
-                  : undefined,
-              }) as CampaignDetail,
-          );
-
-          queryClient.setQueryData<CampaignDetail>(
-            ["campaign", msg.content.campaign_id],
-            (data) =>
-              ({
-                ...data,
-                investmentAmounts: data?.investmentAmounts?.map((ia) =>
-                  ia?.id === `0x${msg.content.outcome_id}`
-                    ? {
-                        ...ia,
-                        usdc: ia.usdc + msg.content.from_amount,
-                      }
-                    : ia,
-                ),
-                odds: data?.odds
-                  ? {
-                      ...data?.odds,
-                      [msg.content.outcome_id]:
-                        data?.odds?.[msg.content.outcome_id] +
-                        msg.content.from_amount,
+                        Number(data?.odds?.[msg.content.outcome_id] ?? 0) +
+                        Number(msg.content.from_amount),
                     }
                   : undefined,
               }) as CampaignDetail,
@@ -289,15 +265,15 @@ export function useWSForDetail({
                   ia?.id === `0x${msg.content.outcome_id}`
                     ? {
                         ...ia,
-                        usdc: ia.usdc + msg.content.from_amount,
+                        usdc: ia.usdc + Number(msg.content.from_amount),
                       }
                     : ia,
                 ),
                 odds: {
                   ...data?.odds,
                   [msg.content.outcome_id]:
-                    data?.odds?.[msg.content.outcome_id] +
-                    msg.content.from_amount,
+                    Number(data?.odds?.[msg.content.outcome_id] ?? 0) +
+                    Number(msg.content.from_amount),
                 },
               }) as SimpleCampaignDetail,
           );
