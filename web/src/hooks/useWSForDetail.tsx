@@ -3,57 +3,18 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import {
-  CampaignDetail,
+  CampaignMessage,
+  PriceMessage,
   PricePoint,
-  RawPricePoint,
+  PriceSnapshot,
   SimpleCampaignDetail,
   SimpleMarketKey,
-  Trade,
 } from "@/types";
 import config from "@/config";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
-import formatFusdc from "@/utils/format/formatUsdc";
 
-type Snapshot<TableName, Content> = {
-  table: "";
-  snapshot_toplevel?: {
-    table: TableName;
-    snapshot: Content[];
-  }[];
-  content: never;
-};
-type PriceSnapshot = Snapshot<
-  "oracles_ninelives_prices_2",
-  RawPricePoint & { base: string }
->;
-type MessageBase<TableName, Content> = {
-  table: TableName;
-  content: Content;
-};
-type PriceMessage = MessageBase<
-  "oracles_ninelives_prices_2",
-  RawPricePoint & { base: string }
->;
-type CampaignMessage = MessageBase<
-  "ninelives_campaigns_1",
-  {
-    id: string;
-    content: Omit<SimpleCampaignDetail, "identifier">;
-  }
->;
-type TradeMessage = MessageBase<
-  "ninelives_buys_and_sells_1",
-  {
-    from_amount: string;
-    outcome_id: string;
-    emitter_addr: string;
-    campaign_id: string;
-    transaction_hash: string;
-    created_by: string;
-  }
->;
-type Message = PriceMessage | CampaignMessage | PriceSnapshot | TradeMessage;
+type Message = PriceMessage | CampaignMessage | PriceSnapshot;
 export function useWSForDetail({
   asset,
   starting,
@@ -201,76 +162,6 @@ export function useWSForDetail({
           );
 
           return;
-        }
-
-        if (msg.table === "ninelives_buys_and_sells_1") {
-          queryClient.setQueryData<Trade[]>(
-            ["campaignTrades", msg.content.campaign_id],
-            (data) => {
-              const newTrade = {
-                amount: formatFusdc(msg.content.from_amount),
-                txHash: msg.content.transaction_hash,
-                outcomeId: `0x${msg.content.outcome_id}`,
-                createdAt: msg.content.created_by,
-              } as Trade;
-              if (data) {
-                if (data.length >= 4) {
-                  const sliced = data.slice(0, 3);
-                  return [newTrade, ...sliced];
-                } else {
-                  return [newTrade, ...data];
-                }
-              }
-              return [newTrade];
-            },
-          );
-
-          queryClient.setQueryData<CampaignDetail>(
-            ["campaign", msg.content.campaign_id],
-            (data) =>
-              ({
-                ...data,
-                investmentAmounts: data?.investmentAmounts?.map((ia) =>
-                  ia?.id === `0x${msg.content.outcome_id}`
-                    ? {
-                        ...ia,
-                        usdc: ia.usdc + Number(msg.content.from_amount),
-                      }
-                    : ia,
-                ),
-                odds: data?.odds
-                  ? {
-                      ...data?.odds,
-                      [msg.content.outcome_id]:
-                        Number(data?.odds?.[msg.content.outcome_id] ?? 0) +
-                        Number(msg.content.from_amount),
-                    }
-                  : undefined,
-              }) as CampaignDetail,
-          );
-
-          const period = getPeriodOfCampaign(previousData);
-          queryClient.setQueryData<SimpleCampaignDetail>(
-            ["simpleCampaign", previousData.priceMetadata.baseAsset, period],
-            (data) =>
-              ({
-                ...data,
-                investmentAmounts: data?.investmentAmounts.map((ia) =>
-                  ia?.id === `0x${msg.content.outcome_id}`
-                    ? {
-                        ...ia,
-                        usdc: ia.usdc + Number(msg.content.from_amount),
-                      }
-                    : ia,
-                ),
-                odds: {
-                  ...data?.odds,
-                  [msg.content.outcome_id]:
-                    Number(data?.odds?.[msg.content.outcome_id] ?? 0) +
-                    Number(msg.content.from_amount),
-                },
-              }) as SimpleCampaignDetail,
-          );
         }
       } catch (e) {
         console.error("invalid ws payload", e);

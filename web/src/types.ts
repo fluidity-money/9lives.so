@@ -328,3 +328,42 @@ export type GroupButtonProps = GroupButtonBaseProps &
 export type PositionHistory = Awaited<
   ReturnType<typeof requestPositionHistory>
 >[number];
+
+export type Snapshot<TableName, Content> = {
+  table: "";
+  snapshot_toplevel?: {
+    table: TableName;
+    snapshot: Content[];
+  }[];
+  content: never;
+};
+export type PriceSnapshot = Snapshot<
+  "oracles_ninelives_prices_2",
+  RawPricePoint & { base: string }
+>;
+export type MessageBase<TableName, Content> = {
+  table: TableName;
+  content: Content;
+};
+export type PriceMessage = MessageBase<
+  "oracles_ninelives_prices_2",
+  RawPricePoint & { base: string }
+>;
+export type CampaignMessage = MessageBase<
+  "ninelives_campaigns_1",
+  {
+    id: string;
+    content: Omit<SimpleCampaignDetail, "identifier">;
+  }
+>;
+export type TradeMessage = MessageBase<
+  "ninelives_buys_and_sells_1",
+  {
+    from_amount: string;
+    outcome_id: string;
+    emitter_addr: string;
+    campaign_id: string;
+    transaction_hash: string;
+    created_by: string;
+  }
+>;
