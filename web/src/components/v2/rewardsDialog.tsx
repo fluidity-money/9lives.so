@@ -111,8 +111,7 @@ export default function SimpleRewardsDialog({
             Claim ${totalRewards} Rewards
           </h3>
           <p className="text-sm font-medium text-neutral-600">
-            You have accumulative of ${totalRewards} {token?.toUpperCase()}{" "}
-            rewards unclaimed.
+            You have ${totalRewards} {token?.toUpperCase()} unclaimed rewards.
           </p>
 
           <div className="rounded-xl bg-neutral-100 p-3 shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]">
