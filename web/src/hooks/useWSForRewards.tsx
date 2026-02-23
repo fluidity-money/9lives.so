@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import config from "@/config";
 import { useAppKitAccount } from "@reown/appkit/react";
 
-export function useWSForWinner(poolAddress: string) {
+export function useWSForRewards() {
   const queryClient = useQueryClient();
   const account = useAppKitAccount();
   useEffect(() => {
@@ -21,10 +21,6 @@ export function useWSForWinner(poolAddress: string) {
             {
               table: "ninelives_payoff_unused_1",
               fields: [
-                {
-                  name: "emitter_addr",
-                  filter_constraints: { et: poolAddress },
-                },
                 {
                   name: "spender",
                   filter_constraints: { et: account.address!.toLowerCase() },
@@ -51,5 +47,5 @@ export function useWSForWinner(poolAddress: string) {
     return () => {
       ws.close();
     };
-  }, [poolAddress, queryClient, account.address]);
+  }, [queryClient, account.address]);
 }

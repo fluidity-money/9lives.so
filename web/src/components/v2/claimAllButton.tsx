@@ -6,6 +6,7 @@ import { useState } from "react";
 import SimpleRewardsDialog from "./rewardsDialog";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { combineClass } from "@/utils/combineClass";
+import { useWSForRewards } from "@/hooks/useWSForRewards";
 
 export function ClaimButton({
   title,
@@ -50,7 +51,7 @@ export default function SimpleClaimAllButton({
   const account = useAppKitAccount();
   const { data } = useUnclaimedCampaigns(account?.address, token);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  useWSForRewards();
   if (data && data.length > 0) {
     return (
       <>
