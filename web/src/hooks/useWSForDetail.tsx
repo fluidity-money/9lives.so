@@ -68,7 +68,6 @@ export function useWSForDetail({
   simple: boolean;
 }) {
   const queryClient = useQueryClient();
-
   useEffect(() => {
     if (!queryClient) return;
 
@@ -88,11 +87,6 @@ export function useWSForDetail({
               ],
             },
           ],
-        }),
-      );
-
-      ws.send(
-        JSON.stringify({
           add: [
             {
               table: "oracles_ninelives_prices_2",
