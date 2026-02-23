@@ -377,3 +377,12 @@ export type WinnerMessage = MessageBase<
     identifier: string;
   }
 >;
+
+export type RewardMessage = MessageBase<
+  "ninelives_payoff_unused_1",
+  {
+    created_at: string;
+    pool_address: string;
+    spender: string;
+  }
+>;
