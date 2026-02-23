@@ -56,11 +56,10 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   </Link>
 );
 export default function Footer() {
-  const { setModal } = useModalStore();
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <footer className="flex flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 p-4 md:mb-0 md:flex-row md:py-2">
+    <footer className="hidden flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 p-4 md:mb-0 md:flex md:flex-row md:py-2">
       <div className="flex flex-col items-center gap-2 md:flex-row">
         <GroupButton
           buttons={[
