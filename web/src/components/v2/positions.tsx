@@ -66,7 +66,10 @@ function PositionItem({
               isWinning ? "text-green-600" : "text-red-600",
               "text-xs font-semibold",
             )}
-          >{`Currently ${isWinning ? "Winning" : "Losing"}`}</span>
+          >
+            <span className="hidden md:inline">Currently </span>
+            {`${isWinning ? "Winning" : "Losing"}`}
+          </span>
           <ArrowIcon variant={isWinning ? "up" : "down"} />
         </div>
       </div>
