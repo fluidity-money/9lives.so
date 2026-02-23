@@ -1,12 +1,10 @@
 import { combineClass } from "@/utils/combineClass";
-import AssetTimer from "./assetTimer";
 import { SimpleMarketPeriod } from "@/types";
 
 export default function AssetButton({
   title,
   isLive,
   selected,
-  period,
 }: {
   isLive: boolean;
   selected: boolean;
@@ -16,7 +14,7 @@ export default function AssetButton({
   return (
     <div
       className={combineClass(
-        selected ? "border-b border-neutral-400" : "md:border-neutral-200",
+        selected ? "border-b-2 border-b-2black" : "md:border-neutral-200",
         "flex flex-row items-center justify-between gap-1 p-2 md:rounded-lg md:border",
       )}
     >
