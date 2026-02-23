@@ -69,7 +69,7 @@ export default function DetailHeader({
 
   useEffect(() => {
     (async function () {
-      if (data.isDppm || address === undefined) return;
+      if (data.isDppm) return;
       const fees = await checkLpRewards(account.address);
       if (fees && BigInt(fees) > BigInt(0)) {
         setUnclaimedRewards(fees);
