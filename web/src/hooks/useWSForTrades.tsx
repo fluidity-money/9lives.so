@@ -15,17 +15,11 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 type Message = TradeMessage;
-export function useWSForDetail({
-  asset,
-  starting,
-  ending,
+export function useWSForTrades({
   previousData,
   simple = false,
   isDpm,
 }: {
-  asset: SimpleMarketKey;
-  starting: number;
-  ending: number;
   previousData: SimpleCampaignDetail;
   simple: boolean;
   isDpm: boolean;
@@ -177,13 +171,5 @@ export function useWSForDetail({
     return () => {
       ws.close();
     };
-  }, [
-    asset,
-    starting,
-    ending,
-    previousData,
-    simple,
-    queryClient,
-    account.address,
-  ]);
+  }, [previousData, simple, queryClient, account.address]);
 }

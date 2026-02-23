@@ -5,6 +5,7 @@ import AssetPriceChart from "./chart";
 import LiveTrades from "./trades";
 import formatFusdc from "@/utils/format/formatUsdc";
 import { useWSForDetail } from "@/hooks/useWSForDetail";
+import { useWSForTrades } from "@/hooks/useWSForTrades";
 
 export default function PriceChartWrapper({
   campaignData,
@@ -22,6 +23,11 @@ export default function PriceChartWrapper({
     starting,
     previousData: campaignData,
     simple,
+  });
+  useWSForTrades({
+    previousData: campaignData,
+    simple,
+    isDpm: campaignData.isDpm,
   });
   const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
