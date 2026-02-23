@@ -47,7 +47,7 @@ export default function ChainSelectorDropdown({
             height={16}
           />
         ) : null}
-        <span className="text-sm font-bold">{selectedChain?.name}</span>
+        <span className="text-sm font-medium">{selectedChain?.name}</span>
         <svg
           width="20"
           height="20"

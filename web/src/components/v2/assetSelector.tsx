@@ -66,7 +66,7 @@ export default function AssetSelector({
         ) : (
           <div className="size-5 rounded-full bg-9gray" />
         )}
-        <span className="text-sm font-bold">
+        <span className="text-sm font-medium">
           {tokens?.find((t) => t.address === fromToken)?.symbol ?? "ETH"}
         </span>
         <svg
