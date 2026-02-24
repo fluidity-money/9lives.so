@@ -847,3 +847,10 @@ export const requestFinalPrice = async (
   symbol: SimpleMarketKey,
   ending: number,
 ) => graph9Lives.query.getFinalPrice({ $: { symbol, ending } });
+
+export const requestAssetsHourlyDelta = async () =>
+  graph9Lives.query.assetsDeltaHour({
+    name: true,
+    price: true,
+    hourAgoPrice: true,
+  });
