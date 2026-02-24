@@ -2121,7 +2121,14 @@ LEFT JOIN spent s ON s.emitter_addr = e.emitter_addr`
 func (r *queryResolver) GetFinalPrice(ctx context.Context, symbol string, ending int) (string, error) {
 	var finalPrice string
 	symbol = strings.ToUpper(symbol)
-	endingTime := time.Unix(int64(ending), 0)
+	var endingTime time.Time
+	if int64(ending) > 1e11 {
+		seconds := int64(ending) / 1000
+		nanoseconds := (int64(ending) % 1000) * 1e6
+		endingTime = time.Unix(seconds, nanoseconds)
+	} else {
+		endingTime = time.Unix(int64(ending), 0)
+	}
 	err := r.DB.Raw(`
 	select amount
 	from oracles_ninelives_prices_2
