@@ -22,10 +22,7 @@ export default function useFinalPrice({
     queryKey: ["assetPrices", symbol, starting, ending],
     queryFn: async () => {
       if (Date.now() > ending && symbol) {
-        const finalPrice = await requestFinalPrice(
-          symbol,
-          Math.floor(ending / 1000),
-        );
+        const finalPrice = await requestFinalPrice(symbol, ending);
         return [{ price: Number(finalPrice), id: 0, timestamp: 0 }];
       }
       throw new Error(
