@@ -54,6 +54,7 @@ export namespace Schema {
       assets: Query.assets;
       totalPnL: Query.totalPnL;
       getFinalPrice: Query.getFinalPrice;
+      assetsDeltaHour: Query.assetsDeltaHour;
     };
   }
 
@@ -622,6 +623,16 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Return all assets with their lastest price and one hour ago prices
+     */
+    export interface assetsDeltaHour extends $.OutputField {
+      name: "assetsDeltaHour";
+      arguments: {};
+      inlineType: [1, [0]];
+      namedType: $$NamedTypes.$$AssetMetadata;
     }
   }
 
@@ -1398,6 +1409,69 @@ export namespace Schema {
   //
   //
   //
+
+  //                                           AssetMetadata
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface AssetMetadata extends $.OutputObject {
+    name: "AssetMetadata";
+    fields: {
+      __typename: AssetMetadata.__typename;
+      name: AssetMetadata.name;
+      price: AssetMetadata.price;
+      priceCreatedAt: AssetMetadata.priceCreatedAt;
+      hourAgoPrice: AssetMetadata.hourAgoPrice;
+      hourAgoPriceCreatedAt: AssetMetadata.hourAgoPriceCreatedAt;
+    };
+  }
+
+  export namespace AssetMetadata {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "AssetMetadata";
+      };
+    }
+
+    export interface name extends $.OutputField {
+      name: "name";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface price extends $.OutputField {
+      name: "price";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface priceCreatedAt extends $.OutputField {
+      name: "priceCreatedAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface hourAgoPrice extends $.OutputField {
+      name: "hourAgoPrice";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    export interface hourAgoPriceCreatedAt extends $.OutputField {
+      name: "hourAgoPriceCreatedAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
 
   //                                                Pnl
   // --------------------------------------------------------------------------------------------------
@@ -3244,6 +3318,7 @@ export namespace Schema {
   namespace $$NamedTypes {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
+    export type $$AssetMetadata = AssetMetadata;
     export type $$Pnl = Pnl;
     export type $$Asset = Asset;
     export type $$UnclaimedCampaign = UnclaimedCampaign;
@@ -3314,6 +3389,7 @@ export interface Schema<
     Modification: Schema.Modification;
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
+    AssetMetadata: Schema.AssetMetadata;
     Pnl: Schema.Pnl;
     Asset: Schema.Asset;
     UnclaimedCampaign: Schema.UnclaimedCampaign;
@@ -3338,6 +3414,7 @@ export interface Schema<
     PriceMetadata: Schema.PriceMetadata;
   };
   objects: {
+    AssetMetadata: Schema.AssetMetadata;
     Pnl: Schema.Pnl;
     Asset: Schema.Asset;
     UnclaimedCampaign: Schema.UnclaimedCampaign;

@@ -605,6 +605,28 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Return all assets with their lastest price and one hour ago prices
+   */
+  assetsDeltaHour: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.assetsDeltaHour<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { assetsDeltaHour: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "assetsDeltaHour"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

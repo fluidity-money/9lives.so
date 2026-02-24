@@ -261,6 +261,14 @@ export interface Query<
   getFinalPrice?:
     | Query.getFinalPrice<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getFinalPrice<_$Scalars>>;
+  /**
+   *
+   * Select the `assetsDeltaHour` field on the `Query` object. Its type is `AssetMetadata` (a `OutputObject` kind of type).
+   *
+   */
+  assetsDeltaHour?:
+    | Query.assetsDeltaHour$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.assetsDeltaHour<_$Scalars>>;
 
   /**
    *
@@ -1287,6 +1295,33 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getFinalPrice$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type assetsDeltaHour<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = assetsDeltaHour$SelectionSet<_$Scalars>;
+
+  export interface assetsDeltaHour$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$AssetMetadata<_$Scalars> {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `assetsDeltaHour` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type assetsDeltaHour$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<assetsDeltaHour$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -2128,6 +2163,246 @@ export interface PriceMetadataInput<
 //
 //
 //
+
+//                                           AssetMetadata
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface AssetMetadata<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `name` field on the `AssetMetadata` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  name?:
+    | AssetMetadata.name$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetMetadata.name<_$Scalars>>;
+  /**
+   *
+   * Select the `price` field on the `AssetMetadata` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  price?:
+    | AssetMetadata.price$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetMetadata.price<_$Scalars>>;
+  /**
+   *
+   * Select the `priceCreatedAt` field on the `AssetMetadata` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  priceCreatedAt?:
+    | AssetMetadata.priceCreatedAt$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetMetadata.priceCreatedAt<_$Scalars>>;
+  /**
+   *
+   * Select the `hourAgoPrice` field on the `AssetMetadata` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  hourAgoPrice?:
+    | AssetMetadata.hourAgoPrice$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetMetadata.hourAgoPrice<_$Scalars>>;
+  /**
+   *
+   * Select the `hourAgoPriceCreatedAt` field on the `AssetMetadata` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  hourAgoPriceCreatedAt?:
+    | AssetMetadata.hourAgoPriceCreatedAt$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<
+        AssetMetadata.hourAgoPriceCreatedAt<_$Scalars>
+      >;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | AssetMetadata$FragmentInline<_$Scalars>
+    | AssetMetadata$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface AssetMetadata$FragmentInline<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    AssetMetadata<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace AssetMetadata {
+  export type name<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>;
+
+  export interface name$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `name` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type name$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | name$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type price<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | price$SelectionSet<_$Scalars>;
+
+  export interface price$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `price` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type price$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | price$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type priceCreatedAt<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | priceCreatedAt$SelectionSet<_$Scalars>;
+
+  export interface priceCreatedAt$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `priceCreatedAt` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type priceCreatedAt$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | priceCreatedAt$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type hourAgoPrice<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | hourAgoPrice$SelectionSet<_$Scalars>;
+
+  export interface hourAgoPrice$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `hourAgoPrice` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type hourAgoPrice$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | hourAgoPrice$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type hourAgoPriceCreatedAt<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > =
+    | $Select.Indicator.NoArgsIndicator
+    | hourAgoPriceCreatedAt$SelectionSet<_$Scalars>;
+
+  export interface hourAgoPriceCreatedAt$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `hourAgoPriceCreatedAt` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type hourAgoPriceCreatedAt$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    | $Select.Indicator.NoArgsIndicator
+    | hourAgoPriceCreatedAt$SelectionSet<_$Scalars>
+  >;
+}
 
 //                                                Pnl
 // --------------------------------------------------------------------------------------------------
@@ -6820,6 +7095,10 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = PriceMetadataInput<_$Scalars>;
+  export type $AssetMetadata<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = AssetMetadata<_$Scalars>;
   export type $Pnl<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

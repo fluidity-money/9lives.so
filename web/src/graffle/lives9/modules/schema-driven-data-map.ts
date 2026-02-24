@@ -128,6 +128,16 @@ const PriceMetadataInput: $$Utilities.SchemaDrivenDataMap.InputObject = {
 //
 //
 
+const AssetMetadata: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    name: {},
+    price: {},
+    priceCreatedAt: {},
+    hourAgoPrice: {},
+    hourAgoPriceCreatedAt: {},
+  },
+};
+
 const Pnl: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     totalPnl: {},
@@ -723,6 +733,9 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
+    assetsDeltaHour: {
+      // nt: AssetMetadata, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -1107,6 +1120,7 @@ Query.f[`timebasedCampaigns`]!.nt = Campaign;
 Query.f[`unclaimedCampaigns`]!.nt = UnclaimedCampaign;
 Query.f[`assets`]!.nt = Asset;
 Query.f[`totalPnL`]!.nt = Pnl;
+Query.f[`assetsDeltaHour`]!.nt = AssetMetadata;
 
 //
 //
@@ -1142,6 +1156,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     ActivityType,
     OutcomeInput,
     PriceMetadataInput,
+    AssetMetadata,
     Pnl,
     Asset,
     UnclaimedCampaign,

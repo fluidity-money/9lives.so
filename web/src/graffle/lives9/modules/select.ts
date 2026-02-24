@@ -57,6 +57,13 @@ export namespace Select {
   //                                            OutputObject
   // --------------------------------------------------------------------------------------------------
   //
+  export type AssetMetadata<
+    $SelectionSet extends $$SelectionSets.AssetMetadata,
+  > = InferResult.OutputObjectLike<
+    $SelectionSet,
+    $$Schema.Schema,
+    $$Schema.Schema["allTypes"]["AssetMetadata"]
+  >;
   export type Pnl<$SelectionSet extends $$SelectionSets.Pnl> =
     InferResult.OutputObjectLike<
       $SelectionSet,
