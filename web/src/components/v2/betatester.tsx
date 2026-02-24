@@ -22,7 +22,7 @@ export default function BetaTesterInvitation() {
       <h6 className="mb-4">Join to the future of 9lives.so</h6>
       <p className="mb-4 text-center text-xs">
         You have been invited to join an alpha channel for 9lives that will
-        allow you to provide feedback and shape the future of 9lives.
+        allow you to provide feedback and shape the future of the app!
         <br />
         <br />
         Join the discord channel to learn more.

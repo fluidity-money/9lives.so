@@ -25,7 +25,7 @@ export default function BetaTesterInvitation() {
       >
         <p className="mb-4 text-center font-chicago text-xs">
           You have been invited to join an alpha channel for 9lives that will
-          allow you to provide feedback and shape the future of 9lives.
+          allow you to provide feedback and shape the future of the app!
           <br />
           <br />
           Join the discord channel to learn more.

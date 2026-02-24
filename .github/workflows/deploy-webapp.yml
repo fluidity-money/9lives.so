@@ -12,7 +12,7 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       NEXT_PUBLIC_WC_ID: ${{ vars.NEXT_PUBLIC_WC_ID }}
-      NEXT_PUBLIC_GRAPHQL_URL: "https://graph2.9lives.so"
+      NEXT_PUBLIC_GRAPHQL_URL: "https://graph.9lives.so"
       NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
       NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"
       NEXT_PUBLIC_ACCOUNTS_URL: "https://accounts.superposition.so/"
