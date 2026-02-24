@@ -270,6 +270,14 @@ type (
 		QuoteAsset       string `json:"quoteAsset"`
 		PriceTargetForUp string `json:"priceTargetForUp"`
 	}
+
+	AssetMetadata struct {
+		Name                  string    `json:"name"`
+		Price                 string    `json:"price"`
+		PriceCreatedAt        time.Time `json:"priceCreatedAt"`
+		HourAgoPrice          string    `json:"hourAgoPrice"`
+		HourAgoPriceCreatedAt time.Time `json:"hourAgoPriceCreatedAt"`
+	}
 )
 
 const (

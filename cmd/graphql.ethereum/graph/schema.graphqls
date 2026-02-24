@@ -127,6 +127,19 @@ type Query {
   Returns final price point for campaign based on ending timestamp
   """
   getFinalPrice(symbol:String!, ending: Int!): String!
+
+  """
+  Return all assets with their lastest price and one hour ago prices
+  """
+  assetsDeltaHour: [AssetMetadata]!
+}
+
+type AssetMetadata {
+  name: String!
+  price: String!
+  priceCreatedAt: Int!
+  hourAgoPrice: String!
+  hourAgoPriceCreatedAt: Int!
 }
 
 type Pnl {

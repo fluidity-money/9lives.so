@@ -100,6 +100,22 @@ func (r *activityResolver) CampaignContent(ctx context.Context, obj *types.Activ
 	return &campaign, nil
 }
 
+// PriceCreatedAt is the resolver for the priceCreatedAt field.
+func (r *assetMetadataResolver) PriceCreatedAt(ctx context.Context, obj *types.AssetMetadata) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("Metadata is nil")
+	}
+	return int(obj.PriceCreatedAt.Unix()), nil
+}
+
+// HourAgoPriceCreatedAt is the resolver for the hourAgoPriceCreatedAt field.
+func (r *assetMetadataResolver) HourAgoPriceCreatedAt(ctx context.Context, obj *types.AssetMetadata) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("Metadata is nil")
+	}
+	return int(obj.HourAgoPriceCreatedAt.Unix()), nil
+}
+
 // Name is the resolver for the name field.
 func (r *campaignResolver) Name(ctx context.Context, obj *types.Campaign) (string, error) {
 	if obj == nil {
@@ -2143,6 +2159,42 @@ func (r *queryResolver) GetFinalPrice(ctx context.Context, symbol string, ending
 	return finalPrice, nil
 }
 
+// AssetsDeltaHour is the resolver for the assetsDeltaHour field.
+func (r *queryResolver) AssetsDeltaHour(ctx context.Context) ([]*types.AssetMetadata, error) {
+	var assets []*types.AssetMetadata
+	err := r.DB.Raw(`
+	SELECT
+    b.base AS name,
+    latest.amount      AS price,
+    latest.created_by  AS price_created_at,
+    hour_ago.amount    AS hour_ago_price,
+    hour_ago.created_by AS hour_ago_price_created_at
+	FROM (
+	    SELECT DISTINCT base
+	    FROM oracles_ninelives_prices_2
+	) b
+	LEFT JOIN LATERAL (
+	    SELECT amount, created_by
+	    FROM oracles_ninelives_prices_2 p
+	    WHERE p.base = b.base
+	    ORDER BY created_by DESC
+	    LIMIT 1
+	) latest ON true
+	LEFT JOIN LATERAL (
+	    SELECT amount, created_by
+	    FROM oracles_ninelives_prices_2 p
+	    WHERE p.base = b.base
+	      AND p.created_by <= NOW() - INTERVAL '1 hour'
+	    ORDER BY created_by DESC
+	    LIMIT 1
+	) hour_ago ON true;
+	`).Scan(&assets).Error
+	if err != nil {
+		return nil, err
+	}
+	return assets, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
@@ -2153,6 +2205,9 @@ func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*
 
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
+
+// AssetMetadata returns AssetMetadataResolver implementation.
+func (r *Resolver) AssetMetadata() AssetMetadataResolver { return &assetMetadataResolver{r} }
 
 // Campaign returns CampaignResolver implementation.
 func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
@@ -2182,6 +2237,7 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 func (r *Resolver) Settings() SettingsResolver { return &settingsResolver{r} }
 
 type activityResolver struct{ *Resolver }
+type assetMetadataResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
 type claimResolver struct{ *Resolver }
@@ -2191,16 +2247,3 @@ type positionResolver struct{ *Resolver }
 type priceEventResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type settingsResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *campaignResolver) Odds(ctx context.Context, obj *types.Campaign) (types.Odds, error) {
-	if obj == nil {
-		return nil, fmt.Errorf("campaign is nil")
-	}
-	return obj.Odds, nil
-}

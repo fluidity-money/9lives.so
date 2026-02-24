@@ -42,6 +42,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Activity() ActivityResolver
+	AssetMetadata() AssetMetadataResolver
 	Campaign() CampaignResolver
 	Changelog() ChangelogResolver
 	Claim() ClaimResolver
@@ -79,6 +80,14 @@ type ComplexityRoot struct {
 	Asset struct {
 		Name       func(childComplexity int) int
 		TotalSpent func(childComplexity int) int
+	}
+
+	AssetMetadata struct {
+		HourAgoPrice          func(childComplexity int) int
+		HourAgoPriceCreatedAt func(childComplexity int) int
+		Name                  func(childComplexity int) int
+		Price                 func(childComplexity int) int
+		PriceCreatedAt        func(childComplexity int) int
 	}
 
 	Campaign struct {
@@ -217,6 +226,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Assets                    func(childComplexity int) int
+		AssetsDeltaHour           func(childComplexity int) int
 		CampaignByID              func(childComplexity int, id string) int
 		CampaignBySymbol          func(childComplexity int, symbol string, category string) int
 		CampaignComments          func(childComplexity int, campaignID string, onlyHolders *bool, page *int, pageSize *int) int
@@ -270,6 +280,11 @@ type ActivityResolver interface {
 
 	CreatedAt(ctx context.Context, obj *types.Activity) (int, error)
 	CampaignContent(ctx context.Context, obj *types.Activity) (*types.Campaign, error)
+}
+type AssetMetadataResolver interface {
+	PriceCreatedAt(ctx context.Context, obj *types.AssetMetadata) (int, error)
+
+	HourAgoPriceCreatedAt(ctx context.Context, obj *types.AssetMetadata) (int, error)
 }
 type CampaignResolver interface {
 	Name(ctx context.Context, obj *types.Campaign) (string, error)
@@ -359,6 +374,7 @@ type QueryResolver interface {
 	Assets(ctx context.Context) ([]types.Asset, error)
 	TotalPnL(ctx context.Context, address string, fromTs *int, untilTs *int) (*types.Pnl, error)
 	GetFinalPrice(ctx context.Context, symbol string, ending int) (string, error)
+	AssetsDeltaHour(ctx context.Context) ([]*types.AssetMetadata, error)
 }
 type SettingsResolver interface {
 	Refererr(ctx context.Context, obj *types.Settings) (*string, error)
@@ -508,6 +524,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Asset.TotalSpent(childComplexity), true
+
+	case "AssetMetadata.hourAgoPrice":
+		if e.complexity.AssetMetadata.HourAgoPrice == nil {
+			break
+		}
+
+		return e.complexity.AssetMetadata.HourAgoPrice(childComplexity), true
+
+	case "AssetMetadata.hourAgoPriceCreatedAt":
+		if e.complexity.AssetMetadata.HourAgoPriceCreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AssetMetadata.HourAgoPriceCreatedAt(childComplexity), true
+
+	case "AssetMetadata.name":
+		if e.complexity.AssetMetadata.Name == nil {
+			break
+		}
+
+		return e.complexity.AssetMetadata.Name(childComplexity), true
+
+	case "AssetMetadata.price":
+		if e.complexity.AssetMetadata.Price == nil {
+			break
+		}
+
+		return e.complexity.AssetMetadata.Price(childComplexity), true
+
+	case "AssetMetadata.priceCreatedAt":
+		if e.complexity.AssetMetadata.PriceCreatedAt == nil {
+			break
+		}
+
+		return e.complexity.AssetMetadata.PriceCreatedAt(childComplexity), true
 
 	case "Campaign.banners":
 		if e.complexity.Campaign.Banners == nil {
@@ -1141,6 +1192,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Assets(childComplexity), true
+
+	case "Query.assetsDeltaHour":
+		if e.complexity.Query.AssetsDeltaHour == nil {
+			break
+		}
+
+		return e.complexity.Query.AssetsDeltaHour(childComplexity), true
 
 	case "Query.campaignById":
 		if e.complexity.Query.CampaignByID == nil {
@@ -3736,6 +3794,226 @@ func (ec *executionContext) fieldContext_Asset_name(_ context.Context, field gra
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AssetMetadata_name(ctx context.Context, field graphql.CollectedField, obj *types.AssetMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AssetMetadata_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AssetMetadata_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AssetMetadata",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AssetMetadata_price(ctx context.Context, field graphql.CollectedField, obj *types.AssetMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AssetMetadata_price(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Price, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AssetMetadata_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AssetMetadata",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AssetMetadata_priceCreatedAt(ctx context.Context, field graphql.CollectedField, obj *types.AssetMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AssetMetadata_priceCreatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AssetMetadata().PriceCreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AssetMetadata_priceCreatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AssetMetadata",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AssetMetadata_hourAgoPrice(ctx context.Context, field graphql.CollectedField, obj *types.AssetMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AssetMetadata_hourAgoPrice(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HourAgoPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AssetMetadata_hourAgoPrice(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AssetMetadata",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AssetMetadata_hourAgoPriceCreatedAt(ctx context.Context, field graphql.CollectedField, obj *types.AssetMetadata) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AssetMetadata_hourAgoPriceCreatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.AssetMetadata().HourAgoPriceCreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AssetMetadata_hourAgoPriceCreatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AssetMetadata",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9484,6 +9762,62 @@ func (ec *executionContext) fieldContext_Query_getFinalPrice(ctx context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_assetsDeltaHour(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_assetsDeltaHour(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AssetsDeltaHour(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*types.AssetMetadata)
+	fc.Result = res
+	return ec.marshalNAssetMetadata2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐAssetMetadata(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_assetsDeltaHour(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "name":
+				return ec.fieldContext_AssetMetadata_name(ctx, field)
+			case "price":
+				return ec.fieldContext_AssetMetadata_price(ctx, field)
+			case "priceCreatedAt":
+				return ec.fieldContext_AssetMetadata_priceCreatedAt(ctx, field)
+			case "hourAgoPrice":
+				return ec.fieldContext_AssetMetadata_hourAgoPrice(ctx, field)
+			case "hourAgoPriceCreatedAt":
+				return ec.fieldContext_AssetMetadata_hourAgoPriceCreatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AssetMetadata", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -12077,6 +12411,127 @@ func (ec *executionContext) _Asset(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var assetMetadataImplementors = []string{"AssetMetadata"}
+
+func (ec *executionContext) _AssetMetadata(ctx context.Context, sel ast.SelectionSet, obj *types.AssetMetadata) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, assetMetadataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AssetMetadata")
+		case "name":
+			out.Values[i] = ec._AssetMetadata_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "price":
+			out.Values[i] = ec._AssetMetadata_price(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "priceCreatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AssetMetadata_priceCreatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "hourAgoPrice":
+			out.Values[i] = ec._AssetMetadata_hourAgoPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "hourAgoPriceCreatedAt":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._AssetMetadata_hourAgoPriceCreatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -14717,6 +15172,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "assetsDeltaHour":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_assetsDeltaHour(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -15411,6 +15888,44 @@ func (ec *executionContext) marshalNAsset2ᚕgithubᚗcomᚋfluidityᚑmoneyᚋ9
 			return graphql.Null
 		}
 	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNAssetMetadata2ᚕᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐAssetMetadata(ctx context.Context, sel ast.SelectionSet, v []*types.AssetMetadata) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOAssetMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐAssetMetadata(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
 
 	return ret
 }
@@ -16437,6 +16952,13 @@ func (ec *executionContext) marshalOActivity2ᚖgithubᚗcomᚋfluidityᚑmoney�
 		return graphql.Null
 	}
 	return ec._Activity(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOAssetMetadata2ᚖgithubᚗcomᚋfluidityᚑmoneyᚋ9livesᚗsoᚋlibᚋtypesᚐAssetMetadata(ctx context.Context, sel ast.SelectionSet, v *types.AssetMetadata) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._AssetMetadata(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
