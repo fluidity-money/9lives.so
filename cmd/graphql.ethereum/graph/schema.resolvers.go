@@ -2133,7 +2133,7 @@ func (r *queryResolver) GetFinalPrice(ctx context.Context, symbol string, ending
 	select amount
 	from oracles_ninelives_prices_2
 	where base = ?
-	and created_by >= ?
+	and ? >= created_by
 	order by created_by desc
 	limit 1
 	`, symbol, endingTime).Scan(&finalPrice).Error
