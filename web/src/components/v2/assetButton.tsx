@@ -14,7 +14,9 @@ export default function AssetButton({
   return (
     <div
       className={combineClass(
-        selected ? "border-b-2 border-b-2black" : "md:border-neutral-200",
+        selected
+          ? "border-b-2 border-b-2black md:border-2 md:border-2black"
+          : "md:border-neutral-200",
         "flex flex-row items-center justify-between gap-1 p-2 md:rounded-lg md:border",
       )}
     >
