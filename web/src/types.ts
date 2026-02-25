@@ -12,6 +12,7 @@ import {
   request9LivesPoints,
   requestAssets,
   requestPositionHistory,
+  requestAssetsHourlyDelta,
 } from "./providers/graphqlClient";
 import config from "./config";
 import { requestUserActivities } from "./providers/graphqlClient";
@@ -385,4 +386,8 @@ export type RewardMessage = MessageBase<
     pool_address: string;
     spender: string;
   }
+>;
+
+export type AssetMetadata = NonNullable<
+  Awaited<ReturnType<typeof requestAssetsHourlyDelta>>[number]
 >;

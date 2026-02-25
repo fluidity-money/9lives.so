@@ -10,6 +10,7 @@ import CookieBanner from "@/components/v2/cookie";
 import Header from "@/components/v2/header";
 import Footer from "@/components/v2/footer";
 import BetaTesterInvitation from "@/components/v2/betatester";
+import TickerBar from "@/components/tickerBar";
 
 export const metadata: Metadata = {
   ...appConfig.metadata,
@@ -40,6 +41,7 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col bg-2white">
         <Providers cookies={cookies} version="2">
           <Header />
+          <TickerBar />
           <main className="mx-auto flex w-full max-w-[620px] flex-1 justify-center">
             <div className="flex-1 p-2 md:p-0 md:pb-4">{children}</div>
           </main>
