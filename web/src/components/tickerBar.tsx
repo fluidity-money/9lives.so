@@ -3,6 +3,7 @@ import useAssetsHourlyDelta from "@/hooks/useAssetsHourlyDelta";
 import { AssetMetadata } from "@/types";
 import ArrowIcon from "./arrowIcon";
 import { combineClass } from "@/utils/combineClass";
+import { useEffect, useRef, useState } from "react";
 
 function TickerItem({ data }: { data: AssetMetadata }) {
   const isPriceUp = Number(data.price) - Number(data.hourAgoPrice) > 0;
@@ -30,13 +31,50 @@ function TickerItem({ data }: { data: AssetMetadata }) {
 export default function TickerBar() {
   const { data: assets, isLoading } = useAssetsHourlyDelta();
 
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const speed = 80; // px per second
+
+  useEffect(() => {
+    if (!trackRef.current) return;
+
+    const width = trackRef.current.scrollWidth / 2;
+    setTrackWidth(width);
+  }, [assets]);
+
   if (isLoading) return <div className="skeleton mb-4 h-9 w-full" />;
 
   return (
-    <ul className="mb-4 flex items-center overflow-hidden border-y border-y-neutral-200">
-      {assets?.map((a) => (
-        <TickerItem data={a} key={a.name} />
-      ))}
-    </ul>
+    <div className="relative mb-4 overflow-hidden border-y border-y-neutral-200">
+      <div
+        ref={trackRef}
+        className="ticker-track flex w-max"
+        style={{
+          animationDuration: trackWidth ? `${trackWidth / speed}s` : "20s",
+        }}
+      >
+        {[...(assets || []), ...(assets || [])].map((a, i) => (
+          <TickerItem data={a} key={`${a.name}-${i}`} />
+        ))}
+      </div>
+
+      <style jsx>{`
+        .ticker-track {
+          animation-name: ticker-scroll;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform;
+        }
+
+        @keyframes ticker-scroll {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(-${trackWidth}px);
+          }
+        }
+      `}</style>
+    </div>
   );
 }
