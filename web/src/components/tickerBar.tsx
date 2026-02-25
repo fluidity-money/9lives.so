@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 function TickerItem({ data }: { data: AssetMetadata }) {
   const isPriceUp = Number(data.price) - Number(data.hourAgoPrice) > 0;
   return (
-    <li className="flex items-center gap-2 border-l border-l-neutral-200 p-2">
+    <li className="flex items-center gap-2 border-l border-l-neutral-200 p-2 hover:bg-neutral-100">
       <div className="flex items-center gap-1">
         <span className="flex size-4 items-center justify-center rounded-sm bg-neutral-200 text-[9px]">
           H
@@ -34,6 +34,7 @@ export default function TickerBar() {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
   const speed = 80; // px per second
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (!trackRef.current) return;
@@ -45,12 +46,17 @@ export default function TickerBar() {
   if (isLoading) return <div className="skeleton mb-4 h-9 w-full" />;
 
   return (
-    <div className="relative mb-4 overflow-hidden border-y border-y-neutral-200">
+    <div
+      className="relative mb-4 overflow-hidden border-y border-y-neutral-200"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div
         ref={trackRef}
         className="ticker-track flex w-max"
         style={{
           animationDuration: trackWidth ? `${trackWidth / speed}s` : "20s",
+          animationPlayState: isPaused ? "paused" : "running",
         }}
       >
         {[...(assets || []), ...(assets || [])].map((a, i) => (
