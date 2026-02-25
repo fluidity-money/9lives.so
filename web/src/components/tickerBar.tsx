@@ -28,10 +28,12 @@ function TickerItem({ data }: { data: AssetMetadata }) {
 }
 
 export default function TickerBar() {
-  const { data: assets } = useAssetsHourlyDelta();
-  console.log("assetsassets", assets);
+  const { data: assets, isLoading } = useAssetsHourlyDelta();
+
+  if (isLoading) return <div className="skeleton mb-4 h-9 w-full" />;
+
   return (
-    <ul className="mb-4 flex items-center border-y border-y-neutral-200">
+    <ul className="mb-4 flex items-center overflow-hidden border-y border-y-neutral-200">
       {assets?.map((a) => (
         <TickerItem data={a} key={a.name} />
       ))}
