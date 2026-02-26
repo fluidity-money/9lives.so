@@ -108,7 +108,7 @@ export function useWSForTrades({
             (data) =>
               ({
                 ...data,
-                investmentAmounts: data?.investmentAmounts.map((ia) =>
+                investmentAmounts: data?.investmentAmounts?.map((ia) =>
                   ia?.id === `0x${msg.content.outcome_id}`
                     ? {
                         ...ia,
