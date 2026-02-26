@@ -10,7 +10,7 @@ import Link from "next/link";
 function TickerItem({ data }: { data: EnrichedAssetMetadata }) {
   const isPriceUp = Number(data.price) - Number(data.hourAgoPrice) > 0;
   return (
-    <li className="">
+    <li className="list-none">
       <Link
         href={data.link}
         className="flex items-center gap-2 border-l border-l-neutral-200 p-2 hover:bg-neutral-100"
