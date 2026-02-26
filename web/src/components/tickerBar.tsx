@@ -1,39 +1,52 @@
 "use client";
 import useAssetsHourlyDelta from "@/hooks/useAssetsHourlyDelta";
-import { AssetMetadata } from "@/types";
+import { EnrichedAssetMetadata } from "@/types";
 import ArrowIcon from "./arrowIcon";
 import { combineClass } from "@/utils/combineClass";
 import { useEffect, useRef, useState } from "react";
+import enrichAssets from "@/utils/enrichAssets";
+import Link from "next/link";
 
-function TickerItem({ data }: { data: AssetMetadata }) {
+function TickerItem({ data }: { data: EnrichedAssetMetadata }) {
   const isPriceUp = Number(data.price) - Number(data.hourAgoPrice) > 0;
   return (
-    <li className="flex items-center gap-2 border-l border-l-neutral-200 p-2 hover:bg-neutral-100">
-      <div className="flex items-center gap-1">
-        <span className="flex size-4 items-center justify-center rounded-sm bg-neutral-200 text-[9px]">
-          H
-        </span>
-        <span className="text-sm font-bold text-neutral-400">${data.name}</span>
-      </div>
-      <span
-        className={combineClass(
-          isPriceUp ? "text-green-600" : "text-red-600",
-          "text-xs font-medium",
-        )}
+    <li className="">
+      <Link
+        href={data.link}
+        className="flex items-center gap-2 border-l border-l-neutral-200 p-2 hover:bg-neutral-100"
       >
-        {Number(data.price).toFixed(2)}
-      </span>
-      <ArrowIcon variant={isPriceUp ? "up" : "down"} />
+        <div className="flex items-center gap-1">
+          <span className="flex size-4 items-center justify-center rounded-sm bg-neutral-200 text-[9px]">
+            {data.period}
+          </span>
+          <span className="text-sm font-bold text-neutral-400">
+            ${data.name}
+          </span>
+        </div>
+        <span
+          className={combineClass(
+            isPriceUp ? "text-green-600" : "text-red-600",
+            "text-xs font-medium",
+          )}
+        >
+          {Number(data.price).toFixed(2)}
+        </span>
+        <ArrowIcon variant={isPriceUp ? "up" : "down"} />
+      </Link>
     </li>
   );
 }
 
 export default function TickerBar() {
   const { data: assets, isLoading } = useAssetsHourlyDelta();
-
+  const enrichedAssets = enrichAssets(assets);
+  const populatedList = Array.from(
+    { length: enrichedAssets.length * 5 },
+    (_, idx) => enrichedAssets[idx % enrichedAssets.length],
+  );
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
-  const speed = 80; // px per second
+  const speed = 40; // px per second
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
@@ -59,7 +72,7 @@ export default function TickerBar() {
           animationPlayState: isPaused ? "paused" : "running",
         }}
       >
-        {[...(assets || []), ...(assets || [])].map((a, i) => (
+        {populatedList.map((a, i) => (
           <TickerItem data={a} key={`${a.name}-${i}`} />
         ))}
       </div>

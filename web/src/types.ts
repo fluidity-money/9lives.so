@@ -391,3 +391,8 @@ export type RewardMessage = MessageBase<
 export type AssetMetadata = NonNullable<
   Awaited<ReturnType<typeof requestAssetsHourlyDelta>>[number]
 >;
+
+export type EnrichedAssetMetadata = AssetMetadata & {
+  link: string;
+  period: string;
+};
