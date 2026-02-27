@@ -93,7 +93,7 @@ export default function SimpleBody({
     handleNextCamp();
   });
   useHotkey("Mod+ArrowLeft", () => {
-    handleNextCamp();
+    handlePrevCamp();
   });
   useHotkey("Mod+ArrowUp", () => {
     setOutcomeIdx(1);
