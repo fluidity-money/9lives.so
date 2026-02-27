@@ -13,15 +13,20 @@ import GroupButton from "./groupButton";
 import { useRouter } from "next/navigation";
 import AssetButton from "./assetButton";
 import GroupButtonMobile from "./groupButtonMobile";
+import { NavContext } from "@/providers/navContext";
+import { useContext } from "react";
+import useAssetsHourlyDelta from "@/hooks/useAssetsHourlyDelta";
 
 function SimpleTabMenuButton({
   market,
-  period,
   symbol,
+  period,
+  isPriceUp,
 }: {
   market: (typeof config.simpleMarkets)[keyof typeof config.simpleMarkets];
-  period: SimpleMarketPeriod;
   symbol: SimpleMarketKey;
+  period: SimpleMarketPeriod;
+  isPriceUp?: boolean;
 }) {
   const isOpen = isMarketOpen(market);
   return (
@@ -29,6 +34,7 @@ function SimpleTabMenuButton({
       <AssetButton
         period={period}
         isLive={isOpen}
+        isPriceUp={isPriceUp}
         title={market.tabTitle}
         selected={symbol === market.slug}
       />
@@ -37,14 +43,11 @@ function SimpleTabMenuButton({
 }
 
 export default function AssetNav({
-  symbol,
-  period,
   assets: initialAssets,
 }: {
-  symbol: SimpleMarketKey;
-  period: SimpleMarketPeriod;
   assets: RawAsset[];
 }) {
+  const { period, symbol } = useContext(NavContext);
   const { data: assets } = useAssets(initialAssets);
   const router = useRouter();
   const mins5Markets = Object.values(config.simpleMarkets)
@@ -78,6 +81,8 @@ export default function AssetNav({
     },
   ] as GroupButtonProps[];
   const orderIdx = periodOrder.findIndex((p) => p === period.toLowerCase());
+  const { data } = useAssetsHourlyDelta();
+
   return (
     <div className="flex flex-row gap-2 md:flex-col md:gap-4">
       <GroupButton
@@ -114,14 +119,20 @@ export default function AssetNav({
                   )?.totalSpent ?? 0;
                 return bSpent - aSpent;
               })
-              .map((m) => (
-                <SimpleTabMenuButton
-                  key={m.slug}
-                  market={m}
-                  symbol={symbol}
-                  period={period}
-                />
-              ))}
+              .map((m) => {
+                const asset = data?.find(
+                  (i) => i.name.toLowerCase() === symbol,
+                );
+                return (
+                  <SimpleTabMenuButton
+                    key={m.slug}
+                    market={m}
+                    isPriceUp={asset && asset.price >= asset.hourAgoPrice}
+                    symbol={symbol}
+                    period={period}
+                  />
+                );
+              })}
           </div>
         </div>
       </div>

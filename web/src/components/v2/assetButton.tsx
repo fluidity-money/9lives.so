@@ -1,15 +1,18 @@
 import { combineClass } from "@/utils/combineClass";
 import { SimpleMarketPeriod } from "@/types";
+import ArrowIcon from "../arrowIcon";
 
 export default function AssetButton({
   title,
   isLive,
   selected,
+  isPriceUp,
 }: {
   isLive: boolean;
   selected: boolean;
   title: string;
   period: SimpleMarketPeriod;
+  isPriceUp?: boolean;
 }) {
   return (
     <div
@@ -24,6 +27,9 @@ export default function AssetButton({
         <span className="text-neutral-400">$</span>
         {title}
       </span>
+      {isPriceUp !== undefined ? (
+        <ArrowIcon variant={isPriceUp ? "up" : "down"} />
+      ) : null}
       <span
         className={combineClass(
           isLive ? "text-green-600" : "text-neutral-400",
