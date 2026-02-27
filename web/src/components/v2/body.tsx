@@ -21,6 +21,7 @@ import ArrowIcon from "../arrowIcon";
 import { getNextCampaign, getPrevCampaign } from "@/utils/getCampaign";
 import useAssets from "@/hooks/useAssets";
 import { combineClass } from "@/utils/combineClass";
+import { useHotkey } from "@tanstack/react-hotkeys";
 
 const RightCarot = ({ className = "size-6" }: { className?: string }) => (
   <svg
@@ -88,6 +89,20 @@ export default function SimpleBody({
     setPeriod(prev.period);
   };
   const buttonStyle = `md:flex absolute inset-y-0 px-4 items-center justify-center hover:bg-neutral-200 bg-neutral-100 rounded-xl cursor-pointer hidden`;
+  useHotkey("Mod+ArrowRight", () => {
+    handleNextCamp();
+  });
+  useHotkey("Mod+ArrowLeft", () => {
+    handleNextCamp();
+  });
+  useHotkey("Mod+ArrowUp", () => {
+    setOutcomeIdx(1);
+    setIsBuyDialogOpen(true);
+  });
+  useHotkey("Mod+ArrowDown", () => {
+    setOutcomeIdx(0);
+    setIsBuyDialogOpen(true);
+  });
   return (
     <>
       <div className="relative rounded-xl border border-neutral-400 bg-2white p-4">
