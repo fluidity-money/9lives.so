@@ -123,11 +123,13 @@ export default function AssetNav({
                 const asset = data?.find(
                   (i) => i.name.toLowerCase() === symbol,
                 );
+                const isPriceUp =
+                  asset && Number(asset.price) >= Number(asset.hourAgoPrice);
                 return (
                   <SimpleTabMenuButton
                     key={m.slug}
                     market={m}
-                    isPriceUp={asset && asset.price >= asset.hourAgoPrice}
+                    isPriceUp={isPriceUp}
                     symbol={symbol}
                     period={period}
                   />
