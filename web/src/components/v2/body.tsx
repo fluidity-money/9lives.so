@@ -10,7 +10,6 @@ import { useContext, useState } from "react";
 import Modal from "./modal";
 import SimpleBuyDialog from "./buyDialog";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
-import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import Image from "next/image";
 import config from "@/config";
 import SimpleSubHeader from "./subheader";
@@ -29,8 +28,7 @@ export default function SimpleBody({
   campaignData: SimpleCampaignDetail;
   initialAssets: RawAsset[];
 }) {
-  const { symbol, setSymbol, setPeriod } = useContext(NavContext);
-  const period = getPeriodOfCampaign(campaignData);
+  const { symbol, period, setSymbol, setPeriod } = useContext(NavContext);
   const { data } = useQuery<SimpleCampaignDetail>({
     queryKey: ["simpleCampaign", symbol, period],
     initialData: campaignData,

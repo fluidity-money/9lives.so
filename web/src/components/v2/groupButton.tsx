@@ -1,7 +1,7 @@
 import useDebouncedCallback from "@/hooks/useDebounceCallback";
 import { GroupButtonProps } from "@/types";
 import { combineClass } from "@/utils/combineClass";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 interface GroupButtonComponentProps {
   buttons: GroupButtonProps[];
@@ -26,10 +26,14 @@ export default function GroupButton({
     buttons[index]?.callback?.();
   }, initialDelay);
 
-  const handleCreate = (index: number) => {
+  const handleClick = (index: number) => {
     setActiveIndex(index);
     triggerDebouncedCallback(index);
   };
+
+  useEffect(() => {
+    setActiveIndex(initialIdx);
+  }, [initialIdx]);
 
   return (
     <div
@@ -48,7 +52,7 @@ export default function GroupButton({
       {buttons.map((b, index) => (
         <div
           key={b.title}
-          onClick={() => handleCreate(index)}
+          onClick={() => handleClick(index)}
           style={{ width: `${widthPercentage}%` }}
           className={combineClass(
             "z-10 cursor-pointer text-center text-sm transition-colors duration-200",
