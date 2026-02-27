@@ -34,6 +34,7 @@
     "@reown/appkit": "^1.8.18",
     "@reown/appkit-adapter-wagmi": "^1.8.18",
     "@reservoir0x/relay-sdk": "^2.4.0",
+    "@tanstack/react-hotkeys": "^0.3.0",
     "@tanstack/react-query": "^5.90.12",
     "bowser": "^2.13.1",
     "buffer": "^6.0.3",
