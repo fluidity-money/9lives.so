@@ -47,7 +47,7 @@ export default function SimpleBody({
   const { data } = useQuery<SimpleCampaignDetail>({
     queryKey: ["simpleCampaign", symbol, period],
     initialData: campaignData,
-    staleTime: 5000,
+    staleTime: 0,
   });
   const { data: assetsRating } = useAssets(initialAssets);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
