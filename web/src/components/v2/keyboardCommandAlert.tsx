@@ -1,10 +1,21 @@
+"use client";
+import { useState } from "react";
+import Button from "./button";
+import Link from "next/link";
+import CloseButton from "./closeButton";
+
 export default function KeyboardCommandAlert() {
   const charStyle = "p-1 rounded-lg bg-neutral-200 text-2black";
 
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed) return null;
+
   return (
-    <div className="hidden flex-col gap-2 rounded-xl border border-2black px-2 py-1 text-center text-xs text-neutral-400 md:flex md:px-4 md:py-3">
-      <h4 className="font-bold text-2black">Use Keyboard Actions</h4>
-      <h5 className="leading-6">
+    <div className="fixed bottom-4 right-4 hidden max-w-[300px] rounded-2xl border border-neutral-400 bg-2white p-4 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] md:block">
+      <CloseButton close={() => setDismissed(true)} />
+      <h6 className="mb-4">Use Keyboard Actions</h6>
+      <p className="mb-4 text-center text-xs leading-6">
         You can use quick keyboard actions to nagivate between assets, and give
         commands to buy. Use <span className={charStyle}>⌘</span> +{" "}
         <span className={charStyle}>←</span> and{" "}
@@ -12,7 +23,13 @@ export default function KeyboardCommandAlert() {
         <span className={charStyle}>↑</span> and{" "}
         <span className={charStyle}>↓</span> to predict if price goes up or
         down.
-      </h5>
+      </p>
+      <Button
+        title="Dismiss"
+        intent={"cta"}
+        className={"w-full"}
+        onClick={() => setDismissed(true)}
+      />
     </div>
   );
 }
