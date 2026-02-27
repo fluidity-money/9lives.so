@@ -1,9 +1,9 @@
 export default function KeyboardCommandAlert() {
-  const charStyle = "p-1 rounded-lg bg-neutral-200";
+  const charStyle = "p-1 rounded-lg bg-neutral-200 text-2black";
 
   return (
-    <div className="hidden flex-col gap-2 rounded-xl border border-2black px-2 py-1 text-center text-xs md:flex md:px-4 md:py-3">
-      <h4 className="font-bold">Use Keyboard Actions</h4>
+    <div className="hidden flex-col gap-2 rounded-xl border border-2black px-2 py-1 text-center text-xs text-neutral-400 md:flex md:px-4 md:py-3">
+      <h4 className="font-bold text-2black">Use Keyboard Actions</h4>
       <h5 className="leading-6">
         You can use quick keyboard actions to nagivate between assets, and give
         commands to buy. Use <span className={charStyle}>⌘</span> +{" "}
