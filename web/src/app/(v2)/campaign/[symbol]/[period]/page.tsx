@@ -5,6 +5,7 @@ import SimpleBody from "@/components/v2/body";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import { SimpleMarketKey, SimpleMarketPeriod } from "@/types";
 import AssetNav from "@/components/v2/assetNav";
+import NavContextProvider from "@/providers/navContext";
 
 type Params = Promise<{ symbol: string; period: string }>;
 export const dynamicParams = true;
@@ -69,8 +70,10 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <AssetNav symbol={symbol} period={period} assets={assets} />
-      <SimpleBody symbol={symbol} campaignData={campaignData} />
+      <NavContextProvider initialSymbol={symbol} initialPeriod={period}>
+        <AssetNav assets={assets} />
+        <SimpleBody initialAssets={assets} campaignData={campaignData} />
+      </NavContextProvider>
     </div>
   );
 }
