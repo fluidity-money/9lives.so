@@ -22,6 +22,7 @@ import { getNextCampaign, getPrevCampaign } from "@/utils/getCampaign";
 import useAssets from "@/hooks/useAssets";
 import { combineClass } from "@/utils/combineClass";
 import { useHotkey } from "@tanstack/react-hotkeys";
+import KeyboardCommandAlert from "./keyboardCommandAlert";
 
 const RightCarot = ({ className = "size-6" }: { className?: string }) => (
   <svg
@@ -165,7 +166,9 @@ export default function SimpleBody({
           setOutcomeIdx={setOutcomeIdx}
         />
       </div>
+      {}
       {enabledSimpleModeAlert ? <SimpleModeAlert /> : <></>}
+      <KeyboardCommandAlert />
       <Modal
         isOpen={isBuyDialogOpen}
         setIsOpen={setIsBuyDialogOpen}

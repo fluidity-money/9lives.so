@@ -22,7 +22,7 @@ export default function SimpleModeAlert() {
   if (!displayAlert) return null;
 
   return (
-    <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-[#fafafa] px-2 py-1 text-center text-xs shadow-9liqCard md:px-4 md:py-3">
+    <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-white px-2 py-1 text-center text-xs md:px-4 md:py-3">
       <h4 className="font-chicago">
         Simple Mode: Get started predicting the future with hourly markets
       </h4>
