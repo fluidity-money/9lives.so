@@ -68,7 +68,12 @@ func NewBroadcast[A any]() *Broadcast[A] {
 				slog.Debug("received a request to unsubscribe",
 					"cookie", cookie,
 				)
-				broadcast.subscribed[cookie] = nil
+				close(broadcast.subscribed[cookie])
+				close(broadcastRequests)
+				close(subscriptionRequests)
+				close(unsubscriptionRequests)
+				close(shutdownRequests)
+				delete(broadcast.subscribed, cookie)
 			case <-shutdownRequests:
 				slog.Debug("received a request to shutdown the broadcast server")
 				return
@@ -95,6 +100,7 @@ func (broadcast Broadcast[A]) Subscribe(messages chan A) uint64 {
 	}
 
 	cookie := <-cookieChan
+	close(cookieChan)
 	slog.Debug("subscribe response",
 		"cookie", cookie,
 	)
