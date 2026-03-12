@@ -11,6 +11,7 @@ import ETH from "#/images/tokens/eth.svg";
 import SOL from "#/images/tokens/sol.svg";
 import CVX from "#/images/tokens/cvx.png";
 import SPY from "#/images/tokens/spy.png";
+import OIL from "#/images/tokens/oil.png";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -231,6 +232,18 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
+    listed: true,
+  },
+  xyzcl: {
+    slug: "xyzcl",
+    logo: OIL,
+    title: "OIL (xyz:CL)",
+    tabTitle: "OIL",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    decimals: 2,
+    periods: ["15mins"],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
     listed: true,
   },
 } as const;
