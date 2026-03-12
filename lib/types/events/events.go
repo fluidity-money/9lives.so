@@ -158,16 +158,20 @@ func (n Number) Value() (sqlDriver.Value, error) {
 	return n.String(), nil
 }
 func (n *Number) Scan(a any) error {
-	s, ok := a.(string)
-	if !ok {
-		return fmt.Errorf("unmarshal %T, wanted string", a)
+	switch v := a.(type) {
+	case string:
+		x, err := NumberFromString(v)
+		if err != nil {
+			return err
+		}
+		*n = *x
+	case []byte:
+		x := new(big.Int).SetBytes(v)
+		*n = Number{x}
+	default:
+		return fmt.Errorf("set bytes: %T", a)
 	}
-	x, err := NumberFromString(s)
-	if err != nil {
-		return err
-	}
-	*n = *x
-	return err
+	return nil
 }
 func (n *Number) MarshalJSON() ([]byte, error) {
 	// This needs to be explicitly implemented thanks to Gorm...
