@@ -19,6 +19,9 @@
 if(~ $SPN_FEE_CREATOR '') {
 	fee_creator=3
 }
+if(~ $SPN_IS_DPPM '') {
+	SPN_IS_DPPM=true
+}
 if not {
 	fee_creator=$SPN_FEE_CREATOR
 }
@@ -147,7 +150,7 @@ while(~ $SPN_TRADING_ADDR '') {
 			$fee_lp \
 			$fee_minter \
 			$fee_referrer \
-			true \
+			$SPN_IS_DPPM \
 			$SPN_STARTING_LIQ
 	}
 	sleep 1
