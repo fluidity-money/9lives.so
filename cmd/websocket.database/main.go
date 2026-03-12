@@ -272,8 +272,24 @@ func main() {
 			shutdown chan<- error,
 			requestShutdown <-chan bool,
 		) {
+			// Create a done channel to signal all goroutines spawned
+			// by this connection that we are tearing down.
+			done := make(chan struct{})
+
 			sink := make(chan TableContent, 64)
 			cookie := broadcast.Subscribe(sink)
+
+			// Ensure cleanup always happens exactly once.
+			defer func() {
+				close(done)
+				broadcast.Unsubscribe(cookie)
+				// Drain the sink so the broadcast goroutine never
+				// blocks writing to a subscriber that is gone.
+				go func() {
+					for range sink {
+					}
+				}()
+			}()
 
 			filterRules := make(map[string]map[string]*FilterConstraint)
 			filterRulesSet := make(map[string]bool)
@@ -281,7 +297,11 @@ func main() {
 		L:
 			for {
 				select {
-				case m := <-sink:
+				case m, ok := <-sink:
+					if !ok {
+						// Channel was closed externally; tear down.
+						break L
+					}
 					if f.Is(features.FeatureFilterTables) {
 						if !filterRulesSet[m.Table] {
 							continue L
@@ -293,10 +313,19 @@ func main() {
 							}
 						}
 					}
-					outgoing <- m.encoded
+					select {
+					case outgoing <- m.encoded:
+					case <-requestShutdown:
+						break L
+					}
 
-				// We need a sink for all messages here:
-				case msg := <-replies:
+				case msg, ok := <-replies:
+					if !ok {
+						// The reply channel was closed, meaning
+						// the WebSocket read side is gone.
+						break L
+					}
+
 					var req struct {
 						AskForSnapshot []struct {
 							Table  string `json:"table"`
@@ -315,7 +344,9 @@ func main() {
 					}
 
 					if err := json.Unmarshal(msg, &req); err != nil {
-						slog.Error("bad message received", "err", err)
+						slog.Error("bad message received",
+							"err", err,
+							"ip", ipAddr)
 						break L
 					}
 
@@ -334,8 +365,22 @@ func main() {
 
 						go func() {
 							snapshotChan := make(chan []TableContent)
-							dumpChan <- snapshotChan
-							rawSnapshot := <-snapshotChan
+
+							// Send the dump request, but bail
+							// out if the connection is already
+							// shutting down.
+							select {
+							case dumpChan <- snapshotChan:
+							case <-done:
+								return
+							}
+
+							var rawSnapshot []TableContent
+							select {
+							case rawSnapshot = <-snapshotChan:
+							case <-done:
+								return
+							}
 
 							var filteredSnapshot []TableContent
 							for _, tableContent := range rawSnapshot {
@@ -374,10 +419,18 @@ func main() {
 								SnapshotToplevel: filteredSnapshot,
 							})
 							if err != nil {
-								slog.Error("failed to marshal snapshot", "err", err)
+								slog.Error("failed to marshal snapshot",
+									"err", err)
 								return
 							}
-							outgoing <- snapshot
+
+							// Send on outgoing, but don't block
+							// forever if the connection is gone.
+							select {
+							case outgoing <- snapshot:
+							case <-done:
+								return
+							}
 						}()
 					}
 
@@ -388,22 +441,19 @@ func main() {
 						}
 						filterRulesSet[t] = true
 						for _, field := range ch.Fields {
-							// We copy here to avoid keeping everything allocated:
 							c := field.Constraints
 							filterRules[t][field.Name] = &c
 						}
 					}
 
-				case done := <-requestShutdown:
-					if done {
-						slog.Error("shutdown requested", "err", err)
-						break L
-					}
+				case <-requestShutdown:
+					slog.Info("shutdown requested",
+						"ip", ipAddr)
+					break L
 				}
 			}
 
-			broadcast.Unsubscribe(cookie)
-			shutdown <- err
+			shutdown <- nil
 		})
 
 		setup.Exitf("bind: %v", http.ListenAndServe(
