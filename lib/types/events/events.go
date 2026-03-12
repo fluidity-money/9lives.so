@@ -159,15 +159,18 @@ func (n Number) Value() (sqlDriver.Value, error) {
 }
 func (n *Number) Scan(a any) error {
 	switch v := a.(type) {
+	case []byte:
+		x, err := NumberFromString(string(v))
+		if err != nil {
+			return err
+		}
+		*n = *x
 	case string:
 		x, err := NumberFromString(v)
 		if err != nil {
 			return err
 		}
 		*n = *x
-	case []byte:
-		x := new(big.Int).SetBytes(v)
-		*n = Number{x}
 	default:
 		return fmt.Errorf("set bytes: %T", a)
 	}
