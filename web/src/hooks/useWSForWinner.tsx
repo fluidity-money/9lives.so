@@ -11,45 +11,74 @@ export function useWSForWinner(id: string, poolAddress: string) {
   useEffect(() => {
     if (!queryClient) return;
 
-    const ws = new WebSocket(config.NEXT_PUBLIC_WS_URL);
+    let ws: WebSocket | null = null;
+    let reconnectAttempts = 0;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let destroyed = false;
 
-    ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          add: [
-            {
-              table: "ninelives_events_outcome_decided",
-              fields: [
-                {
-                  name: "emitter_addr",
-                  filter_constraints: { et: poolAddress },
-                },
-              ],
-            },
-          ],
-        }),
-      );
-    };
+    const connect = () => {
+      if (destroyed) return;
 
-    ws.onmessage = (raw: MessageEvent<string>) => {
-      try {
-        const msg: WinnerMessage = JSON.parse(raw.data);
+      ws = new WebSocket(config.NEXT_PUBLIC_WS_URL);
 
-        queryClient.setQueryData<CampaignDetail>(
-          ["campaign", id],
-          (data) =>
-            ({
-              ...data,
-              winner: `0x${msg.content.identifier}`,
-            }) as CampaignDetail,
+      ws.onopen = () => {
+        ws!.send(
+          JSON.stringify({
+            add: [
+              {
+                table: "ninelives_events_outcome_decided",
+                fields: [
+                  {
+                    name: "emitter_addr",
+                    filter_constraints: { et: poolAddress },
+                  },
+                ],
+              },
+            ],
+          }),
         );
-      } catch (e) {
-        console.error("invalid ws payload", e);
-      }
+      };
+
+      ws.onmessage = (raw: MessageEvent<string>) => {
+        try {
+          const msg: WinnerMessage = JSON.parse(raw.data);
+
+          queryClient.setQueryData<CampaignDetail>(
+            ["campaign", id],
+            (data) =>
+              ({
+                ...data,
+                winner: `0x${msg.content.identifier}`,
+              }) as CampaignDetail,
+          );
+        } catch (e) {
+          console.error("invalid ws payload", e);
+        }
+      };
+
+      ws.onclose = () => {
+        if (destroyed) return;
+
+        const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+        reconnectAttempts++;
+        reconnectTimer = setTimeout(() => {
+          if (!destroyed) connect();
+        }, delay);
+      };
+
+      ws.onerror = () => {
+        ws?.close();
+      };
     };
+
+    connect();
 
     return () => {
-      ws.close();
+      destroyed = true;
+
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+
+      ws?.close();
     };
   }, [poolAddress, id, queryClient]);
 }
