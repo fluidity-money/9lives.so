@@ -118,14 +118,14 @@ export default function SimpleBody({
             />
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-1">
-                <h1 className="text-2xl font-semibold text-2black">
+                <h1 className="text:lg font-semibold text-2black md:text-2xl">
                   <span className="text-neutral-400">$</span>
-                  {data.priceMetadata?.baseAsset.toUpperCase()}
+                  {config.simpleMarkets[data.priceMetadata?.baseAsset].title}
                 </h1>
                 {isPriceUp !== undefined ? (
                   <ArrowIcon
                     variant={isPriceUp ? "up" : "down"}
-                    size="size-4"
+                    size="size-3 md:size-4"
                   />
                 ) : null}
               </div>
