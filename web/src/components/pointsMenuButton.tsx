@@ -76,7 +76,7 @@ export default function PointMenuButton() {
               Learn More
             </Link>
             <div className="flex flex-col gap-1">
-              <Link href="/leaderboard">
+              <Link href="/v1/leaderboard">
                 <Button
                   title="Leaderboard"
                   size={"large"}
