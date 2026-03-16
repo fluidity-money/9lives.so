@@ -35,6 +35,7 @@ export function useWSForDetail({
     let ws: WebSocket | null = null;
     let reconnectAttempts = 0;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let campaignTimer: ReturnType<typeof setTimeout> | null = null;
     let destroyed = false;
 
     const connect = () => {
@@ -165,7 +166,7 @@ export function useWSForDetail({
 
             const timeleft = content.starting * 1000 - Date.now();
 
-            setTimeout(
+            campaignTimer = setTimeout(
               () =>
                 queryClient.setQueryData(
                   ["simpleCampaign", asset, nextPeriod],
@@ -202,6 +203,7 @@ export function useWSForDetail({
       destroyed = true;
 
       if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (campaignTimer) clearTimeout(campaignTimer);
 
       ws?.close();
     };
