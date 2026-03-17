@@ -64,17 +64,17 @@ impl StorageTrading {
     #[allow(non_snake_case)]
     pub fn mint_schedule_claim_C_8_A_5591_F(
         &mut self,
-        outcome: FixedBytes<8>,
-        value: U256,
-        referrer: Address,
-        recipient: Address,
+        _outcome: FixedBytes<8>,
+        _value: U256,
+        _referrer: Address,
+        _recipient: Address,
     ) -> R<U256> {
         #[cfg(feature = "trading-backend-amm")]
         return Err(Error::DPPMOnly);
         #[cfg(not(feature = "trading-backend-amm"))]
         {
             self.scheduled_payouts.push(recipient);
-            self.mint_8_A_059_B_6_E(outcome, value, referrer, recipient)
+            self.mint_8_A_059_B_6_E(_outcome, _value, _referrer, _recipient)
         }
     }
 
