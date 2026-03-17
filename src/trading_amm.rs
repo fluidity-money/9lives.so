@@ -10,17 +10,32 @@ use alloc::vec::Vec;
 use bobcat_features::BOBCAT_FEATURES;
 
 // Should this contract use internal tokens instead of erc20?
-BOBCAT_FEATURES!(internal_tokens);
+BOBCAT_FEATURES!(internal_tokens, shortterm_amm);
 
 impl StorageTrading {
-    pub fn internal_amm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>) -> R<()> {
-        for outcome_id in outcomes {
+    pub fn internal_amm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {
+        for &outcome_id in outcomes.iter() {
             // This isn't a precaution that we actually need, but there may be weird
             // behaviour with this being possible (ie, payoff before the end date).
             assert_or!(!outcome_id.is_zero(), Error::OutcomeIsZero);
             self.outcome_list.push(outcome_id);
             self.amm_outcome_exists.setter(outcome_id).set(true);
         }
+        // If the shortterm AMM feature is enabled, then we need to set up the
+        // liquidity here:
+        FEATURE_IF_SHORTTERM_AMM!({
+            for &outcome_id in outcomes.iter() {
+                self.amm_shares.setter(outcome_id).set(seed_liq);
+                self.amm_total_shares.setter(outcome_id).set(seed_liq);
+            }
+            let product = seed_liq
+                .checked_pow(U256::from(outcomes.len()))
+                .ok_or(Error::CheckedMulOverflow)?;
+            self.amm_liquidity
+                .set(c!(maths::rooti(product, self.outcome_list.len() as u32)));
+        } else {
+            // We don't do anything here!
+        });
         Ok(())
     }
 

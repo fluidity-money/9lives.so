@@ -12,7 +12,7 @@ use crate::{
     vault_call,
 };
 
-use bobcat_features::BOBCAT_FEATURES;
+use bobcat_features::{FEATURE_COPY_NON_ZEROES, BOBCAT_FEATURES};
 
 use alloc::vec::Vec;
 
@@ -27,7 +27,7 @@ pub struct CalcFees {
     pub fee_for_protocol: U256,
 }
 
-BOBCAT_FEATURES!(internal_tokens);
+BOBCAT_FEATURES!(internal_tokens, shortterm_amm);
 
 impl StorageTrading {
     pub fn internal_ctor(
@@ -67,7 +67,11 @@ impl StorageTrading {
         let factory_addr = msg_sender();
         self.factory_addr.set(factory_addr);
         // Copy from the factory our feature configuration:
-        //FEATURE_COPY_NON_ZEROES!(factory_addr.0 .0, internal_tokens);
+        FEATURE_COPY_NON_ZEROES!(
+            **factory_addr,
+            internal_tokens,
+            shortterm_amm
+        );
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR
@@ -86,7 +90,7 @@ impl StorageTrading {
         #[cfg(feature = "trading-backend-dppm")]
         return self.internal_dppm_ctor(outcomes, seed_liq);
         #[cfg(not(feature = "trading-backend-dppm"))]
-        return self.internal_amm_ctor(outcomes);
+        return self.internal_amm_ctor(outcomes, seed_liq);
     }
 
     pub fn internal_shutdown(&mut self) -> R<U256> {

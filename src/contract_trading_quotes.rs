@@ -5,7 +5,7 @@ use crate::{
     fusdc_call,
     immutables::{CLAIMANT_HELPER, DAO_OP_ADDR},
     maths,
-    utils::{block_timestamp, contract_address, msg_sender},
+    utils::{block_timestamp, msg_sender},
 };
 
 pub use crate::storage_trading::*;

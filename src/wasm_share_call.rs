@@ -16,7 +16,6 @@ sol! {
 
 // Construct the ERC20 with the description in bytes provided, and an
 // admin that can mint more tokens on request.
-#[deprecated]
 pub fn ctor(addr: Address, name: String, admin: Address) -> Result<(), Error> {
     unsafe {
         RawCall::new()
@@ -26,7 +25,6 @@ pub fn ctor(addr: Address, name: String, admin: Address) -> Result<(), Error> {
     Ok(())
 }
 
-#[deprecated]
 pub fn mint(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
     unsafe {
         RawCall::new()
@@ -36,7 +34,6 @@ pub fn mint(addr: Address, spender: Address, amount: U256) -> Result<(), Error> 
     Ok(())
 }
 
-#[deprecated]
 pub fn burn(addr: Address, spender: Address, amount: U256) -> Result<(), Error> {
     unsafe {
         RawCall::new()
@@ -46,7 +43,6 @@ pub fn burn(addr: Address, spender: Address, amount: U256) -> Result<(), Error> 
     Ok(())
 }
 
-#[deprecated]
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
     erc20_call::balance_of(addr, spender)
 }
