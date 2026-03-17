@@ -171,40 +171,40 @@ impl StorageTrading {
 
     pub fn dppm_simulate_payoff_for_address(
         &self,
-        spender: Address,
-        outcome_id: FixedBytes<8>,
+        _spender: Address,
+        _outcome_id: FixedBytes<8>,
     ) -> R<(U256, U256, U256)> {
         #[cfg(not(feature = "trading-backend-dppm"))]
         unimplemented!();
         #[cfg(feature = "trading-backend-dppm")]
         {
             let user_share_amt = FEATURE_IF_INTERNAL_TOKENS!({
-                self.erc20_balance_of.getter(outcome_id).get(spender)
+                self.erc20_balance_of.getter(_outcome_id).get(_spender)
             } else {
                 share_call::balance_of(
                     proxy::get_share_addr(
                         self.factory_addr.get(),
                         contract_address(),
                         self.share_impl.get(),
-                        outcome_id,
+                        _outcome_id,
                     ),
-                    spender,
+                    _spender,
                 )?
             });
             let user_boosted_shares = self
                 .ninetails_user_boosted_shares
-                .getter(spender)
-                .get(outcome_id);
+                .getter(_spender)
+                .get(_outcome_id);
             let (fusdc_dppm, fusdc_winning_ninetails) = self.internal_dppm_simulate_payoff_state(
                 user_share_amt,
                 user_boosted_shares,
-                outcome_id,
+                _outcome_id,
                 U256::ZERO,
                 U256::ZERO,
                 U256::ZERO,
             )?;
             let o_1 = self.outcome_list.get(0).unwrap();
-            let winning_outcome_shares = self.dppm_shares_outcome.get(if o_1 == outcome_id {
+            let winning_outcome_shares = self.dppm_shares_outcome.get(if o_1 == _outcome_id {
                 self.outcome_list.get(1).unwrap()
             } else {
                 o_1
@@ -221,7 +221,7 @@ impl StorageTrading {
 
     pub fn dppm_simulate_payoff_for_address_all(
         &self,
-        spender: Address,
+        _spender: Address,
     ) -> R<(
         (FixedBytes<8>, U256, U256, U256),
         (FixedBytes<8>, U256, U256, U256),
@@ -230,8 +230,8 @@ impl StorageTrading {
         return {
             let o_a = self.outcome_list.get(0).unwrap();
             let o_b = self.outcome_list.get(1).unwrap();
-            let (o_a_1, o_a_2, o_a_3) = self.dppm_simulate_payoff_for_address(spender, o_a)?;
-            let (o_b_1, o_b_2, o_b_3) = self.dppm_simulate_payoff_for_address(spender, o_b)?;
+            let (o_a_1, o_a_2, o_a_3) = self.dppm_simulate_payoff_for_address(_spender, o_a)?;
+            let (o_b_1, o_b_2, o_b_3) = self.dppm_simulate_payoff_for_address(_spender, o_b)?;
             Ok(((o_a, o_a_1, o_a_2, o_a_3), (o_b, o_b_1, o_b_2, o_b_3)))
         };
         #[cfg(not(feature = "trading-backend-dppm"))]

@@ -24,15 +24,17 @@ impl StorageTrading {
         // If the shortterm AMM feature is enabled, then we need to set up the
         // liquidity here:
         FEATURE_IF_SHORTTERM_AMM!({
-            for &outcome_id in outcomes.iter() {
-                self.amm_shares.setter(outcome_id).set(seed_liq);
-                self.amm_total_shares.setter(outcome_id).set(seed_liq);
+            if !seed_liq.is_zero() {
+                for &outcome_id in outcomes.iter() {
+                    self.amm_shares.setter(outcome_id).set(seed_liq);
+                    self.amm_total_shares.setter(outcome_id).set(seed_liq);
+                }
+                let product = seed_liq
+                    .checked_pow(U256::from(outcomes.len()))
+                    .ok_or(Error::CheckedMulOverflow)?;
+                self.amm_liquidity
+                    .set(c!(maths::rooti(product, self.outcome_list.len() as u32)));
             }
-            let product = seed_liq
-                .checked_pow(U256::from(outcomes.len()))
-                .ok_or(Error::CheckedMulOverflow)?;
-            self.amm_liquidity
-                .set(c!(maths::rooti(product, self.outcome_list.len() as u32)));
         } else {
             // We don't do anything here!
         });

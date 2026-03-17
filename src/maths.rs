@@ -63,6 +63,7 @@ pub fn ninetails_payoff_losers(
     Ok(mul_div(user_boosted_shares, refund, global_boosted_shares)?.0)
 }
 
+#[allow(non_snake_case)]
 pub fn ninetails_calculate_leftovers_winner(
     M1: U256,
     M2: U256,
@@ -73,6 +74,7 @@ pub fn ninetails_calculate_leftovers_winner(
         .ok_or(Error::CheckedSubOverflow(M, global_dppm_shares_outcome))
 }
 
+#[allow(non_snake_case)]
 pub fn ninetails_calculate_leftovers_loser(
     M1: U256,
     M2: U256,
