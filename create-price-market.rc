@@ -19,9 +19,6 @@
 if(~ $SPN_FEE_CREATOR '') {
 	fee_creator=3
 }
-if(~ $SPN_IS_DPPM '') {
-	SPN_IS_DPPM=true
-}
 if not {
 	fee_creator=$SPN_FEE_CREATOR
 }
@@ -42,6 +39,9 @@ if(~ $SPN_FEE_REFERRER '') {
 }
 if not {
 	fee_referrer=$SPN_FEE_REFERRER
+}
+if(~ $SPN_IS_DPPM '') {
+	SPN_IS_DPPM=true
 }
 
 backend_is_dppm=true
