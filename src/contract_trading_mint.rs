@@ -73,7 +73,7 @@ impl StorageTrading {
         return Err(Error::DPPMOnly);
         #[cfg(not(feature = "trading-backend-amm"))]
         {
-            self.scheduled_payouts.push(recipient);
+            self.scheduled_payouts.push(_recipient);
             self.mint_8_A_059_B_6_E(_outcome, _value, _referrer, _recipient)
         }
     }
