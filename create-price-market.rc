@@ -95,22 +95,26 @@ echo SPN_DEADLINE=$SPN_DEADLINE >[1=2]
 
 fn send {
 	if(~ $SPN_DRYRUN '') {
+		flag x +
 		cast send \
 			--json \
 			--rpc-url $SPN_SUPERPOSITION_URL \
 			--private-key $SPN_SUPERPOSITION_KEY \
 			$*
+		flag x -
 	}
 	if not {
 		echo
 	}
 }
 
-fn call {
+fn call {(
+	flag x +
 	cast call \
 		--rpc-url $SPN_SUPERPOSITION_URL \
 		--private-key $SPN_SUPERPOSITION_KEY \
 		$*
+	flag x -
 }
 
 fn call_and_send {
