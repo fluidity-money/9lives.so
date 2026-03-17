@@ -683,7 +683,7 @@ impl core::fmt::Debug for Error {
                 ),
                 Error::CheckedSubOverflow(x, y) => format!("sub overflow: {x} - {y}"),
                 Error::CheckedPowOverflow(x, y) => format!("pow overflow: pow({x}, {y})"),
-                Error::ERC20ErrorTransfer(addr, amt, msg) => format!(
+                Error::ERC20ErrorTransfer(amt, addr, msg) => format!(
                     "{} sending {amt}: {:?}",
                     rename_addr(*addr),
                     String::from_utf8(msg.clone())

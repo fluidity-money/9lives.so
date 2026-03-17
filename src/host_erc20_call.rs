@@ -153,7 +153,7 @@ pub fn burn(addr: Address, spender: Address, amt: U256) {
 fn safe_print(x: U256, d: u8) -> String {
     match x {
         U256::MAX => "max".to_string(),
-        x => (x / U256::from(10).pow(U256::from(d))).to_string()
+        x => (x / U256::from(10).pow(U256::from(d))).to_string(),
     }
 }
 
@@ -202,6 +202,7 @@ pub fn should_spend<T>(
         let b = balance_of(addr, k).unwrap();
         if !b.is_zero() {
             return Err(Error::ERC20ErrorTransfer(
+                U256::ZERO,
                 addr,
                 format!(
                     "{} has leftover bal {} ({b}), they were initially given {} ({v})",
@@ -214,6 +215,7 @@ pub fn should_spend<T>(
         }
         if !was_erc20_spent(addr, k) {
             return Err(Error::ERC20ErrorTransfer(
+                U256::ZERO,
                 addr,
                 format!(
                     "spending token {} with spender {} was not spent",
@@ -254,16 +256,8 @@ pub fn transfer_from(
             if spender == testing_addrs::ZERO_FOR_MINT_ADDR && cur_bal.is_zero() {
                 return Ok(());
             }
-            Err(Error::ERC20ErrorTransfer(
-                addr,
-                format!(
-                    "{} sending {} ({amount}) to {}: bal is {} ({cur_bal})",
-                    rename_addr(spender),
-                    rename_amt(addr, amount),
-                    rename_addr(recipient),
-                    rename_amt(addr, cur_bal)
-                )
-                .into(),
+            Err(Error::ERC20ErrorTransferFrom(
+                addr, spender, recipient, amount,
             ))
         })?;
     test_give_tokens(addr, recipient, amount);
