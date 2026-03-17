@@ -8,6 +8,7 @@ import POL from "#/images/chains/polygon.svg";
 import BASE from "#/images/chains/base.svg";
 import AVAX from "#/images/chains/avalanche.svg";
 import MEGAETH from "#/images/chains/megaeth.svg";
+import HYPEREVM from "#/images/chains/hyperevm.svg";
 import { defineChain } from "@reown/appkit/networks";
 import {
   mainnet,
@@ -18,6 +19,7 @@ import {
   bsc,
   avalanche,
   megaeth,
+  hyperEvm,
 } from "@reown/appkit/networks";
 
 const superpositionTestnet = defineChain({
@@ -64,6 +66,7 @@ const farcasterList = {
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
   megaeth: { ...megaeth, icon: MEGAETH },
+  hyperEvm: { ...hyperEvm, icon: HYPEREVM },
 } as const;
 const chainList = {
   arbitrum: { ...arbitrum, icon: ARB },
@@ -75,6 +78,7 @@ const chainList = {
   bsc: { ...bsc, icon: BSC },
   avalanche: { ...avalanche, icon: AVAX },
   megaeth: { ...megaeth, icon: MEGAETH },
+  hyperEvm: { ...hyperEvm, icon: HYPEREVM },
 };
 export const chainIdToEid: Record<number, number> = {
   [superposition.id]: 30327,
@@ -85,6 +89,7 @@ export const chainIdToEid: Record<number, number> = {
   [polygon.id]: 30109,
   [bsc.id]: 30102,
   [avalanche.id]: 30106,
+  [hyperEvm.id]: 30367,
 };
 
 export default chainList;
