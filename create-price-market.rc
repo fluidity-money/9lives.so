@@ -108,7 +108,7 @@ fn send {
 	}
 }
 
-fn call {(
+fn call {
 	flag x +
 	cast call \
 		--rpc-url $SPN_SUPERPOSITION_URL \
