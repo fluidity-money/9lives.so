@@ -1,3 +1,9 @@
+## 18-03-2026 Shortterm AMM
+
+It's been a while since our last update!
+
+We launched several features, including new markets, better usability, and more. In this release we're beginning to support shortterm AMM markets that have different pricing behaviour to
+
 ## 28-08-2025 Display of odds on the frontpage
 
 We released several reliability improvements since our last update, including having the
