@@ -15,7 +15,7 @@ use lib9lives::{
 
 use proptest::prelude::*;
 
-fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
+fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>], starting_liq: U256) {
     c.created.set(false);
     c.is_protocol_fee_disabled.set(true);
     c.ctor((
@@ -24,12 +24,12 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
         block_timestamp() + 1,
         block_timestamp() + 10,
         msg_sender(),
-        SHARE,
         false,
         0,
         0,
         0,
         0,
+        starting_liq,
     ))
     .unwrap();
     c.amm_liquidity.set(U256::ZERO);
@@ -45,7 +45,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>]) {
 
 fn simulate_market_2(outcome_a: FixedBytes<8>, outcome_b: FixedBytes<8>, c: &mut StorageTrading) {
     // simulate_market_2 translation:
-    setup_contract(c, &[outcome_a, outcome_b]);
+    setup_contract(c, &[outcome_a, outcome_b], U256::ZERO);
     c.test_set_outcome_shares(
         1100e6 as u64,
         &[
@@ -144,7 +144,8 @@ macro_rules! test_should_burn_shares {
         // In this test scaffolding, we don't set the referrer.
         let a = should_spend_fusdc_contract!($buy_amt, {
             let estimated_usd = $c
-                .estimate_burn_E_9_B_09_A_17($outcome, shares_sold).unwrap();
+                .estimate_burn_E_9_B_09_A_17($outcome, shares_sold)
+                .unwrap();
             let (x, _) = $c
                 .burn_854_C_C_96_E(
                     $outcome,
@@ -183,7 +184,7 @@ proptest! {
         interactions_clear_after! {
             // Ivan goes to add $100 worth of liquidity...
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 let liquidity_amt = U256::from(100e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
@@ -245,7 +246,7 @@ proptest! {
             IVAN => {
                 // simulate_market_3 translation:
                 let outcomes = vec![outcome_a, outcome_b, outcome_c, outcome_d];
-                setup_contract(&mut c, &outcomes);
+                setup_contract(&mut c, &outcomes, U256::ZERO);
                 c.test_set_outcome_shares(1000e6 as u64, &[
                     (outcome_a, 461530000),  //461.53
                     (outcome_b, 1294000000), //1294
@@ -321,7 +322,7 @@ proptest! {
         let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 c.test_set_outcome_shares(1769680000 as u64, &[
                     (outcome_a, 812460000 as u64),  //812.46
                     (outcome_b, 2294000000 as u64), //2294
@@ -353,7 +354,7 @@ proptest! {
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 // First, fund the contract with some fUSDC using add liquidity:
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
@@ -385,7 +386,7 @@ proptest! {
         let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 // First, fund the contract with some fUSDC using add liquidity:
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
@@ -421,7 +422,7 @@ proptest! {
         let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 // First, fund the contract with some fUSDC using add liquidity:
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 c.internal_amm_get_prices().unwrap();
@@ -474,7 +475,7 @@ proptest! {
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 // First, fund the contract with some fUSDC using add liquidity:
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity!(&mut c, add_liq_amt);
@@ -517,7 +518,7 @@ proptest! {
         let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 // First, fund the contract with some fUSDC using add liquidity:
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity!(&mut c, add_liq_amt);
@@ -560,7 +561,7 @@ proptest! {
         let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity!(&mut c, add_liq_amt);
                 let user_shares = 621296296;
@@ -604,7 +605,7 @@ proptest! {
         let outcome_d = outcomes[3];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 c.test_set_outcome_shares(
                     141421356 as u64,
                     &[
@@ -640,7 +641,7 @@ proptest! {
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &outcomes);
+                setup_contract(&mut c, &outcomes, U256::ZERO);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
@@ -683,7 +684,7 @@ proptest! {
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &outcomes);
+                setup_contract(&mut c, &outcomes, U256::ZERO);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
@@ -716,7 +717,7 @@ proptest! {
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 // 20 = 2% fees
                 c.fee_lp.set(U256::from(20));
                 test_add_liquidity!(&mut c, 1000e6 as u64);
@@ -752,7 +753,7 @@ proptest! {
         let half_of_target_fee_collected = target_fee_collected / U256::from(2);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b]);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 c.oracle.set(ELI);
                 // 20 = 2% fees
                 c.fee_lp.set(U256::from(20));
@@ -846,7 +847,7 @@ proptest! {
         let ogous_shares: Option<U256>;
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d]);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 c.oracle.set(ELI);
                 // 20 = 2% fees
                 c.fee_lp.set(U256::from(20));

@@ -15,9 +15,10 @@ use lib9lives::{
 use proptest::prelude::*;
 
 macro_rules! setup_contract {
-    ($c:expr, $outcomes:expr) => {
+    ($c:expr, $outcomes:expr, $startup_liq:expr) => {
         let c = $c;
         let outcomes = $outcomes;
+        let startup_liq = U256::from($startup_liq);
         c.created.set(false);
         c.is_protocol_fee_disabled.set(true);
         c.ctor((
@@ -26,12 +27,12 @@ macro_rules! setup_contract {
             block_timestamp() + 1,
             block_timestamp() + 10,
             msg_sender(),
-            SHARE,
             false,
             0,
             0,
             0,
             0,
+            startup_liq
         ))
         .unwrap();
         c.amm_liquidity.set(U256::ZERO);
@@ -63,27 +64,14 @@ macro_rules! test_add_liquidity {
 }
 
 proptest! {
-    // FIXME
-    #[test]
-    #[ignore]
-    fn test_amm_crazy_testing_1(
-        outcomes in strat_uniq_outcomes(100, 100),
-        mut c in strat_storage_trading(false),
-        actions in proptest::collection::vec((any::<Address>(), strat_action()), 1..1000)
-    ) {
-        setup_contract!(&mut c, &outcomes);
-        for (sender, a) in actions {
-            implement_action!(c, sender, a);
-        }
-    }
-
     #[test]
     fn test_amm_access_control_okay_1(
         outcomes in strat_uniq_outcomes(2, 10),
         mut c in strat_storage_trading(false),
-        rand_word in strat_large_u256()
+        rand_word in strat_large_u256(),
+        setup_liq in strat_tiny_u256()
     ) {
-        setup_contract!(&mut c, &outcomes);
+        setup_contract!(&mut c, &outcomes, setup_liq);
         panic_guard(|| {
             // A user should not be able to use payoff with a campaign that hasn't ended.
             assert_eq!(
@@ -109,11 +97,12 @@ proptest! {
     #[test]
     fn test_five_outcomes(
         outcomes in strat_uniq_outcomes(2, 7),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_tiny_u256()
     ) {
         interactions_clear_after! {
             IVAN => {
-                setup_contract!(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes, startup_liq);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
             }
         }
@@ -122,11 +111,12 @@ proptest! {
     #[test]
     fn test_amm_variable_outcomes(
         outcomes in strat_uniq_outcomes(2, 5),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_tiny_u256()
     ) {
         interactions_clear_after! {
             IVAN => {
-                setup_contract!(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes, startup_liq);
                 test_add_liquidity!(&mut c, 10e6 as u64);
             }
         }
@@ -135,11 +125,12 @@ proptest! {
     #[test]
     fn test_amm_breaking_specific_26k(
         outcomes in strat_uniq_outcomes(2, 10),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_tiny_u256()
     ) {
         interactions_clear_after! {
             ERIK => {
-                setup_contract!(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes, startup_liq);
                 test_add_liquidity!(&mut c, 100_000e6 as u64);
             }
         }
@@ -148,11 +139,12 @@ proptest! {
     #[test]
     fn test_amm_simulate_swag(
         o in strat_uniq_outcomes(2, 2),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_tiny_u256()
     ) {
         interactions_clear_after! {
             IVAN => {
-                setup_contract!(&mut c, &o);
+                setup_contract!(&mut c, &o, startup_liq);
                 test_add_liquidity!(&mut c, 10_000e6);
                 should_spend_fusdc_sender!(
                     1446413256,
@@ -183,13 +175,14 @@ proptest! {
     fn test_amm_tiny_mint_into_burning(
         add_lp in strat_tiny_u256(),
         (outcomes, _, acts) in strat_tiny_mint_into_burn_outcomes(10, 10, 10, 1000),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_tiny_u256()
     )
     {
         // Test up to a thousand mint and burn operations from a hundred minimum.
         interactions_clear_after! {
             IVAN => {
-                setup_contract!(&mut c, &outcomes);
+                setup_contract!(&mut c, &outcomes, startup_liq);
                 test_add_liquidity!(&mut c, add_lp);
                 for (_, a) in acts.iter().enumerate() {
                     if let [Action::Mint(ActionMint {
@@ -283,120 +276,6 @@ fn print_bal_mint_burn_state_until(outcomes: &[FixedBytes<8>], acts: &[[Action; 
         {
             let o_i = outcomes.iter().position(|x| x == outcome).unwrap();
             eprintln!(r#"market.sell({o_i}, {usd_amt} / 1e6, "Alice")"#);
-        }
-    }
-}
-
-#[test]
-#[allow(non_snake_case)]
-fn test_amm_reproduction_0x276b5b896b088c5604E7333df90f7691d6FDE93A_1621096() {
-    let outcomes = [
-        fixed_bytes!("009380e6201ad444"),
-        fixed_bytes!("72e84ce41b33954e"),
-        fixed_bytes!("9cff5edbbb8ac0a9"),
-        fixed_bytes!("a7913c07dc467994"),
-    ];
-    interactions_clear_after! {
-        IVAN => {
-            let mut c = StorageTrading::default();
-            setup_contract!(&mut c, &outcomes);
-            //c.fee_creator.set(U256::from(0));
-            //c.fee_minter.set(U256::from(0));
-            //c.fee_lp.set(U256::from(0));
-            //c.fee_referrer.set(U256::from(0));
-            c.is_protocol_fee_disabled.set(true); // Disabled by the generator!
-            //c.is_protocol_fee_disabled.set(false);
-            c.amm_liquidity.set(U256::from(1000000));
-            c.amm_outcome_prices.setter(fixed_bytes!("009380e6201ad444")).set(U256::from(0));
-            c.amm_outcome_prices.setter(fixed_bytes!("72e84ce41b33954e")).set(U256::from(0));
-            c.amm_outcome_prices.setter(fixed_bytes!("9cff5edbbb8ac0a9")).set(U256::from(0));
-            c.amm_outcome_prices.setter(fixed_bytes!("a7913c07dc467994")).set(U256::from(0));
-            c.amm_shares.setter(fixed_bytes!("009380e6201ad444")).set(U256::from(5960000));
-            c.amm_shares.setter(fixed_bytes!("72e84ce41b33954e")).set(U256::from(5960000));
-            c.amm_shares.setter(fixed_bytes!("9cff5edbbb8ac0a9")).set(U256::from(4724));
-            c.amm_shares.setter(fixed_bytes!("a7913c07dc467994")).set(U256::from(5960000));
-            c.amm_total_shares.setter(fixed_bytes!("009380e6201ad444")).set(U256::from(5960000));
-            c.amm_total_shares.setter(fixed_bytes!("72e84ce41b33954e")).set(U256::from(5960000));
-            c.amm_total_shares.setter(fixed_bytes!("9cff5edbbb8ac0a9")).set(U256::from(5960000));
-            c.amm_total_shares.setter(fixed_bytes!("a7913c07dc467994")).set(U256::from(5960000));
-            c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(1000000));
-            c.amm_fees_collected_weighted.set(U256::from(0));
-            c.amm_lp_global_fees_claimed.set(U256::from(0));
-            c.amm_lp_user_fees_claimed.setter(msg_sender()).set(U256::from(0));
-
-            assert_eq!((U256::from(5954797), U256::from(4959880)), should_spend!(
-                c.share_addr(fixed_bytes!("9cff5edbbb8ac0a9")).unwrap(),
-                { msg_sender() => 5954797 },
-                Ok(should_spend_fusdc_contract!(
-                    4959880,
-                    c.burn_854_C_C_96_E(
-                        fixed_bytes!("9cff5edbbb8ac0a9"),
-                        U256::from(5955276),
-                        true,
-                        U256::ZERO,
-                        msg_sender(),
-                        msg_sender()
-                    )
-                ))
-            ));
-        }
-    }
-}
-
-#[test]
-#[allow(non_snake_case)]
-fn test_amm_reproduction_0x9d86E956d55e1AfDaC5910b581f7ec4322B65704_1640358() {
-    let outcomes = [
-        fixed_bytes!("2e141d56f374af10"),
-        fixed_bytes!("e4e18b38e72765bb"),
-        fixed_bytes!("ed90801f07c2f571"),
-        fixed_bytes!("f8e1d8e326b6891d"),
-    ];
-    interactions_clear_after! {
-        IVAN => {
-            let mut c = StorageTrading::default();
-            setup_contract!(&mut c, &outcomes);
-            //c.fee_creator.set(U256::from(0));
-            //c.fee_minter.set(U256::from(0));
-            //c.fee_lp.set(U256::from(0));
-            //c.fee_referrer.set(U256::from(0));
-            c.is_protocol_fee_disabled.set(true); // Disabled by the generator!
-            //c.is_protocol_fee_disabled.set(false);
-            c.amm_liquidity.set(U256::from(10999997));
-            c.amm_outcome_prices.setter(fixed_bytes!("2e141d56f374af10")).set(U256::from(178478));
-            c.amm_outcome_prices.setter(fixed_bytes!("e4e18b38e72765bb")).set(U256::from(178478));
-            c.amm_outcome_prices.setter(fixed_bytes!("ed90801f07c2f571")).set(U256::from(262336));
-            c.amm_outcome_prices.setter(fixed_bytes!("f8e1d8e326b6891d")).set(U256::from(380706));
-            c.amm_shares.setter(fixed_bytes!("2e141d56f374af10")).set(U256::from(14637339));
-            c.amm_shares.setter(fixed_bytes!("e4e18b38e72765bb")).set(U256::from(14637339));
-            c.amm_shares.setter(fixed_bytes!("ed90801f07c2f571")).set(U256::from(9958385));
-            c.amm_shares.setter(fixed_bytes!("f8e1d8e326b6891d")).set(U256::from(6862101));
-            c.amm_total_shares.setter(fixed_bytes!("2e141d56f374af10")).set(U256::from(21705727));
-            c.amm_total_shares.setter(fixed_bytes!("e4e18b38e72765bb")).set(U256::from(21705727));
-            c.amm_total_shares.setter(fixed_bytes!("ed90801f07c2f571")).set(U256::from(21705727));
-            c.amm_total_shares.setter(fixed_bytes!("f8e1d8e326b6891d")).set(U256::from(21705727));
-            c.amm_user_liquidity_shares.setter(msg_sender()).set(U256::from(11000000));
-            c.amm_fees_collected_weighted.set(U256::from(0));
-            c.amm_lp_global_fees_claimed.set(U256::from(0));
-            c.amm_lp_user_fees_claimed.setter(msg_sender()).set(U256::from(0));
-
-            let id = c.outcome_ids_iter().nth(3).unwrap();
-
-            should_spend!(
-                c.share_addr(id).unwrap(),
-                { msg_sender() => 14842486 },
-                Ok(should_spend_fusdc_contract!(
-                    3489925,
-                    c.burn_854_C_C_96_E(
-                        id,
-                        U256::from(14843000),
-                        true,
-                        U256::ZERO,
-                        msg_sender(),
-                        msg_sender()
-                    )
-                ))
-            );
         }
     }
 }
