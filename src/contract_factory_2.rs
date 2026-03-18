@@ -17,8 +17,7 @@ use stylus_sdk::call::RawCall;
 
 use bobcat_features::BOBCAT_FEATURES;
 
-// Should this contract use internal tokens instead of erc20?
-BOBCAT_FEATURES!(internal_tokens);
+BOBCAT_FEATURES!(shortterm_amm);
 
 #[cfg_attr(feature = "contract-factory-2", stylus_sdk::prelude::public)]
 impl StorageFactory {
@@ -124,12 +123,6 @@ impl StorageFactory {
 
     pub fn features() -> R<FixedBytes<32>> {
         Ok(FixedBytes::<32>(feature_pack().0))
-    }
-
-    pub fn set_feature_internal_erc20(&self, v: bool) -> R<()> {
-        assert_or!(msg_sender() == self.operator.get(), Error::NotOperator);
-        feature_set_internal_tokens(v);
-        Ok(())
     }
 
     // The following methods are deprecated methods from the previous

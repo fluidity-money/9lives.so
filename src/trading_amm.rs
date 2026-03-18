@@ -9,8 +9,7 @@ use alloc::vec::Vec;
 
 use bobcat_features::BOBCAT_FEATURES;
 
-// Should this contract use internal tokens instead of erc20?
-BOBCAT_FEATURES!(internal_tokens, shortterm_amm);
+BOBCAT_FEATURES!(shortterm_amm);
 
 impl StorageTrading {
     pub fn internal_amm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {
@@ -158,21 +157,16 @@ impl StorageTrading {
             .collect::<R<Vec<_>>>()?;
         for (outcome_id, outcome_shares_received) in shares_received.iter() {
             if !outcome_shares_received.is_zero() {
-                FEATURE_IF_INTERNAL_TOKENS!({
-                    self.give_shares(*outcome_id, recipient, *outcome_shares_received)?;
-                } else {
-                    #[allow(deprecated)]
-                    share_call::mint(
-                        proxy::get_share_addr(
-                            self.factory_addr.get(),
-                            contract_address(),
-                            self.share_impl.get(),
-                            *outcome_id,
-                        ),
-                        recipient,
-                        *outcome_shares_received,
-                    )?;
-                });
+                share_call::mint(
+                    proxy::get_share_addr(
+                        self.factory_addr.get(),
+                        contract_address(),
+                        self.share_impl.get(),
+                        *outcome_id,
+                    ),
+                    recipient,
+                    *outcome_shares_received,
+                )?;
                 evm::log(events::SharesMinted {
                     identifier: *outcome_id,
                     shareAmount: *outcome_shares_received,
@@ -302,21 +296,16 @@ impl StorageTrading {
             .collect::<R<Vec<_>>>()?;
         for (outcome_id, outcome_shares_received) in shares_received.iter() {
             if !outcome_shares_received.is_zero() {
-                FEATURE_IF_INTERNAL_TOKENS!({
-                    self.give_shares(*outcome_id, recipient, *outcome_shares_received)?
-                } else {
-                    #[allow(deprecated)]
-                    share_call::mint(
-                        proxy::get_share_addr(
-                            self.factory_addr.get(),
-                            contract_address(),
-                            self.share_impl.get(),
-                            *outcome_id,
-                        ),
-                        recipient,
-                        *outcome_shares_received,
-                    )?;
-                });
+                share_call::mint(
+                    proxy::get_share_addr(
+                        self.factory_addr.get(),
+                        contract_address(),
+                        self.share_impl.get(),
+                        *outcome_id,
+                    ),
+                    recipient,
+                    *outcome_shares_received,
+                )?;
                 evm::log(events::SharesMinted {
                     identifier: *outcome_id,
                     shareAmount: *outcome_shares_received,
@@ -410,21 +399,16 @@ impl StorageTrading {
                 })
                 .collect::<Vec<_>>(),
         });
-        FEATURE_IF_INTERNAL_TOKENS!({
-            self.burn_shares(outcome_id, sender, burned_shares)?
-        } else {
-            #[allow(deprecated)]
-            share_call::burn(
-                proxy::get_share_addr(
-                    self.factory_addr.get(),
-                    contract_address(),
-                    self.share_impl.get(),
-                    outcome_id,
-                ),
-                sender,
-                burned_shares,
-            )?;
-        });
+        share_call::burn(
+            proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(),
+                self.share_impl.get(),
+                outcome_id,
+            ),
+            sender,
+            burned_shares,
+        )?;
         let fees = self.calculate_and_set_fees(usd_amt, false, referrer)?;
         let usd_amt = c!(usd_amt
             .checked_sub(fees)
@@ -570,21 +554,11 @@ impl StorageTrading {
         // If the user gave us a U256::MAX, we claim everything they have.
         assert_or!(share_amt > U256::ZERO, Error::ZeroShares);
         let share_amt = if share_amt == U256::MAX {
-            FEATURE_IF_INTERNAL_TOKENS!({
-                self.erc20_balance_of.getter(outcome_id).get(spender)
-            } else {
-                #[allow(deprecated)]
-                share_call::balance_of(share_addr, spender)?
-            })
+            share_call::balance_of(share_addr, spender)?
         } else {
             share_amt
         };
-        FEATURE_IF_INTERNAL_TOKENS!({
-            self.burn_shares(outcome_id, spender, share_amt)?
-        } else {
-            #[allow(deprecated)]
-            share_call::burn(share_addr, spender, share_amt)?;
-        });
+        share_call::burn(share_addr, spender, share_amt)?;
         fusdc_call::transfer(recipient, share_amt)?;
         evm::log(events::PayoffActivated {
             identifier: outcome_id,
@@ -659,21 +633,16 @@ impl StorageTrading {
                 })
                 .collect::<Vec<_>>(),
         });
-        FEATURE_IF_INTERNAL_TOKENS!({
-            self.give_shares(outcome_id, recipient, shares)?
-        } else {
-            #[allow(deprecated)]
-            share_call::mint(
-                proxy::get_share_addr(
-                    self.factory_addr.get(),
-                    contract_address(),
-                    self.share_impl.get(),
-                    outcome_id,
-                ),
-                recipient,
-                shares,
-            )?;
-        });
+        share_call::mint(
+            proxy::get_share_addr(
+                self.factory_addr.get(),
+                contract_address(),
+                self.share_impl.get(),
+                outcome_id,
+            ),
+            recipient,
+            shares,
+        )?;
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,

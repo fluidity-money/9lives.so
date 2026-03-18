@@ -154,12 +154,7 @@ impl StorageTrading {
                 .setter(outcome_id)
                 .set(x.checked_add(shares).ok_or(Error::CheckedAddOverflow)?);
         }
-        FEATURE_IF_INTERNAL_TOKENS!({
-            self.give_shares(outcome_id, recipient, shares)?;
-        } else {
-            #[allow(deprecated)]
-            share_call::mint(share_addr, recipient, shares)?;
-        });
+        share_call::mint(share_addr, recipient, shares)?;
         evm::log(events::SharesMinted {
             identifier: outcome_id,
             shareAmount: shares,
@@ -233,21 +228,11 @@ impl StorageTrading {
             return Ok(U256::ZERO);
         }
         let amt = if amt == U256::MAX {
-            FEATURE_IF_INTERNAL_TOKENS!({
-                self.erc20_balance_of.getter(outcome_id).get(spender)
-            } else {
-                #[allow(deprecated)]
-                share_call::balance_of(share_addr, spender)?
-            })
+            share_call::balance_of(share_addr, spender)?
         } else {
             amt
         };
-        FEATURE_IF_INTERNAL_TOKENS!({
-            self.burn_shares(outcome_id, spender, amt)?
-        } else {
-            #[allow(deprecated)]
-            share_call::burn(share_addr, spender, amt)?;
-        });
+        share_call::burn(share_addr, spender, amt)?;
         let user_boosted_shares = self
             .ninetails_user_boosted_shares
             .get(spender)

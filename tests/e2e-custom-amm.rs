@@ -4,11 +4,11 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::alloy_primitives::{fixed_bytes, Address, FixedBytes, U256, U64};
+use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256, U64};
 
 use lib9lives::{
-    actions::*, error::Error, fees::FEE_SCALING, host, immutables::*, implement_action,
-    interactions_clear_after, maths, panic_guard, proxy, should_spend, should_spend_fusdc_contract,
+    actions::*, error::Error, fees::FEE_SCALING, host, immutables::*, interactions_clear_after,
+    maths, panic_guard, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender, strat_storage_trading, testing_addrs::*, utils::*, StorageTrading,
 };
 
@@ -32,7 +32,7 @@ macro_rules! setup_contract {
             0,
             0,
             0,
-            startup_liq
+            startup_liq,
         ))
         .unwrap();
         c.amm_liquidity.set(U256::ZERO);
@@ -53,12 +53,7 @@ macro_rules! test_add_liquidity {
         let buy_amt = U256::from($amt);
         should_spend_fusdc_sender!(
             buy_amt,
-            $c.add_liquidity_B_9_D_D_A_952(
-                buy_amt,
-                msg_sender(),
-                U256::ZERO,
-                U256::MAX
-            )
+            $c.add_liquidity_B_9_D_D_A_952(buy_amt, msg_sender(), U256::ZERO, U256::MAX)
         )
     };
 }
