@@ -16,14 +16,16 @@ use lib9lives::{
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_small_u256, strat_uniq_outcomes},
     StorageTrading,
+    host_vault_call,
 };
 
 use proptest::prelude::*;
 
 macro_rules! setup_contract {
-    ($c:expr, $outcomes:expr) => {
+    ($c:expr, $outcomes:expr, $startup_liq:expr) => {
         let c = $c;
         let outcomes = $outcomes;
+        let startup_liq = U256::from($startup_liq);
         c.created.set(false);
         c.is_protocol_fee_disabled.set(true);
         c.ctor((
@@ -37,10 +39,10 @@ macro_rules! setup_contract {
             0,
             0,
             0,
-            U256::ZERO
+            startup_liq
         ))
         .unwrap();
-        c.amm_liquidity.set(U256::ZERO);
+        host_vault_call::borrow(VAULT, CONTRACT, startup_liq).unwrap();
         c.when_decided.set(U64::ZERO);
         c.is_shutdown.set(false);
         c.winner.set(FixedBytes::<8>::ZERO);
@@ -65,7 +67,7 @@ fn test_dppm_simple() {
     let mut erik_simulated_earnings = (U256::ZERO, U256::ZERO, U256::ZERO);
     interactions_clear_after! {
         IVAN => {
-            setup_contract!(&mut c, o);
+            setup_contract!(&mut c, o, 100u64);
             c.time_ending.set(U64::from(block_timestamp() + 60 * 60));
             set_block_timestamp(5 * 60);
             let (v_ivan_dppm, v_ivan_ninetails) = c.internal_dppm_simulate_mint(o[0], U256::from(5e6)).unwrap();
@@ -97,7 +99,7 @@ fn test_dppm_simple() {
             // l_loser: USDC you would get if outcome 1 lost
             let ((_, w_fusdc, w_boosted, _), (_, _, _, l_loser)) =
                 c.dppm_simulate_payoff_for_address_all(msg_sender()).unwrap();
-            let (returned_1, returned_2) = should_spend_fusdc_contract!(15091831 ,
+            let (returned_1, returned_2) = should_spend_fusdc_contract!(13222318,
                 c.dppm_payoff_for_all_58633_B_6_E(msg_sender())
             );
             assert_eq!(returned_1, w_fusdc + w_boosted);
@@ -105,7 +107,7 @@ fn test_dppm_simple() {
         },
         ERIK => {
             let resulted = should_spend_fusdc_contract!(
-                1908167,
+                1777780,
                 c.payoff_C_B_6_F_2565(o[1], U256::ZERO, ERIK)
             );
             assert_eq!(resulted, erik_simulated_earnings.2);
@@ -150,12 +152,13 @@ proptest! {
         fee_referrer in 0u64..10,
         referrer_sink_addr in any::<Address>(),
         creator_sink_addr in any::<Address>(),
-        (o_0, o_1, actions) in strat_dppm_actions()
+        (o_0, o_1, actions) in strat_dppm_actions(),
+        startup_liq in strat_small_u256()
     ) {
         clear_storage();
         let mut c = StorageTrading::default();
         set_block_timestamp(1);
-        setup_contract!(&mut c, [o_0, o_1]);
+        setup_contract!(&mut c, [o_0, o_1], startup_liq);
         c.fee_recipient.set(creator_sink_addr);
         c.fee_creator.set(U256::from(fee_creator));
         c.fee_referrer.set(U256::from(fee_referrer));
@@ -182,7 +185,7 @@ proptest! {
                 let e_1 = c.dppm_simulate_payoff_for_address(sender, o_1).unwrap();
                 let e_2 = c.dppm_simulate_payoff_for_address(sender, o_2).unwrap();
                 assert!(max_fusdc >= e_1.0 + e_1.1, "{max_fusdc} < {}", e_1.0 + e_1.1);
-                assert!(max_fusdc >= e_2.0 + e_2.1);
+                assert!(max_fusdc >= e_2.0 + e_2.1, "{max_fusdc} < {}", e_2.0 + e_2.1);
                 let e = c.dppm_simulate_earnings_B_866_B_112(fusdc_amt, outcome).unwrap();
                 // We need to check that the winning payout and Ninetails payout can
                 // never exceed the pool balance:

@@ -4,7 +4,7 @@
     not(target_arch = "wasm32")
 ))]
 
-use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
+use stylus_sdk::alloy_primitives::{FixedBytes, U256};
 
 use proptest::{
     collection::{self, VecStrategy},

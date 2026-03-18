@@ -1,7 +1,6 @@
 use crate::{
     error::*,
-    events, fusdc_call,
-    maths, proxy, share_call,
+    events, fusdc_call, maths, proxy, share_call,
     storage_trading::*,
     utils::{block_timestamp, contract_address, msg_sender},
 };
@@ -20,7 +19,10 @@ BOBCAT_FEATURES!(internal_tokens);
 
 impl StorageTrading {
     pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {
-        assert_or!(outcomes.len() == 2, Error::BadTradingCtor);
+        assert_or!(
+            outcomes.len() == 2 && seed_liq > U256::ZERO,
+            Error::BadTradingCtor
+        );
         // We assume that the caller already supplied the liquidity to
         // us, and we set them as the factory.
         self.dppm_global_invested.set(seed_liq);

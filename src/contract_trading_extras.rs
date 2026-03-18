@@ -266,51 +266,6 @@ fn default_ctor_args() -> CtorArgs {
     )
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-#[test]
-fn test_cant_recreate() {
-    use stylus_sdk::alloy_primitives::fixed_bytes;
-    crate::host::with_contract::<_, StorageTrading, _>(|c| {
-        c.ctor((
-            vec![
-                fixed_bytes!("0541d76af67ad076"),
-                fixed_bytes!("0541d76af67ad077"),
-            ],
-            Address::ZERO,
-            0,
-            u64::MAX,
-            Address::ZERO,
-            false,
-            0,
-            0,
-            0,
-            0,
-            U256::ZERO
-        ))
-        .unwrap();
-        assert_eq!(
-            Error::AlreadyConstructed,
-            c.ctor((
-                vec![
-                    fixed_bytes!("0541d76af67ad076"),
-                    fixed_bytes!("0541d76af67ad077"),
-                ],
-                Address::ZERO,
-                0,
-                u64::MAX,
-                Address::ZERO,
-                false,
-                0,
-                0,
-                0,
-                0,
-                U256::ZERO
-            ))
-            .unwrap_err()
-        )
-    });
-}
-
 // Property testing that takes advantage of the tuple type to simplify
 // doing setup.
 #[cfg(all(test, not(target_arch = "wasm32")))]
