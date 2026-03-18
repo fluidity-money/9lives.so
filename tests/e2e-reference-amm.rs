@@ -187,11 +187,11 @@ proptest! {
     #[test]
     fn test_amm_user_story_1_a(
         outcomes in strat_uniq_outcomes(2, 2),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_small_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b], startup_liq);
@@ -256,13 +256,13 @@ proptest! {
     #[test]
     fn test_amm_user_story_3(
         outcomes in strat_uniq_outcomes(4, 4),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_small_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
                 let outcomes = vec![outcome_a, outcome_b, outcome_c, outcome_d];
@@ -300,11 +300,11 @@ proptest! {
     #[test]
     fn test_amm_user_story_4(
         outcomes in strat_uniq_outcomes(2, 2),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_small_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
                 simulate_market_2(outcome_a, outcome_b, &mut c, startup_liq);
