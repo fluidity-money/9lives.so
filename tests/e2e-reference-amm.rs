@@ -228,14 +228,27 @@ proptest! {
     #[test]
     fn test_amm_user_story_2(
         outcomes in strat_uniq_outcomes(2, 2),
-        mut c in strat_storage_trading(false)
+        mut c in strat_storage_trading(false),
+        startup_liq in strat_tiny_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
                 simulate_market_2(outcome_a, outcome_b, &mut c, startup_liq);
+                panic_guard(|| {
+                    assert_eq!(
+                        Error::ShorttermAmm,
+                        c.burn_854_C_C_96_E(
+                            outcome_a,
+                            U256::from(100e6 as u64),
+                            false,
+                            U256::ZERO,
+                            Address::ZERO,
+                            msg_sender(),
+                        ).unwrap_err()
+                    );
+                });
             }
         }
     }
