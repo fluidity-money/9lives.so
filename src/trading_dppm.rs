@@ -14,8 +14,7 @@ use alloc::vec::Vec;
 
 use bobcat_features::BOBCAT_FEATURES;
 
-// Should this contract use internal tokens instead of erc20?
-BOBCAT_FEATURES!(internal_tokens);
+BOBCAT_FEATURES!(shortterm_amm);
 
 impl StorageTrading {
     pub fn internal_dppm_ctor(&mut self, outcomes: Vec<FixedBytes<8>>, seed_liq: U256) -> R<()> {

@@ -179,7 +179,9 @@ proptest! {
                 set_msg_sender(sender);
                 referrer_fee +=  maths::calc_fee(fusdc_amt, U256::from(fee_referrer)).unwrap();
                 creator_fee += maths::calc_fee(fusdc_amt, U256::from(fee_creator)).unwrap();
+                #[allow(non_snake_case)]
                 let M1 = c.dppm_outcome_invested.get(o_1);
+                #[allow(non_snake_case)]
                 let M2 = c.dppm_outcome_invested.get(o_2);
                 let max_fusdc = M1 + M2 + fusdc_amt;
                 let e_1 = c.dppm_simulate_payoff_for_address(sender, o_1).unwrap();
