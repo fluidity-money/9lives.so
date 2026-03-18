@@ -48,8 +48,8 @@ impl StorageLockup {
         Ok(self.token_addr.get())
     }
 
-    pub fn locked_until(&self, addr: Address) -> Result<u64, Error> {
-        Ok(u64::from_be_bytes(self.deadlines.get(addr).to_be_bytes()))
+    pub fn locked_until(&self, addr: Address) -> Result<U64, Error> {
+        Ok(self.deadlines.get(addr))
     }
 
     /// Lockup sends Locked ARB to the user after taking Staked ARB from
@@ -111,17 +111,17 @@ impl StorageLockup {
         );
         // Make sure that their deadline is as late as possible.
         let existing_deadline = self.deadlines.get(spender);
-        let until = U64::from(until);
+        let u = U64::from(until);
         self.deadlines
             .setter(spender)
-            .set(if existing_deadline > until {
+            .set(if existing_deadline > u {
                 existing_deadline
             } else {
-                until
+                u
             });
         evm::log(events::Frozen {
             victim: spender,
-            until: u64::from_le_bytes(until.to_le_bytes()),
+            until,
         });
         Ok(())
     }

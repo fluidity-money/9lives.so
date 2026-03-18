@@ -581,6 +581,13 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
+        FEATURE_IF_SHORTTERM_AMM!({
+            if block_timestamp() > self.time_ending.get().into_limbs()[0] - 60 {
+                return Err(Error::ShorttermTooLate)
+            }
+        } else {
+            // Do nothing here.
+        });
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity

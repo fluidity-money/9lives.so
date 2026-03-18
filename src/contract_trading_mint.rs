@@ -3,6 +3,8 @@ use stylus_sdk::{
     evm,
 };
 
+use bobcat_features::BOBCAT_FEATURES;
+
 use crate::{
     error::*,
     events, fusdc_call,
@@ -18,6 +20,8 @@ pub use crate::storage_trading::*;
 
 #[cfg(feature = "contract-trading-mint")]
 use alloc::vec::Vec;
+
+BOBCAT_FEATURES!(shortterm_amm);
 
 #[cfg_attr(feature = "contract-trading-mint", stylus_sdk::prelude::public)]
 impl StorageTrading {
@@ -93,6 +97,11 @@ impl StorageTrading {
         _recipient: Address,
     ) -> R<(U256, U256)> {
         self.require_not_done_predicting()?;
+        FEATURE_IF_SHORTTERM_AMM!({
+            return Err(Error::ShorttermAmm)
+        } else {
+            // We let them through if this is the case.
+        });
         #[cfg(feature = "trading-backend-dppm")]
         return Err(Error::AMMOnly);
         #[cfg(not(feature = "trading-backend-dppm"))]

@@ -592,6 +592,12 @@ pub enum Error {
 
     /// DPPM only!
     DPPMOnly,
+
+    /// The shortterm AMM is enabled, so we don't support burning.
+    ShorttermAmm,
+
+    /// It's too late to mint, the shortterm market is in play.
+    ShorttermTooLate,
 }
 
 #[cfg(any(
