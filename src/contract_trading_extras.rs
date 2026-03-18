@@ -77,7 +77,7 @@ impl StorageTrading {
 
     pub fn shutdown(&mut self) -> R<U256> {
         assert_or!(
-            u64::from_be_bytes(self.time_ending.get().to_be_bytes()) < block_timestamp(),
+            self.time_ending.get() < U64::from(block_timestamp()),
             Error::NotPastDeadline
         );
         self.internal_shutdown()
