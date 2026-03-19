@@ -598,6 +598,12 @@ pub enum Error {
 
     /// It's too late to mint, the shortterm market is in play.
     ShorttermTooLate,
+
+    /// Error with the muldiv precompile.
+    MulDivError,
+
+    /// Bad denominator for the rooti
+    BadDenom
 }
 
 #[cfg(any(

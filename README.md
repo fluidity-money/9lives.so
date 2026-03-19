@@ -110,10 +110,10 @@ The error table lives in ERRORS.md.
 | Trading DPPM extras impl      | `0x7289a31ca767883d6ad711e634c2591a16e6ef74` |
 | Trading DPPM price impl       | `0xb6c29b66bb663f3cd6a733b77927ba09cefa8d5a` |
 | Trading DPPM quotes impl      | `0xa516f91f100cbd796d2351acbf11f857402d2204` |
-| Trading AMM mint impl         | `0x858f37b9d3aa15e0df2ca9d427febf9a47344f19` |
-| Trading AMM extras impl       | `0xb3127f0083eb4c03a21b917656575ac766d46369` |
-| Trading AMM price impl        | `0x3fcae4ee12564f606c2dd34759f32a884f28a516` |
-| Trading AMM quotes impl       | `0xe25f8210f710ca3582214239d32aeb42841117cf` |
+| Trading AMM mint impl         | `0x44acd68dcd447659a6954742f24c572c63fba808` |
+| Trading AMM extras impl       | `0xdba02e75cf29b9c5290437a232d1d5d63bfb86a3` |
+| Trading AMM price impl        | `0x3be11d59fe73c0b516f821ec4ea6d37499e68a65` |
+| Trading AMM quotes impl       | `0x097e45ee7a05e470ee7c884d558cfb4ad0d3cf87` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
 | Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
 | Infrastructure market impl    | `0x863642e21a45e824c4f6347a5757e5dcacae11c1` |

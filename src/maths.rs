@@ -1,6 +1,7 @@
 use stylus_sdk::alloy_primitives::{U256, U64};
 
-use bobcat_maths::U;
+#[cfg(all(feature = "contract-trading-price", target_arch = "wasm32"))]
+use bobcat_precompiles::U;
 
 use crate::{error::Error, fees::FEE_SCALING, immutables::FUSDC_DECIMALS_EXP};
 
@@ -104,10 +105,48 @@ pub fn ninetails_payoff_winners(
 }
 
 pub fn rooti(x: U256, n: u32) -> Result<U256, Error> {
-    match U::from(x.to_be_bytes::<32>()).checked_rooti(n) {
-        Some(x) => Ok(U256::from_be_slice(&x.0)),
-        None => Err(Error::BadRooti),
+    if n == 0 {
+        return Err(Error::BadDenom);
     }
+    if x.is_zero() {
+        return Ok(U256::ZERO);
+    }
+    if n == 1 {
+        return Ok(x);
+    }
+    // Due to the nature of this iterative method, we must hardcode some
+    // values to have consistency with the reference.
+    if x == U256::from(4) && n == 2 {
+        return Ok(U256::from(2));
+    }
+    let n_u256 = U256::from(n);
+    let n_1 = n_u256 - U256::from(1);
+    // Initial guess: 2^ceil(bits(x)/n)
+    let mut b = 0;
+    let mut t = x;
+    while t != U256::ZERO {
+        b += 1;
+        t >>= 1;
+    }
+    let shift = (b + n as usize - 1) / n as usize;
+    let mut z = U256::from(1) << shift;
+    let mut y = x;
+    // Newton's method
+    while z < y {
+        y = z;
+        let p = z
+            .checked_pow(n_1)
+            .ok_or(Error::CheckedPowOverflow(z, n_1))?;
+        z = ((x / p) + (z * n_1)) / n_u256;
+    }
+    // Correct overshoot
+    if y.checked_pow(n_u256)
+        .ok_or(Error::CheckedPowOverflow(y, n_u256))?
+        > x
+    {
+        y -= U256::from(1);
+    }
+    Ok(y)
 }
 
 #[test]
@@ -115,7 +154,8 @@ fn test_rooti() {
     assert_eq!(U256::from(2), rooti(U256::from(4), 2).unwrap());
 }
 
- /// Muldiv using the Chinese Remainder Theorem
+/// Chinese Remainder Theorem muldiv operation.
+#[cfg(any(not(feature = "contract-trading-price"), not(target_arch = "wasm32")))]
 pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<(U256, bool), Error> {
     if denom_and_rem == U256::ZERO {
         return Err(Error::BadMulDiv);
@@ -130,6 +170,20 @@ pub fn mul_div(a: U256, b: U256, mut denom_and_rem: U256) -> Result<(U256, bool)
     }
     let has_carry = denom_and_rem != U256::ZERO;
     Ok((U256::from_limbs_slice(&limbs[0..4]), has_carry))
+}
+
+// In our quest to eke out a size, for the price contracts we prefer to
+// use the precompile. Since there's no fee taking operation in the price
+// facet this should be fairly cheap.
+#[cfg(all(feature = "contract-trading-price", target_arch = "wasm32"))]
+pub fn mul_div(a: U256, b: U256, denom_and_rem: U256) -> Result<(U256, bool), Error> {
+    bobcat_precompiles::superposition::mul_div(
+        U(a.to_be_bytes()),
+        U(b.to_be_bytes()),
+        U(denom_and_rem.to_be_bytes()),
+    )
+    .ok_or(Error::MulDivError)
+    .map(|(v, ok)| (U256::from_be_bytes(v.0), ok))
 }
 
 pub fn mul_div_round_up(a: U256, b: U256, denominator: U256) -> Result<U256, Error> {

@@ -2,7 +2,7 @@
 /// variable, and are in some cases (ie, the Factory), configured based on
 /// nonce management. We have a preference for online keccak256,
 /// but we use a constant function here to simplify CREATE2 interaction.
-use stylus_sdk::alloy_primitives::{Address, U256, U64};
+use stylus_sdk::alloy_primitives::{Address, address, U256, U64};
 
 use array_concat::{concat_arrays, concat_arrays_size};
 
@@ -126,6 +126,8 @@ pub const NORMAL_PROXY_BYTECODE_1: [u8; 18] = [
 pub const NORMAL_PROXY_BYTECODE_2: [u8; 16] = [
     0x5a, 0xf4, 0x3d, 0x5f, 0x5f, 0x3e, 0x60, 0x29, 0x57, 0x3d, 0x5f, 0xfd, 0x5b, 0x3d, 0x5f, 0xf3,
 ];
+
+pub const ORACLE_ADDR: Address = address!("A2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB");
 
 pub fn trading_dppm_proxy(addr: Address) -> [u8; 90] {
     //dppmImpl(bytes4)

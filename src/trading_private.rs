@@ -12,7 +12,7 @@ use crate::{
     vault_call,
 };
 
-use bobcat_features::{BOBCAT_FEATURES, FEATURE_COPY_NON_ZEROES};
+use bobcat_features::BOBCAT_FEATURES;
 
 use alloc::vec::Vec;
 
@@ -57,6 +57,12 @@ impl StorageTrading {
             fee_creator < 100 && fee_minter < 100 && fee_lp < 100 && fee_referrer < 100,
             Error::ExcessiveFee
         );
+        // This oracle address is used to check if we're running a somewhat
+        // permissioned market, since this resolver would determine the outcome
+        // of the markets:
+        if oracle == ORACLE_ADDR {
+            feature_set_shortterm_amm(true);
+        }
         unsafe {
             // We don't need to reset this, but it's useful for testing, and
             // is presumably pretty cheap.
@@ -66,8 +72,6 @@ impl StorageTrading {
         self.created.set(true);
         let factory_addr = msg_sender();
         self.factory_addr.set(factory_addr);
-        // Copy from the factory our feature configuration:
-        FEATURE_COPY_NON_ZEROES!(**factory_addr, shortterm_amm);
         // If the fee recipient is zero, then we set it to the DAO address.
         self.fee_recipient.set(if fee_recipient.is_zero() {
             DAO_EARN_ADDR

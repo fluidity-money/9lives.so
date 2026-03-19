@@ -121,10 +121,6 @@ impl StorageFactory {
 
     pub fn disable_shares(&self, _: Vec<FixedBytes<8>>) {}
 
-    pub fn features() -> R<FixedBytes<32>> {
-        Ok(FixedBytes::<32>(feature_pack().0))
-    }
-
     // The following methods are deprecated methods from the previous
     // proxy pattern. These will be removed eventually!
 
