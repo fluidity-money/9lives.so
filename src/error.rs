@@ -512,7 +512,7 @@ pub enum Error {
     // No fees are available to claim!
     NoFeesToClaim,
 
-    // Bad rooti argument.
+    // Bad rooti arguments.
     BadRooti,
 
     // Subtraction underflow with a decimal function.

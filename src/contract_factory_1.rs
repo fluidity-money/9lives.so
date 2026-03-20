@@ -96,6 +96,11 @@ impl StorageFactory {
             vault_call::borrow(VAULT_ADDR, trading_addr, seed_liq)?;
         }
 
+        // If these flags are enabled, then this is a shortterm AMM market:
+        if !backend_is_dppm && oracle == ORACLE_ADDR && seed_liq > U256::ZERO {
+            vault_call::amm_register(VAULT_ADDR, trading_addr)?;
+        }
+
         // This code is in a weird place, the UX no longer supports doing setup
         // with the infra market, and it always assumes the AMM is in use now. In
         // doing so, the fee accounting internally will always prefer to take no

@@ -102,7 +102,7 @@ The error table lives in ERRORS.md.
 |        Deployment name        |              Deployment address              |
 |-------------------------------|----------------------------------------------|
 | Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x9fce275ea1cd6dfb5ceec767f12d32507fe28b20` |
+| Factory 1 implementation      | `0x47d8ffc6e491b7ef8c126555264cceed0ea6caa6` |
 | Factory 2 implementation      | `0xa7c8c010d32e2316637636265a4d137b9bb1bf03` |
 | Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
 | Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
@@ -111,7 +111,7 @@ The error table lives in ERRORS.md.
 | Trading DPPM price impl       | `0xb6c29b66bb663f3cd6a733b77927ba09cefa8d5a` |
 | Trading DPPM quotes impl      | `0xa516f91f100cbd796d2351acbf11f857402d2204` |
 | Trading AMM mint impl         | `0x44acd68dcd447659a6954742f24c572c63fba808` |
-| Trading AMM extras impl       | `0xdba02e75cf29b9c5290437a232d1d5d63bfb86a3` |
+| Trading AMM extras impl       | `0x11efbbe7c8c0d75dc93726dd6b504ca4a4b603d3` |
 | Trading AMM price impl        | `0x3be11d59fe73c0b516f821ec4ea6d37499e68a65` |
 | Trading AMM quotes impl       | `0x097e45ee7a05e470ee7c884d558cfb4ad0d3cf87` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
@@ -136,5 +136,5 @@ The error table lives in ERRORS.md.
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
 | Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
 | Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
-| Vault implementation          | `0xd3C33F04536815cd2eD34f6f77c758eB640def34` |
+| Vault implementation          | `0x95c1546bC9124B6CfbF2293b90aC4694b597F643` |
 | Vault proxy                   | `0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14` |
