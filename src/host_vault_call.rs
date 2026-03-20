@@ -12,3 +12,15 @@ pub fn borrow(addr: Address, for_: Address, amt: U256) -> Result<(), Error> {
 pub fn repay(addr: Address, amt: U256) -> Result<(), Error> {
     host_erc20_call::transfer_from(addr, testing_addrs::CONTRACT, testing_addrs::VAULT, amt)
 }
+
+pub fn amm_register(_addr: Address, _amm: Address) -> Result<(), Error> {
+    Ok(())
+}
+
+pub fn amm_receive(_addr: Address, _amt: U256) -> Result<(), Error> {
+    Ok(())
+}
+
+pub fn amm_gift(_addr: Address, _amt: U256) -> Result<(), Error> {
+    Ok(())
+}

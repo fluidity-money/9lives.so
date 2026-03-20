@@ -75,14 +75,6 @@ impl StorageTrading {
         Ok(self.amm_user_liquidity_shares.get(addr))
     }
 
-    pub fn shutdown(&mut self) -> R<U256> {
-        assert_or!(
-            self.time_ending.get() < U64::from(block_timestamp()),
-            Error::NotPastDeadline
-        );
-        self.internal_shutdown()
-    }
-
     pub fn decide(&mut self, outcome: FixedBytes<8>) -> R<U256> {
         self.internal_decide(outcome)
     }

@@ -114,11 +114,6 @@ interface INineLivesTrading {
     /// @param outcome to test for
     function priceA827ED27(bytes8 outcome) external returns (uint256);
 
-    /// @notice Shutdown this contract by disabling associated pools. Compensates callers
-    /// of this function by distributing them a small amount of token for doing so.
-    /// This can only be called when the contract has exceeded its deadline.
-    function shutdown() external returns (uint256);
-
     /// @notice Decide an outcome. Only callable by the oracle!
     /// @param outcome to set as the winner.
     function decide(bytes8 outcome) external;

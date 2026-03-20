@@ -9,8 +9,10 @@ use crate::{
     maths,
     storage_trading::*,
     utils::{block_timestamp, msg_sender},
-    vault_call,
 };
+
+#[cfg(any(feature = "trading-backend-dppm", feature = "trading-backend-amm"))]
+use crate::vault_call;
 
 use bobcat_features::BOBCAT_FEATURES;
 
@@ -93,10 +95,12 @@ impl StorageTrading {
         return self.internal_amm_ctor(outcomes, seed_liq);
     }
 
-    pub fn internal_shutdown(&mut self) -> R<U256> {
+    pub fn internal_shutdown(&mut self, _outcome: FixedBytes<8>) -> R<U256> {
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
         // If we're using the vault, we ask the vault for funds at the end, not
-        // assuming the factory funded it for us:
+        // assuming the factory funded it for us. The DPPM is the only
+        // user of this path of code:
+        #[cfg(feature = "trading-backend-dppm")]
         if self.feature_using_vault.get() {
             let fees = self.fees_owed_addresses.get(DAO_EARN_ADDR);
             self.fees_owed_addresses
@@ -115,6 +119,29 @@ impl StorageTrading {
             });
             vault_call::repay(VAULT_ADDR, fees)?;
         }
+        // The shortterm AMM uses this code with the vault, so it needs special
+        // behaviour. It needs to repay the vault but to do so with a slightly different
+        // behaviour. We feature flag this out to avoid the check:
+        #[cfg(feature = "trading-backend-amm")]
+        FEATURE_IF_SHORTTERM_AMM!({
+            let avail_liq = self.shortterm_amm_usd_liq.get();
+            // We assume each winning share is worth $1, since that's how the model
+            // works in this context:
+            let needed = self.amm_shares.get(_outcome);
+            let shortfall = needed.wrapping_sub(avail_liq);
+            let surplus = avail_liq.wrapping_sub(needed);
+            if shortfall > U256::ZERO {
+                // We have a liquidity shortfall. We need to take what's missing:
+                vault_call::amm_receive(VAULT_ADDR, shortfall)?;
+            } else if surplus > U256::ZERO {
+                // We're in liquidity surplus, we can gift back what's there to the vault:
+                vault_call::amm_gift(VAULT_ADDR, surplus)?;
+            }
+            // If we don't have either of these paths activate, then we're exactly
+            // equal, so there's no need to interact with the vault in this setup.
+        } else {
+            // But if this isn't enabled, then it's business as usual for the AMM.
+        });
         let payouts_collected =
             u32::from_le_bytes(self.scheduled_payout_processed.get().to_le_bytes()) as usize;
         let payouts_remaining = min(
@@ -170,7 +197,7 @@ impl StorageTrading {
         });
         // We call shutdown in the event this wasn't called in the past.
         if !self.is_shutdown.get() {
-            self.internal_shutdown()?;
+            self.internal_shutdown(outcome)?;
         }
         Ok(U256::ZERO)
     }

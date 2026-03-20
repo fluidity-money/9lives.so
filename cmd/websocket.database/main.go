@@ -28,26 +28,15 @@ import (
 )
 
 const (
-	// EnvListenAddr to listen the HTTP server on.
-	EnvListenAddr = "SPN_LISTEN_ADDR"
-
-	// EnvPublicationName to use as the publication name.
-	EnvPublicationName = "SPN_PUBLICATION_NAME"
-
-	// EnvPublicationSlot to use as the publication slot.
-	EnvPublicationSlot = "SPN_PUBLICATION_SLOT"
-
-	// EnvPublicationMetricSlot to use as the metric slot with the publication.
+	EnvListenAddr            = "SPN_LISTEN_ADDR"
+	EnvPublicationName       = "SPN_PUBLICATION_NAME"
+	EnvPublicationSlot       = "SPN_PUBLICATION_SLOT"
 	EnvPublicationMetricSlot = "SPN_PUBLICATION_PORT"
 )
 
-// PrivateSnapshotLookback to buffer in the service.
 const PrivateSnapshotLookback = 4000
 
-// PricesTable is the table name that gets per-base partitioned buffering.
 const PricesTable = "oracles_ninelives_prices_2"
-
-// PricesPartitionKey is the column used to partition the prices buffer.
 const PricesPartitionKey = "base"
 
 type TableContent struct {
@@ -67,8 +56,6 @@ type ringBuffer struct {
 	items [PrivateSnapshotLookback]map[string]any
 }
 
-// partitionedBuffer holds a ring buffer per unique partition key value.
-// For non-partitioned tables, a single entry keyed by "" is used.
 type partitionedBuffer struct {
 	buffers map[string]*ringBuffer
 }
@@ -90,7 +77,6 @@ func (pb *partitionedBuffer) insert(partitionKey string, content map[string]any)
 	x.i++
 }
 
-// allItems returns every buffered item across all partitions.
 func (pb *partitionedBuffer) allItems() []map[string]any {
 	var out []map[string]any
 	for _, rb := range pb.buffers {
@@ -182,6 +168,8 @@ func main() {
 	dumpChan := make(chan chan []TableContent)
 
 	go func() {
+		// This is the internal buffer subscriber — it lives for the
+		// lifetime of the process, so we don't need to unsubscribe it.
 		bufferMsgsChan := make(chan TableContent, 1000)
 		broadcast.Subscribe(bufferMsgsChan)
 
@@ -189,16 +177,17 @@ func main() {
 
 		for {
 			select {
-			case v := <-bufferMsgsChan:
+			case v, ok := <-bufferMsgsChan:
+				if !ok {
+					// broadcast shut down
+					return
+				}
 				pb := buffer[v.Table]
 				if pb == nil {
 					pb = newPartitionedBuffer()
 					buffer[v.Table] = pb
 				}
 
-				// For the prices table, partition by the "base"
-				// column so each unique base value gets its own
-				// 4000-item ring buffer.
 				partitionKey := ""
 				if v.Table == PricesTable {
 					if base, ok := v.Content[PricesPartitionKey]; ok {
@@ -265,6 +254,7 @@ func main() {
 
 	go func() {
 		websocket.Endpoint("/", func(
+			connCtx context.Context,
 			ipAddr string,
 			query url.Values,
 			replies <-chan []byte,
@@ -272,24 +262,15 @@ func main() {
 			shutdown chan<- error,
 			requestShutdown <-chan bool,
 		) {
-			// Create a done channel to signal all goroutines spawned
-			// by this connection that we are tearing down.
-			done := make(chan struct{})
-
+			// Use a buffered channel so the broadcast can drop into it
+			// without blocking even momentarily.
 			sink := make(chan TableContent, 64)
 			cookie := broadcast.Subscribe(sink)
 
-			// Ensure cleanup always happens exactly once.
-			defer func() {
-				close(done)
-				broadcast.Unsubscribe(cookie)
-				// Drain the sink so the broadcast goroutine never
-				// blocks writing to a subscriber that is gone.
-				go func() {
-					for range sink {
-					}
-				}()
-			}()
+			// Ensure we always unsubscribe when this handler exits.
+			// Unsubscribe closes `sink`, which breaks the for-range
+			// and stops any goroutine reading from it.
+			defer broadcast.Unsubscribe(cookie)
 
 			filterRules := make(map[string]map[string]*FilterConstraint)
 			filterRulesSet := make(map[string]bool)
@@ -297,9 +278,16 @@ func main() {
 		L:
 			for {
 				select {
+				case <-connCtx.Done():
+					// Connection closed — clean up.
+					slog.Debug("connection context cancelled",
+						"ip", ipAddr,
+					)
+					break L
+
 				case m, ok := <-sink:
 					if !ok {
-						// Channel was closed externally; tear down.
+						// Channel was closed (unsubscribed elsewhere).
 						break L
 					}
 					if f.Is(features.FeatureFilterTables) {
@@ -315,17 +303,14 @@ func main() {
 					}
 					select {
 					case outgoing <- m.encoded:
-					case <-requestShutdown:
+					case <-connCtx.Done():
 						break L
 					}
 
 				case msg, ok := <-replies:
 					if !ok {
-						// The reply channel was closed, meaning
-						// the WebSocket read side is gone.
 						break L
 					}
-
 					var req struct {
 						AskForSnapshot []struct {
 							Table  string `json:"table"`
@@ -344,9 +329,7 @@ func main() {
 					}
 
 					if err := json.Unmarshal(msg, &req); err != nil {
-						slog.Error("bad message received",
-							"err", err,
-							"ip", ipAddr)
+						slog.Error("bad message received", "err", err)
 						break L
 					}
 
@@ -363,22 +346,22 @@ func main() {
 							}
 						}
 
+						// Capture connCtx and outgoing so the goroutine
+						// can bail out if the connection is already gone.
 						go func() {
-							snapshotChan := make(chan []TableContent)
-
-							// Send the dump request, but bail
-							// out if the connection is already
-							// shutting down.
+							snapshotChan := make(chan []TableContent, 1)
+							// Use a select so we don't block on dumpChan
+							// if the connection has already closed.
 							select {
 							case dumpChan <- snapshotChan:
-							case <-done:
+							case <-connCtx.Done():
 								return
 							}
 
 							var rawSnapshot []TableContent
 							select {
 							case rawSnapshot = <-snapshotChan:
-							case <-done:
+							case <-connCtx.Done():
 								return
 							}
 
@@ -419,17 +402,17 @@ func main() {
 								SnapshotToplevel: filteredSnapshot,
 							})
 							if err != nil {
-								slog.Error("failed to marshal snapshot",
-									"err", err)
+								slog.Error("failed to marshal snapshot", "err", err)
 								return
 							}
 
-							// Send on outgoing, but don't block
-							// forever if the connection is gone.
+							// Don't block if the connection is gone.
 							select {
 							case outgoing <- snapshot:
-							case <-done:
-								return
+							case <-connCtx.Done():
+								slog.Debug("connection gone before snapshot could be sent",
+									"ip", ipAddr,
+								)
 							}
 						}()
 					}
@@ -446,14 +429,22 @@ func main() {
 						}
 					}
 
-				case <-requestShutdown:
-					slog.Info("shutdown requested",
-						"ip", ipAddr)
-					break L
+				case done, ok := <-requestShutdown:
+					if !ok || done {
+						slog.Debug("shutdown requested by framework",
+							"ip", ipAddr,
+						)
+						break L
+					}
 				}
 			}
 
-			shutdown <- nil
+			// Signal the framework that we're done. Send nil (no error)
+			// unless there's a real error to report.
+			select {
+			case shutdown <- nil:
+			default:
+			}
 		})
 
 		setup.Exitf("bind: %v", http.ListenAndServe(

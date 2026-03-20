@@ -166,12 +166,6 @@ contract MockTrading is INineLivesTrading {
         return uint256(keccak256(abi.encodePacked(block.timestamp)));
     }
 
-    function shutdown() external returns (uint256) {
-        // Do nothing, for now...
-        ++counter_;
-        return counter_;
-    }
-
     function decide(bytes8 outcome) external {
         ++counter_;
         calledOutcome_ = outcome;

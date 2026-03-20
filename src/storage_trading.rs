@@ -157,6 +157,14 @@ pub struct StorageTrading {
 
     /// Scheduled payouts that were processed:
     pub scheduled_payout_processed: StorageU32,
+
+
+    /* ~~~~~~~~~~ AMM SHORTTERM MARKETS ONLY ~~~~~~~~~~ */
+    //
+    /// Shortterm liquidity that's available in the form of USD. Only added to
+    /// track the liquidity shortfall during the claims process for a shortterm
+    /// market.
+    pub shortterm_amm_usd_liq: StorageU256,
 }
 
 // Storage accessors to simplify lookup.

@@ -3,14 +3,11 @@ package websocket
 import "log/slog"
 
 type (
-	// registration for a broadcast. If replies is nil, then it's assumed
-	// that someone is unsubscribing!
 	registration[A any] struct {
 		cookieReply chan uint64
 		replies     chan A
 	}
 
-	// Broadcast for sending messages to channels subscribing to events here
 	Broadcast[A any] struct {
 		broadcastRequests      chan A
 		subscriptionRequests   chan registration[A]
@@ -21,8 +18,6 @@ type (
 	}
 )
 
-// NewBroadcast, creating a new map and new counter for messages and set
-// up the server that handles new subscriptions.
 func NewBroadcast[A any]() *Broadcast[A] {
 	var (
 		broadcastRequests      = make(chan A, 1000)
@@ -68,14 +63,21 @@ func NewBroadcast[A any]() *Broadcast[A] {
 				slog.Debug("received a request to unsubscribe",
 					"cookie", cookie,
 				)
-				close(broadcast.subscribed[cookie])
-				close(broadcastRequests)
-				close(subscriptionRequests)
-				close(unsubscriptionRequests)
-				close(shutdownRequests)
+				// Close the channel so any goroutine reading from it
+				// gets notified, then remove from the map immediately.
+				if ch, ok := broadcast.subscribed[cookie]; ok && ch != nil {
+					close(ch)
+				}
 				delete(broadcast.subscribed, cookie)
 			case <-shutdownRequests:
 				slog.Debug("received a request to shutdown the broadcast server")
+				// Close all subscriber channels before returning.
+				for cookie, ch := range broadcast.subscribed {
+					if ch != nil {
+						close(ch)
+					}
+					delete(broadcast.subscribed, cookie)
+				}
 				return
 			}
 		}
@@ -89,7 +91,6 @@ func (broadcast *Broadcast[A]) incrementCookie() (previous uint64) {
 	return previous
 }
 
-// Subscribe to the broadcast, with a new channel receiving messages being sent.
 func (broadcast Broadcast[A]) Subscribe(messages chan A) uint64 {
 	slog.Debug("subscribe request")
 	cookieChan := make(chan uint64)
@@ -100,7 +101,6 @@ func (broadcast Broadcast[A]) Subscribe(messages chan A) uint64 {
 	}
 
 	cookie := <-cookieChan
-	close(cookieChan)
 	slog.Debug("subscribe response",
 		"cookie", cookie,
 	)
@@ -111,7 +111,6 @@ func (broadcast Broadcast[A]) Unsubscribe(cookie uint64) {
 	broadcast.unsubscriptionRequests <- cookie
 }
 
-// Shutdown the broadcast, closing the inner worker.
 func (broadcast *Broadcast[A]) Shutdown() {
 	broadcast.shutdownRequests <- true
 }

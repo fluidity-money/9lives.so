@@ -252,4 +252,12 @@ interface IEvents {
         uint256 indexed surplus,
         uint256 indexed deficit
     );
+
+    event VaultDrained(uint256 indexed amount, address indexed recipient);
+
+    event AmmRegistered(address indexed registrant);
+
+    event AmmReceived(address indexed recipient, uint256 indexed amount);
+
+    event AmmGifted(address indexed spender, uint256 indexed amount);
 }

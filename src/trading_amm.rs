@@ -24,15 +24,7 @@ impl StorageTrading {
         // liquidity here:
         FEATURE_IF_SHORTTERM_AMM!({
             if !seed_liq.is_zero() {
-                for &outcome_id in outcomes.iter() {
-                    self.amm_shares.setter(outcome_id).set(seed_liq);
-                    self.amm_total_shares.setter(outcome_id).set(seed_liq);
-                }
-                let product = seed_liq
-                    .checked_pow(U256::from(outcomes.len()))
-                    .ok_or(Error::CheckedMulOverflow)?;
-                self.amm_liquidity
-                    .set(c!(maths::rooti(product, self.outcome_list.len() as u32)));
+                self.amm_liquidity.set(seed_liq);
             }
         } else {
             // We don't do anything here!
@@ -72,6 +64,9 @@ impl StorageTrading {
         recipient: Address,
         min_liquidity: U256,
     ) -> R<(U256, Vec<(FixedBytes<8>, U256)>)> {
+        FEATURE_IF_SHORTTERM_AMM!({
+            return Err(Error::ShorttermAmm)
+        } else {});
         self.require_not_done_predicting()?;
         self.internal_amm_get_prices()?;
         let prev_liquidity = self.amm_liquidity.get();
@@ -583,8 +578,11 @@ impl StorageTrading {
         );
         FEATURE_IF_SHORTTERM_AMM!({
             if block_timestamp() > self.time_ending.get().into_limbs()[0] - 60 {
-                return Err(Error::ShorttermTooLate)
+                return Err(Error::ShorttermTooLate);
             }
+            let x = self.shortterm_amm_usd_liq.get();
+            self.shortterm_amm_usd_liq
+                .set(x.checked_add(usd_amt).ok_or(Error::CheckedAddOverflow)?);
         } else {
             // Do nothing here.
         });
