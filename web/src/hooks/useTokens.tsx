@@ -13,6 +13,20 @@ export default function useTokens(fromChain: number) {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["tokens", fromChain],
     queryFn: async () => {
+      if (fromChain === config.chains.tempo.id) {
+        return [
+          {
+            chainId: 4217,
+            address: "0x20c000000000000000000000b9537d11c60e8b50",
+            symbol: "USDC",
+            name: "USD Coin",
+            decimals: 6,
+            priceUSD: "0",
+            coinKey: "USDC",
+            logoURI: "https://assets.relay.link/icons/currencies/usdc.png",
+          },
+        ];
+      }
       const url = `https://li.quest/v1/tokens?chains=${fromChain}`;
       const options = {
         method: "GET",
