@@ -910,6 +910,7 @@ proptest! {
             }
         };
     }
+
     #[test]
     fn test_shortterm_erik_example(
         outcomes in strat_uniq_outcomes(2, 2),
