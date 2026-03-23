@@ -22,6 +22,7 @@ BOBCAT_FEATURES!(shortterm_amm);
 fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>], starting_liq: U256) {
     c.created.set(false);
     c.is_protocol_fee_disabled.set(true);
+    c.amm_liquidity.set(U256::ZERO);
     c.ctor((
         outcomes.to_vec(),
         msg_sender(),
@@ -36,9 +37,11 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>], starting_l
         starting_liq,
     ))
     .unwrap();
-    c.amm_liquidity.set(U256::ZERO);
     c.when_decided.set(U64::ZERO);
     c.is_shutdown.set(false);
+    if starting_liq > U256::ZERO {
+        feature_set_shortterm_amm(true);
+    }
     for (i, o) in outcomes.iter().enumerate() {
         host::register_addr(
             proxy::get_share_addr(c.factory_addr.get(), CONTRACT, c.share_impl.get(), *o),
@@ -63,9 +66,6 @@ fn simulate_market_2(
         ],
     );
     let liquidity_amt = U256::from(1000e6 as u64);
-    if liquidity_amt > U256::ZERO {
-        feature_set_shortterm_amm(true);
-    }
     should_spend!(
         c.share_addr(outcome_a).unwrap(),
         { ZERO_FOR_MINT_ADDR => 387098718 },
@@ -188,13 +188,12 @@ proptest! {
     fn test_amm_user_story_1_a(
         outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false),
-        startup_liq in strat_small_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 let liquidity_amt = U256::from(100e6 as u64);
                 should_spend_fusdc_sender!(
                     liquidity_amt,
@@ -229,13 +228,12 @@ proptest! {
     fn test_amm_user_story_2(
         outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false),
-        startup_liq in strat_tiny_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                simulate_market_2(outcome_a, outcome_b, &mut c, startup_liq);
+                simulate_market_2(outcome_a, outcome_b, &mut c, U256::ZERO);
                 panic_guard(|| {
                     assert_eq!(
                         Error::ShorttermAmm,
@@ -257,7 +255,6 @@ proptest! {
     fn test_amm_user_story_3(
         outcomes in strat_uniq_outcomes(4, 4),
         mut c in strat_storage_trading(false),
-        startup_liq in strat_small_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
@@ -266,7 +263,7 @@ proptest! {
         interactions_clear_after! {
             IVAN => {
                 let outcomes = vec![outcome_a, outcome_b, outcome_c, outcome_d];
-                setup_contract(&mut c, &outcomes, startup_liq);
+                setup_contract(&mut c, &outcomes, U256::ZERO);
                 c.test_set_outcome_shares(1000e6 as u64, &[
                     (outcome_a, 461530000),
                     (outcome_b, 1294000000),
@@ -301,13 +298,12 @@ proptest! {
     fn test_amm_user_story_4(
         outcomes in strat_uniq_outcomes(2, 2),
         mut c in strat_storage_trading(false),
-        startup_liq in strat_small_u256()
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
         interactions_clear_after! {
             IVAN => {
-                simulate_market_2(outcome_a, outcome_b, &mut c, startup_liq);
+                simulate_market_2(outcome_a, outcome_b, &mut c, U256::ZERO);
                 c.test_set_outcome_shares(5600e6 as u64, &[
                     (outcome_a, 357697e4 as u64),
                     (outcome_b, 876230e4 as u64),
@@ -340,10 +336,9 @@ proptest! {
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 c.test_set_outcome_shares(1769680000 as u64, &[
                     (outcome_a, 812460000 as u64),
                     (outcome_b, 2294000000 as u64),
@@ -372,10 +367,9 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
@@ -404,10 +398,9 @@ proptest! {
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
@@ -438,10 +431,9 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b], U256::ZERO);
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity!(&mut c, add_liq_amt);
                 let user_shares = 833333333u64;
@@ -481,10 +473,9 @@ proptest! {
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity!(&mut c, add_liq_amt);
                 let user_shares = test_should_buy_check_shares!(
@@ -524,10 +515,9 @@ proptest! {
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 let add_liq_amt = 1000e6 as u64;
                 test_add_liquidity!(&mut c, add_liq_amt);
                 let user_shares = 621296296;
@@ -569,10 +559,9 @@ proptest! {
         let outcome_b = outcomes[1];
         let outcome_c = outcomes[2];
         let outcome_d = outcomes[3];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], startup_liq);
+                setup_contract(&mut c, &[outcome_a, outcome_b, outcome_c, outcome_d], U256::ZERO);
                 c.test_set_outcome_shares(
                     141421356 as u64,
                     &[
@@ -606,10 +595,9 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &outcomes, startup_liq);
+                setup_contract(&mut c, &outcomes, U256::ZERO);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
@@ -650,10 +638,9 @@ proptest! {
     ) {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
-        let startup_liq = U256::from(10e6 as u64);
         interactions_clear_after! {
             IVAN => {
-                setup_contract(&mut c, &outcomes, startup_liq);
+                setup_contract(&mut c, &outcomes, U256::ZERO);
                 test_add_liquidity!(&mut c, 1000e6 as u64);
                 test_should_buy_check_shares!(
                     c,
@@ -922,5 +909,27 @@ proptest! {
                 assert_eq!(U256::ZERO, fusdc_call::balance_of(CONTRACT).unwrap());
             }
         };
+    }
+    #[test]
+    fn test_shortterm_erik_example(
+        outcomes in strat_uniq_outcomes(2, 2),
+        mut c in strat_storage_trading(false)
+    ) {
+        let outcome_a = outcomes[0];
+        let outcome_b = outcomes[1];
+        let startup_liq = U256::from(10e6 as u64);
+        interactions_clear_after! {
+            IVAN => {
+                setup_contract(&mut c, &[outcome_a, outcome_b], startup_liq);
+                test_should_buy_check_shares!(
+                    c,
+                    outcome_a,
+                    10e6,
+                    166666,
+                    1333334,
+                    0
+                );
+            },
+        }
     }
 }

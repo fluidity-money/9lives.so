@@ -138,3 +138,5 @@ The error table lives in ERRORS.md.
 | Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
 | Vault implementation          | `0x95c1546bC9124B6CfbF2293b90aC4694b597F643` |
 | Vault proxy                   | `0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14` |
+
+Several "precompiles" are in use, provided by superposition-precompiles.

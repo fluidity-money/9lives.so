@@ -23,7 +23,7 @@ impl StorageTrading {
         // If the shortterm AMM feature is enabled, then we need to set up the
         // liquidity here:
         FEATURE_IF_SHORTTERM_AMM!({
-            if !seed_liq.is_zero() {
+            if seed_liq > U256::ZERO {
                 self.amm_liquidity.set(seed_liq);
             }
         } else {
@@ -694,6 +694,9 @@ impl StorageTrading {
         let minted = c!(current
             .checked_sub(target)
             .ok_or(Error::CheckedSubOverflow(current, target)));
+        if self.amm_liquidity.get().is_zero() {
+            panic!("{n}, {target}, {product}, {current}, {minted}");
+        }
         Ok(minted)
     }
 
