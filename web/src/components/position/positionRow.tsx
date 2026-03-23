@@ -102,7 +102,7 @@ export default function PositionRow({
       ? totalRewards > 0
       : campaignContent.winner === data.id;
   const rewardDpm = 0;
-  const rewardAmm = data.balance ? data.balanceRaw : 0;
+  const rewardAmm = data.balance ? +data.balance : 0;
   const rewardDppm = totalRewards;
   const reward = campaignContent.isDpm
     ? rewardDpm
@@ -113,8 +113,9 @@ export default function PositionRow({
     ? Number(reward) - Number(formatFusdc(historicalValue, 6))
     : Number(
         formatFusdc(
-          ((isWinner && !!reward ? BigInt(reward) : estimationOfBurn) ??
-            BigInt(0)) - BigInt(historicalValue),
+          ((isWinner && !!reward
+            ? BigInt(data.balanceRaw)
+            : estimationOfBurn) ?? BigInt(0)) - BigInt(historicalValue),
           6,
         ),
       );
