@@ -42,8 +42,8 @@ export function formatCampaign(ro: RawCampaign): Campaign {
       ro.outcomes?.length === 2 &&
       ro.outcomes.findIndex((o) => o.name === "Yes") !== -1 &&
       ro.outcomes.findIndex((o) => o.name === "No") !== -1,
-    outcomes: ro.outcomes?.map((o) => formatOutcome(o, ro.isDppm)),
-    name: ro.isDppm
+    outcomes: ro.outcomes?.map((o) => formatOutcome(o, !!ro.priceMetadata)),
+    name: !!ro.priceMetadata
       ? formatDppmTitle({
           symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
           end: ro.ending * 1000,
@@ -121,19 +121,20 @@ export function formatParticipatedContent(
 
   return {
     ...ro,
-    name: ro.isDppm
+    name: !!ro.priceMetadata
       ? formatDppmTitle({
           symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
           price: ro.priceMetadata?.priceTargetForUp,
           end: ro.ending * 1000,
         })
       : ro.name,
+    winner: ro.winner,
     starting: ro.starting * 1000,
     ending: ro.ending * 1000,
     priceMetadata: formatPriceMetadata(ro.priceMetadata),
     poolAddress: ro.poolAddress as `0x${string}`,
     identifier: ro.identifier as `0x${string}`,
-    outcomes: ro.outcomes.map((o) => formatOutcome(o, ro.isDppm)),
+    outcomes: ro.outcomes.map((o) => formatOutcome(o, !!ro.priceMetadata)),
   };
 }
 
@@ -141,6 +142,7 @@ export function formatParticipatedCampaign(
   ro: RawParticipatedCampaign,
 ): ParticipatedCampaign {
   if (!ro) throw new Error("Campaign data is null");
+
   return {
     campaignId: ro.campaignId as `0x${string}`,
     content: formatParticipatedContent(ro.content),
@@ -154,7 +156,7 @@ export function formatClaimedCampaign(ro: RawClaimedCampaign): ClaimedCampaign {
     ...ro,
     content: {
       ...ro.content,
-      name: ro.content.isDppm
+      name: !!ro.content.priceMetadata
         ? formatDppmTitle({
             symbol:
               ro.content.priceMetadata!.baseAsset.toLowerCase() as SimpleMarketKey,
