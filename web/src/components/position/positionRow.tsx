@@ -97,23 +97,10 @@ export default function PositionRow({
     outcomes: campaignContent.outcomes,
     singleOutcomeId: campaignContent.isDppm ? data.id : undefined,
   });
-  const PnL = campaignContent.isDppm
-    ? totalRewards - Number(formatFusdc(historicalValue, 6))
-    : Number(
-        formatFusdc((estimationOfBurn ?? BigInt(0)) - BigInt(historicalValue)),
-      );
-  const percentageChange = Math.abs(
-    (PnL / +formatFusdc(historicalValue, 6)) * 100,
-  ).toFixed(2);
-
   const isWinner =
     !!campaignContent.winner && campaignContent.isDppm
       ? totalRewards > 0
       : campaignContent.winner === data.id;
-  // const totalSharesOfWinner = campaign.investmentAmounts.find((i) => i?.id === data.id)?.share;
-  // totalSharesOfWinner should get from investmentAmounts (expensive), and needs to be implemented if dpm markets activated
-  // const avgPrice = campaignContent.totalVolume / totalSharesOfWinner;
-  // const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
   const rewardDpm = 0;
   const rewardAmm = data.balance ? +data.balance : 0;
   const rewardDppm = totalRewards;
@@ -122,6 +109,24 @@ export default function PositionRow({
     : campaignContent.isDppm
       ? rewardDppm
       : rewardAmm;
+  const PnL = campaignContent.isDppm
+    ? reward - Number(formatFusdc(historicalValue, 6))
+    : Number(
+        formatFusdc(
+          ((isWinner && reward ? BigInt(reward) : estimationOfBurn) ??
+            BigInt(0)) - BigInt(historicalValue),
+          6,
+        ),
+      );
+  const percentageChange = Math.abs(
+    (PnL / +formatFusdc(historicalValue, 6)) * 100,
+  ).toFixed(2);
+
+  // const totalSharesOfWinner = campaign.investmentAmounts.find((i) => i?.id === data.id)?.share;
+  // totalSharesOfWinner should get from investmentAmounts (expensive), and needs to be implemented if dpm markets activated
+  // const avgPrice = campaignContent.totalVolume / totalSharesOfWinner;
+  // const rewardDpm = data.balance ? +data.balance * avgPrice : 0;
+
   useEffect(() => {
     if (price && !isWinner) {
       addPosition({
