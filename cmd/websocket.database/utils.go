@@ -2,7 +2,7 @@ package main
 
 import cdcPublication "github.com/Trendyol/go-pq-cdc/pq/publication"
 
-var tables = map[string][]string{
+var Tables = map[string][]string{
 	"ninelives_buys_and_sells_1": {
 		"shown",
 		"block_hash",
@@ -66,9 +66,9 @@ var tables = map[string][]string{
 }
 
 func getTables() (t cdcPublication.Tables) {
-	t = make(cdcPublication.Tables, len(tables))
+	t = make(cdcPublication.Tables, len(Tables))
 	i := 0
-	for n := range tables {
+	for n := range Tables {
 		t[i] = cdcPublication.Table{
 			Name:            n,
 			ReplicaIdentity: cdcPublication.ReplicaIdentityFull,
@@ -79,8 +79,8 @@ func getTables() (t cdcPublication.Tables) {
 }
 
 func makeTableFilter() (m map[string]map[string]bool) {
-	m = make(map[string]map[string]bool, len(tables))
-	for k, vs := range tables {
+	m = make(map[string]map[string]bool, len(Tables))
+	for k, vs := range Tables {
 		if m[k] == nil {
 			m[k] = make(map[string]bool, len(vs))
 		}

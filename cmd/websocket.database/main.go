@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -14,10 +15,11 @@ import (
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
-	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/websocket"
+
+	_ "github.com/lib/pq"
 
 	cdc "github.com/Trendyol/go-pq-cdc"
 	cdcConfig "github.com/Trendyol/go-pq-cdc/config"
@@ -37,7 +39,8 @@ const (
 const PrivateSnapshotLookback = 4000
 
 const PricesTable = "oracles_ninelives_prices_2"
-const PricesPartitionKey = "base"
+
+const MaxFilters = 10
 
 type TableContent struct {
 	Table            string           `json:"table"`
@@ -51,46 +54,6 @@ type FilterConstraint struct {
 	Et any `json:"et"`
 }
 
-type ringBuffer struct {
-	i     int
-	items [PrivateSnapshotLookback]map[string]any
-}
-
-type partitionedBuffer struct {
-	buffers map[string]*ringBuffer
-}
-
-func newPartitionedBuffer() *partitionedBuffer {
-	return &partitionedBuffer{buffers: make(map[string]*ringBuffer)}
-}
-
-func (pb *partitionedBuffer) insert(partitionKey string, content map[string]any) {
-	x := pb.buffers[partitionKey]
-	if x == nil {
-		x = &ringBuffer{}
-		pb.buffers[partitionKey] = x
-	}
-	if x.i == PrivateSnapshotLookback {
-		x.i = 0
-	}
-	x.items[x.i] = content
-	x.i++
-}
-
-func (pb *partitionedBuffer) allItems() []map[string]any {
-	var out []map[string]any
-	for _, rb := range pb.buffers {
-		snapshot := make([]map[string]any, PrivateSnapshotLookback)
-		copy(snapshot, rb.items[:])
-		for _, item := range snapshot {
-			if item != nil {
-				out = append(out, item)
-			}
-		}
-	}
-	return out
-}
-
 func compareFmt(v1, v2 any) bool {
 	if v1 == v2 {
 		return true
@@ -99,11 +62,26 @@ func compareFmt(v1, v2 any) bool {
 }
 
 func main() {
-	f := features.Get()
 	config := config.Get()
 	u, err := url.Parse(config.PickTimescaleUrl())
 	if err != nil {
 		setup.Exitf("parse error: %v", err)
+	}
+	publicationSlot := os.Getenv(EnvPublicationSlot)
+	if publicationSlot == "" {
+		setup.Exitf("empty %v", EnvPublicationSlot)
+	}
+	db, err := sql.Open("postgres", config.PickTimescaleUrl())
+	if err != nil {
+		setup.Exitf("database: %v", err)
+	}
+	defer db.Close()
+	_, err = db.Exec(`
+SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
+		publicationSlot,
+	)
+	if err != nil {
+		setup.Exitf("update slot: %v", err)
 	}
 	if u.User == nil {
 		setup.Exitf("timescale url has no username")
@@ -131,11 +109,12 @@ func main() {
 		}
 	}()
 	cfg := cdcConfig.Config{
-		Host:     u.Hostname(),
-		Username: u.User.Username(),
-		Password: timescalePassword,
-		Database: strings.TrimPrefix(u.Path, "/"),
-		Port:     port,
+		Host:      u.Hostname(),
+		Username:  u.User.Username(),
+		Password:  timescalePassword,
+		Database:  strings.TrimPrefix(u.Path, "/"),
+		Port:      port,
+		DebugMode: false,
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
 			Name:              os.Getenv(EnvPublicationName),
@@ -148,7 +127,7 @@ func main() {
 			Port: metricPort,
 		},
 		Slot: cdcSlot.Config{
-			Name:                        os.Getenv(EnvPublicationSlot),
+			Name:                        publicationSlot,
 			CreateIfNotExists:           true,
 			SlotActivityCheckerInterval: 1000,
 		},
@@ -158,49 +137,41 @@ func main() {
 		bufferMsgsChan := make(chan TableContent)
 		broadcast.Subscribe(bufferMsgsChan)
 	}()
-
 	tableFilter := makeTableFilter()
-
 	connector, err := cdc.NewConnector(ctx, cfg, func(ctx *cdcReplication.ListenerContext) {
 		msg, isInsert := ctx.Message.(*cdcFormat.Insert)
 		if err := ctx.Ack(); err != nil {
 			setup.Exitf("ack: %v", err)
 		}
-
 		if !isInsert {
 			slog.Debug("non insert received",
 				"msg", msg,
 				"type", fmt.Sprintf("%T", msg))
 			return
 		}
-
 		validKeys := tableFilter[msg.TableName]
 		if validKeys == nil {
 			slog.Debug("skipping table we can't filter for",
 				"name", msg.TableName)
 			return
 		}
-
 		o := make(map[string]any, len(validKeys))
 		for k, e := range validKeys {
 			if e {
 				o[k] = msg.Decoded[k]
 			}
 		}
-
 		m := TableContent{msg.TableName, o, nil, nil, nil}
 		e, err := json.Marshal(m)
 		if err != nil {
 			log.Fatalf("failed to encode: %v", err)
 		}
 		m.encoded = e
-
 		broadcast.Broadcast(m)
 	})
 	if err != nil {
 		setup.Exitf("error opening connector: %v", err)
 	}
-
 	go func() {
 		websocket.Endpoint("/", func(
 			connCtx context.Context,
@@ -213,31 +184,29 @@ func main() {
 		) {
 			sink := make(chan TableContent)
 			cookie := broadcast.Subscribe(sink)
-
 			defer broadcast.Unsubscribe(cookie)
-
 			filterRules := make(map[string]map[string]*FilterConstraint)
 			filterRulesSet := make(map[string]bool)
-
+			var shouldShutdown bool
 		L:
 			for {
+				if shouldShutdown {
+					broadcast.Unsubscribe(cookie)
+				}
 				select {
 				case <-connCtx.Done():
 					slog.Debug("connection context cancelled",
 						"ip", ipAddr,
 					)
 					break L
-
 				case m := <-sink:
-					if f.Is(features.FeatureFilterTables) {
-						if !filterRulesSet[m.Table] {
+					if !filterRulesSet[m.Table] {
+						continue L
+					}
+					for k, c := range filterRules[m.Table] {
+						v, exists := m.Content[k]
+						if !exists || !compareFmt(v, c.Et) {
 							continue L
-						}
-						for k, c := range filterRules[m.Table] {
-							v, exists := m.Content[k]
-							if !exists || !compareFmt(v, c.Et) {
-								continue L
-							}
 						}
 					}
 					select {
@@ -245,7 +214,6 @@ func main() {
 					case <-connCtx.Done():
 						break L
 					}
-
 				case msg := <-replies:
 					var req struct {
 						AskForSnapshot []struct {
@@ -267,18 +235,28 @@ func main() {
 						slog.Error("bad message received", "err", err)
 						break L
 					}
-					if len(req.AskForSnapshot) > 0 {
-						snapshotFilters := make(map[string]map[string]*FilterConstraint)
-						for _, ch := range req.AskForSnapshot {
-							t := ch.Table
-							if snapshotFilters[t] == nil {
-								snapshotFilters[t] = make(map[string]*FilterConstraint)
-							}
-							for _, field := range ch.Fields {
-								c := field.Constraints
-								snapshotFilters[t][field.Name] = &c
-							}
+					// TODO: we only support a single snapshot table:
+					if len(req.AskForSnapshot) > 1 {
+						shouldShutdown = true
+						continue
+					}
+					args := make([]any, 1)
+					for _, ch := range req.AskForSnapshot {
+						args = append(args, ch.Table)
+						for _, f := range ch.Fields {
+							c := f.Name
+							// Currently we only support strings (TODO):
+							v := f.Constraints.Et
+							args= append(append(args, c), v)
 						}
+						query := formatSql(args)
+						rows, err := db.Query(query, args...)
+						if err != nil {
+							slog.Error("bad query", "err", err, "sql", query)
+							shouldShutdown = true
+							continue
+						}
+						defer rows.Close()
 					}
 					for _, ch := range req.FilterReq {
 						t := ch.Table
@@ -291,7 +269,6 @@ func main() {
 							filterRules[t][field.Name] = &c
 						}
 					}
-
 				case done := <-requestShutdown:
 					if done {
 						break L
@@ -303,13 +280,11 @@ func main() {
 			default:
 			}
 		})
-
 		setup.Exitf("bind: %v", http.ListenAndServe(
 			os.Getenv(EnvListenAddr),
 			nil,
 		))
 	}()
-
 	defer connector.Close()
 	connector.Start(ctx)
 }
