@@ -127,13 +127,18 @@ impl StorageTrading {
             let avail_liq = self.shortterm_amm_usd_liq.get();
             // We assume each winning share is worth $1, since that's how the model
             // works in this context:
-            let needed = self.amm_shares.get(_outcome);
-            let shortfall = needed.wrapping_sub(avail_liq);
-            let surplus = avail_liq.wrapping_sub(needed);
+            let amm_total_shares = self.amm_total_shares.get(_outcome);
+            let amm_shares = self.amm_shares.get(_outcome);
+            let needed = amm_total_shares
+                .checked_sub(amm_shares)
+                .ok_or(Error::CheckedSubOverflow(amm_total_shares, amm_shares))?;
+            let shortfall = needed.saturating_sub(avail_liq);
+            let surplus = avail_liq.saturating_sub(needed);
             if shortfall > U256::ZERO {
                 // We have a liquidity shortfall. We need to take what's missing:
                 vault_call::amm_receive(VAULT_ADDR, shortfall)?;
             } else if surplus > U256::ZERO {
+                fusdc_call::approve(VAULT_ADDR, surplus)?;
                 // We're in liquidity surplus, we can gift back what's there to the vault:
                 vault_call::amm_gift(VAULT_ADDR, surplus)?;
             }

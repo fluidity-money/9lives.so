@@ -110,8 +110,8 @@ The error table lives in ERRORS.md.
 | Trading DPPM extras impl      | `0x7289a31ca767883d6ad711e634c2591a16e6ef74` |
 | Trading DPPM price impl       | `0xb6c29b66bb663f3cd6a733b77927ba09cefa8d5a` |
 | Trading DPPM quotes impl      | `0xa516f91f100cbd796d2351acbf11f857402d2204` |
-| Trading AMM mint impl         | `0x44acd68dcd447659a6954742f24c572c63fba808` |
-| Trading AMM extras impl       | `0x11efbbe7c8c0d75dc93726dd6b504ca4a4b603d3` |
+| Trading AMM mint impl         | `0x5d549e6313453854d7713f673ba81b3caa82f9f5` |
+| Trading AMM extras impl       | `0xc3a8d88116536a9ba34893489a2c75f9a16c3263` |
 | Trading AMM price impl        | `0x3be11d59fe73c0b516f821ec4ea6d37499e68a65` |
 | Trading AMM quotes impl       | `0x097e45ee7a05e470ee7c884d558cfb4ad0d3cf87` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
@@ -136,7 +136,7 @@ The error table lives in ERRORS.md.
 | Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
 | Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
 | Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
-| Vault implementation          | `0x95c1546bC9124B6CfbF2293b90aC4694b597F643` |
+| Vault implementation          | `0xA1eBA7dD250e587BdA34737aA43b6F1ad3A21Bf8` |
 | Vault proxy                   | `0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14` |
 
 Several "precompiles" are in use, provided by superposition-precompiles.

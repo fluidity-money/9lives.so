@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -15,11 +14,10 @@ import (
 	"time"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
+	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/heartbeat"
 	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/websocket"
-
-	_ "github.com/lib/pq"
 
 	cdc "github.com/Trendyol/go-pq-cdc"
 	cdcConfig "github.com/Trendyol/go-pq-cdc/config"
@@ -39,8 +37,7 @@ const (
 const PrivateSnapshotLookback = 4000
 
 const PricesTable = "oracles_ninelives_prices_2"
-
-const MaxFilters = 10
+const PricesPartitionKey = "base"
 
 type TableContent struct {
 	Table            string           `json:"table"`
@@ -54,6 +51,53 @@ type FilterConstraint struct {
 	Et any `json:"et"`
 }
 
+type ringBuffer struct {
+	i     int
+	items [PrivateSnapshotLookback]map[string]any
+}
+
+type partitionedBuffer struct {
+	buffers map[string]*ringBuffer
+}
+
+// dumpRequest wraps the snapshot reply channel with a context so the
+// buffer goroutine can abandon the send when the requester is gone.
+type dumpRequest struct {
+	ctx   context.Context
+	reply chan []TableContent
+}
+
+func newPartitionedBuffer() *partitionedBuffer {
+	return &partitionedBuffer{buffers: make(map[string]*ringBuffer)}
+}
+
+func (pb *partitionedBuffer) insert(partitionKey string, content map[string]any) {
+	x := pb.buffers[partitionKey]
+	if x == nil {
+		x = &ringBuffer{}
+		pb.buffers[partitionKey] = x
+	}
+	if x.i == PrivateSnapshotLookback {
+		x.i = 0
+	}
+	x.items[x.i] = content
+	x.i++
+}
+
+func (pb *partitionedBuffer) allItems() []map[string]any {
+	var out []map[string]any
+	for _, rb := range pb.buffers {
+		snapshot := make([]map[string]any, PrivateSnapshotLookback)
+		copy(snapshot, rb.items[:])
+		for _, item := range snapshot {
+			if item != nil {
+				out = append(out, item)
+			}
+		}
+	}
+	return out
+}
+
 func compareFmt(v1, v2 any) bool {
 	if v1 == v2 {
 		return true
@@ -62,33 +106,27 @@ func compareFmt(v1, v2 any) bool {
 }
 
 func main() {
+	f := features.Get()
 	config := config.Get()
+
 	u, err := url.Parse(config.PickTimescaleUrl())
 	if err != nil {
 		setup.Exitf("parse error: %v", err)
 	}
-	publicationSlot := os.Getenv(EnvPublicationSlot)
-	if publicationSlot == "" {
-		setup.Exitf("empty %v", EnvPublicationSlot)
-	}
-	db, err := sql.Open("postgres", config.PickTimescaleUrl())
-	if err != nil {
-		setup.Exitf("database: %v", err)
-	}
-	defer db.Close()
-	_, err = db.Exec(`
-SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
-		publicationSlot,
-	)
-	if err != nil {
-		setup.Exitf("update slot: %v", err)
-	}
+
 	if u.User == nil {
 		setup.Exitf("timescale url has no username")
 	}
-	ctx := context.Background()
+
+	// masterCtx is cancelled when the process is shutting down.
+	// Every long-lived goroutine should watch it.
+	masterCtx, masterCancel := context.WithCancel(context.Background())
+	defer masterCancel()
+
 	tables := getTables()
+
 	timescalePassword, _ := u.User.Password()
+
 	var port int
 	if p := u.Port(); p != "" {
 		if port, err = strconv.Atoi(strings.TrimPrefix(u.Port(), ":")); err != nil {
@@ -97,24 +135,32 @@ SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
 	} else {
 		port = 5432
 	}
+
 	metricPort, err := strconv.Atoi(os.Getenv(EnvPublicationMetricSlot))
 	if err != nil {
 		setup.Exitf("metric slot: %v", err)
 	}
+
 	go func() {
 		t := time.NewTicker(time.Minute)
-		for range t.C {
-			heartbeat.Pulse()
-			t.Reset(time.Minute)
+		defer t.Stop()
+		for {
+			select {
+			case <-masterCtx.Done():
+				return
+			case <-t.C:
+				heartbeat.Pulse()
+				t.Reset(time.Minute)
+			}
 		}
 	}()
+
 	cfg := cdcConfig.Config{
-		Host:      u.Hostname(),
-		Username:  u.User.Username(),
-		Password:  timescalePassword,
-		Database:  strings.TrimPrefix(u.Path, "/"),
-		Port:      port,
-		DebugMode: false,
+		Host:     u.Hostname(),
+		Username: u.User.Username(),
+		Password: timescalePassword,
+		Database: strings.TrimPrefix(u.Path, "/"),
+		Port:     port,
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
 			Name:              os.Getenv(EnvPublicationName),
@@ -127,51 +173,114 @@ SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
 			Port: metricPort,
 		},
 		Slot: cdcSlot.Config{
-			Name:                        publicationSlot,
+			Name:                        os.Getenv(EnvPublicationSlot),
 			CreateIfNotExists:           true,
 			SlotActivityCheckerInterval: 1000,
 		},
 	}
+
 	broadcast := websocket.NewBroadcast[TableContent]()
+
+	dumpChan := make(chan dumpRequest)
+
 	go func() {
-		bufferMsgsChan := make(chan TableContent)
-		broadcast.Subscribe(bufferMsgsChan)
+		bufferMsgsChan := make(chan TableContent, 100 * 60)
+		bufferCookie := broadcast.Subscribe(bufferMsgsChan)
+
+		// Clean up when this goroutine exits.
+		defer broadcast.Unsubscribe(bufferCookie)
+
+		buffer := make(map[string]*partitionedBuffer)
+
+		for {
+			select {
+			case <-masterCtx.Done():
+				return
+
+			case v, ok := <-bufferMsgsChan:
+				if !ok {
+					return
+				}
+				pb := buffer[v.Table]
+				if pb == nil {
+					pb = newPartitionedBuffer()
+					buffer[v.Table] = pb
+				}
+
+				partitionKey := ""
+				if v.Table == PricesTable {
+					if base, ok := v.Content[PricesPartitionKey]; ok {
+						partitionKey = fmt.Sprintf("%v", base)
+					}
+				}
+
+				pb.insert(partitionKey, v.Content)
+
+			case req, ok := <-dumpChan:
+				if !ok {
+					return
+				}
+				content := make([]TableContent, 0, len(buffer))
+				for k, pb := range buffer {
+					content = append(content, TableContent{
+						Table:    k,
+						Snapshot: pb.allItems(),
+					})
+				}
+				// Send the snapshot, but give up if the requester's
+				// context is already cancelled.
+				select {
+				case req.reply <- content:
+				case <-req.ctx.Done():
+				case <-masterCtx.Done():
+				}
+				close(req.reply)
+			}
+		}
 	}()
+
 	tableFilter := makeTableFilter()
-	connector, err := cdc.NewConnector(ctx, cfg, func(ctx *cdcReplication.ListenerContext) {
+
+	connector, err := cdc.NewConnector(masterCtx, cfg, func(ctx *cdcReplication.ListenerContext) {
 		msg, isInsert := ctx.Message.(*cdcFormat.Insert)
 		if err := ctx.Ack(); err != nil {
 			setup.Exitf("ack: %v", err)
 		}
+
 		if !isInsert {
 			slog.Debug("non insert received",
 				"msg", msg,
 				"type", fmt.Sprintf("%T", msg))
 			return
 		}
+
 		validKeys := tableFilter[msg.TableName]
 		if validKeys == nil {
 			slog.Debug("skipping table we can't filter for",
 				"name", msg.TableName)
 			return
 		}
+
 		o := make(map[string]any, len(validKeys))
 		for k, e := range validKeys {
 			if e {
 				o[k] = msg.Decoded[k]
 			}
 		}
+
 		m := TableContent{msg.TableName, o, nil, nil, nil}
 		e, err := json.Marshal(m)
 		if err != nil {
 			log.Fatalf("failed to encode: %v", err)
 		}
 		m.encoded = e
+
 		broadcast.Broadcast(m)
 	})
 	if err != nil {
 		setup.Exitf("error opening connector: %v", err)
 	}
+
 	go func() {
 		websocket.Endpoint("/", func(
 			connCtx context.Context,
@@ -182,39 +291,61 @@ SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
 			shutdown chan<- error,
 			requestShutdown <-chan bool,
 		) {
-			sink := make(chan TableContent)
+			sink := make(chan TableContent, 5 * 60)
 			cookie := broadcast.Subscribe(sink)
 			defer broadcast.Unsubscribe(cookie)
+
 			filterRules := make(map[string]map[string]*FilterConstraint)
 			filterRulesSet := make(map[string]bool)
-			var shouldShutdown bool
+
 		L:
 			for {
-				if shouldShutdown {
-					broadcast.Unsubscribe(cookie)
-				}
 				select {
 				case <-connCtx.Done():
 					slog.Debug("connection context cancelled",
 						"ip", ipAddr,
 					)
 					break L
-				case m := <-sink:
-					if !filterRulesSet[m.Table] {
-						continue L
+
+				case <-masterCtx.Done():
+					slog.Debug("master context cancelled, tearing down connection",
+						"ip", ipAddr,
+					)
+					break L
+
+				case m, ok := <-sink:
+					if !ok {
+						break L
 					}
-					for k, c := range filterRules[m.Table] {
-						v, exists := m.Content[k]
-						if !exists || !compareFmt(v, c.Et) {
+					if f.Is(features.FeatureFilterTables) {
+						if !filterRulesSet[m.Table] {
 							continue L
+						}
+						for k, c := range filterRules[m.Table] {
+							v, exists := m.Content[k]
+							if !exists || !compareFmt(v, c.Et) {
+								continue L
+							}
 						}
 					}
 					select {
 					case outgoing <- m.encoded:
 					case <-connCtx.Done():
 						break L
+					case <-masterCtx.Done():
+						break L
+					default:
+						slog.Warn("outgoing channel full, dropping message",
+							"ip", ipAddr,
+							"table", m.Table,
+						)
 					}
-				case msg := <-replies:
+
+
+				case msg, ok := <-replies:
+					if !ok {
+						break L
+					}
 					var req struct {
 						AskForSnapshot []struct {
 							Table  string `json:"table"`
@@ -231,33 +362,107 @@ SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
 							} `json:"fields"`
 						} `json:"add"`
 					}
+
 					if err := json.Unmarshal(msg, &req); err != nil {
 						slog.Error("bad message received", "err", err)
 						break L
 					}
-					// TODO: we only support a single snapshot table:
-					if len(req.AskForSnapshot) > 1 {
-						shouldShutdown = true
-						continue
-					}
-					args := make([]any, 1)
-					for _, ch := range req.AskForSnapshot {
-						args = append(args, ch.Table)
-						for _, f := range ch.Fields {
-							c := f.Name
-							// Currently we only support strings (TODO):
-							v := f.Constraints.Et
-							args= append(append(args, c), v)
+
+					if len(req.AskForSnapshot) > 0 {
+						snapshotFilters := make(map[string]map[string]*FilterConstraint)
+						for _, ch := range req.AskForSnapshot {
+							t := ch.Table
+							if snapshotFilters[t] == nil {
+								snapshotFilters[t] = make(map[string]*FilterConstraint)
+							}
+							for _, field := range ch.Fields {
+								c := field.Constraints
+								snapshotFilters[t][field.Name] = &c
+							}
 						}
-						query := formatSql(args)
-						rows, err := db.Query(query, args...)
-						if err != nil {
-							slog.Error("bad query", "err", err, "sql", query)
-							shouldShutdown = true
-							continue
-						}
-						defer rows.Close()
+
+						go func() {
+							replyChan := make(chan []TableContent)
+
+							// Send the dump request, giving up if the
+							// connection or process is shutting down.
+							select {
+							case dumpChan <- dumpRequest{ctx: connCtx, reply: replyChan}:
+							case <-connCtx.Done():
+								return
+							case <-masterCtx.Done():
+								return
+							}
+
+							// Wait for the buffer goroutine to respond.
+							var rawSnapshot []TableContent
+							select {
+							case s, ok := <-replyChan:
+								if !ok {
+									// The buffer goroutine closed the
+									// channel without sending (requester
+									// context was cancelled).
+									return
+								}
+								rawSnapshot = s
+							case <-connCtx.Done():
+								return
+							case <-masterCtx.Done():
+								return
+							}
+
+							var filteredSnapshot []TableContent
+							for _, tableContent := range rawSnapshot {
+								tableFilter, requested := snapshotFilters[tableContent.Table]
+								if !requested {
+									continue
+								}
+
+								var filteredItems []map[string]any
+								for _, item := range tableContent.Snapshot {
+									if item == nil {
+										continue
+									}
+									include := true
+									for k, c := range tableFilter {
+										v, exists := item[k]
+										if !exists || !compareFmt(v, c.Et) {
+											include = false
+											break
+										}
+									}
+									if include {
+										filteredItems = append(filteredItems, item)
+									}
+								}
+
+								if len(filteredItems) > 0 {
+									filteredSnapshot = append(filteredSnapshot, TableContent{
+										Table:    tableContent.Table,
+										Snapshot: filteredItems,
+									})
+								}
+							}
+
+							snapshot, err := json.Marshal(TableContent{
+								SnapshotToplevel: filteredSnapshot,
+							})
+							if err != nil {
+								slog.Error("failed to marshal snapshot", "err", err)
+								return
+							}
+
+							select {
+							case outgoing <- snapshot:
+							case <-connCtx.Done():
+								slog.Debug("connection gone before snapshot could be sent",
+									"ip", ipAddr,
+								)
+							case <-masterCtx.Done():
+							}
+						}()
 					}
+
 					for _, ch := range req.FilterReq {
 						t := ch.Table
 						if filterRules[t] == nil {
@@ -269,22 +474,29 @@ SELECT pg_replication_slot_advance($1, pg_current_wal_lsn())`,
 							filterRules[t][field.Name] = &c
 						}
 					}
-				case done := <-requestShutdown:
-					if done {
+
+				case done, ok := <-requestShutdown:
+					if !ok || done {
+						slog.Debug("shutdown requested by framework",
+							"ip", ipAddr,
+						)
 						break L
 					}
 				}
 			}
+
 			select {
 			case shutdown <- nil:
 			default:
 			}
 		})
+
 		setup.Exitf("bind: %v", http.ListenAndServe(
 			os.Getenv(EnvListenAddr),
 			nil,
 		))
 	}()
+
 	defer connector.Close()
-	connector.Start(ctx)
+	connector.Start(masterCtx)
 }

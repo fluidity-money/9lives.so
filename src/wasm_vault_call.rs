@@ -1,45 +1,62 @@
 use stylus_sdk::{
     alloy_primitives::{Address, U256},
-    alloy_sol_types::{sol, SolCall},
     call::RawCall,
 };
 
+use bobcat_cd::const_keccak_sel;
+
 use crate::error::*;
 
-sol! {
-    function borrow(address _for, uint256 amount);
-    function repay(uint256 feesEarned);
-    function ammRegister(address _amm);
-    function ammReceive(uint256 _amount);
-    function ammGift(uint256 _amount);
-}
+use array_concat::concat_arrays;
+
+const SEL_BORROW: [u8; 4] = const_keccak_sel(b"borrow(address,uint256)");
+const SEL_REPAY: [u8; 4] = const_keccak_sel(b"repay(uint256)");
+const SEL_AMM_REGISTER: [u8; 4] = const_keccak_sel(b"ammRegister(address)");
+const SEL_AMM_RECEIVE: [u8; 4] = const_keccak_sel(b"ammReceive(uint256)");
+const SEL_AMM_GIFT: [u8; 4] = const_keccak_sel(b"ammGift(uint256)");
 
 pub fn borrow(addr: Address, _for: Address, amt: U256) -> Result<(), Error> {
-    unsafe { RawCall::new().call(addr, &borrowCall { _for, amount: amt }.abi_encode()) }
-        .map_err(|b| Error::VaultError(b))?;
+    let cd: [u8; 4 + 32 * 2] = concat_arrays!(
+        SEL_BORROW,
+        _for.into_word().0,
+        amt.to_be_bytes::<32>()
+    );
+    unsafe { RawCall::new().call(addr, &cd) }.map_err(|b| Error::VaultError(cd.to_vec(), b))?;
     Ok(())
 }
 
 pub fn repay(addr: Address, amt: U256) -> Result<(), Error> {
-    unsafe { RawCall::new().call(addr, &repayCall { feesEarned: amt }.abi_encode()) }
-        .map_err(|b| Error::VaultError(b))?;
+    let cd: [u8; 4 + 32] = concat_arrays!(
+        SEL_REPAY,
+        amt.to_be_bytes::<32>()
+    );
+    unsafe { RawCall::new().call(addr, &cd) }.map_err(|b| Error::VaultError(cd.to_vec(), b))?;
     Ok(())
 }
 
 pub fn amm_register(addr: Address, amm: Address) -> Result<(), Error> {
-    unsafe { RawCall::new().call(addr, &ammRegisterCall { _amm: amm }.abi_encode()) }
-        .map_err(|b| Error::VaultError(b))?;
+    let cd: [u8; 4 + 32] = concat_arrays!(
+        SEL_AMM_REGISTER,
+        amm.into_word().0
+    );
+    unsafe { RawCall::new().call(addr, &cd) }.map_err(|b| Error::VaultError(cd.to_vec(), b))?;
     Ok(())
 }
 
 pub fn amm_receive(addr: Address, amt: U256) -> Result<(), Error> {
-    unsafe { RawCall::new().call(addr, &ammReceiveCall { _amount: amt }.abi_encode()) }
-        .map_err(|b| Error::VaultError(b))?;
+    let cd: [u8; 4 + 32] = concat_arrays!(
+        SEL_AMM_RECEIVE,
+        amt.to_be_bytes::<32>()
+    );
+    unsafe { RawCall::new().call(addr, &cd) }.map_err(|b| Error::VaultError(cd.to_vec(), b))?;
     Ok(())
 }
 
 pub fn amm_gift(addr: Address, amt: U256) -> Result<(), Error> {
-    unsafe { RawCall::new().call(addr, &ammGiftCall { _amount: amt }.abi_encode()) }
-        .map_err(|b| Error::VaultError(b))?;
+    let cd: [u8; 4 + 32] = concat_arrays!(
+        SEL_AMM_GIFT,
+        amt.to_be_bytes::<32>()
+    );
+    unsafe { RawCall::new().call(addr, &cd) }.map_err(|b| Error::VaultError(cd.to_vec(), b))?;
     Ok(())
 }

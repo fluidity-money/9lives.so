@@ -25,6 +25,10 @@ impl StorageTrading {
         FEATURE_IF_SHORTTERM_AMM!({
             if seed_liq > U256::ZERO {
                 self.amm_liquidity.set(seed_liq);
+                for &outcome_id in outcomes.iter() {
+                    self.amm_shares.setter(outcome_id).set(seed_liq);
+                    self.amm_total_shares.setter(outcome_id).set(seed_liq);
+                }
             }
         } else {
             // We don't do anything here!
@@ -577,7 +581,11 @@ impl StorageTrading {
             Error::NonexistentOutcome
         );
         FEATURE_IF_SHORTTERM_AMM!({
-            if block_timestamp() > self.time_ending.get().into_limbs()[0] - 60 {
+            // There's no way this is set. But we blow up here anyway instead of
+            // overflowing (there's no way the time was set so close to epoch that
+            // this is lower than 60):
+            let ending_ts_hour = self.time_ending.get().into_limbs()[0].checked_sub(60).unwrap();
+            if block_timestamp() > ending_ts_hour {
                 return Err(Error::ShorttermTooLate);
             }
             let x = self.shortterm_amm_usd_liq.get();
@@ -694,9 +702,6 @@ impl StorageTrading {
         let minted = c!(current
             .checked_sub(target)
             .ok_or(Error::CheckedSubOverflow(current, target)));
-        if self.amm_liquidity.get().is_zero() {
-            panic!("{n}, {target}, {product}, {current}, {minted}");
-        }
         Ok(minted)
     }
 

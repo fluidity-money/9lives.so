@@ -27,7 +27,7 @@ fn setup_contract(c: &mut StorageTrading, outcomes: &[FixedBytes<8>], starting_l
         outcomes.to_vec(),
         msg_sender(),
         block_timestamp() + 1,
-        block_timestamp() + 10,
+        block_timestamp() + 70,
         msg_sender(),
         false,
         0,
@@ -919,6 +919,7 @@ proptest! {
         let outcome_a = outcomes[0];
         let outcome_b = outcomes[1];
         let startup_liq = U256::from(10e6 as u64);
+        lib9lives::host::clear_storage();
         interactions_clear_after! {
             IVAN => {
                 setup_contract(&mut c, &[outcome_a, outcome_b], startup_liq);
@@ -926,8 +927,8 @@ proptest! {
                     c,
                     outcome_a,
                     10e6,
-                    166666,
-                    1333334,
+                    5000000,  // Market shares
+                    15000000, // Shares the user got
                     0
                 );
             },

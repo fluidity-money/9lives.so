@@ -72,7 +72,7 @@ contract Vault is IEvents {
     /// @notice ammRegister an address using the factory as a trusted
     /// worker.
     function ammRegister(address _amm) external {
-        require(msg.sender == FACTORY, "not factory");
+        require(msg.sender == FACTORY || msg.sender == OPERATOR, "not factory or operator");
         authorisedContracts[_amm] = true;
         emit AmmRegistered(_amm);
     }

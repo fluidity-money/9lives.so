@@ -1280,6 +1280,7 @@ dependencies = [
  "arbitrary",
  "array-concat",
  "arrayvec",
+ "bobcat-cd",
  "bobcat-features",
  "bobcat-maths",
  "bobcat-panic",

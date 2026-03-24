@@ -79,6 +79,7 @@ err_pre!(ERR_TRADING_OUTCOME_LIST_PREAMBLE, 0x10);
 err_pre!(ERR_TRADING_IS_DPPM_PREAMBLE, 0x11);
 err_pre!(ERR_TRADING_ADD_LIQ, 0x12);
 err_pre!(ERR_TRADING_PRICE, 0x13);
+err_pre!(ERR_VAULT_PREAMBLE, 0x14);
 
 // Some testing affordances to make life easier with tracing the source
 // of issues.
@@ -585,7 +586,7 @@ pub enum Error {
     MarketNotOverForClawback,
 
     /// The vault experienced an issue and reverted (maybe no liquidity?)
-    VaultError(Vec<u8>),
+    VaultError(Vec<u8>, Vec<u8>),
 
     /// The caller is not the dppm creator
     NotDppmCreator,
@@ -603,7 +604,7 @@ pub enum Error {
     MulDivError,
 
     /// Bad denominator for the rooti
-    BadDenom
+    BadDenom,
 }
 
 #[cfg(any(
@@ -777,6 +778,15 @@ impl From<Error> for Vec<u8> {
             Error::TradingUnableToUnpack(addr, b) => {
                 ext(&ERR_GENERAL_PREAMBLE, &[addr.as_slice(), &b])
             }
+            Error::VaultError(cd, rd) => ext(
+                &ERR_VAULT_PREAMBLE,
+                &[
+                    &cd.len().to_be_bytes(),
+                    cd.as_slice(),
+                    &rd.len().to_be_bytes(),
+                    rd.as_slice(),
+                ],
+            ),
             v => ext(&ERR_GENERAL_PREAMBLE, &[&[v.into()]]),
         }
     }

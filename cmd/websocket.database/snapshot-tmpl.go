@@ -11,14 +11,21 @@ var Tmpl = template.Must(template.New("snapshot").Funcs(template.FuncMap{
 		return a + b
 	},
 }).Parse(`
-SELECT * FROM $1
-{{range $i, $c := .}}
-{{if $i }} AND{{ else }} WHERE{{ end }} ${{ add $i 2 }} = ${{ add $i 3 }}
-{{end}}`))
+SELECT {{range $i, $c := .Columns}}{{if $i}}, {{end}}{{.}}{{end}} FROM {{.Table}}
+{{range $i, $c := .Items}}
+{{if $i }} AND{{ else }} WHERE{{ end }} ${{ add $i 1 }} = ${{ add $i 2 }}
+{{end}}
+ORDER BY {{.OrderColumn}} LIMIT 4000`))
 
-func formatSql(a ...any) string {
+func formatSql(table string, columns []string, orderColumn string, args ...any) string {
 	var buf bytes.Buffer
-	if err := Tmpl.Execute(&buf, a); err != nil {
+	err := Tmpl.Execute(&buf, struct{
+		Table string
+		Columns []string
+		OrderColumn string
+		Items []any
+	}{table, columns, orderColumn, args})
+	if err != nil {
 		log.Fatalf("template: %v", err)
 	}
 	return buf.String()
