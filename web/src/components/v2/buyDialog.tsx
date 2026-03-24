@@ -26,6 +26,8 @@ import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
 import { formatUnits, zeroAddress } from "viem";
 import GroupButton from "./groupButton";
 import Badge from "./chanceBadge";
+import useReturnValue from "@/hooks/useReturnValue";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 export default function SimpleBuyDialog({
   data,
@@ -153,6 +155,14 @@ export default function SimpleBuyDialog({
     setValue("supply", ((Number(maxBalance) * percentage) / 1).toString());
     if (Number(maxBalance) > 0) clearErrors();
   };
+  const { data: estimatedSharesToGet } = useReturnValue({
+    outcomeId: selectedOutcome.identifier,
+    shareAddr: selectedOutcome.share.address,
+    tradingAddr: data.poolAddress,
+    fusdc: usdValue,
+  });
+  const sharesToGet = formatFusdc(estimatedSharesToGet ?? 0, 2);
+
   const {
     data: [shares, boost, refund],
   } = useDppmWinEstimation({
@@ -160,6 +170,7 @@ export default function SimpleBuyDialog({
     usdValue,
     outcomeId: selectedOutcome.identifier,
   });
+  const winEstimation = data.isDppm ? shares + boost : Number(sharesToGet);
   const handleTokenChange = useCallback(
     (addr: string) => setValue("fromToken", addr),
     [setValue],
@@ -419,18 +430,20 @@ export default function SimpleBuyDialog({
               </div>
               <div className="text-xl font-bold text-green-600">
                 <span className="text-neutral-400">+</span> $
-                {+(shares + boost).toFixed(2)}
+                {+winEstimation.toFixed(2)}
               </div>
             </div>
-            <div className="flex flex-col justify-end gap-1">
-              <div className="text-xs font-bold text-neutral-400">
-                If Incorrect Win:
+            {data.isDppm ? (
+              <div className="flex flex-col justify-end gap-1">
+                <div className="text-xs font-bold text-neutral-400">
+                  If Incorrect Win:
+                </div>
+                <div className="text-xl font-bold text-green-600">
+                  <span className="text-neutral-400">+</span> $
+                  {+refund.toFixed(2)}
+                </div>
               </div>
-              <div className="text-xl font-bold text-green-600">
-                <span className="text-neutral-400">+</span> $
-                {+refund.toFixed(2)}
-              </div>
-            </div>
+            ) : null}
           </div>
         </div>
 

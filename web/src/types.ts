@@ -52,8 +52,8 @@ export type SimpleCampaignDetail = NonNullable<RawSimpleCampaignDetail> & {
   outcomes: Outcome[];
   identifier: `0x${string}`;
   poolAddress: `0x${string}`;
-  isDpm: false;
-  isDppm: true;
+  isDpm: false | null;
+  isDppm: boolean;
   priceMetadata: {
     baseAsset: SimpleMarketKey;
     priceTargetForUp: string;

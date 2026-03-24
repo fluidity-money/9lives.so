@@ -88,7 +88,7 @@ export function formatSimpleCampaignDetail(
   return {
     ...ro,
     isDpm: false,
-    isDppm: true,
+    isDppm: ro.isDppm,
     name: formatDppmTitle({
       symbol: formatPriceMetadata(ro.priceMetadata)?.baseAsset,
       price: ro.priceMetadata.priceTargetForUp,

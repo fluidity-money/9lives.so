@@ -629,6 +629,7 @@ export const requestSimpleMarket = (
       },
       categories: true,
       identifier: true,
+      isDppm: true,
       starting: true,
       odds: true,
       ending: true,
