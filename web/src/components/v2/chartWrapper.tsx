@@ -27,7 +27,7 @@ export default function PriceChartWrapper({
   useWSForTrades({
     previousData: campaignData,
     simple,
-    isDpm: campaignData.isDpm,
+    isDpm: !!campaignData.isDpm,
   });
   const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
