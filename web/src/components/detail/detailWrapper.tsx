@@ -64,7 +64,7 @@ export default function DetailWrapper({
             />
           )}
         </TimingGate>
-        {data.isDppm && data.priceMetadata ? (
+        {!!data.priceMetadata ? (
           <PriceChartWrapper
             campaignData={data as SimpleCampaignDetail}
             simple={true}
