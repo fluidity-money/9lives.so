@@ -78,13 +78,6 @@ export default function TickerBar() {
       </div>
 
       <style jsx>{`
-        .ticker-track {
-          animation-name: ticker-scroll;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          will-change: transform;
-        }
-
         @keyframes ticker-scroll {
           from {
             transform: translateX(0);

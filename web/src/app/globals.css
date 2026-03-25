@@ -23,21 +23,26 @@
 section {
   flex-grow: 1;
 }
+
 /* Scrollbar Track */
 ::-webkit-scrollbar-track {
-  background-color: #cccccc; /* Background color of the track */
+  background-color: #cccccc;
+  /* Background color of the track */
 }
 
 /* Scrollbar Thumb */
 ::-webkit-scrollbar-thumb {
-  background-color: #999999; /* Background color of the thumb */
-  border-radius: 0px; /* Round the corners of the thumb */
+  background-color: #999999;
+  /* Background color of the thumb */
+  border-radius: 0px;
+  /* Round the corners of the thumb */
   border: 2px solid #cccccc;
 }
 
 /* Scrollbar Width */
 ::-webkit-scrollbar {
-  width: 7px; /* Set scrollbar width */
+  width: 7px;
+  /* Set scrollbar width */
 }
 
 /* Firefox */
@@ -66,18 +71,22 @@ input[type="range"]::-webkit-slider-runnable-track {
   background-color: #0c0c0c;
   height: 9px;
 }
+
 input[type="range"]:disabled {
   opacity: 0.5;
 }
+
 input[type="range"]:disabled::-webkit-slider-runnable-track {
   background-color: #999999;
 }
 
 /* slider thumb */
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
+  -webkit-appearance: none;
+  /* Override default look */
   appearance: none;
-  margin-top: -9px; /* Centers thumb on the track */
+  margin-top: -9px;
+  /* Centers thumb on the track */
 
   /*custom styles*/
   border: 1px solid #0c0c0c;
@@ -104,8 +113,10 @@ input[type="range"]::-moz-range-track {
 
 /* slider thumb */
 input[type="range"]::-moz-range-thumb {
-  border: none; /*Removes extra border that FF applies*/
-  border-radius: 0; /*Removes default border-radius that FF applies*/
+  border: none;
+  /*Removes extra border that FF applies*/
+  border-radius: 0;
+  /*Removes default border-radius that FF applies*/
 
   /*custom styles*/
   border: 1px solid #0c0c0c;
@@ -184,6 +195,7 @@ div[id^="radix"][role="dialog"][data-state="open"] div[data-error] {
 .changelog h2:not(:first-child) {
   margin-top: 16px;
 }
+
 .changelog h2 {
   font-size: 16px;
   font-weight: 700;
@@ -194,4 +206,11 @@ div[id^="radix"][role="dialog"][data-state="open"] div[data-error] {
 ol {
   list-style: square;
   list-style-position: inside;
+}
+
+.ticker-track {
+  animation-name: ticker-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
 }

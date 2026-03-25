@@ -199,5 +199,5 @@ export function useWSForTrades({
 
       ws?.close();
     };
-  }, [previousData, simple, queryClient, account.address]);
+  }, [previousData, simple, queryClient, account.address, isDpm]);
 }

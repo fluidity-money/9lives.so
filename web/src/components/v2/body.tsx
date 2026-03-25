@@ -118,7 +118,7 @@ export default function SimpleBody({
             />
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-1">
-                <h1 className="text:lg font-semibold text-2black md:text-2xl">
+                <h1 className="text-lg font-semibold text-2black md:text-2xl">
                   <span className="text-neutral-400">$</span>
                   {config.simpleMarkets[data.priceMetadata?.baseAsset].title}
                 </h1>
