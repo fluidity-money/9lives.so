@@ -67,6 +67,8 @@ export default function PositionRow({
         baseAsset: "btc",
         priceTargetForUp: "0",
       },
+      isDppm: campaignContent.isDppm,
+      winner: campaignContent.winner,
       outcomes: campaignContent.outcomes,
       identifier: campaignContent.identifier,
       poolAddress: campaignContent.poolAddress,

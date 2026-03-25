@@ -702,9 +702,11 @@ export const requestUnclaimedCampaigns = (address: string, token?: string) =>
         baseAsset: true,
         priceTargetForUp: true,
       },
+      isDppm: true,
       starting: true,
       poolAddress: true,
       ending: true,
+      winner: true,
       outcomes: {
         name: true,
         picture: true,

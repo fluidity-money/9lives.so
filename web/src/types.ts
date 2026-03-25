@@ -288,8 +288,6 @@ export type UnclaimedCampaign = Omit<
   SimpleCampaignDetail,
   | "isDpm"
   | "investmentAmounts"
-  | "isDppm"
-  | "winner"
   | "totalVolume"
   | "creator"
   | "categories"

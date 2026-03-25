@@ -4,13 +4,13 @@ import Button from "./button";
 import Link from "next/link";
 import { combineClass } from "@/utils/combineClass";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import RightCaretIcon from "#/icons/right-caret.svg";
 import useClaimAllPools from "@/hooks/useClaimAllPools";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useClaimAllPoolsWithAS from "@/hooks/useClaimAllPoolsAS";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import { useAppKitAccount } from "@reown/appkit/react";
+import useBalance from "@/hooks/useBalance";
+import formatFusdc from "@/utils/format/formatUsdc";
 
 function SimpleRewardItem({
   data,
@@ -23,7 +23,7 @@ function SimpleRewardItem({
     React.SetStateAction<{ id: string; reward: number }[]>
   >;
 }) {
-  const { totalRewards, isLoading } = useDppmRewards({
+  const { totalRewards: rewardDppm, isLoading } = useDppmRewards({
     tradingAddr: data.poolAddress,
     priceMetadata: data.priceMetadata,
     starting: data.starting,
@@ -31,30 +31,35 @@ function SimpleRewardItem({
     outcomes: data.outcomes,
     address,
   });
+  const winnerOutcome = data.outcomes.find((o) => o.identifier === data.winner);
+  const { data: sharesOfAmm } = useBalance(
+    address,
+    winnerOutcome?.share.address,
+  );
+  const rewardAmm = Number(formatFusdc(sharesOfAmm ?? 0, 2));
   const bodyClasses = "text-xs";
-  const PnL = totalRewards - data.totalSpent;
+  const reward = data.isDppm ? rewardDppm : rewardAmm;
+  const PnL = reward - data.totalSpent;
 
   useEffect(() => {
-    if (totalRewards) {
+    if (reward) {
       setRewards((prev) => {
         if (prev.find((i) => i.id === data.identifier)) {
           return prev.map((i) =>
-            i.id === data.identifier
-              ? { id: data.identifier, reward: totalRewards }
-              : i,
+            i.id === data.identifier ? { id: data.identifier, reward } : i,
           );
         } else {
-          return [...prev, { id: data.identifier, reward: totalRewards }];
+          return [...prev, { id: data.identifier, reward }];
         }
       });
     }
-  }, [totalRewards, data.identifier, setRewards]);
+  }, [reward, data.identifier, setRewards]);
 
   return (
     <tr>
       <td className={bodyClasses}>{data.name}</td>
       <td className={bodyClasses}>${data.totalSpent}</td>
-      <td className={bodyClasses}>${+totalRewards.toFixed(2)}</td>
+      <td className={bodyClasses}>${+reward.toFixed(2)}</td>
       <td className={bodyClasses}>
         {isLoading ? null : (
           <span
