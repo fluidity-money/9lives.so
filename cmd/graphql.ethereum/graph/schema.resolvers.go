@@ -2014,17 +2014,25 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
     select
         emitter_addr,
         campaign_id,
+		outcome_id,
         sum(from_amount) as total_spent,
         campaign_content
     from ninelives_buys_and_sells_1
     where recipient = ?
-    group by emitter_addr,campaign_id, campaign_content
+    group by emitter_addr,campaign_id,outcome_id,campaign_content
 	) bs_sum
     on py.pool_address  = bs_sum.emitter_addr
 	where
     py.spender = ?
     and py.was_spent = false
 	and bs_sum.campaign_content->>'winner' is not null
+	and (
+    	(bs_sum.campaign_content->>'isDppm')::boolean = true 
+    or (
+    	(bs_sum.campaign_content->>'isDppm')::boolean = false 
+    	and bs_sum.campaign_content->>'winner' = CONCAT('0x', bs_sum.outcome_id)
+    	)
+	)
 	`
 	if token != nil {
 		query += ` and bs_sum.campaign_content->'priceMetadata'->>'baseAsset' = ?`
