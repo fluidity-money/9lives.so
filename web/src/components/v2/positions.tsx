@@ -10,15 +10,16 @@ import formatFusdc from "@/utils/format/formatUsdc";
 import Button from "./button";
 import { combineClass } from "@/utils/combineClass";
 import ArrowIcon from "../arrowIcon";
+import useReturnValue from "@/hooks/useReturnValue";
 
 function PositionItem({
-  isConcluded,
+  isDppm,
   position,
   tradingAddr,
   address,
   isPriceAbove,
 }: {
-  isConcluded: boolean;
+  isDppm: SimpleCampaignDetail["isDppm"];
   position: {
     id: `0x${string}`;
     shareAddress: `0x${string}`;
@@ -46,7 +47,16 @@ function PositionItem({
       2,
     ),
   );
-  const PnL = cost ? (isWinning ? shares + boost - cost : -cost + refund) : 0;
+  const { data: estimatedSharesToGet } = useReturnValue({
+    outcomeId: position.id,
+    shareAddr: position.shareAddress,
+    tradingAddr,
+    fusdc: cost,
+  });
+  const sharesToGet = formatFusdc(estimatedSharesToGet ?? 0, 2);
+  const toWin = isDppm ? Number(shares + boost) : Number(sharesToGet);
+  const toLose = isDppm ? -cost + refund : -cost;
+  const PnL = cost ? (isWinning ? toWin : toLose) : 0;
   return (
     <div className="flex flex-1 flex-col gap-1 rounded-lg bg-neutral-200 p-1">
       <div
@@ -94,25 +104,29 @@ function PositionItem({
                 "text-xs font-semibold",
               )}
             >
-              {isWinning ? `+ $${shares}` : `- $${cost}`}
+              {isWinning ? `+ $${isDppm ? shares : toWin}` : `- $${cost}`}
             </span>
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-[9px] font-bold text-neutral-400">
-              {isWinning ? "Bonus" : "Refund"}
-            </span>
-            <span
-              className={combineClass(
-                isWinning ? "text-green-700" : "text-red-700",
-                "text-xs font-semibold",
-              )}
-            >
-              {isWinning ? `+ $${boost}` : `+ ${refund}`}
-            </span>
-          </div>
+          {isDppm ? (
+            <div className="flex flex-col">
+              <span className="text-[9px] font-bold text-neutral-400">
+                {isWinning ? "Bonus" : "Refund"}
+              </span>
+              <span
+                className={combineClass(
+                  isWinning ? "text-green-700" : "text-red-700",
+                  "text-xs font-semibold",
+                )}
+              >
+                {isWinning ? `+ $${boost}` : `+ ${refund}`}
+              </span>
+            </div>
+          ) : (
+            <div className="flex" />
+          )}
           <div className="flex flex-col justify-end">
             <span className="text-right text-[9px] font-bold text-neutral-400">
               PnL / Cost
@@ -148,9 +162,9 @@ export default function SimplePositions({
     address: account.address,
     isDpm: false,
   });
-  const winnerOutcome = data.outcomes.find(
-    (o) => o.identifier === data?.winner,
-  ) as Outcome;
+  // const winnerOutcome = data.outcomes.find(
+  //   (o) => o.identifier === data?.winner,
+  // ) as Outcome;
   const { data: finalPrice } = useFinalPrice({
     symbol: data.priceMetadata.baseAsset,
     starting: data.starting,
@@ -166,7 +180,7 @@ export default function SimplePositions({
         <div className="flex flex-row gap-2">
           {positions.map((p) => (
             <PositionItem
-              isConcluded={!!winnerOutcome}
+              isDppm={data.isDppm}
               isPriceAbove={finalPrice ? finalPrice > basePrice : false}
               key={p.id}
               position={p}
