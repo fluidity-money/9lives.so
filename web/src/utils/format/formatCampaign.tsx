@@ -99,14 +99,17 @@ export function formatSimpleCampaignDetail(
     priceMetadata: formatPriceMetadata(ro.priceMetadata)!,
     poolAddress: ro.poolAddress as `0x${string}`,
     identifier: ro.identifier as `0x${string}`,
-    outcomes: ro.outcomes.map((o) => formatOutcome(o, true)),
+    outcomes: ro.outcomes.map((o) => formatOutcome(o, !!ro.priceMetadata)),
   };
 }
 
-export function formatOutcome(ro: RawOutcome, isDppm?: boolean): Outcome {
+export function formatOutcome(
+  ro: RawOutcome,
+  hasPriceMetadata: boolean,
+): Outcome {
   return {
     identifier: ro.identifier as `0x${string}`,
-    name: isDppm ? formatDppmOutcomeName(ro.name) : ro.name,
+    name: hasPriceMetadata ? formatDppmOutcomeName(ro.name) : ro.name,
     picture: ro.picture ?? null,
     share: { address: ro.share.address as `0x${string}` },
   };
@@ -166,7 +169,9 @@ export function formatClaimedCampaign(ro: RawClaimedCampaign): ClaimedCampaign {
         : ro.content.name,
       outcomes: ro.content.outcomes.map((o) => ({
         identifier: o.identifier as `0x${string}`,
-        name: ro.content.isDppm ? formatDppmOutcomeName(o.name) : o.name,
+        name: !!ro.content.priceMetadata
+          ? formatDppmOutcomeName(o.name)
+          : o.name,
         picture: o.picture ?? null,
       })),
     },
@@ -185,7 +190,9 @@ export function formatUnclaimedCampaign(
     ...ro.campaign,
     poolAddress: ro.campaign.poolAddress as `0x${string}`,
     identifier: ro.campaign.identifier as `0x${string}`,
-    outcomes: ro.campaign.outcomes.map((o) => formatOutcome(o)),
+    outcomes: ro.campaign.outcomes.map((o) =>
+      formatOutcome(o, !!ro.campaign.priceMetadata),
+    ),
     totalSpent: +formatFusdc(ro.totalSpent, 2),
     priceMetadata,
     ending: ro.campaign.ending * 1000,
