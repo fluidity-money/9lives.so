@@ -580,20 +580,6 @@ impl StorageTrading {
             self.amm_outcome_exists.get(outcome_id),
             Error::NonexistentOutcome
         );
-        FEATURE_IF_SHORTTERM_AMM!({
-            // There's no way this is set. But we blow up here anyway instead of
-            // overflowing (there's no way the time was set so close to epoch that
-            // this is lower than 60):
-            let ending_ts_hour = self.time_ending.get().into_limbs()[0].checked_sub(60).unwrap();
-            if block_timestamp() > ending_ts_hour {
-                return Err(Error::ShorttermTooLate);
-            }
-            let x = self.shortterm_amm_usd_liq.get();
-            self.shortterm_amm_usd_liq
-                .set(x.checked_add(usd_amt).ok_or(Error::CheckedAddOverflow)?);
-        } else {
-            // Do nothing here.
-        });
         assert_or!(
             !self.amm_liquidity.get().is_zero(),
             Error::NotEnoughLiquidity

@@ -124,7 +124,11 @@ impl StorageTrading {
         // behaviour. We feature flag this out to avoid the check:
         #[cfg(feature = "trading-backend-amm")]
         FEATURE_IF_SHORTTERM_AMM!({
+            // With this code, users aren't able to add liquidity so there're no extra fees. It's also worth noting that users that are expecting fees from
             let avail_liq = self.shortterm_amm_usd_liq.get();
+            self.fees_owed_addresses
+                .setter(DAO_EARN_ADDR)
+                .set(U256::ZERO);
             // We assume each winning share is worth $1, since that's how the model
             // works in this context:
             let amm_total_shares = self.amm_total_shares.get(_outcome);
@@ -313,6 +317,11 @@ impl StorageTrading {
     }
 
     pub fn internal_claim_addr_fees(&mut self, sender: Address, recipient: Address) -> R<U256> {
+        FEATURE_IF_SHORTTERM_AMM!({
+            // Fee creation doesn't work here. This happens implicitly using the
+            // vault. Despite that, we return zero instead of breaking down.
+            return Ok(U256::ZERO);
+        } else {});
         let owed = self.fees_owed_addresses.get(sender);
         fusdc_call::transfer(recipient, owed)?;
         self.fees_owed_addresses.setter(sender).set(U256::ZERO);

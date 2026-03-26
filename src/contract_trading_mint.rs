@@ -56,6 +56,23 @@ impl StorageTrading {
                 });
             }
         }
+        #[cfg(feature = "trading-backend-amm")]
+        FEATURE_IF_SHORTTERM_AMM!({
+            // There's no way this is set. But we blow up here anyway instead of
+            // overflowing (there's no way the time was set so close to epoch that
+            // this is lower than 60):
+            let ending_ts_hour = self.time_ending.get().into_limbs()[0].checked_sub(60).unwrap();
+            if block_timestamp() > ending_ts_hour {
+                return Err(Error::ShorttermTooLate);
+            }
+            // We provide this code outside the AMM-specific internal code since this
+            // is inclusive of fees:
+            let x = self.shortterm_amm_usd_liq.get();
+            self.shortterm_amm_usd_liq
+                .set(x.checked_add(value).ok_or(Error::CheckedAddOverflow)?);
+        } else {
+            // Do nothing here.
+        });
         // Set the fees, including the AMM helper ones.
         let fees = self.calculate_and_set_fees(value, true, referrer)?;
         let value = value.checked_sub(fees).ok_or(Error::MintAmountTooLow)?;
