@@ -2025,14 +2025,7 @@ func (r *queryResolver) UnclaimedCampaigns(ctx context.Context, address string, 
 	where
     py.spender = ?
     and py.was_spent = false
-	and bs_sum.campaign_content->>'winner' is not null
-	and (
-    	(bs_sum.campaign_content->>'isDppm')::boolean = true 
-    or (
-    	(bs_sum.campaign_content->>'isDppm')::boolean = false 
-    	and bs_sum.campaign_content->>'winner' = CONCAT('0x', bs_sum.outcome_id)
-    	)
-	)
+	and bs_sum.campaign_content->>'winner' = CONCAT('0x', bs_sum.outcome_id)
 	`
 	if token != nil {
 		query += ` and bs_sum.campaign_content->'priceMetadata'->>'baseAsset' = ?`
