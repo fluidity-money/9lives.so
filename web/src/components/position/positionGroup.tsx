@@ -32,7 +32,7 @@ export default function PositionsGroup({
     address: account.address,
     isDpm: content?.isDpm,
   });
-  const dppmPrices = getDppmPrices(content.odds);
+  const dppmPrices = getDppmPrices(content.odds, content.outcomes);
   const ammPrices = Object.entries(getAmmPrices(content.shares) ?? {}).map(
     ([k, v]) => ({ id: k, price: v }),
   );

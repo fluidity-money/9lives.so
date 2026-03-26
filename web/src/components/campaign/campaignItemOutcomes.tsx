@@ -29,7 +29,7 @@ export default function CampaignItemOutcomes({
 }: CampaignItemOutcomesProps) {
   const router = useRouter();
   const prices = useMemo(() => getAmmPrices(shares), [shares]);
-  const otherPrices = getDppmPrices(odds);
+  const otherPrices = getDppmPrices(odds, outcomes);
   const yesPrice =
     (isDppm
       ? otherPrices.find(

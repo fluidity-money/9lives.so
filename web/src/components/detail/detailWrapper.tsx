@@ -47,7 +47,7 @@ export default function DetailWrapper({
   const ammPrices = Object.entries(getAmmPrices(data.shares) ?? {}).map(
     ([k, v]) => ({ id: k, price: v }),
   );
-  const dppmPrices = getDppmPrices(data.odds);
+  const dppmPrices = getDppmPrices(data.odds, data.outcomes);
   const sharePrices = data.isDppm ? dppmPrices : ammPrices;
   const isConcluded = Boolean(data.winner);
 
