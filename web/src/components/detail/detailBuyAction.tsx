@@ -51,7 +51,7 @@ export default function DetailBuyAction({
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
-  price: string;
+  price: number;
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {

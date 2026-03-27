@@ -38,7 +38,7 @@ export default function DetailSellAction({
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
-  price: string;
+  price: number;
   minimized: boolean;
   setMinimized: React.Dispatch<boolean>;
 }) {

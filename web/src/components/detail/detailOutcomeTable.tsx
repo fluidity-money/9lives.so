@@ -16,7 +16,7 @@ export default function DetailOutcomes({
   isDpm,
 }: {
   data: CampaignDetail;
-  sharePrices?: { id: string; price: string }[];
+  sharePrices?: { id: string; price: number }[];
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   isConcluded: boolean;
@@ -59,11 +59,9 @@ export default function DetailOutcomes({
             )?.usdc ?? 0;
           const sharePrice =
             sharePrices?.find((item) => item.id === outcome.identifier)
-              ?.price ?? "0";
+              ?.price ?? 0;
           const price =
-            data.winner && outcome.identifier !== data.winner
-              ? "0"
-              : sharePrice;
+            data.winner && outcome.identifier !== data.winner ? 0 : sharePrice;
           const chanceDpm = dpmChances?.find(
             (chance) => chance.id === outcome.identifier,
           )!.chance;

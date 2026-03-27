@@ -23,7 +23,7 @@ export default function DetailOutcomeRow({
   isDpm,
 }: {
   data: Outcome;
-  price: string;
+  price: number;
   amount?: string;
   chance?: number;
   selectedOutcome: SelectedOutcome;

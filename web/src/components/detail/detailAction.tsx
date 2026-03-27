@@ -11,7 +11,7 @@ interface DetailActionProps {
   selectedOutcome: SelectedOutcome;
   setSelectedOutcome: React.Dispatch<SelectedOutcome>;
   data: CampaignDetail;
-  price: string;
+  price: number;
 }
 export default function DetailAction(props: DetailActionProps) {
   const [minimized, setMinimized] = useState(true);
