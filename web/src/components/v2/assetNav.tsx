@@ -66,7 +66,7 @@ export default function AssetNav({
     [
       {
         slug: "15mins",
-        title: is15Min ? "15 Min Markets" : "15 Mins",
+        title: is15Min ? "15 Min Markets" : "15 Mins 🔥",
         mobileTitle: "15 Min",
         callback: () => router.push(`/campaign/${mins15Markets[0]}/15mins`),
       },
