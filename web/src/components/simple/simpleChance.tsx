@@ -1,10 +1,13 @@
 "use client";
 
+import useAmmPrices from "@/hooks/useAmmPrices";
 import { SimpleCampaignDetail } from "@/types";
 import getDppmPrices from "@/utils/getDppmPrices";
 
 export default function SimpleChance({ data }: { data: SimpleCampaignDetail }) {
-  const sharePrices = getDppmPrices(data.odds, data.outcomes);
+  const { data: ammPrices } = useAmmPrices(data.poolAddress, data.outcomes);
+  const dppmPrices = getDppmPrices(data.odds, data.outcomes);
+  const sharePrices = data.isDppm ? dppmPrices : (ammPrices ?? []);
   const id = (outcomeName: "Up" | "Down") =>
     data.outcomes.find((o) => o.name === outcomeName)?.identifier;
   const chance = (outcomeName: "Up" | "Down") =>
