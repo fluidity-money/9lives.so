@@ -168,6 +168,13 @@ export function useWSForTrades({
                   [`0x${msg.content.outcome_id}`],
                 ],
               });
+              queryClient.invalidateQueries({
+                queryKey: [
+                  "prices",
+                  previousData.poolAddress,
+                  previousData.outcomes,
+                ],
+              });
             }
           }
         } catch (e) {
