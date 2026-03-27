@@ -1,7 +1,7 @@
 "use client";
 import { SimpleCampaignDetail } from "@/types";
 import Button from "./button";
-import React from "react";
+import React, { useEffect } from "react";
 import useCountdown from "@/hooks/useCountdown";
 import isMarketOpen from "@/utils/isMarketOpen";
 import config from "@/config";
@@ -22,37 +22,53 @@ export default function SimpleButtons({
   no: string;
 }) {
   const timeleft = useCountdown(data.ending, "differenceInMs");
-  const isEnded = 0 >= Number(timeleft);
+  const isEnded = 60 * 1000 >= Number(timeleft); // Prevent last minute buy
   const isOpen = isMarketOpen(
     config.simpleMarkets[data.priceMetadata.baseAsset],
   );
-  if (isEnded || !isOpen) return null;
+  useEffect(() => {
+    if (isEnded) {
+      setIsBuyDialogOpen(false);
+    }
+  }, [isEnded]);
+
+  if (!isOpen) return null;
 
   return (
-    <div className="flex flex-auto items-center gap-2">
-      <Button
-        title="Yes"
-        intent={"yes"}
-        size={"large"}
-        className={"flex-1"}
-        onClick={() => {
-          setOutcomeIdx(1);
-          setIsBuyDialogOpen(true);
-        }}
-        badge={<Badge intent={"yes"} chance={yes} />}
-      />
-      <Button
-        title="No"
-        intent={"no"}
-        size={"large"}
-        className={"flex-1"}
-        onClick={() => {
-          setOutcomeIdx(0);
-          setIsBuyDialogOpen(true);
-        }}
-        badge={<Badge intent={"no"} chance={no} />}
-      />
-      <MobileMenuButton />
+    <div className="flex flex-auto flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Button
+          title="Yes"
+          intent={"yes"}
+          size={"large"}
+          disabled={isEnded || !isOpen}
+          className={"flex-1"}
+          onClick={() => {
+            setOutcomeIdx(1);
+            setIsBuyDialogOpen(true);
+          }}
+          badge={<Badge intent={"yes"} chance={yes} />}
+        />
+        <Button
+          title="No"
+          intent={"no"}
+          size={"large"}
+          disabled={isEnded || !isOpen}
+          className={"flex-1"}
+          onClick={() => {
+            setOutcomeIdx(0);
+            setIsBuyDialogOpen(true);
+          }}
+          badge={<Badge intent={"no"} chance={no} />}
+        />
+        <MobileMenuButton />
+      </div>
+      {isEnded ? (
+        <p className="text-center text-xs text-neutral-400">
+          Last minute buy is not allowed at the moment to protect real users
+          trading.
+        </p>
+      ) : null}
     </div>
   );
 }
