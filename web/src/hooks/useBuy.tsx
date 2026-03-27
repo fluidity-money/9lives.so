@@ -179,6 +179,9 @@ const useBuy = ({
               config.destinationChain.id,
             ],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["prices", data.poolAddress, data.outcomes],
+          });
           track(EVENTS.MINT, {
             amount: fusdc,
             outcomeId,

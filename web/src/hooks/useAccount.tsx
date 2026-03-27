@@ -307,6 +307,9 @@ export default function useAccount({
               config.destinationChain.id,
             ],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["prices", data.poolAddress, data.outcomes],
+          });
         } catch (e) {
           rej(e);
         }

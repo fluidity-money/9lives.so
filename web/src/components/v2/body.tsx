@@ -23,6 +23,7 @@ import useAssets from "@/hooks/useAssets";
 import { combineClass } from "@/utils/combineClass";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import KeyboardCommandAlert from "./keyboardCommandAlert";
+import usePrices from "@/hooks/useAmmPrices";
 
 const RightCarot = ({ className = "size-6" }: { className?: string }) => (
   <svg
@@ -55,7 +56,9 @@ export default function SimpleBody({
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   const [outcomeIdx, setOutcomeIdx] = useState(1);
   const enabledSimpleModeAlert = useFeatureFlag("enable simple mode alert");
-  const sharePrices = getDppmPrices(data.odds, data.outcomes);
+  const dppmPrices = getDppmPrices(data.odds, data.outcomes);
+  const { data: ammPrices } = usePrices(data.poolAddress, data.outcomes);
+  const sharePrices = data.isDppm ? dppmPrices : (ammPrices ?? []);
   const id = (outcomeName: "Up" | "Down") =>
     data.outcomes.find((o) => o.name === outcomeName)?.identifier;
   const chance = (outcomeName: "Up" | "Down") =>

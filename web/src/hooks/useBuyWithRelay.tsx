@@ -258,6 +258,9 @@ const useBuyWithRelay = ({
           queryClient.invalidateQueries({
             queryKey: ["tokensWithBalances", address, fromChain],
           });
+          queryClient.invalidateQueries({
+            queryKey: ["prices", data.poolAddress, data.outcomes],
+          });
         } catch (e) {
           if (
             !(
