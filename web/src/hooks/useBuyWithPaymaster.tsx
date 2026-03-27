@@ -95,11 +95,11 @@ const useBuyWithPaymaster = ({
           (o) => o.identifier === newRequest.outcome,
         );
         newPosition = {
-          id: investedOutcome?.identifier ?? "0x0",
+          id: investedOutcome?.identifier ?? "0xff",
           balanceRaw: BigInt(newRequest.amountToSpend),
           balance: formatFusdc(newRequest.amountToSpend, 2),
           name: investedOutcome?.name ?? "Unknown",
-          shareAddress: investedOutcome?.share.address ?? "0x0",
+          shareAddress: investedOutcome?.share.address ?? "0xff",
         };
         newPositions = [...previousPositions, newPosition];
       }
