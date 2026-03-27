@@ -65,8 +65,7 @@ export default function SimpleButtons({
       </div>
       {isEnded ? (
         <p className="text-center text-xs text-neutral-400">
-          Last minute buy is not allowed at the moment to protect real users
-          trading.
+          Last minute buy is not allowed.
         </p>
       ) : null}
     </div>
