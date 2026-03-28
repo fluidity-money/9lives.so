@@ -21,13 +21,11 @@ export default function AssetButton({
           ? "border-b-2 border-b-2black md:border-2 md:border-2black"
           : "md:border-neutral-200",
         "flex flex-row items-center justify-between gap-1 p-2 md:rounded-lg md:border",
-        title === "BTC" && "bg-yellow-200",
       )}
     >
       <span className="flex items-center justify-start text-sm text-2black">
         <span className="text-neutral-400">$</span>
         {title}
-        {title === "BTC" ? "🔥" : ""}
       </span>
       {isPriceUp !== undefined ? (
         <ArrowIcon variant={isPriceUp ? "up" : "down"} />
