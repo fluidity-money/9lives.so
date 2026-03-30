@@ -17,14 +17,13 @@ flowchart TD
     Factory -->|Deploys beacon proxy via CREATE2| TradingProxy[Trading Proxy]
     Factory -->|Deploys ERC20 proxy per outcome via CREATE2| ShareERC20s[Share ERC20s]
     Factory -->|Borrows seed liquidity for DPPM markets| Vault
-    Factory -->|Registers campaign if using Infra Market oracle| InfraMarket[Infra Market]
     TradingProxy -->|Delegates to facet based on selector| TradingBeacon
     TradingBeacon -->|Routes to| MintImpl[Mint Impl]
     TradingBeacon -->|Routes to| ExtrasImpl[Extras Impl]
     TradingBeacon -->|Routes to| QuotesImpl[Quotes Impl]
     TradingBeacon -->|Routes to| PriceImpl[Price Impl]
     ShareERC20s -->|Minted/burned by| MintImpl
-    Oracle[Oracle: Beauty Contest / Infra Market / Price Resolver] -->|Calls decide on| TradingProxy
+    Oracle[Oracle: Beauty Contest / Price Resolver] -->|Calls decide on| TradingProxy
 ```
 
 ### Contract facets
@@ -65,30 +64,6 @@ Markets must specify an oracle at creation time. The oracle is the only address 
 - For AMM: picks the outcome with the highest price
 - Pays a fee to the caller who triggers resolution
 
-**Infrastructure Market** ([`contract_infra_market.rs`](src/contract_infra_market.rs)):
-- A decentralized oracle using Staked ARB as collateral, with a commit-reveal voting scheme
-- Operates through a state machine with timed phases:
-
-```
-+------------+------------+-------------------+------------+
-| Whinging   | Predicting | Commitment Reveal | Sweeping   |
-| Period (2d)| Period (2d)| Period (2d)       | Period     |
-+------------+------------+-------------------+------------+
-| Day 1-2    | Day 3-4    | Day 5-6           | Day 7+     |
-+------------+------------+-------------------+------------+
-```
-
-The lifecycle is:
-1. **Callable**: anyone can `call()` an outcome, posting a $2 fUSDC bond
-2. **Whinging** (2 days): anyone can `whinge()` to challenge the call, posting a $7 fUSDC bond and naming a different outcome. If nobody whinges, the market moves to **Closable**
-3. **Closable**: anyone calls `close()`, which accepts the called outcome, returns the caller's bond + incentive, and calls `decide()` on the Trading contract
-4. **Predicting** (2 days, after a whinge): Locked ARB holders submit `predict()` with a hash commitment of their vote
-5. **Revealing** (2 days): voters `reveal()` their commitments, weighted by their Locked ARB balance at the time the campaign started
-6. **Declarable**: anyone calls `declare()` with the outcome list; the outcome with the most ARB-weighted votes wins
-7. **Sweeping**: voters on the winning side can claim rewards; voters on the losing side are slashed
-
-If the declared winner is the zero outcome (inconclusive), the epoch increments and the market returns to the Callable state.
-
 **Price Resolver Oracle** (external contract at `ORACLE_ADDR`):
 - Used for short-term markets where the outcome is determined by an external data source (e.g., asset prices via LayerZero)
 - The oracle contract calls `decide()` when the condition is met
@@ -101,11 +76,6 @@ If the declared winner is the zero outcome (inconclusive), the epoch increments 
 - For DPPM: the Factory calls `borrow()` at market creation; the Trading contract calls `repay()` at resolution, returning DAO-earned fees to cover the loan
 - For shortterm AMM: the Factory calls `ammRegister()`; at resolution the Trading contract either calls `ammReceive()` (if there's a shortfall) or `ammGift()` (if there's a surplus)
 - The operator can `drain()` excess funds above outstanding debt
-
-**Lockup** ([`contract_lockup.rs`](src/contract_lockup.rs)):
-- Takes Staked ARB from users and mints Locked ARB (an internal ERC20 with vote-tracking via `getPastVotes`)
-- The Infra Market can `freeze()` a user's Locked ARB during voting and `slash()` incorrect voters
-- Users can `withdraw()` (burn Locked ARB, receive Staked ARB) only after their freeze period expires
 
 **Share ERC20s** ([`Share.sol`](src/Share.sol)):
 - Minimal ERC20 tokens deployed per outcome via CREATE2
@@ -129,11 +99,6 @@ Fees are configured per-market at creation time (each capped at <10%):
 | Referrer fee | Referrer address | Paid when a referrer is specified on mint |
 | Protocol fee | Protocol | Fixed 0.8% on all mints |
 
-For Infra Market campaigns, additional fees are collected at creation to incentivize oracle participants:
-- $1 fUSDC for the `call()` incentive
-- $0.10 fUSDC for the `close()` incentive
-- $0.10 fUSDC for the `declare()` incentive
-
 ---
 
 ## Project structure
@@ -155,13 +120,8 @@ src/
   trading_dppm.rs                 # DPPM backend: mint, payoff, price logic
   trading_amm.rs                  # AMM backend: mint, burn, liquidity, price logic
   trading_private.rs              # Shared trading internals: ctor, decide, fees, shutdown
-  contract_infra_market.rs        # Infra Market oracle: call/whinge/predict/reveal/declare/sweep
-  storage_infra_market.rs         # Infra Market storage layout
-  timing_infra_market.rs          # Infra Market state machine timing
   contract_beauty_contest.rs      # Beauty Contest oracle: resolve by popularity
   storage_beauty_contest.rs       # Beauty Contest storage layout
-  contract_lockup.rs              # Lockup: stake ARB, freeze, slash
-  storage_lockup.rs               # Lockup storage layout
   immutables.rs                   # Compile-time addresses and constants
   fees.rs                         # Fee constants (bonds, incentives, protocol %)
   maths.rs                        # Math helpers (DPPM share calc, sqrt, mul_div)
@@ -172,7 +132,6 @@ src/
   TradingBeacon.sol               # Beacon: maps selectors to facet impls (Solidity)
   Share.sol                       # Share ERC20 (Solidity, compiled with Foundry)
   NineLivesPaymaster.sol          # Paymaster for gasless transactions (Solidity)
-  LockupToken.sol                 # Locked ARB ERC20 with vote tracking (Solidity)
 tests/                            # Property tests, e2e tests, reference implementations
 db/                               # Database migrations (PostgreSQL)
 cmd/                              # Backend services (Go): GraphQL API, ingestor, paymaster, etc.
@@ -192,8 +151,6 @@ Each contract facet is compiled as a separate WASM binary using Cargo feature fl
 | `contract-trading-extras` + backend | Extras facet |
 | `contract-trading-quotes` + backend | Quotes facet |
 | `contract-trading-price` + backend | Price facet |
-| `contract-lockup` | Lockup |
-| `contract-infra-market` | Infra Market oracle |
 | `contract-beauty-contest` | Beauty Contest oracle |
 | `testing` | Required for non-WASM builds (unit/property tests) |
 
