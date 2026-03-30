@@ -1,99 +1,274 @@
 
 # 9lives
 
-9lives is the most customisable and advanced prediction market in the web3 ecosystem, with
-a liquidity free bootstrapping model titled the DPPM, and an AMM feature. We can support
-teams interested in releasing prediction markets themselves using 9lives, including
-hosting the graph for you. If you're interested in this, contact us at [this
-link](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60T7NHtLLmewkNvldg/viewform?usp=dialog)!
+9lives is a prediction market protocol built on [Arbitrum Stylus](https://docs.arbitrum.io/stylus/gentle-introduction), supporting both a Dynamic Pari-Mutuel Prediction Market (DPPM) model and a Constant Product AMM model. The core contracts are written in Rust and compiled to WASM, with supporting Solidity contracts for proxies, the Vault, and the TradingBeacon.
+
+If you're interested in running prediction markets using 9lives (including hosted graph infrastructure), reach out via [this form](https://docs.google.com/forms/d/e/1FAIpQLSfYfgLuQ0GU8K5vGj-kU0PciqHHQCCD60T7NHtLLmewkNvldg/viewform?usp=dialog).
 
 ---
 
-9lives is an Arbitrum Stylus smart contract implemented with a simple factory/pair
-pattern. A factory takes a list of outcomes, and creates a variable number of contracts
-with a minimal viable proxy pointing to share ERC20s, and a trading contract. It either
-supports the Dynamic Pari-Mutuel Prediction Market (DPPM) model to solve liquidity issues
-in orderbooks, or a Constant Product Market Maker model hosted entirely in contract.
+## How the contracts work
 
-To get started with the contract entrypoint, src/lib.rs contains the matching of features
-to deploy different contract facets. Testing is done with a mixture of property and
-mutation testing and a bespoke testing environment for ERC20 accounting and more.
-
-Inventors create campaigns (the prediction markets) by locking up "incentive" amounts, and
-by picking the type of oracle they want to use. Any fees earned in the campaign are sent
-to the Inventor, which provides incentive to create markets. Markets must be created with
-a hard deadline and a Beauty Contest or a Infrastructure Market, or with a Contract
-Interaction type of outcome. The Inventor must communicate to the Factory which oracle
-they would like to use, and provide the hash of the string that must be used to determine
-the outcome. This will then set the correct behaviour.
+The system follows a **factory/proxy** pattern. The Factory deploys Trading contract proxies and Share ERC20 proxies for each market. Each Trading contract is a beacon proxy that delegates calls to one of four implementation facets (mint, extras, quotes, price) based on the function selector, looked up via the [TradingBeacon](src/TradingBeacon.sol). There are separate implementations for DPPM and AMM backends, selected at deploy time.
 
 ```mermaid
 flowchart TD
-    Trader --> |Locks up incentive amount, sets parameters| Factory
-    Factory --> |Sets start, end, description, if infra market oracle chosen| Infra[Infra market]
-    Factory --> |Deploys contract. Sets parameters| Trading
-    Factory --> |Configures Longtail pool| Longtail
-    Factory --> |Deploys ERC20 assets for each outcome| ERC20s
-    Trading --> |Disables Longtail once trading is done| Factory
-    ERC20s --> |Burns and mints supply| Trading
-    Infra --> |Tells Trading who won| Trading
+    Creator -->|Calls newTrading with outcomes, oracle, fees, backend type| Factory
+    Factory -->|Deploys beacon proxy via CREATE2| TradingProxy[Trading Proxy]
+    Factory -->|Deploys ERC20 proxy per outcome via CREATE2| ShareERC20s[Share ERC20s]
+    Factory -->|Borrows seed liquidity for DPPM markets| Vault
+    Factory -->|Registers campaign if using Infra Market oracle| InfraMarket[Infra Market]
+    TradingProxy -->|Delegates to facet based on selector| TradingBeacon
+    TradingBeacon -->|Routes to| MintImpl[Mint Impl]
+    TradingBeacon -->|Routes to| ExtrasImpl[Extras Impl]
+    TradingBeacon -->|Routes to| QuotesImpl[Quotes Impl]
+    TradingBeacon -->|Routes to| PriceImpl[Price Impl]
+    ShareERC20s -->|Minted/burned by| MintImpl
+    Oracle[Oracle: Beauty Contest / Infra Market / Price Resolver] -->|Calls decide on| TradingProxy
 ```
 
-Infra Markets are prediction markets where Staked ARB is locked up as LARB, which is used
-to predict the outcome of another prediction market with a commit and reveal scheme. These
-markets exist in an optimistic state where anyone can "call" the outcome, before being
-challenged with a "whinge", which begins the process of a commit and reveal system.
-Following this, amounts can be claimed with a slashing process based on amounts staked.
+### Contract facets
 
-Oracle State oracles are very simple comparatively, as presumably the associated Trading
-contract was configured to allow early activation, so all a caller must do is activate the
-associated Oracle State contract. These could communicate with LayerZero to pull
-information from another chain, and the contract will simply check the result of the
-message. If it's not activated by the date that's given, then it defaults to a "DEFAULT"
-clause that could be "no" if a user were to try to estimate the price of something.
+Each Trading contract is split into four facets, each compiled as a separate WASM binary with either the `trading-backend-dppm` or `trading-backend-amm` feature flag. The [TradingBeacon](src/TradingBeacon.sol) maps function selectors to the correct facet address using a byte in the selector:
+
+| Facet | Responsibility | Key functions |
+|-------|---------------|---------------|
+| **Mint** ([`contract_trading_mint.rs`](src/contract_trading_mint.rs)) | Buying and selling shares | `mint`, `burn` (AMM only) |
+| **Extras** ([`contract_trading_extras.rs`](src/contract_trading_extras.rs)) | Constructor, state queries, deciding outcomes | `ctor`, `decide`, `details`, `share_addr`, `outcome_list` |
+| **Quotes** ([`contract_trading_quotes.rs`](src/contract_trading_quotes.rs)) | Quoting prices, payoffs, fee queries | `quote`, `payoff`, `fees`, `estimate_burn` |
+| **Price** ([`contract_trading_price.rs`](src/contract_trading_price.rs)) | Current prices, liquidity management, fee claiming | `price`, `add_liquidity`, `remove_liquidity`, `claim_all_fees` |
+
+### Trading backends
+
+**DPPM** (Dynamic Pari-Mutuel Prediction Market) -- implemented in [`trading_dppm.rs`](src/trading_dppm.rs):
+- Supports exactly 2 outcomes
+- Seed liquidity is borrowed from the [Vault](src/Vault.sol) at creation time and repaid at resolution
+- Share prices are determined by the ratio of funds invested in each outcome
+- Includes a "Ninetails" time-weighted bonus: earlier buyers receive boosted shares that entitle them to a larger portion of the losing side's funds
+- Only whitelisted creator addresses (`DPPM_HOUR_CREATOR_ADDR`, `DPPM_15_MIN_CREATOR_ADDR`, `DPPM_5_MIN_CREATOR_ADDR`) can create DPPM markets
+- No selling/burning of shares -- positions are held until resolution
+
+**AMM** (Automated Market Maker) -- implemented in [`trading_amm.rs`](src/trading_amm.rs):
+- Supports 2+ outcomes
+- Uses a constant-product invariant across outcome share pools
+- Liquidity providers can add/remove liquidity and earn fees
+- Shares can be both minted (bought) and burned (sold) before resolution
+- A "shortterm AMM" variant exists for markets using the price resolver oracle, where the Vault provides and reclaims liquidity at resolution
+
+### Oracles (resolution mechanisms)
+
+Markets must specify an oracle at creation time. The oracle is the only address allowed to call `decide()` on a Trading contract, which locks in the winning outcome.
+
+**Beauty Contest** ([`contract_beauty_contest.rs`](src/contract_beauty_contest.rs)):
+- The simplest oracle -- anyone can call `resolve()` after the market's deadline passes
+- For DPPM: picks the outcome with the most shares purchased
+- For AMM: picks the outcome with the highest price
+- Pays a fee to the caller who triggers resolution
+
+**Infrastructure Market** ([`contract_infra_market.rs`](src/contract_infra_market.rs)):
+- A decentralized oracle using Staked ARB as collateral, with a commit-reveal voting scheme
+- Operates through a state machine with timed phases:
+
+```
++------------+------------+-------------------+------------+
+| Whinging   | Predicting | Commitment Reveal | Sweeping   |
+| Period (2d)| Period (2d)| Period (2d)       | Period     |
++------------+------------+-------------------+------------+
+| Day 1-2    | Day 3-4    | Day 5-6           | Day 7+     |
++------------+------------+-------------------+------------+
+```
+
+The lifecycle is:
+1. **Callable**: anyone can `call()` an outcome, posting a $2 fUSDC bond
+2. **Whinging** (2 days): anyone can `whinge()` to challenge the call, posting a $7 fUSDC bond and naming a different outcome. If nobody whinges, the market moves to **Closable**
+3. **Closable**: anyone calls `close()`, which accepts the called outcome, returns the caller's bond + incentive, and calls `decide()` on the Trading contract
+4. **Predicting** (2 days, after a whinge): Locked ARB holders submit `predict()` with a hash commitment of their vote
+5. **Revealing** (2 days): voters `reveal()` their commitments, weighted by their Locked ARB balance at the time the campaign started
+6. **Declarable**: anyone calls `declare()` with the outcome list; the outcome with the most ARB-weighted votes wins
+7. **Sweeping**: voters on the winning side can claim rewards; voters on the losing side are slashed
+
+If the declared winner is the zero outcome (inconclusive), the epoch increments and the market returns to the Callable state.
+
+**Price Resolver Oracle** (external contract at `ORACLE_ADDR`):
+- Used for short-term markets where the outcome is determined by an external data source (e.g., asset prices via LayerZero)
+- The oracle contract calls `decide()` when the condition is met
+- If not activated by the deadline, defaults to a preconfigured outcome
+
+### Supporting contracts
+
+**Vault** ([`Vault.sol`](src/Vault.sol)):
+- A shared liquidity pool that lends seed capital to DPPM markets at creation and is repaid at resolution
+- For DPPM: the Factory calls `borrow()` at market creation; the Trading contract calls `repay()` at resolution, returning DAO-earned fees to cover the loan
+- For shortterm AMM: the Factory calls `ammRegister()`; at resolution the Trading contract either calls `ammReceive()` (if there's a shortfall) or `ammGift()` (if there's a surplus)
+- The operator can `drain()` excess funds above outstanding debt
+
+**Lockup** ([`contract_lockup.rs`](src/contract_lockup.rs)):
+- Takes Staked ARB from users and mints Locked ARB (an internal ERC20 with vote-tracking via `getPastVotes`)
+- The Infra Market can `freeze()` a user's Locked ARB during voting and `slash()` incorrect voters
+- Users can `withdraw()` (burn Locked ARB, receive Staked ARB) only after their freeze period expires
+
+**Share ERC20s** ([`Share.sol`](src/Share.sol)):
+- Minimal ERC20 tokens deployed per outcome via CREATE2
+- Minted/burned exclusively by the associated Trading contract
+- The CREATE2 salt is derived from the trading address + outcome identifier, making addresses deterministic
+
+**Factory** ([`contract_factory_1.rs`](src/contract_factory_1.rs), [`contract_factory_2.rs`](src/contract_factory_2.rs)):
+- Split across two facets for code size reasons
+- Factory 1: `newTrading` -- deploys trading proxies, share ERC20s, seeds liquidity, registers with oracles
+- Factory 2: constructor, admin functions, address lookups, legacy compatibility methods
+
+### Fee structure
+
+Fees are configured per-market at creation time (each capped at <10%):
+
+| Fee | Recipient | Description |
+|-----|-----------|-------------|
+| Creator fee | Market creator (`fee_recipient`) | Incentive for creating markets |
+| LP fee | Liquidity providers (AMM only) | Reward for providing liquidity |
+| Minter fee | Protocol (`DAO_EARN_ADDR`) | Protocol revenue |
+| Referrer fee | Referrer address | Paid when a referrer is specified on mint |
+| Protocol fee | Protocol | Fixed 0.8% on all mints |
+
+For Infra Market campaigns, additional fees are collected at creation to incentivize oracle participants:
+- $1 fUSDC for the `call()` incentive
+- $0.10 fUSDC for the `close()` incentive
+- $0.10 fUSDC for the `declare()` incentive
 
 ---
 
-![Diagram of the system](diagram.svg)
+## Project structure
 
-## Building contracts
+```
+src/
+  lib.rs                          # Crate root, feature-gated entrypoint selection
+  contract_factory_1.rs           # Factory: market creation (newTrading)
+  contract_factory_2.rs           # Factory: admin, queries, legacy compat
+  storage_factory.rs              # Factory storage layout
+  contract_trading.rs             # Trading: feature gate that selects the active facet
+  contract_trading_mint.rs        # Trading facet: mint/burn shares
+  contract_trading_extras.rs      # Trading facet: ctor, state, decide
+  contract_trading_quotes.rs      # Trading facet: quotes, payoff, fees
+  contract_trading_price.rs       # Trading facet: price, liquidity, fee claiming
+  contract_trading_extras_admin.rs # Trading facet: admin-only operations
+  contract_trading_dumper.rs      # Trading facet: emergency dumper
+  storage_trading.rs              # Trading storage layout
+  trading_dppm.rs                 # DPPM backend: mint, payoff, price logic
+  trading_amm.rs                  # AMM backend: mint, burn, liquidity, price logic
+  trading_private.rs              # Shared trading internals: ctor, decide, fees, shutdown
+  contract_infra_market.rs        # Infra Market oracle: call/whinge/predict/reveal/declare/sweep
+  storage_infra_market.rs         # Infra Market storage layout
+  timing_infra_market.rs          # Infra Market state machine timing
+  contract_beauty_contest.rs      # Beauty Contest oracle: resolve by popularity
+  storage_beauty_contest.rs       # Beauty Contest storage layout
+  contract_lockup.rs              # Lockup: stake ARB, freeze, slash
+  storage_lockup.rs               # Lockup storage layout
+  immutables.rs                   # Compile-time addresses and constants
+  fees.rs                         # Fee constants (bonds, incentives, protocol %)
+  maths.rs                        # Math helpers (DPPM share calc, sqrt, mul_div)
+  proxy.rs                        # CREATE2 proxy deployment helpers
+  error.rs                        # Error types and codes (see ERRORS.md)
+  events.rs                       # Event definitions
+  Vault.sol                       # Vault: shared liquidity pool (Solidity)
+  TradingBeacon.sol               # Beacon: maps selectors to facet impls (Solidity)
+  Share.sol                       # Share ERC20 (Solidity, compiled with Foundry)
+  NineLivesPaymaster.sol          # Paymaster for gasless transactions (Solidity)
+  LockupToken.sol                 # Locked ARB ERC20 with vote tracking (Solidity)
+tests/                            # Property tests, e2e tests, reference implementations
+db/                               # Database migrations (PostgreSQL)
+cmd/                              # Backend services (Go): GraphQL API, ingestor, paymaster, etc.
+web/                              # Frontend (TypeScript)
+```
 
-	make build
+### Feature flags
 
-## Updating docs (after editing markdown files)
+Each contract facet is compiled as a separate WASM binary using Cargo feature flags. Exactly one `contract-*` feature must be enabled per build, and trading facets additionally require either `trading-backend-dppm` or `trading-backend-amm`:
 
-	forge doc -b
+| Feature | Contract |
+|---------|----------|
+| `contract-factory-1` | Factory (market creation) |
+| `contract-factory-2` | Factory (admin/queries) |
+| `contract-trading-mint` + `trading-backend-dppm` | DPPM mint facet |
+| `contract-trading-mint` + `trading-backend-amm` | AMM mint facet |
+| `contract-trading-extras` + backend | Extras facet |
+| `contract-trading-quotes` + backend | Quotes facet |
+| `contract-trading-price` + backend | Price facet |
+| `contract-lockup` | Lockup |
+| `contract-infra-market` | Infra Market oracle |
+| `contract-beauty-contest` | Beauty Contest oracle |
+| `testing` | Required for non-WASM builds (unit/property tests) |
+
+---
+
+## Building
+
+Build all contract WASM binaries and Solidity artifacts:
+
+```sh
+make build
+```
+
+This compiles each facet separately (see the [Makefile](Makefile) for the full list of targets). Solidity contracts are built with Foundry:
+
+```sh
+forge build
+```
+
+### Environment variables
+
+The Rust contracts read deployment addresses at compile time from environment variables (see [`immutables.rs`](src/immutables.rs)). Key variables include:
+
+- `SPN_FUSDC_ADDR` -- fUSDC token address
+- `SPN_STAKED_ARB_ADDR` -- Staked ARB token address
+- `SPN_TRADING_BEACON_ADDR` -- TradingBeacon contract address
+- `SPN_VAULT_ADDR` -- Vault contract address
+- `SPN_SHARE_IMPL_ADDR` -- Share ERC20 implementation address
+- `SPN_DAO_EARN_ADDR` -- DAO fee recipient
+- `SPN_DAO_OP_ADDR` -- DAO operator (admin)
+
+See [`immutables.rs`](src/immutables.rs) for the full list. When the `testing` feature is enabled, these are replaced with hardcoded test addresses from [`testing_addrs.rs`](src/testing_addrs.rs).
 
 ## Testing
 
-Testing must be done with no trading or contract feature enabled. Testing is only possible
-on the local environment, or with end to end tests with an Arbitrum node.
+Unit and property tests run natively (not in WASM). The `testing` feature must be enabled:
 
-	./tests.sh
+```sh
+./tests.sh
+```
 
-Testing coverage can be measured using mutation testing and `cargo-nextest`. This can be
-quite heavy, and will take a long time to run. `proptest` is configured using `PROPTEST_CASES`
-to reduce the time to 10, instead of the default 256.
+Mutation testing with `cargo-mutants` and `cargo-nextest` (slow, resource-intensive):
 
-	./mutants.sh
+```sh
+./mutants.sh
+```
 
-Interrogation of the deployment in the end to end testing library could be done using the
-`build.rs` use of `environment.lst`, which could be in turn read with a fresh deploy (and
-a clean artifacts directory):
+`PROPTEST_CASES` controls the number of property test iterations (default in CI: 10, proptest default: 256).
 
-	sort $(find target -name environment.lst) | uniq
+End-to-end tests in `tests/` use a bespoke harness that deploys contracts to a local Arbitrum node. The `build.rs` script reads `environment.lst` files to track deployment addresses:
 
-You could clear the recorded environment variables the same way with a test harness:
+```sh
+# List all recorded environment variables from a fresh deploy
+sort $(find target -name environment.lst) | uniq
 
-	find target -name environment.lst -delete
+# Clear recorded variables
+find target -name environment.lst -delete
+```
 
-You could use this to test the code by making a debug build, which includes more
-information about reverts, then simulate your calldata against it using
-`stylus-interpreter`, making debugging a breeze.
+For debugging reverts, build with debug info and use `stylus-interpreter` to simulate calldata against the WASM binary.
 
 ## Errors
 
-The error table lives in ERRORS.md.
+See [ERRORS.md](ERRORS.md) for the full error code table. Generate it with:
+
+```sh
+./print-error-table.sh
+```
+
+## Audits
+
+- [Dadekuma (December 2024)](audits/Dadekuma-12-2024.pdf)
+- [OpenZeppelin (November 2025)](audits/OpenZeppelin-11-2025.pdf)
+
+See [audits/README.md](audits/README.md) for details.
 
 ## Deployments
 
@@ -140,3 +315,7 @@ The error table lives in ERRORS.md.
 | Vault proxy                   | `0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14` |
 
 Several "precompiles" are in use, provided by superposition-precompiles.
+
+## License
+
+See [LICENSE](LICENSE).
