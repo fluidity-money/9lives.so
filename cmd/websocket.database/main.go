@@ -161,6 +161,9 @@ func main() {
 		Password: timescalePassword,
 		Database: strings.TrimPrefix(u.Path, "/"),
 		Port:     port,
+		ExtensionSupport: cdcConfig.ExtensionSupport {
+			EnableTimeScaleDB: true,
+		},
 		Publication: cdcPublication.Config{
 			CreateIfNotExists: true,
 			Name:              os.Getenv(EnvPublicationName),
