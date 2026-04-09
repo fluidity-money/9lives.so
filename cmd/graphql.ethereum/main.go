@@ -50,6 +50,12 @@ const (
 	// EnvBackendType to use to listen the server with, (http|lambda).
 	EnvBackendType = "SPN_LISTEN_BACKEND"
 
+	// EnvKeyFile to use as the cert when listening with tls.
+	EnvCertFile = "SPN_CERT_FILE"
+
+	// EnvKeyFile to use as the key when listening with tls.
+	EnvKeyFile = "SPN_KEY_FILE"
+
 	// EnvListenAddr to listen the HTTP server on.
 	EnvListenAddr = "SPN_LISTEN_ADDR"
 
@@ -165,6 +171,18 @@ func main() {
 		lambda.Start(httpadapter.NewV2(http.DefaultServeMux).ProxyWithContext)
 	case "http":
 		err := http.ListenAndServe(os.Getenv(EnvListenAddr), nil)
+		setup.Exitf( // This should only return if there's an error.
+			"err listening, %#v not set?: %v",
+			EnvListenAddr,
+			err,
+		)
+	case "https":
+		err := http.ListenAndServeTLS(
+			os.Getenv(EnvListenAddr),
+			os.Getenv(EnvCertFile),
+			os.Getenv(EnvKeyFile),
+			nil,
+		)
 		setup.Exitf( // This should only return if there's an error.
 			"err listening, %#v not set?: %v",
 			EnvListenAddr,
