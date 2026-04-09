@@ -190,7 +190,7 @@ func main() {
 		)
 	default:
 		setup.Exitf(
-			"unexpected listen type: %#v, use either (lambda|http) for SPN_LISTEN_BACKEND",
+			"unexpected listen type: %#v, use either (lambda|http|https) for SPN_LISTEN_BACKEND",
 			typ,
 		)
 	}
