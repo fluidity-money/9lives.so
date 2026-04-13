@@ -130,8 +130,8 @@ fn take_outcome_id {
 outcome_0_desc=`{echo $SPN_BASE_ASSET will end up below '$'$SPN_END_QUOTE_PRICE before $SPN_DEADLINE}
 outcome_1_desc=`{echo $SPN_BASE_ASSET will end up above '$'$SPN_END_QUOTE_PRICE before $SPN_DEADLINE}
 
-outcome_0_id=`{go run scripts/outcome-id.go $"outcome_0_desc $SPN_OUTCOME_0_SEED}
-outcome_1_id=`{go run scripts/outcome-id.go $"outcome_1_desc $SPN_OUTCOME_1_SEED}
+outcome_0_id=`{go run scripts/outcome-id/main.go $"outcome_0_desc $SPN_OUTCOME_0_SEED}
+outcome_1_id=`{go run scripts/outcome-id/main.go $"outcome_1_desc $SPN_OUTCOME_1_SEED}
 
 outcome_args='[('$outcome_0_id','$*(1)','$"outcome_0_desc'),('$outcome_1_id','$*(1)','$"outcome_1_desc')]'
 
