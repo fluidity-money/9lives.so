@@ -132,7 +132,7 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
-    listed: true,
+    listed: false,
   },
   goog: {
     slug: "goog",
