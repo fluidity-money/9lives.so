@@ -12,7 +12,7 @@ export default function KeyboardCommandAlert() {
   if (dismissed) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 hidden max-w-[300px] rounded-2xl border border-neutral-400 bg-2white p-4 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] md:block">
+    <div className="fixed bottom-4 right-4 z-50 hidden max-w-[300px] rounded-2xl border border-neutral-400 bg-2white p-4 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)] md:block">
       <CloseButton close={() => setDismissed(true)} />
       <h6 className="mb-4">Use Keyboard Actions</h6>
       <p className="mb-4 text-center text-xs leading-6">

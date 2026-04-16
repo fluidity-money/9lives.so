@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "../globals.css";
-import { combineClass } from "@/utils/combineClass";
 import appConfig from "@/config";
 import Providers from "@/providers";
 import { headers } from "next/headers";
@@ -13,6 +12,7 @@ import Header from "@/components/v2/header";
 import Footer from "@/components/v2/footer";
 import BetaTesterInvitation from "@/components/v2/betatester";
 import TickerBar from "@/components/tickerBar";
+import { combineClass } from "@/utils/combineClass";
 
 export const metadata: Metadata = {
   ...appConfig.metadata,
@@ -51,7 +51,7 @@ const overusedGrotesk = localFont({
   display: "swap",
 });
 
-export default async function RootLayout({
+export default async function WideLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -74,8 +74,8 @@ export default async function RootLayout({
         <Providers cookies={cookies} version="2">
           <Header />
           <TickerBar />
-          <main className="mx-auto flex w-full max-w-[620px] flex-1 justify-center">
-            <div className="flex-1 p-2 md:p-0 md:pb-4">{children}</div>
+          <main className="flex w-full flex-1">
+            <div className="flex-1">{children}</div>
           </main>
           <Footer />
           <BetaTesterInvitation />

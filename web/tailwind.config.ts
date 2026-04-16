@@ -11,6 +11,8 @@ const config: Config = {
         chicago: ["var(--font-chicago)"],
         geneva: ["var(--font-geneva)"],
         arial: ["var(--font-arial)"],
+        dmMono: ["var(--font-dm-mono)"],
+        overusedGrotesk: ["var(--font-overused-grotesk)"],
       },
       backgroundImage: {
         closeIdle: "url('/icons/close.svg')",
@@ -33,6 +35,9 @@ const config: Config = {
         "9layer": "#F5F5F5",
         "2black": "#181818",
         "2white": "#FDFDFD",
+        "lb-green": "#16a34a",
+        "lb-self": "#deffcd",
+        "lb-pink": "#f9d8ee",
       },
       boxShadow: {
         "9btnPrimaryIdle":

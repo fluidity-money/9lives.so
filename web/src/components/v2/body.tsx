@@ -1,5 +1,5 @@
 "use client";
-import { RawAsset, SimpleCampaignDetail } from "@/types";
+import { PricePoint, RawAsset, SimpleCampaignDetail } from "@/types";
 import SimpleButtons from "./buttons";
 import SimpleChance from "./chances";
 import SimplePositions from "./positions";
@@ -69,12 +69,20 @@ export default function SimpleBody({
     ).toFixed(0);
   const yesChance = chance("Up");
   const noChance = chance("Down");
+  const baseAsset = data.priceMetadata.baseAsset;
+  const basePrice = Number(data.priceMetadata.priceTargetForUp);
+  const { data: liveAssetPrices } = useQuery<PricePoint[]>({
+    queryKey: ["assetPrices", baseAsset, data.starting, data.ending],
+    queryFn: () => Promise.resolve([]),
+    enabled: false,
+  });
+  const latestLivePrice = liveAssetPrices?.at(-1)?.price;
   const { data: assets } = useAssetsHourlyDelta();
   const assetPrice = assets?.find(
-    (a) => a.name.toLowerCase() === data.priceMetadata.baseAsset,
+    (a) => a.name.toLowerCase() === baseAsset,
   );
-  const isPriceUp =
-    assetPrice && Number(assetPrice.price) >= Number(assetPrice.hourAgoPrice);
+  const currentPrice = latestLivePrice ?? (assetPrice ? Number(assetPrice.price) : undefined);
+  const isPriceUp = currentPrice !== undefined && currentPrice >= basePrice;
   const handleNextCamp = () => {
     const next = getNextCampaign({ symbol, period, assets: assetsRating });
     setSymbol(next.symbol);

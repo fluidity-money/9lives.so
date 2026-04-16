@@ -96,5 +96,20 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@posthog/cli",
+      "@reown/appkit",
+      "bufferutil",
+      "core-js",
+      "esbuild",
+      "keccak",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver",
+      "utf-8-validate"
+    ]
   }
 }

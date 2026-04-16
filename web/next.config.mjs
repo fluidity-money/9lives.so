@@ -42,11 +42,16 @@ const nextConfig = {
   },
 };
 
-export default withPostHogConfig(nextConfig, {
-  personalApiKey: process.env.POSTHOG_API_KEY,
-  projectId: process.env.POSTHOG_ENV_ID,
-  sourcemaps: {
-    enabled: true,
-    deleteAfterUpload: true,
-  },
-})
+const posthogApiKey = process.env.POSTHOG_API_KEY;
+const posthogProjectId = process.env.POSTHOG_ENV_ID;
+
+export default (posthogApiKey && posthogProjectId)
+  ? withPostHogConfig(nextConfig, {
+      personalApiKey: posthogApiKey,
+      projectId: posthogProjectId,
+      sourcemaps: {
+        enabled: true,
+        deleteAfterUpload: true,
+      },
+    })
+  : nextConfig;

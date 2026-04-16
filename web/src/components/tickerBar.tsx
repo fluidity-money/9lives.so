@@ -1,5 +1,6 @@
 "use client";
 import useAssetsHourlyDelta from "@/hooks/useAssetsHourlyDelta";
+import useMarketBasePrices from "@/hooks/useMarketBasePrices";
 import { EnrichedAssetMetadata } from "@/types";
 import ArrowIcon from "./arrowIcon";
 import { combineClass } from "@/utils/combineClass";
@@ -7,13 +8,28 @@ import { useEffect, useRef, useState } from "react";
 import enrichAssets from "@/utils/enrichAssets";
 import Link from "next/link";
 
-function TickerItem({ data }: { data: EnrichedAssetMetadata }) {
-  const isPriceUp = Number(data.price) - Number(data.hourAgoPrice) > 0;
+function TickerItem({
+  data,
+  basePrices,
+}: {
+  data: EnrichedAssetMetadata;
+  basePrices?: Record<string, number>;
+}) {
+  const key = `${data.name.toLowerCase()}-${data.link.split("/").pop()}`;
+  const basePrice = basePrices?.[key];
+  const isPriceUp =
+    basePrice !== undefined
+      ? Number(data.price) >= basePrice
+      : Number(data.price) - Number(data.hourAgoPrice) > 0;
+
   return (
     <li className="list-none">
       <Link
         href={data.link}
-        className="flex items-center gap-2 border-l border-l-neutral-200 p-2 hover:bg-neutral-100"
+        className={combineClass(
+          "flex items-center gap-2 border-l border-l-neutral-200 p-2 transition-colors duration-150",
+          isPriceUp ? "hover:bg-green-600/10" : "hover:bg-red-600/10",
+        )}
       >
         <div className="flex items-center gap-1">
           <span className="flex size-4 items-center justify-center rounded-sm bg-neutral-200 text-[9px]">
@@ -39,6 +55,7 @@ function TickerItem({ data }: { data: EnrichedAssetMetadata }) {
 
 export default function TickerBar() {
   const { data: assets, isLoading } = useAssetsHourlyDelta();
+  const { data: basePrices } = useMarketBasePrices();
   const enrichedAssets = enrichAssets(assets);
   const populatedList = Array.from(
     { length: enrichedAssets.length * 5 },
@@ -73,7 +90,7 @@ export default function TickerBar() {
         }}
       >
         {populatedList.map((a, i) => (
-          <TickerItem data={a} key={`${a.name}-${i}`} />
+          <TickerItem data={a} basePrices={basePrices} key={`${a.name}-${i}`} />
         ))}
       </div>
 

@@ -135,7 +135,7 @@ export default function MobileMenuButton() {
         <div className="absolute bottom-[64px] right-0 z-[9999] flex h-[254px] w-40 flex-col items-end justify-end gap-2">
           <SimpleClaimAllButton />
           <ReferralButton />
-          <Link href={"/v1/leaderboard"}>
+          <Link href={"/leaderboard"}>
             <Button title="Leaderboard" icon={<LeaderboardIcon />} />
           </Link>
           <Link href={"/v1/portfolio"}>

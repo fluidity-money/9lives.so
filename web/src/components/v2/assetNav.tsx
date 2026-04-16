@@ -16,6 +16,7 @@ import GroupButtonMobile from "./groupButtonMobile";
 import { NavContext } from "@/providers/navContext";
 import { useContext } from "react";
 import useAssetsHourlyDelta from "@/hooks/useAssetsHourlyDelta";
+import useMarketBasePrices from "@/hooks/useMarketBasePrices";
 
 function SimpleTabMenuButton({
   market,
@@ -88,6 +89,7 @@ export default function AssetNav({
   );
   const orderIdx = periodOrder.findIndex((p) => p === period.toLowerCase());
   const { data } = useAssetsHourlyDelta();
+  const { data: basePrices } = useMarketBasePrices();
 
   return (
     <div className="flex flex-row gap-2 md:flex-col md:gap-4">
@@ -127,10 +129,17 @@ export default function AssetNav({
               })
               .map((m) => {
                 const asset = data?.find(
-                  (i) => i.name.toLowerCase() === symbol,
+                  (i) => i.name.toLowerCase() === m.slug.toLowerCase(),
                 );
+                const baseKey = `${m.slug.toLowerCase()}-${period.toLowerCase()}`;
+                const basePrice = basePrices?.[baseKey];
                 const isPriceUp =
-                  asset && Number(asset.price) >= Number(asset.hourAgoPrice);
+                  asset && basePrice !== undefined
+                    ? Number(asset.price) >= basePrice
+                    : asset
+                      ? Number(asset.price) >= Number(asset.hourAgoPrice)
+                      : undefined;
+
                 return (
                   <SimpleTabMenuButton
                     key={m.slug}
