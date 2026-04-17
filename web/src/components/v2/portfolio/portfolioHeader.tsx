@@ -21,7 +21,9 @@ import WithdrawDialog from "@/components/withdrawDialog";
 import svgPaths from "../leaderboard/svgPaths";
 import { TIERS, getTierIndex } from "../leaderboard/demoData";
 
-export default function PortfolioHeader({ overrideTierIdx }: { overrideTierIdx?: number }) {
+import type { MockPortfolioState } from "./mockData";
+
+export default function PortfolioHeader({ overrideTierIdx, mockState }: { overrideTierIdx?: number; mockState?: MockPortfolioState }) {
   const account = useAppKitAccount();
   const { data: balance } = useBalance(account.address);
   const { connect } = useConnectWallet();
@@ -40,13 +42,16 @@ export default function PortfolioHeader({ overrideTierIdx }: { overrideTierIdx?:
   });
   const { data: domainOrAddress } = useMeowDomains(account.address ?? "");
 
-  const netWorth = (
-    Number(formatFusdc(Number(balance), 2)) + (positionsValue || 0)
-  ).toFixed(2);
+  const displayNetWorth = mockState?.netWorth ?? (Number(formatFusdc(Number(balance), 2)) + (positionsValue || 0));
+  const netWorth = displayNetWorth.toFixed(2);
+  const displayPnL = mockState?.pnl ?? totalPnL;
+  const displayVolume = mockState?.volume ?? (totalVolume ?? 0);
+  const displayAvailable = mockState?.available ?? Number(formatFusdc(Number(balance), 2));
+  const displayPositionsValue = mockState?.positionsValue ?? (positionsValue ?? 0);
 
-  const isProfitable = totalPnL >= 0;
-  const points = pointsData?.[0]?.amount ?? 0;
-  const rank = pointsData?.[0]?.rank ?? 0;
+  const isProfitable = displayPnL >= 0;
+  const points = mockState?.points ?? (pointsData?.[0]?.amount ?? 0);
+  const rank = mockState?.rank ?? (pointsData?.[0]?.rank ?? 0);
   const realTierIdx = getTierIndex(points);
   const tierIdx = overrideTierIdx ?? realTierIdx;
   const currentTier = TIERS[tierIdx];
@@ -172,7 +177,7 @@ export default function PortfolioHeader({ overrideTierIdx }: { overrideTierIdx?:
                   isProfitable ? "text-[#4ade80]" : "text-[#fca5a5]",
                 )}
               >
-                {isProfitable ? "+" : ""}${totalPnL.toFixed(2)}
+                {isProfitable ? "+" : ""}${displayPnL.toFixed(2)}
               </span>
             </div>
             <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
@@ -180,7 +185,7 @@ export default function PortfolioHeader({ overrideTierIdx }: { overrideTierIdx?:
                 Volume
               </span>
               <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px]">
-                ${formatFusdc(totalVolume ?? 0, 2)}
+                ${mockState ? displayVolume.toFixed(2) : formatFusdc(totalVolume ?? 0, 2)}
               </span>
             </div>
             <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
@@ -188,7 +193,7 @@ export default function PortfolioHeader({ overrideTierIdx }: { overrideTierIdx?:
                 Available
               </span>
               <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px]">
-                ${formatFusdc(Number(balance), 2)}
+                ${mockState ? displayAvailable.toFixed(2) : formatFusdc(Number(balance), 2)}
               </span>
             </div>
             <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
@@ -196,7 +201,7 @@ export default function PortfolioHeader({ overrideTierIdx }: { overrideTierIdx?:
                 Positions
               </span>
               <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px]">
-                ${(positionsValue ?? 0).toFixed(2)}
+                ${displayPositionsValue.toFixed(2)}
               </span>
             </div>
           </div>
