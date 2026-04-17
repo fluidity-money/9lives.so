@@ -70,7 +70,7 @@ export default async function WideLayout({
       <head>
         <link rel="icon" href="/icon.png" type="image/png" />
       </head>
-      <body className="flex min-h-screen flex-col bg-2white">
+      <body className="flex min-h-screen flex-col bg-2white overflow-x-hidden">
         <Providers cookies={cookies} version="2">
           <Header />
           <TickerBar />

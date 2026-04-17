@@ -20,15 +20,15 @@ export default function Footer() {
   const isV1 = pathname.startsWith("/v1");
 
   return (
-    <footer className="hidden md:block backdrop-blur-[2px] bg-[rgba(253,253,253,0.6)] relative shrink-0 w-full">
+    <footer className="backdrop-blur-[2px] bg-[rgba(253,253,253,0.6)] relative shrink-0 w-full">
       <div
         aria-hidden="true"
         className="absolute border-[#d4d4d4] border-solid border-t inset-0 pointer-events-none"
       />
       <div className="flex items-center size-full">
-        <div className="flex items-center justify-between px-[16px] py-[8px] relative size-full">
+        <div className="flex flex-col md:flex-row items-center justify-between px-[16px] py-[8px] relative size-full gap-[8px]">
           {/* Left: version toggle + links */}
-          <div className="flex gap-[10px] items-center shrink-0">
+          <div className="flex flex-wrap gap-[10px] items-center justify-center md:justify-start shrink-0">
             {/* v1/v2 toggle */}
             <div className="flex h-[35px] items-center justify-center max-h-[40px] p-[4px] relative rounded-[12px] shrink-0 w-[98px]">
               <div
@@ -91,7 +91,7 @@ export default function Footer() {
           </div>
 
           {/* Right: socials */}
-          <div className="flex gap-[10px] items-center justify-end shrink-0">
+          <div className="flex gap-[10px] items-center justify-center md:justify-end shrink-0">
             {socials.map((item) => (
               <Link
                 key={item.title}

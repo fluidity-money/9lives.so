@@ -1,10 +1,9 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HeaderLogo from "../headerLogo";
-import SimpleClaimAllButton from "./claimAllButton";
-import ReferralButton from "./referralButton";
 import ConnectButton from "./connectButton";
 import svgPaths from "./leaderboard/svgPaths";
 
@@ -68,8 +67,79 @@ const routes = [
   { name: "LEADERBOARD", path: "/leaderboard" },
 ];
 
+function MobileMenu({
+  isOpen,
+  onClose,
+  isActive,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  isActive: (path: string) => boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      ref={ref}
+      className="absolute top-[48px] right-0 z-50 w-[200px] bg-[#fdfdfd] border border-[#e5e5e5] rounded-[12px] shadow-[0_4px_24px_rgba(0,0,0,0.12)] overflow-hidden"
+    >
+      <div className="flex flex-col py-[4px]">
+        {routes.map((r) => (
+          <Link
+            key={r.path}
+            href={r.path}
+            onClick={onClose}
+            className={`flex items-center gap-[8px] px-[16px] py-[12px] font-dmMono font-medium text-[11.67px] uppercase transition-colors ${
+              isActive(r.path)
+                ? "text-[#0e0e0e] bg-[#fafafa]"
+                : "text-[#a3a3a3] hover:bg-[#fafafa]"
+            }`}
+          >
+            {r.name}
+          </Link>
+        ))}
+        <div className="border-t border-[#e5e5e5] my-[4px]" />
+        <Link
+          href="#"
+          onClick={onClose}
+          className="flex items-center gap-[8px] px-[16px] py-[12px] font-dmMono font-medium text-[11.67px] uppercase text-[#a3a3a3] hover:bg-[#fafafa] transition-colors"
+        >
+          <svg className="size-[12px]" fill="none" viewBox="0 0 16.9917 16">
+            <path d={svgPaths.p3cadd400} fill="#a3a3a3" />
+          </svg>
+          REWARDS
+        </Link>
+        <Link
+          href="#"
+          onClick={onClose}
+          className="flex items-center gap-[8px] px-[16px] py-[12px] font-dmMono font-medium text-[11.67px] uppercase text-[#a3a3a3] hover:bg-[#fafafa] transition-colors"
+        >
+          <svg className="size-[12px]" fill="none" viewBox="0 0 11.792 7.50114">
+            <path d={svgPaths.p3ba8a480} fill="#a3a3a3" />
+          </svg>
+          REFERRAL
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function Header() {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function isActive(path: string) {
     if (path === "/") {
@@ -81,6 +151,11 @@ export default function Header() {
     }
     return pathname.startsWith(path);
   }
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   return (
     <div className="h-[48px] relative shrink-0 w-full sticky top-0 z-40 bg-[#fdfdfd]">
@@ -111,7 +186,7 @@ export default function Header() {
             </nav>
           </div>
 
-          {/* Right: Rewards | Referral | User */}
+          {/* Right: Rewards | Referral | User + Mobile Menu */}
           <div className="flex h-full items-center justify-end shrink-0">
             <HeaderSection className="hidden md:block">
               <svg
@@ -137,13 +212,42 @@ export default function Header() {
                 REFERRAL
               </p>
             </HeaderSection>
+            {/* Mobile menu toggle */}
+            <div className="h-full relative shrink-0 md:hidden">
+              <div
+                aria-hidden="true"
+                className="absolute border-[#e5e5e5] border-l border-solid inset-[0_0_0_-0.5px] pointer-events-none"
+              />
+              <div className="flex items-center justify-center size-full">
+                <button
+                  className="flex items-center justify-center p-[14px] size-full cursor-pointer hover:bg-[#fafafa] transition-colors"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                  {mobileMenuOpen ? (
+                    <svg className="size-[18px]" fill="none" viewBox="0 0 16 16">
+                      <path d="M4 4L12 12M12 4L4 12" stroke="#0e0e0e" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  ) : (
+                    <svg className="size-[18px]" fill="none" viewBox="0 0 16 16">
+                      <path d="M2 4H14M2 8H14M2 12H14" stroke="#0e0e0e" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <MobileMenu
+                isOpen={mobileMenuOpen}
+                onClose={() => setMobileMenuOpen(false)}
+                isActive={isActive}
+              />
+            </div>
+            {/* Connect wallet */}
             <div className="h-full relative shrink-0">
               <div
                 aria-hidden="true"
                 className="absolute border-[#e5e5e5] border-l border-solid inset-[0_0_0_-1px] pointer-events-none"
               />
               <div className="flex items-center justify-end size-full">
-                <div className="flex gap-[4px] items-center justify-end p-[16px] size-full">
+                <div className="flex gap-[4px] items-center justify-end p-[12px] md:p-[16px] size-full">
                   <ConnectButton />
                 </div>
               </div>

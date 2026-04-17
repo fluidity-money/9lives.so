@@ -8,13 +8,13 @@ export default function StreakSection({ s }: { s: PState }) {
   const greenDays = s.streakMode === "lost" ? s.lostDay : s.streakDays;
 
   return (
-    <div className="bg-[#fdfdfd] max-w-[450px] relative rounded-[12px] shrink-0 w-full">
+    <div className="bg-[#fdfdfd] md:max-w-[450px] relative rounded-[12px] shrink-0 w-full">
       <div
         aria-hidden="true"
         className="absolute border border-[#e5e5e5] border-solid inset-0 pointer-events-none rounded-[12px]"
       />
       <div className="flex flex-col justify-center max-w-[inherit] size-full">
-        <div className="flex flex-col gap-[16px] items-start justify-center max-w-[inherit] p-[16px] relative size-full">
+        <div className="flex flex-col gap-[16px] items-start justify-center max-w-[inherit] p-[12px] md:p-[16px] relative size-full">
           {/* Header */}
           <div className="flex gap-[8px] items-center relative shrink-0 w-full">
             <div className="flex items-center justify-center overflow-clip p-[2px] relative shrink-0 size-[32px]">
@@ -46,7 +46,7 @@ export default function StreakSection({ s }: { s: PState }) {
                 My Active Streak
               </span>
             </div>
-            <div className="flex flex-[1_0_0] flex-col gap-[4px] items-end justify-center min-h-px min-w-px relative">
+            <div className="flex flex-[1_0_0] flex-col gap-[4px] items-end justify-center min-h-px min-w-0 relative">
               <div className="flex gap-[2px] items-center justify-end relative shrink-0 w-full">
                 <div className="relative shrink-0 size-[16px]">
                   <svg
@@ -80,11 +80,11 @@ export default function StreakSection({ s }: { s: PState }) {
 
           {/* Calendar */}
           <div className="flex flex-col gap-[4px] h-[62px] items-start justify-center relative shrink-0 w-full">
-            <div className="flex flex-[1_0_0] font-overusedGrotesk font-semibold gap-[4px] items-center min-h-px min-w-px relative text-[#a3a3a3] text-[14px] text-center tracking-[-0.28px] w-full">
+            <div className="flex flex-[1_0_0] font-overusedGrotesk font-semibold gap-[4px] items-center min-h-px min-w-0 relative text-[#a3a3a3] text-[14px] text-center tracking-[-0.28px] w-full">
               {days.map((d, i) => (
                 <p
                   key={i}
-                  className="flex-[1_0_0] min-h-px min-w-px relative"
+                  className="flex-[1_0_0] min-h-px min-w-0 relative"
                 >
                   {d}
                 </p>
@@ -102,7 +102,7 @@ export default function StreakSection({ s }: { s: PState }) {
                 return (
                   <div
                     key={i}
-                    className={`flex-[1_0_0] h-[40px] min-h-px min-w-px relative rounded-[999px] transition-all duration-500 ${
+                    className={`flex-[1_0_0] h-[40px] min-h-px min-w-0 relative rounded-[999px] transition-all duration-500 ${
                       isGreen
                         ? "bg-[#16a34a]"
                         : isLostDay
@@ -160,7 +160,7 @@ export default function StreakSection({ s }: { s: PState }) {
                       ) : hasCatIcon ? (
                         <div className="flex items-center justify-center p-[4px] relative size-full">
                           <div className="flex items-center justify-center overflow-clip p-[2px] relative shrink-0 size-[24px]">
-                            <div className="flex-[1_0_0] h-full min-h-px min-w-px relative">
+                            <div className="flex-[1_0_0] h-full min-h-px min-w-0 relative">
                               <div className="flex flex-col items-center justify-center overflow-clip rounded-[inherit] size-full">
                                 <div className="flex flex-col items-center justify-center p-[2px] relative size-full">
                                   <div className="aspect-[16/15.2] relative shrink-0 w-full">
@@ -213,7 +213,7 @@ export default function StreakSection({ s }: { s: PState }) {
           {/* Buttons */}
           {s.streakMode === "lost" ? (
             <div className="flex gap-[8px] items-center relative shrink-0 w-full">
-              <div className="flex-[1_0_0] h-[42px] min-h-px min-w-px relative rounded-[12px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
+              <div className="flex-[1_0_0] h-[42px] min-h-px min-w-0 relative rounded-[12px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
                 <div
                   aria-hidden="true"
                   className="absolute border border-[#d4d4d4] border-solid inset-0 pointer-events-none rounded-[12px]"
@@ -224,7 +224,7 @@ export default function StreakSection({ s }: { s: PState }) {
                   </p>
                 </div>
               </div>
-              <div className="flex-[2_0_0] h-[42px] min-h-px min-w-px relative rounded-[12px] bg-[#0e0e0e] cursor-pointer hover:bg-[#2a2a2a] transition-colors">
+              <div className="flex-[2_0_0] h-[42px] min-h-px min-w-0 relative rounded-[12px] bg-[#0e0e0e] cursor-pointer hover:bg-[#2a2a2a] transition-colors">
                 <div className="flex items-center justify-center size-full">
                   <p className="font-overusedGrotesk font-medium text-[#fdfdfd] text-[14px] whitespace-nowrap">
                     {s.btnText2}

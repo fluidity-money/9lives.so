@@ -29,13 +29,13 @@ export default function JackpotSection({ s }: { s: PState }) {
 
   return (
     <div
-      className={`${bgColor} h-[400px] relative shrink-0 w-full transition-colors duration-700`}
+      className={`${bgColor} h-[260px] md:h-[400px] relative shrink-0 w-full transition-colors duration-700`}
     >
       <div className="flex items-center justify-center size-full">
-        <div className="flex gap-[12px] items-center justify-center p-[24px] relative size-full">
-          <div className="flex flex-1 flex-col gap-[12px] h-full items-center min-h-px min-w-px">
+        <div className="flex gap-[12px] items-center justify-center p-[16px] md:p-[24px] relative size-full">
+          <div className="flex flex-1 flex-col gap-[12px] h-full items-center min-h-px min-w-0">
             {/* Jackpot header */}
-            <div className="flex flex-col gap-[8px] h-[244px] items-center justify-center shrink-0 w-full">
+            <div className="flex flex-col gap-[8px] h-[150px] md:h-[244px] items-center justify-center shrink-0 w-full">
               <div className="flex h-[23px] items-center justify-between shrink-0 w-full">
                 <div className="flex gap-[4px] items-center px-[4px] py-[2px] rounded-[4px] shrink-0">
                   <div className="overflow-clip shrink-0 size-[12px]">
@@ -52,7 +52,7 @@ export default function JackpotSection({ s }: { s: PState }) {
                       <path d={svgPaths.p12e9c600} fill="#FDFDFD" />
                     </svg>
                   </div>
-                  <div className="font-dmMono font-medium text-[#fdfdfd] text-[11.67px] uppercase whitespace-nowrap">
+                  <div className="font-dmMono font-medium text-[#fdfdfd] text-[9px] md:text-[11.67px] uppercase whitespace-nowrap">
                     {headerLabel}
                   </div>
                 </div>
@@ -74,28 +74,26 @@ export default function JackpotSection({ s }: { s: PState }) {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-[12px] h-[175px] items-center justify-center shrink-0 text-[#fdfdfd] text-center">
-                <div className="flex font-overusedGrotesk font-black items-center justify-center shrink-0 text-[72px] tracking-[-2.88px] whitespace-nowrap">
+              <div className="flex flex-col gap-[8px] md:gap-[12px] h-[100px] md:h-[175px] items-center justify-center shrink-0 text-[#fdfdfd] text-center">
+                <div className="flex font-overusedGrotesk font-black items-center justify-center shrink-0 text-[36px] md:text-[72px] tracking-[-1.44px] md:tracking-[-2.88px] whitespace-nowrap">
                   <span>5,000</span>
                   <span>pts</span>
                 </div>
-                <div className="font-overusedGrotesk font-medium shrink-0 text-[14px] w-[300px]">
+                <div className="font-overusedGrotesk font-medium shrink-0 text-[13px] md:text-[14px] w-full max-w-[220px] md:max-w-none md:w-[300px]">
                   {bodyText}
                 </div>
               </div>
             </div>
             {/* Progress / Status */}
             <div className="flex items-center justify-center shrink-0 w-full">
-              <div className="flex flex-1 flex-col gap-[4px] items-center justify-center max-w-[500px] min-h-px min-w-px">
+              <div className="flex flex-1 flex-col gap-[4px] items-center justify-center max-w-[500px] min-h-px min-w-0">
                 <div className="flex font-overusedGrotesk font-medium items-center justify-between shrink-0 text-[#fdfdfd] text-[14px] w-full whitespace-nowrap">
                   <span className="font-dmMono uppercase text-[11.67px]">
                     Progress
                   </span>
                   {ineligible ? (
                     <div className="flex gap-[8px] items-center">
-                      {/* Concluded bar */}
                       <div className="flex-1" />
-                      {/* Ineligible badge */}
                       <div className="bg-[#991b1b] flex gap-[6px] items-center px-[12px] py-[4px] rounded-[999px]">
                         <svg
                           className="size-[12px]"
@@ -131,11 +129,11 @@ export default function JackpotSection({ s }: { s: PState }) {
                   </div>
                 ) : (
                   <div className="flex gap-[2px] items-center shrink-0 w-full">
-                    <div className="bg-[#fdfdfd] flex-1 h-[10px] min-h-px min-w-px rounded-[4px]" />
+                    <div className="bg-[#fdfdfd] flex-1 h-[8px] md:h-[10px] min-h-px min-w-0 rounded-[4px]" />
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="flex-1 h-[10px] min-h-px min-w-px relative rounded-[4px] transition-all duration-500"
+                        className="flex-1 h-[8px] md:h-[10px] min-h-px min-w-0 relative rounded-[4px] transition-all duration-500"
                       >
                         {i <= s.jackpotFilled ? (
                           <div className="bg-[#fdfdfd] h-full rounded-[4px] w-full" />

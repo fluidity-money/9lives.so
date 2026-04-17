@@ -60,9 +60,9 @@ export default function TierWidget({ s }: { s: PState }) {
           </div>
         </div>
         {/* Points + Streak */}
-        <div className="flex flex-1 items-center justify-center min-h-px min-w-px">
-          <div className="flex flex-1 gap-[16px] items-center justify-center min-h-px min-w-px">
-            <div className="flex flex-1 flex-col gap-[2px] items-end justify-center min-h-px min-w-px">
+        <div className="flex flex-1 items-center justify-center min-h-px min-w-0">
+          <div className="flex flex-1 gap-[16px] items-center justify-center min-h-px min-w-0">
+            <div className="flex flex-1 flex-col gap-[2px] items-end justify-center min-h-px min-w-0">
               <p className="font-dmMono font-medium text-[#a3a3a3] text-[11.67px] uppercase whitespace-nowrap">
                 Total Points
               </p>
@@ -77,7 +77,7 @@ export default function TierWidget({ s }: { s: PState }) {
                 </div>
               </div>
             </div>
-            <div className="flex flex-1 flex-col gap-[2px] items-end justify-center min-h-px min-w-px">
+            <div className="flex flex-1 flex-col gap-[2px] items-end justify-center min-h-px min-w-0">
               <p className="font-dmMono font-medium text-[#a3a3a3] text-[11.67px] uppercase whitespace-nowrap">
                 Active Streak
               </p>
@@ -104,7 +104,7 @@ export default function TierWidget({ s }: { s: PState }) {
         <div className="h-[6px] relative rounded-[12px] shrink-0 w-full">
           <div className="flex flex-col items-start overflow-clip relative rounded-[inherit] size-full">
             <div
-              className="bg-[#181818] flex-1 min-h-px min-w-px rounded-[8px] transition-all duration-700 ease-out"
+              className="bg-[#181818] flex-1 min-h-px min-w-0 rounded-[8px] transition-all duration-700 ease-out"
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -112,7 +112,7 @@ export default function TierWidget({ s }: { s: PState }) {
         </div>
       </div>
       {/* Tier carousel */}
-      <div className="flex-1 min-h-px min-w-px relative rounded-[12px] w-full overflow-hidden">
+      <div className="flex-1 min-h-px min-w-0 relative rounded-[12px] w-full overflow-hidden">
         <div className="absolute bg-lb-pink inset-0 pointer-events-none rounded-[12px]" />
         <div
           ref={scrollRef}

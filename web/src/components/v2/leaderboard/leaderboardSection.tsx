@@ -33,13 +33,13 @@ function LeaderboardRow({
   return (
     <div
       className={combineClass(
-        "flex gap-[16px] items-center overflow-clip py-[8px] px-[16px] w-full transition-colors",
+        "flex gap-[16px] items-center overflow-clip py-[8px] px-[8px] md:px-[16px] w-full transition-colors",
         isHighlighted
           ? "bg-lb-self rounded-[6px] sticky top-0 z-10"
           : "hover:bg-[#fafafa] cursor-pointer",
       )}
     >
-      <div className="font-overusedGrotesk font-medium text-[#0e0e0e] text-[14px] w-[45px]">
+      <div className="font-overusedGrotesk font-medium text-[#0e0e0e] text-[14px] w-[35px] md:w-[45px]">
         #{rank}
       </div>
       <div className="flex flex-1 gap-[8px] items-center min-w-0">
@@ -64,7 +64,7 @@ function LeaderboardRow({
       <div className="flex-1 font-overusedGrotesk font-medium text-[#0e0e0e] text-[14px]">
         {amount}
       </div>
-      <div className="flex flex-1 gap-[4px] items-center justify-end">
+      <div className="hidden md:flex flex-1 gap-[4px] items-center justify-end">
         <PnlIcon />
         <span
           className={combineClass(
@@ -75,7 +75,7 @@ function LeaderboardRow({
           ${formatFusdc(history?.totalPnl ?? "0", 2)}
         </span>
       </div>
-      <div className="flex-1 font-overusedGrotesk font-medium text-[#0e0e0e] text-[14px] text-right">
+      <div className="hidden md:block flex-1 font-overusedGrotesk font-medium text-[#0e0e0e] text-[14px] text-right">
         ${formatFusdc(history?.volume ?? "0", 2)}
       </div>
     </div>
@@ -95,9 +95,9 @@ export default function LeaderboardSection() {
   );
 
   return (
-    <div className="flex flex-1 flex-col gap-[16px] items-center min-h-px min-w-px">
+    <div className="flex flex-1 flex-col gap-[16px] items-center min-h-px min-w-0">
       {/* Header controls */}
-      <div className="flex items-center justify-between w-full">
+      <div className="flex flex-col md:flex-row gap-[8px] md:gap-0 items-start md:items-center justify-between w-full">
         {/* Scope toggle */}
         <div className="flex gap-[2px] h-[42px] items-center justify-center p-[4px] relative rounded-[16px] shrink-0">
           <div className="absolute bg-[#e5e5e5] inset-0 pointer-events-none rounded-[16px]" />
@@ -139,11 +139,11 @@ export default function LeaderboardSection() {
           })}
         </div>
         {/* Period filter */}
-        <div className="flex gap-[8px] h-full items-center shrink-0">
+        <div className="flex gap-[4px] md:gap-[8px] h-full items-center shrink-0 w-full md:w-auto">
           {periods.map((p) => (
             <div
               key={p}
-              className="h-full relative shrink-0 w-[72px] cursor-pointer"
+              className="h-full relative flex-1 md:flex-none md:shrink-0 md:w-[72px] cursor-pointer"
               onClick={() => setPeriod(p)}
             >
               {period === p && (
@@ -171,12 +171,12 @@ export default function LeaderboardSection() {
         <div className="absolute border border-[#e5e5e5] inset-0 pointer-events-none rounded-[12px]" />
         <div className="flex flex-col gap-[16px] items-start p-[16px] size-full">
           {/* Column headers */}
-          <div className="flex font-overusedGrotesk font-medium gap-[16px] items-center text-[#a3a3a3] text-[14px] w-full px-[16px]">
-            <div className="w-[45px]">Rank</div>
+          <div className="flex font-overusedGrotesk font-medium gap-[16px] items-center text-[#a3a3a3] text-[14px] w-full px-[8px] md:px-[16px]">
+            <div className="w-[35px] md:w-[45px]">Rank</div>
             <div className="flex-1">Wallet</div>
             <div className="flex-1">Points</div>
-            <div className="flex-1 text-right">PnL</div>
-            <div className="flex-1 text-right">Volume</div>
+            <div className="hidden md:block flex-1 text-right">PnL</div>
+            <div className="hidden md:block flex-1 text-right">Volume</div>
           </div>
 
           <div className="flex flex-col gap-[12px] items-start w-full">

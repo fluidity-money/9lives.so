@@ -30,7 +30,7 @@ export default function MissionsSection({ s }: { s: PState }) {
                     className="flex flex-[1_0_0] items-center self-stretch"
                   >
                     <div
-                      className={`flex-[1_0_0] h-full min-h-px min-w-px relative cursor-pointer ${
+                      className={`flex-[1_0_0] h-full min-h-px min-w-0 relative cursor-pointer ${
                         tab === t
                           ? "bg-[#fdfdfd] rounded-[12px] shadow-[2px_2px_8px_0px_rgba(178,178,178,0.5)]"
                           : "rounded-[8px]"
@@ -61,11 +61,11 @@ export default function MissionsSection({ s }: { s: PState }) {
 
           {/* Progress bar */}
           <div className="flex gap-[10px] items-start relative shrink-0 w-full">
-            <div className="flex-[1_0_0] h-[22px] min-h-px min-w-px relative rounded-[12px]">
+            <div className="flex-[1_0_0] h-[22px] min-h-px min-w-0 relative rounded-[12px]">
               <div className="overflow-clip rounded-[inherit] size-full">
                 <div className="flex flex-col items-start p-[4px] relative size-full">
                   <div
-                    className="bg-[#a3a3a3] h-[14px] rounded-[8px] shrink-0 transition-all duration-700"
+                    className="bg-[#a3a3a3] h-[14px] rounded-[8px] shrink-0 transition-all duration-700 max-w-full"
                     style={{ width: `${s.missionBarPx}px` }}
                   />
                 </div>
