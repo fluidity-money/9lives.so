@@ -138,7 +138,7 @@ export default function MobileMenuButton() {
           <Link href={"/leaderboard"}>
             <Button title="Leaderboard" icon={<LeaderboardIcon />} />
           </Link>
-          <Link href={"/v1/portfolio"}>
+          <Link href={"/portfolio"}>
             <Button title="Portfolio" icon={<PortfolioIcon />} />
           </Link>
           <Link href={"/"}>

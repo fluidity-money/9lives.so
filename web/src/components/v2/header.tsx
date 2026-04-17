@@ -63,7 +63,7 @@ function HeaderSection({
 
 const routes = [
   { name: "MARKETPLACE", path: "/" },
-  { name: "PORTFOLIO", path: "/v1/portfolio" },
+  { name: "PORTFOLIO", path: "/portfolio" },
   { name: "LEADERBOARD", path: "/leaderboard" },
 ];
 

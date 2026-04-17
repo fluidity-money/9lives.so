@@ -147,7 +147,7 @@ export default function SimpleRewardsDialog({
       <div>
         <div className="mt-2 flex items-center gap-2">
           <Link
-            href={"/v1/portfolio"}
+            href={"/portfolio"}
             className="mx-auto flex flex-1 items-center font-chicago text-xs underline"
           >
             <Button
