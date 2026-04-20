@@ -33,7 +33,7 @@ export default function CampaignsTab() {
     <div className="flex flex-col gap-[12px]">
       {/* Sort control */}
       <div className="flex items-center justify-between">
-        <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
           Your Campaigns
         </span>
         <select
@@ -79,7 +79,7 @@ export default function CampaignsTab() {
             onClick={() => fetchNextPage()}
           />
         ) : campaigns && campaigns.length > 0 ? (
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             End of results
           </span>
         ) : null}
@@ -116,25 +116,25 @@ function CampaignRow({ data }: { data: Campaign }) {
 
           <div className="flex flex-col gap-[4px] flex-1 min-w-0">
             <div className="flex items-center gap-[6px]">
-              <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e] truncate">
+              <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e] truncate">
                 {data.name}
               </span>
               {data.winner && (
-                <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
+                <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
                   Concluded
                 </span>
               )}
             </div>
-            <span className="font-dmMono text-[9px] text-[#a3a3a3]">
+            <span className="font-dmMono text-[11px] text-[#737373]">
               Ends {endDate}
             </span>
           </div>
 
           <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-            <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+            <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
               Volume
             </span>
-            <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
+            <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
               ${data.totalVolume?.toLocaleString() ?? "0"}
             </span>
           </div>
@@ -157,7 +157,7 @@ function PlaceholderCard({
         {title}
       </span>
       {subtitle && (
-        <span className="font-dmMono text-[11px] text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] text-[#737373]">
           {subtitle}
         </span>
       )}

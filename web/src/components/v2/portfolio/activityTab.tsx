@@ -56,7 +56,7 @@ export default function ActivityTab() {
             onClick={() => fetchNextPage()}
           />
         ) : data && data.length > 0 ? (
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             End of results
           </span>
         ) : null}
@@ -101,14 +101,14 @@ function ActivityRow({ data }: { data: Activity }) {
         <div className="flex flex-col gap-[4px] flex-1 min-w-0">
           <Link
             href={`/campaign/${data.campaignId}`}
-            className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e] hover:underline truncate"
+            className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e] hover:underline truncate"
           >
             {data.campaignName}
           </Link>
           <div className="flex items-center gap-[6px]">
             <span
               className={combineClass(
-                "font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px]",
+                "font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px]",
                 isYes
                   ? "bg-green-50 text-green-600"
                   : isNo
@@ -121,7 +121,7 @@ function ActivityRow({ data }: { data: Activity }) {
             <Link
               href={`${config.destinationChain.blockExplorers.default.url}/tx/${data.txHash}`}
               target="_blank"
-              className="font-dmMono text-[9px] text-[#a3a3a3] hover:underline"
+              className="font-dmMono text-[11px] text-[#737373] hover:underline"
             >
               {data.txHash.slice(0, 6)}...{data.txHash.slice(-4)}
             </Link>
@@ -131,7 +131,7 @@ function ActivityRow({ data }: { data: Activity }) {
         {/* Type badge */}
         <span
           className={combineClass(
-            "font-dmMono text-[9px] uppercase px-[6px] py-[2px] rounded-[4px] flex-shrink-0",
+            "font-dmMono text-[10px] uppercase px-[6px] py-[2px] rounded-[4px] flex-shrink-0",
             isBuy ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600",
           )}
         >
@@ -140,40 +140,40 @@ function ActivityRow({ data }: { data: Activity }) {
 
         {/* Price */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Price
           </span>
-          <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
             ${pricePerShare.toFixed(2)}
           </span>
         </div>
 
         {/* Qty */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Qty
           </span>
-          <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
             {qty}
           </span>
         </div>
 
         {/* Cost */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Cost
           </span>
-          <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
             ${cost}
           </span>
         </div>
 
         {/* Time */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0 min-w-[50px]">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Time
           </span>
-          <span className="font-overusedGrotesk text-[12px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk text-[13px] text-[#0e0e0e]">
             {calcTimePassed(data.createdAt * 1000).text}
           </span>
         </div>
@@ -195,7 +195,7 @@ function PlaceholderCard({
         {title}
       </span>
       {subtitle && (
-        <span className="font-dmMono text-[11px] text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] text-[#737373]">
           {subtitle}
         </span>
       )}

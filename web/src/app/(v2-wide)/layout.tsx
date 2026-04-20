@@ -74,8 +74,8 @@ export default async function WideLayout({
         <Providers cookies={cookies} version="2">
           <Header />
           <TickerBar />
-          <main className="flex w-full flex-1">
-            <div className="flex-1">{children}</div>
+          <main className="flex w-full flex-1 min-w-0">
+            <div className="flex-1 min-w-0">{children}</div>
           </main>
           <Footer />
           <BetaTesterInvitation />

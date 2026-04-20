@@ -45,15 +45,17 @@ export default function PositionsTab() {
 
   const positionGroups = data?.pages.flatMap((i) => i);
 
+  const hasResults = !isLoading && !isError && (positionGroups?.length ?? 0) > 0;
+
   return (
     <div className="flex flex-col gap-[12px]">
       {/* Toggle */}
       <div className="flex items-center justify-between">
-        <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
           {positionGroups?.length ?? 0} campaign(s)
         </span>
         <label className="flex items-center gap-[6px] cursor-pointer select-none">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Hide Small Balances
           </span>
           <input
@@ -64,6 +66,9 @@ export default function PositionsTab() {
           />
         </label>
       </div>
+
+      {/* Table header row */}
+      {hasResults && <PositionsTableHeader />}
 
       {/* States */}
       {isError ? (
@@ -100,11 +105,49 @@ export default function PositionsTab() {
             onClick={() => fetchNextPage()}
           />
         ) : positionGroups && positionGroups.length > 0 ? (
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             End of results
           </span>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Shared grid template — header + rows must use identical column widths so
+// columns line up across the positions table.
+// ---------------------------------------------------------------------------
+
+const POSITIONS_GRID =
+  "grid grid-cols-[40px_minmax(0,1fr)_72px_104px_104px_96px_128px_24px] items-center gap-[12px]";
+
+function PositionsTableHeader() {
+  return (
+    <div
+      className={combineClass(
+        POSITIONS_GRID,
+        "px-[12px] py-[8px] rounded-[8px] bg-[#fafafa] border border-[#e5e5e5]",
+      )}
+    >
+      <span />
+      <span />
+      <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252] text-right">
+        Price
+      </span>
+      <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252] text-right">
+        Shares
+      </span>
+      <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252] text-right">
+        Value
+      </span>
+      <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252] text-right">
+        PnL
+      </span>
+      <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252] text-right">
+        To Win
+      </span>
+      <span />
     </div>
   );
 }
@@ -354,42 +397,47 @@ function PositionRow({
       <div className="relative flex flex-col">
         {/* Main row */}
         <div
-          className="flex items-center gap-[12px] p-[12px] cursor-pointer hover:bg-[#fafafa] rounded-[12px] transition-colors"
+          className={combineClass(
+            POSITIONS_GRID,
+            "p-[12px] cursor-pointer hover:bg-[#fafafa] rounded-[12px] transition-colors",
+          )}
           onClick={() => setShowHistory(!showHistory)}
         >
-          {/* Outcome image */}
-          {outcomeSrc && (
-            <Image
-              src={outcomeSrc}
-              alt={data.name + "_" + campaignContent.name}
-              width={40}
-              height={40}
-              className="size-[40px] rounded-[8px] object-cover flex-shrink-0"
-            />
-          )}
+          {/* Outcome image (fixed 40px column, always present for alignment) */}
+          <div className="size-[40px] flex items-center justify-center">
+            {outcomeSrc && (
+              <Image
+                src={outcomeSrc}
+                alt={data.name + "_" + campaignContent.name}
+                width={40}
+                height={40}
+                className="size-[40px] rounded-[8px] object-cover"
+              />
+            )}
+          </div>
 
           {/* Info */}
-          <div className="flex flex-col gap-[4px] flex-1 min-w-0">
+          <div className="flex flex-col gap-[4px] min-w-0">
             <div className="flex items-center gap-[6px] flex-wrap">
               <Link
                 href={`/campaign/${campaignContent.identifier}`}
                 onClick={(e) => e.stopPropagation()}
-                className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e] hover:underline truncate"
+                className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e] hover:underline truncate"
               >
                 {campaignContent.name}
               </Link>
               {campaignContent.winner && (
-                <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
+                <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
                   Concluded
                 </span>
               )}
               {isWinner && (
-                <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-green-50 text-green-600">
+                <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-green-50 text-green-600">
                   Winner
                 </span>
               )}
               {campaignContent.winner && campaignContent.winner !== data.id && !isWinner && (
-                <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-red-50 text-red-600">
+                <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-red-50 text-red-600">
                   Lost
                 </span>
               )}
@@ -398,7 +446,7 @@ function PositionRow({
             <div className="flex items-center gap-[6px]">
               <span
                 className={combineClass(
-                  "font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px]",
+                  "font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px]",
                   isPositiveOutcome
                     ? "bg-green-50 text-green-600"
                     : isNegativeOutcome
@@ -412,150 +460,123 @@ function PositionRow({
                 href={`${config.destinationChain.blockExplorers.default.url}/token/${data.shareAddress}`}
                 target="_blank"
                 onClick={(e) => e.stopPropagation()}
-                className="font-dmMono text-[9px] text-[#a3a3a3] hover:underline"
+                className="font-dmMono text-[11px] text-[#737373] hover:underline"
               >
                 {data.shareAddress.slice(0, 6)}...{data.shareAddress.slice(-4)}
               </Link>
             </div>
           </div>
 
-          {/* Stats columns */}
-          <div className="flex items-center gap-[16px] flex-shrink-0">
-            {/* Price */}
-            <div className="flex flex-col items-end gap-[2px]">
-              <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
-                Price
-              </span>
-              <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
-                ${price ?? "--"}
-              </span>
-            </div>
+          {/* Price */}
+          <div className="flex flex-col items-end gap-[2px]">
+            <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+              ${price ?? "--"}
+            </span>
+          </div>
 
-            {/* Shares */}
-            <div className="flex flex-col items-end gap-[2px]">
-              <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
-                Shares
+          {/* Shares */}
+          <div className="flex flex-col items-end gap-[2px]">
+            <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+              {Number(data.balance) ? data.balance : "<0.01"}
+            </span>
+            {history && history.length > 0 && Number(data.balance) ? (
+              <span className="font-dmMono text-[11px] text-[#737373]">
+                AVG ${averageShareCost.toFixed(2)}
               </span>
-              <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
-                {Number(data.balance) ? data.balance : "<0.01"}
-              </span>
-              {history && history.length > 0 && Number(data.balance) ? (
-                <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                  AVG ${averageShareCost.toFixed(2)}
-                </span>
-              ) : null}
-            </div>
+            ) : null}
+          </div>
 
-            {/* Value */}
-            <div className="flex flex-col items-end gap-[2px]">
-              <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
-                Value
-              </span>
-              <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
-                {valueDisplay}
-              </span>
-              <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                Cost ${formatFusdc(historicalValue, 2)}
-              </span>
-            </div>
+          {/* Value */}
+          <div className="flex flex-col items-end gap-[2px]">
+            <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+              {valueDisplay}
+            </span>
+            <span className="font-dmMono text-[11px] text-[#737373]">
+              Cost ${formatFusdc(historicalValue, 2)}
+            </span>
+          </div>
 
-            {/* PnL */}
-            <div className="flex flex-col items-end gap-[2px]">
-              <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
-                PnL
+          {/* PnL */}
+          <div className="flex flex-col items-end gap-[2px]">
+            {isWinner && reward ? (
+              <>
+                {dppmLoading ? null : (
+                  <>
+                    <span
+                      className={combineClass(
+                        "font-overusedGrotesk font-semibold text-[14px]",
+                        winnerPnL >= 0 ? "text-[#16a34a]" : "text-[#dc2626]",
+                      )}
+                    >
+                      {winnerPnL >= 0 ? "+" : "-"}$
+                      {Math.abs(winnerPnL).toFixed(2)}
+                    </span>
+                    <span className="font-dmMono text-[11px] text-[#737373]">
+                      {winnerPnL >= 0 ? "+" : "-"}
+                      {Math.abs(
+                        ((winnerPnL) / +formatFusdc(historicalValue, 6)) * 100,
+                      ).toFixed(2)}
+                      %
+                    </span>
+                  </>
+                )}
+              </>
+            ) : campaignContent.isDppm && !campaignContent.winner ? (
+              <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
+                TBD
               </span>
-              {isWinner && reward ? (
-                <>
-                  {dppmLoading ? null : (
-                    <>
-                      <span
-                        className={combineClass(
-                          "font-overusedGrotesk font-semibold text-[13px]",
-                          winnerPnL >= 0 ? "text-[#16a34a]" : "text-[#dc2626]",
-                        )}
-                      >
-                        {winnerPnL >= 0 ? "+" : "-"}$
-                        {Math.abs(winnerPnL).toFixed(2)}
-                      </span>
-                      <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                        {winnerPnL >= 0 ? "+" : "-"}
-                        {Math.abs(
-                          ((winnerPnL) / +formatFusdc(historicalValue, 6)) * 100,
-                        ).toFixed(2)}
-                        %
-                      </span>
-                    </>
+            ) : (
+              <>
+                <span
+                  className={combineClass(
+                    "font-overusedGrotesk font-semibold text-[14px]",
+                    PnL >= 0 ? "text-[#16a34a]" : "text-[#dc2626]",
                   )}
-                </>
-              ) : campaignContent.isDppm && !campaignContent.winner ? (
-                <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
-                  TBD
+                >
+                  {PnL >= 0 ? "+" : "-"}${Math.abs(PnL).toFixed(2)}
+                </span>
+                <span className="font-dmMono text-[11px] text-[#737373]">
+                  {PnL >= 0 ? "+" : "-"}
+                  {percentageChange}%
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* To Win column — unified for DPPM + AMM */}
+          <div className="flex flex-col items-end gap-[3px]">
+            {!campaignContent.isDpm && campaignContent.isDppm ? (
+              dppmLoading ? (
+                <span className="font-dmMono text-[11px] text-[#737373]">
+                  ...
                 </span>
               ) : (
                 <>
-                  <span
-                    className={combineClass(
-                      "font-overusedGrotesk font-semibold text-[13px]",
-                      PnL >= 0 ? "text-[#16a34a]" : "text-[#dc2626]",
-                    )}
-                  >
-                    {PnL >= 0 ? "+" : "-"}${Math.abs(PnL).toFixed(2)}
+                  <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+                    ${dppmRewards.dppmFusdc}
                   </span>
-                  <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                    {PnL >= 0 ? "+" : "-"}
-                    {percentageChange}%
+                  <span className="font-dmMono text-[11px] text-[#737373]">
+                    +${dppmRewards.ninetailsWinnerFusdc} bonus
                   </span>
+                  <span className="font-dmMono text-[11px] text-[#737373]">
+                    +${dppmRewards.ninetailsLoserFusd} refund
+                  </span>
+                  {!campaignContent.winner && (
+                    <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
+                      TBD
+                    </span>
+                  )}
                 </>
-              )}
-            </div>
+              )
+            ) : !campaignContent.isDpm && !campaignContent.isDppm ? (
+              <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+                ${data.balance}
+              </span>
+            ) : null}
 
-            {/* DPPM rewards detail */}
-            {!campaignContent.isDpm && campaignContent.isDppm && (
-              <div className="flex flex-col items-end gap-[2px]">
-                <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
-                  Rewards
-                </span>
-                {dppmLoading ? (
-                  <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                    ...
-                  </span>
-                ) : (
-                  <>
-                    <span className="font-overusedGrotesk text-[11px] text-[#0e0e0e]">
-                      ${dppmRewards.dppmFusdc}
-                    </span>
-                    <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                      +${dppmRewards.ninetailsWinnerFusdc} bonus
-                    </span>
-                    <span className="font-dmMono text-[9px] text-[#a3a3a3]">
-                      +${dppmRewards.ninetailsLoserFusd} refund
-                    </span>
-                    {!campaignContent.winner && (
-                      <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
-                        TBD
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* AMM reward column */}
-            {!campaignContent.isDpm && !campaignContent.isDppm && (
-              <div className="flex flex-col items-end gap-[2px]">
-                <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
-                  Reward
-                </span>
-                <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
-                  ${data.balance}
-                </span>
-              </div>
-            )}
-
-            {/* Claim button for winners */}
             {isWinner && reward ? (
-              <div className="flex flex-col items-end gap-[4px]">
-                <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
+              <>
+                <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
                   ${reward.toFixed(2)} claimable
                 </span>
                 <Button
@@ -568,25 +589,25 @@ function PositionRow({
                   }}
                   disabled={isClaiming}
                 />
-              </div>
+              </>
             ) : null}
-
-            {/* Chevron toggle */}
-            <svg
-              className={combineClass(
-                "size-[16px] text-[#a3a3a3] transition-transform",
-                showHistory && "rotate-180",
-              )}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                clipRule="evenodd"
-              />
-            </svg>
           </div>
+
+          {/* Chevron toggle */}
+          <svg
+            className={combineClass(
+              "size-[16px] text-[#a3a3a3] transition-transform justify-self-end",
+              showHistory && "rotate-180",
+            )}
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+              clipRule="evenodd"
+            />
+          </svg>
         </div>
 
         {/* Expandable history */}
@@ -621,7 +642,7 @@ function PositionRow({
                   {/* Type badge */}
                   <span
                     className={combineClass(
-                      "font-dmMono text-[9px] uppercase px-[6px] py-[2px] rounded-[4px] w-[40px] text-center",
+                      "font-dmMono text-[10px] uppercase px-[6px] py-[2px] rounded-[4px] w-[44px] text-center",
                       h.type === "buy"
                         ? "bg-green-50 text-green-600"
                         : "bg-red-50 text-red-600",
@@ -631,21 +652,21 @@ function PositionRow({
                   </span>
 
                   {/* Price */}
-                  <div className="flex flex-col items-end gap-[1px] min-w-[60px]">
-                    <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+                  <div className="flex flex-col items-end gap-[1px] min-w-[64px]">
+                    <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
                       Price
                     </span>
-                    <span className="font-overusedGrotesk text-[12px] text-[#0e0e0e]">
+                    <span className="font-overusedGrotesk text-[13px] text-[#0e0e0e]">
                       ${hPrice.toFixed(2)}
                     </span>
                   </div>
 
                   {/* Qty */}
-                  <div className="flex flex-col items-end gap-[1px] min-w-[60px]">
-                    <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+                  <div className="flex flex-col items-end gap-[1px] min-w-[64px]">
+                    <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
                       Qty
                     </span>
-                    <span className="font-overusedGrotesk text-[12px] text-[#0e0e0e]">
+                    <span className="font-overusedGrotesk text-[13px] text-[#0e0e0e]">
                       {h.type === "buy" ? "+" : "-"}
                       {formatFusdc(
                         h.type === "buy" ? h.toAmount : h.fromAmount,
@@ -653,7 +674,7 @@ function PositionRow({
                       )}{" "}
                       <span
                         className={combineClass(
-                          "font-dmMono text-[9px] px-[3px] py-[1px] rounded-[3px]",
+                          "font-dmMono text-[10px] px-[4px] py-[1px] rounded-[3px]",
                           isPositiveOutcome
                             ? "bg-green-50 text-green-600"
                             : isNegativeOutcome
@@ -667,11 +688,11 @@ function PositionRow({
                   </div>
 
                   {/* Cost */}
-                  <div className="flex flex-col items-end gap-[1px] min-w-[60px]">
-                    <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+                  <div className="flex flex-col items-end gap-[1px] min-w-[64px]">
+                    <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
                       Cost
                     </span>
-                    <span className="font-overusedGrotesk text-[12px] text-[#0e0e0e]">
+                    <span className="font-overusedGrotesk text-[13px] text-[#0e0e0e]">
                       $
                       {formatFusdc(
                         h.type === "buy" ? h.fromAmount : h.toAmount,
@@ -681,19 +702,19 @@ function PositionRow({
                   </div>
 
                   {/* PnL */}
-                  <div className="flex flex-col items-end gap-[1px] min-w-[60px]">
-                    <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+                  <div className="flex flex-col items-end gap-[1px] min-w-[64px]">
+                    <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
                       PnL
                     </span>
                     <span
                       className={combineClass(
-                        "font-overusedGrotesk text-[12px] font-semibold",
+                        "font-overusedGrotesk text-[13px] font-semibold",
                         hPnL >= 0 ? "text-[#16a34a]" : "text-[#dc2626]",
                       )}
                     >
                       {hPnL >= 0 ? "+" : "-"}${Math.abs(hPnL).toFixed(2)}
                     </span>
-                    <span className="font-dmMono text-[9px] text-[#a3a3a3]">
+                    <span className="font-dmMono text-[11px] text-[#737373]">
                       {hPnL >= 0 ? "+" : "-"}
                       {hPercentageChange}%
                     </span>
@@ -721,11 +742,11 @@ function PlaceholderCard({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-[8px] py-[40px] rounded-[12px] border border-[#e5e5e5] bg-[#fdfdfd]">
-      <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+      <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
         {title}
       </span>
       {subtitle && (
-        <span className="font-dmMono text-[11px] text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#737373]">
           {subtitle}
         </span>
       )}

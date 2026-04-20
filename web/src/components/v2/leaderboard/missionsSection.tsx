@@ -1,19 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import type { PState } from "./types";
 
-export default function MissionsSection({ s }: { s: PState }) {
+// Static placeholder — rendered behind a "Coming Soon" overlay. Real
+// mission data will plug in via a hook once the feature launches.
+const PLACEHOLDER_DAILY = [
+  { title: "Connect wallet for the day", points: "50pt", pct: 100, cur: "1", tot: "1" },
+  { title: "Complete a trade", points: "50pt", pct: 60, cur: "0", tot: "1" },
+  { title: "Place a limit order", points: "30pt", pct: 0, cur: "0", tot: "1" },
+  { title: "Swap any token pair", points: "25pt", pct: 0, cur: "0", tot: "1" },
+];
+
+const PLACEHOLDER_WEEKLY = [
+  { title: "Trade 5 days this week", points: "200pt", pct: 40, cur: "2", tot: "5" },
+  { title: "Reach $10k volume", points: "150pt", pct: 20, cur: "$2k", tot: "$10k" },
+  { title: "Refer 3 new users", points: "100pt", pct: 33, cur: "1", tot: "3" },
+  { title: "Hold position for 48 hours", points: "60pt", pct: 25, cur: "12h", tot: "48h" },
+];
+
+export default function MissionsSection() {
   const [tab, setTab] = useState<"daily" | "weekly">("daily");
-  const missions = tab === "daily" ? s.daily : s.weekly;
+  const missions = tab === "daily" ? PLACEHOLDER_DAILY : PLACEHOLDER_WEEKLY;
 
   return (
     <div className="bg-[#fafafa] relative rounded-[12px] w-full overflow-hidden">
       <div
         aria-hidden="true"
-        className="absolute border border-[#a3a3a3] border-solid inset-0 pointer-events-none rounded-[12px]"
+        className="absolute border border-[#a3a3a3] border-solid inset-0 pointer-events-none rounded-[12px] z-[2]"
       />
-      <div className="flex flex-col items-center size-full">
+      {/* Coming soon overlay */}
+      <div className="absolute inset-0 z-[3] flex flex-col items-center justify-center gap-[8px] pointer-events-none px-[16px] text-center">
+        <span className="font-dmMono text-[10px] uppercase tracking-[0.5px] text-[#525252] bg-[#fdfdfd]/80 backdrop-blur-sm rounded-[6px] px-[10px] py-[3px] shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+          Coming Soon
+        </span>
+        <span className="font-overusedGrotesk font-bold text-[22px] text-[#0e0e0e]">
+          Missions
+        </span>
+        <span className="font-overusedGrotesk text-[13px] text-[#525252] max-w-[320px]">
+          Complete daily and weekly missions to stack points. Quests are on the
+          way.
+        </span>
+      </div>
+      <div
+        aria-hidden
+        className="flex flex-col items-center size-full blur-[3px] opacity-60 pointer-events-none select-none"
+      >
         <div className="flex flex-col gap-[16px] items-center p-[16px] relative w-full">
           {/* Toggle */}
           <div className="h-[42px] relative rounded-[16px] shrink-0 w-full">
@@ -27,162 +58,61 @@ export default function MissionsSection({ s }: { s: PState }) {
                 {(["daily", "weekly"] as const).map((t) => (
                   <div
                     key={t}
-                    className="flex flex-[1_0_0] items-center self-stretch"
+                    className={`flex flex-[1_0_0] items-center self-stretch justify-center rounded-[12px] ${
+                      tab === t ? "bg-[#fdfdfd]" : ""
+                    }`}
+                    onClick={() => setTab(t)}
                   >
-                    <div
-                      className={`flex-[1_0_0] h-full min-h-px min-w-0 relative cursor-pointer ${
+                    <span
+                      className={`font-overusedGrotesk text-[14px] uppercase ${
                         tab === t
-                          ? "bg-[#fdfdfd] rounded-[12px] shadow-[2px_2px_8px_0px_rgba(178,178,178,0.5)]"
-                          : "rounded-[8px]"
+                          ? "font-semibold text-[#0e0e0e]"
+                          : "font-medium text-[#a3a3a3]"
                       }`}
-                      onClick={() => setTab(t)}
                     >
-                      <div className="flex items-center justify-center size-full">
-                        <div className="flex items-center justify-center px-[16px] py-[8px] relative size-full">
-                          <span
-                            className={`font-overusedGrotesk font-medium text-[14px] whitespace-nowrap ${
-                              tab === t
-                                ? "text-[#0e0e0e]"
-                                : "text-[#a3a3a3]"
-                            }`}
-                          >
-                            {t === "daily"
-                              ? "Daily Missions"
-                              : "Weekly Missions"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                      {t}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Progress bar */}
-          <div className="flex gap-[10px] items-start relative shrink-0 w-full">
-            <div className="flex-[1_0_0] h-[22px] min-h-px min-w-0 relative rounded-[12px]">
-              <div className="overflow-clip rounded-[inherit] size-full">
-                <div className="flex flex-col items-start p-[4px] relative size-full">
-                  <div
-                    className="bg-[#a3a3a3] h-[14px] rounded-[8px] shrink-0 transition-all duration-700 max-w-full"
-                    style={{ width: `${s.missionBarPx}px` }}
-                  />
-                </div>
-              </div>
-              <div
-                aria-hidden="true"
-                className="absolute border border-[#0e0e0e] border-solid inset-0 pointer-events-none rounded-[12px]"
-              />
-            </div>
-            <div className="flex font-overusedGrotesk font-bold gap-[4px] items-center justify-end self-stretch shrink-0 text-[14px] text-center whitespace-nowrap">
-              <span className="text-[#a3a3a3]">Max:</span>
-              <span className="text-[#0e0e0e]">200pt</span>
-            </div>
-          </div>
-
           {/* Mission cards */}
-          <div className="flex flex-col gap-[10px] w-full">
+          <div className="flex flex-col gap-[8px] w-full">
             {missions.map((m, i) => {
-              const done = m.pct >= 100 && m.color === "#16a34a";
-              const complete = m.pct >= 100;
+              const complete = m.pct === 100;
               return (
                 <div
-                  key={`${tab}-${i}`}
-                  className={`relative rounded-[12px] shrink-0 w-full p-[12px] transition-all duration-300 ${
-                    done ? "bg-[#f0fdf4]" : "bg-[#fdfdfd]"
-                  }`}
+                  key={i}
+                  className="flex flex-col gap-[6px] bg-[#fdfdfd] border border-[#e5e5e5] rounded-[10px] p-[12px]"
                 >
-                  <div
-                    aria-hidden="true"
-                    className={`absolute border border-solid inset-0 pointer-events-none rounded-[12px] ${
-                      done ? "border-[#bbf7d0]" : "border-[#e5e5e5]"
-                    }`}
-                  />
-                  <div className="flex gap-[12px] items-start relative">
-                    <div
-                      className={`overflow-clip relative rounded-[10px] shrink-0 size-[38px] transition-colors duration-500 flex items-center justify-center ${
-                        done
-                          ? "bg-[#dcfce7]"
-                          : complete
-                            ? "bg-[#f5f5f5]"
-                            : "bg-[#f5f5f5]"
+                  <div className="flex items-center justify-between gap-[8px]">
+                    <span
+                      className={`font-overusedGrotesk font-medium text-[13px] ${
+                        complete
+                          ? "text-[#16a34a] line-through"
+                          : "text-[#0e0e0e]"
                       }`}
                     >
-                      {done ? (
-                        <svg
-                          className="size-[18px]"
-                          fill="none"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M3 8L6.5 11.5L13 5"
-                            stroke="#16A34A"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      ) : complete ? (
-                        <svg
-                          className="size-[18px]"
-                          fill="none"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M3 8L6.5 11.5L13 5"
-                            stroke="#0e0e0e"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      ) : (
-                        <img
-                          alt=""
-                          className="absolute inset-0 max-w-none object-cover size-full rounded-[10px]"
-                          src="/images/leaderboard/blur.png"
-                        />
-                      )}
+                      {m.title}
+                    </span>
+                    <span className="font-dmMono font-medium text-[11px] uppercase tracking-[0.22px] text-[#a3a3a3] shrink-0">
+                      {m.points}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-[8px]">
+                    <div className="flex-1 h-[4px] rounded-[2px] bg-[#e5e5e5] overflow-hidden">
+                      <div
+                        className={`h-full rounded-[2px] transition-all ${
+                          complete ? "bg-[#16a34a]" : "bg-[#0e0e0e]"
+                        }`}
+                        style={{ width: `${m.pct}%` }}
+                      />
                     </div>
-                    <div className="flex flex-[1_0_0] flex-col gap-[8px] items-start min-w-0 relative">
-                      <div className="flex items-start justify-between w-full gap-[8px]">
-                        <span
-                          className={`font-overusedGrotesk font-medium text-[13px] leading-[1.3] ${
-                            done
-                              ? "text-[#a3a3a3] line-through"
-                              : "text-[#0e0e0e]"
-                          }`}
-                        >
-                          {m.title}
-                        </span>
-                        <span
-                          className={`font-dmMono font-medium px-[8px] py-[2px] rounded-[6px] text-[11px] whitespace-nowrap shrink-0 ${
-                            done
-                              ? "bg-[#16a34a] text-[#fdfdfd]"
-                              : "bg-[#dcfce7] text-[#16a34a]"
-                          }`}
-                        >
-                          {m.points}
-                        </span>
-                      </div>
-                      <div className="flex gap-[8px] items-center w-full">
-                        <div className="flex-[1_0_0] h-[8px] min-w-0 relative rounded-[6px]">
-                          <div className="overflow-clip rounded-[inherit] size-full bg-[#f0f0f0]">
-                            <div
-                              className="h-full rounded-[6px] transition-all duration-700"
-                              style={{
-                                width: `${Math.max(m.pct, m.pct > 0 ? 8 : 0)}%`,
-                                backgroundColor: m.color,
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <span className="font-overusedGrotesk font-medium text-[#a3a3a3] text-[11px] whitespace-nowrap">
-                          {m.cur}/{m.tot}
-                        </span>
-                      </div>
-                    </div>
+                    <span className="font-dmMono font-medium text-[10px] text-[#a3a3a3] shrink-0">
+                      {m.cur}/{m.tot}
+                    </span>
                   </div>
                 </div>
               );

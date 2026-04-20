@@ -65,11 +65,11 @@ function LeaderboardRow({
         {amount}
       </div>
       <div className="hidden md:flex flex-1 gap-[4px] items-center justify-end">
-        <PnlIcon />
+        <PnlIcon positive={pnl >= 0} />
         <span
           className={combineClass(
             "font-overusedGrotesk font-medium text-[14px]",
-            pnl >= 0 ? "text-[#0e0e0e]" : "text-red-600",
+            pnl >= 0 ? "text-[#16a34a]" : "text-[#dc2626]",
           )}
         >
           ${formatFusdc(history?.totalPnl ?? "0", 2)}

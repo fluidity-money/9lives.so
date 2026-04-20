@@ -1,15 +1,14 @@
 "use client";
 
-import useReferrerCode from "@/hooks/useReferrerCode";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { useAppKitAccount } from "@reown/appkit/react";
+import useReferrerCode from "@/hooks/useReferrerCode";
+import useCountReferees from "@/hooks/useCountReferees";
 import { genReferrer } from "@/providers/graphqlClient";
 import { generateReferralCode } from "@/utils/generateReferralCode";
-import Button from "./button";
-import toast from "react-hot-toast";
-import useCountReferees from "@/hooks/useCountReferees";
-import { useAppKitAccount } from "@reown/appkit/react";
-import GroupButton from "./groupButton";
-import Link from "next/link";
+import { combineClass } from "@/utils/combineClass";
 
 export default function ReferrerDialog({
   closeModal,
@@ -24,115 +23,235 @@ export default function ReferrerDialog({
     isLoading,
     refetch,
   } = useReferrerCode(account?.address);
-  const [genError, setGenError] = useState<string>();
-  const post1 = `https://twitter.com/intent/tweet?text=Got%20a%20hot%20take%20on%20the%20future%3F%0AOn%209Lives%2C%20you%20can%20create%20your%20own%20market%2C%20trade%20on%20predictions%2C%20and%20earn.%0A%0AIt%E2%80%99s%20open%2C%20permissionless%2C%20and%20built%20on%20Superposition.%0A%0AJoin%20me%20here%3A%20https://9lives.so/?referral=${code}`;
-  const post2 = `https://twitter.com/intent/tweet?text=Think%20you%E2%80%99ve%20got%209Lives%3F%0A%0AExplore%20prediction%20markets%2C%20trade%20on%20outcomes%2C%20and%20earn%20fees%20and%20points%20on%20markets%20you%20create!%0A%0AJoin%20me%20here%3A%20https://9lives.so/?referral=${code}`;
-  function handleCopy() {
-    navigator.clipboard.writeText(`https://9lives.so/?referral=${code}`);
-    toast.success("Referral link copied");
-  }
   const { data: refereeCount } = useCountReferees(account?.address);
+  const [genError, setGenError] = useState<string>();
+  const [activeTab, setActiveTab] = useState<"how" | "fees">("how");
+  const [hasCopied, setHasCopied] = useState(false);
+  const [justCopied, setJustCopied] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const referralUrl = code ? `https://9lives.so/?referral=${code}` : "";
+
+  const tweetText = encodeURIComponent(
+    `Got a hot take on the future?\nOn 9Lives, you can create your own market, trade on predictions, and earn.\n\nIt's open, permissionless, and built on Superposition.\n\nJoin me here: ${referralUrl}`,
+  );
+  const shareUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
 
   useEffect(() => {
     async function generateCode() {
       try {
         if (!account?.address)
           throw new Error("Connect your wallet to generate a referral code");
-        const code = generateReferralCode();
-        await genReferrer({ address: account.address, code });
+        const newCode = generateReferralCode();
+        await genReferrer({ address: account.address, code: newCode });
         await refetch();
-      } catch (error) {
-        setGenError(error instanceof Error ? error.message : "Unknown error");
+      } catch (e) {
+        setGenError(e instanceof Error ? e.message : "Unknown error");
       }
     }
-    if (isSuccess && !code) {
-      generateCode();
-    }
+    if (isSuccess && !code) generateCode();
   }, [code, isSuccess, account?.address, refetch]);
 
-  if (isLoading || (isSuccess && !code))
-    return <div className="skeleton h-[400px] w-full" />;
+  function handleCopy() {
+    if (!referralUrl) return;
+    navigator.clipboard.writeText(referralUrl);
+    toast.success("Referral link copied");
+    setHasCopied(true);
+    setJustCopied(true);
+    setTimeout(() => setJustCopied(false), 1600);
+  }
 
-  if (code)
+  if (isLoading || (isSuccess && !code)) {
     return (
-      <div className="relative flex max-w-[600px] flex-col space-y-3">
-        <div className="flex flex-col gap-4 md:flex-row">
-          <p className="text-center text-4xl">💎</p>
-          <div className="flex flex-1 flex-col gap-4">
-            <h3 className="text-left text-xl font-semibold">
-              {refereeCount ?? 0} Active Referrals
-            </h3>
-            <p className="text-sm font-medium text-neutral-600">
-              Refer users using your link to earn more rewards!
-            </p>
-            <input
-              disabled
-              value={`https://9lives.so/?referral=${code}`}
-              type="text"
-              className="w-full rounded-xl bg-neutral-100 px-3 py-2 text-center shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]"
-            />
-            <Button
-              size={"medium"}
-              onClick={handleCopy}
-              intent={"cta"}
-              title="COPY LINK"
-              className="w-full"
-            />
-          </div>
-        </div>
-        {/* <p className="border px-4 py-2 font-chicago">{`https://9lives.so/?referral=${code}`}</p> */}
-        <GroupButton
-          buttons={[
-            {
-              title: "How it works",
-            },
-            {
-              title: "Fees Generated",
-            },
-          ]}
-        />
-        <div className="w-full rounded-xl bg-neutral-100 p-3 shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.70)]">
-          <div className="flex flex-col items-center justify-between gap-4">
-            <div className="flex w-full items-center justify-between gap-4">
-              <span className="flex items-center gap-1 text-sm font-bold text-neutral-600">
-                1. Copy your link.
-              </span>
-              <span className="flex items-center gap-1 text-sm font-bold text-neutral-600">
-                2. Share with your friends.
-              </span>
-            </div>
-            <p className="w-full rounded-md bg-green-200 px-1 py-2 text-center text-sm font-medium text-green-700">
-              You get %1 of fees generated by referred user
-            </p>
-          </div>
-        </div>
-
-        {/* <p className="font-chicago text-xs font-normal">
-          <a
-            href={Math.random() > 0.5 ? post1 : post2}
-            rel="noreferrer"
-            target="_blank"
-            className="font-geneva uppercase underline"
-          >
-            Share To:{" "}
-            X
-          </a>
-        </p> */}
-        <Link
-          href={Math.random() > 0.5 ? post1 : post2}
-          rel="noreferrer"
-          target="_blank"
-          className="font-geneva uppercase underline"
-        >
-          <Button title="Share to X" intent={"inverted"} className={"w-full"} />
-        </Link>
+      <div className="flex flex-col gap-[16px] py-[8px]">
+        <div className="h-[28px] w-[200px] rounded bg-neutral-200 animate-pulse" />
+        <div className="h-[40px] w-full rounded-[12px] bg-neutral-100 animate-pulse" />
+        <div className="h-[40px] w-full rounded-full bg-neutral-100 animate-pulse" />
+        <div className="h-[96px] w-full rounded-[12px] bg-neutral-100 animate-pulse" />
+        <div className="h-[48px] w-full rounded-[12px] bg-neutral-100 animate-pulse" />
       </div>
     );
+  }
+
+  if (!code) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-[8px] py-[32px]">
+        <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
+          Something went wrong
+        </span>
+        <span className="font-dmMono text-[11px] text-[#737373]">
+          {error?.message ?? genError ?? "Unknown error"}
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-20 items-center justify-center">
-      <p className="font-chicago">Ups something went wrong</p>
-      <p className="text-xs">{error?.message ?? genError ?? "Unknown error"}</p>
+    <div className="flex flex-col gap-[20px]">
+      {/* Top: diamond + title + subtitle */}
+      <div className="flex gap-[16px] items-start">
+        <span className="text-[56px] leading-none shrink-0 select-none" aria-hidden>
+          💎
+        </span>
+        <div className="flex flex-col gap-[6px] flex-1 min-w-0 pt-[2px]">
+          <span className="font-overusedGrotesk font-bold text-[24px] text-[#0e0e0e] leading-[1.1]">
+            {refereeCount ?? 0} Active Referrals
+          </span>
+          <span className="font-overusedGrotesk text-[15px] text-[#525252] leading-[1.35]">
+            Refer users using your link to earn more rewards!
+          </span>
+        </div>
+      </div>
+
+      {/* Referral URL — full-width centered pill */}
+      <button
+        type="button"
+        onClick={handleCopy}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        className={combineClass(
+          "w-full rounded-full border px-[20px] py-[12px] cursor-pointer transition-colors shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.35)]",
+          hasCopied
+            ? "bg-[#dcfce7] border-[#bbf7d0] hover:bg-[#c7f2d3]"
+            : "bg-[#f5f5f5] border-[#e5e5e5] hover:bg-[#ededed]",
+        )}
+        title="Click to copy"
+      >
+        {justCopied ? (
+          <span className="flex items-center justify-center gap-[8px] font-overusedGrotesk font-semibold text-[15px] text-[#15803d]">
+            <svg
+              className="size-[16px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            Link Copied
+          </span>
+        ) : isHovering && !hasCopied ? (
+          <span className="flex items-center justify-center gap-[8px] font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
+            <svg
+              className="size-[16px]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            Copy Your Link
+          </span>
+        ) : (
+          <span
+            className={combineClass(
+              "font-dmMono text-[14px] tracking-[0.3px] truncate block text-center",
+              hasCopied ? "text-[#15803d]" : "text-[#525252]",
+            )}
+          >
+            {referralUrl}
+          </span>
+        )}
+      </button>
+
+      {/* Segmented tab */}
+      <div className="relative flex items-center rounded-full bg-[#f0f0f0] p-[4px] border border-[#e5e5e5]">
+        <button
+          type="button"
+          onClick={() => setActiveTab("how")}
+          className={combineClass(
+            "flex-1 rounded-full py-[10px] font-overusedGrotesk font-semibold text-[14px] transition-colors cursor-pointer",
+            activeTab === "how"
+              ? "bg-[#fdfdfd] text-[#0e0e0e] shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
+              : "text-[#a3a3a3] hover:text-[#525252]",
+          )}
+        >
+          How it works
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("fees")}
+          className={combineClass(
+            "flex-1 rounded-full py-[10px] font-overusedGrotesk font-semibold text-[14px] transition-colors cursor-pointer",
+            activeTab === "fees"
+              ? "bg-[#fdfdfd] text-[#0e0e0e] shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
+              : "text-[#a3a3a3] hover:text-[#525252]",
+          )}
+        >
+          Fees Generated
+        </button>
+      </div>
+
+      {/* Tab content */}
+      <div className="rounded-[16px] bg-[#fafafa] border border-[#e5e5e5] p-[16px] shadow-[inset_1px_1px_3px_0px_rgba(163,163,163,0.25)]">
+        {activeTab === "how" ? (
+          <div className="flex flex-col gap-[12px]">
+            <div className="flex items-center justify-between gap-[16px]">
+              <div className="flex items-center gap-[8px]">
+                <span className="font-overusedGrotesk font-bold text-[15px] text-[#0e0e0e]">
+                  1 .
+                </span>
+                <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
+                  Copy Your Link.
+                </span>
+              </div>
+              <div className="flex items-center gap-[8px]">
+                <span className="font-overusedGrotesk font-bold text-[15px] text-[#0e0e0e]">
+                  2 .
+                </span>
+                <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
+                  Share with your friends.
+                </span>
+              </div>
+            </div>
+            <div className="rounded-[10px] bg-[#dcfce7] px-[16px] py-[12px] text-center">
+              <span className="font-overusedGrotesk font-medium text-[15px] text-[#15803d]">
+                You get %1 of fees generated by referred user.
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-[6px] py-[16px]">
+            <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
+              Coming soon
+            </span>
+            <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#737373]">
+              Fee tracking will appear here
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Share to X */}
+      <Link href={shareUrl} target="_blank" rel="noreferrer" className="w-full">
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-[10px] rounded-[12px] bg-[#fdfdfd] border border-[#e5e5e5] py-[14px] font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e] hover:bg-[#fafafa] transition-colors cursor-pointer"
+        >
+          <svg
+            className="size-[16px]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+          Share to X
+        </button>
+      </Link>
     </div>
   );
 }

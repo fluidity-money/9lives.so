@@ -110,37 +110,37 @@ function LpCampaignRow({
           <div className="flex items-center gap-[6px]">
             <Link
               href={`/campaign/${data?.identifier}`}
-              className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e] hover:underline truncate"
+              className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e] hover:underline truncate"
             >
               {data?.name}
             </Link>
             {data?.winner && (
-              <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
+              <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-amber-50 text-amber-600">
                 Concluded
               </span>
             )}
           </div>
-          <span className="font-dmMono text-[9px] text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] text-[#737373]">
             Ends {endDate}
           </span>
         </div>
 
         {/* Liquidity */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Liquidity
           </span>
-          <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
             ${formatFusdc(liquidity ?? "0", 2)}
           </span>
         </div>
 
         {/* Unclaimed */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Unclaimed
           </span>
-          <span className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
             ${formatFusdc(unclaimedRewards ?? "0", 2)}
           </span>
         </div>
@@ -169,11 +169,11 @@ function PlaceholderCard({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-[8px] py-[40px] rounded-[12px] border border-[#e5e5e5] bg-[#fdfdfd]">
-      <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+      <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
         {title}
       </span>
       {subtitle && (
-        <span className="font-dmMono text-[11px] text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] text-[#737373]">
           {subtitle}
         </span>
       )}

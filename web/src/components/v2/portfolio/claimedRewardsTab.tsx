@@ -56,7 +56,7 @@ export default function ClaimedRewardsTab() {
             onClick={() => fetchNextPage()}
           />
         ) : claimedRewards && claimedRewards.length > 0 ? (
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             End of results
           </span>
         ) : null}
@@ -95,14 +95,14 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
         <div className="flex flex-col gap-[4px] flex-1 min-w-0">
           <Link
             href={`/campaign/${data.content.identifier}`}
-            className="font-overusedGrotesk font-semibold text-[13px] text-[#0e0e0e] hover:underline truncate"
+            className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e] hover:underline truncate"
           >
             {data.content.name}
           </Link>
           <Link
             target="_blank"
             href={`https://explorer.superposition.so/tx/${data.txHash}`}
-            className="font-dmMono text-[9px] text-[#a3a3a3] hover:underline"
+            className="font-dmMono text-[11px] text-[#737373] hover:underline"
           >
             Tx: {data.txHash.slice(0, 6)}...{data.txHash.slice(-4)}
           </Link>
@@ -121,7 +121,7 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
           ) : null}
           <span
             className={combineClass(
-              "font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px]",
+              "font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px]",
               isYes
                 ? "bg-green-50 text-green-600"
                 : isNo
@@ -135,7 +135,7 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
 
         {/* Reward amount */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Reward
           </span>
           <div className="flex items-center gap-[6px]">
@@ -145,7 +145,7 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
             {pnlValue !== null ? (
               <span
                 className={combineClass(
-                  "font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px]",
+                  "font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px]",
                   isPositivePnl
                     ? "bg-green-50 text-green-600"
                     : "bg-red-50 text-red-600",
@@ -154,7 +154,7 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
                 ${formatFusdc(BigInt(data.pnl!), 2)}
               </span>
             ) : (
-              <span className="font-dmMono text-[9px] uppercase px-[4px] py-[1px] rounded-[4px] bg-red-50 text-red-600">
+              <span className="font-dmMono text-[10px] uppercase px-[6px] py-[1px] rounded-[4px] bg-red-50 text-red-600">
                 Refund
               </span>
             )}
@@ -163,14 +163,14 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
 
         {/* Shares spent */}
         <div className="flex flex-col items-end gap-[2px] flex-shrink-0">
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Shares
           </span>
-          <span className="font-overusedGrotesk text-[12px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk text-[13px] text-[#0e0e0e]">
             {formatFusdc(+data.sharesSpent, 2)}{" "}
             <span
               className={combineClass(
-                "font-dmMono text-[9px] px-[3px] py-[1px] rounded-[3px]",
+                "font-dmMono text-[10px] px-[4px] py-[1px] rounded-[3px]",
                 isYes
                   ? "bg-green-50 text-green-600"
                   : isNo
@@ -188,10 +188,10 @@ function ClaimedRewardRow({ data }: { data: ClaimedCampaign }) {
           className="flex flex-col items-end gap-[2px] flex-shrink-0 min-w-[50px]"
           title={new Date(data.createdAt * 1000).toISOString()}
         >
-          <span className="font-dmMono text-[9px] uppercase text-[#a3a3a3]">
+          <span className="font-dmMono text-[11px] uppercase tracking-[0.5px] text-[#525252]">
             Date
           </span>
-          <span className="font-overusedGrotesk text-[12px] text-[#0e0e0e]">
+          <span className="font-overusedGrotesk text-[13px] text-[#0e0e0e]">
             {calcTimePassed(data.createdAt * 1000).text}
           </span>
         </div>
@@ -209,11 +209,11 @@ function PlaceholderCard({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-[8px] py-[40px] rounded-[12px] border border-[#e5e5e5] bg-[#fdfdfd]">
-      <span className="font-overusedGrotesk font-semibold text-[14px] text-[#0e0e0e]">
+      <span className="font-overusedGrotesk font-semibold text-[15px] text-[#0e0e0e]">
         {title}
       </span>
       {subtitle && (
-        <span className="font-dmMono text-[11px] text-[#a3a3a3]">
+        <span className="font-dmMono text-[11px] text-[#737373]">
           {subtitle}
         </span>
       )}

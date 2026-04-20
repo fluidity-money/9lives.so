@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { STATES } from "./demoData";
 import JackpotSection from "./jackpotSection";
 import LeaderboardSection from "./leaderboardSection";
 import TierWidget from "./tierWidget";
 import TierCardMobile from "./tierCardMobile";
 import StreakSection from "./streakSection";
 import MissionsSection from "./missionsSection";
-import ProgressionController from "./progressionController";
 import MobileMenuButton from "../mobileMenuButton";
 
 function MobileTabSwitcher({
@@ -47,17 +45,15 @@ function MobileTabSwitcher({
 }
 
 export default function LeaderboardPage() {
-  const [level, setLevel] = useState(0);
   const [mobileTab, setMobileTab] = useState<"leaderboard" | "streaks">(
     "leaderboard",
   );
-  const s = STATES[level];
 
   return (
     <>
       {/* ===== MOBILE LAYOUT (below md) ===== */}
       <div className="md:hidden flex flex-col w-full bg-[#fdfdfd] overflow-x-hidden pb-[72px]">
-        <JackpotSection s={s} />
+        <JackpotSection />
         <MobileTabSwitcher activeTab={mobileTab} onTabChange={setMobileTab} />
 
         {mobileTab === "leaderboard" ? (
@@ -66,12 +62,12 @@ export default function LeaderboardPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-[12px] p-[12px] w-full">
-            <StreakSection s={s} />
-            <TierCardMobile s={s} />
+            <StreakSection />
+            <TierCardMobile />
             <p className="font-overusedGrotesk font-medium text-[#525252] text-[14px] text-center">
               Earn points by doing missions:
             </p>
-            <MissionsSection s={s} />
+            <MissionsSection />
           </div>
         )}
 
@@ -85,8 +81,6 @@ export default function LeaderboardPage() {
           </Link>
           <MobileMenuButton />
         </div>
-
-        <ProgressionController level={level} setLevel={setLevel} />
       </div>
 
       {/* ===== DESKTOP LAYOUT (md and above) ===== */}
@@ -94,7 +88,7 @@ export default function LeaderboardPage() {
         <div className="bg-[#fafafa] flex flex-col lg:flex-row flex-[1_0_0] items-start justify-center min-h-px min-w-0 overflow-clip relative w-full">
           {/* Left content — independent scroll */}
           <div className="flex flex-[1_0_0] flex-col gap-[12px] lg:h-full items-start min-h-px min-w-0 relative lg:overflow-y-auto w-full">
-            <JackpotSection s={s} />
+            <JackpotSection />
             <div className="relative shrink-0 w-full">
               <div className="flex justify-center size-full">
                 <div className="flex items-start justify-center pb-[24px] px-[16px] relative size-full">
@@ -106,13 +100,12 @@ export default function LeaderboardPage() {
           {/* Right sidebar — independent scroll */}
           <div className="bg-[#f5f5f5] lg:h-full relative shrink-0 lg:overflow-y-auto w-full lg:w-auto overflow-x-hidden">
             <div className="flex flex-col gap-[12px] items-start p-[16px] relative w-full lg:w-[414px]">
-              <TierWidget s={s} />
-              <StreakSection s={s} />
-              <MissionsSection s={s} />
+              <TierWidget />
+              <StreakSection />
+              <MissionsSection />
             </div>
           </div>
         </div>
-        <ProgressionController level={level} setLevel={setLevel} />
       </div>
     </>
   );

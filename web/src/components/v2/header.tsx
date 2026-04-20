@@ -3,9 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAppKitAccount } from "@reown/appkit/react";
 import HeaderLogo from "../headerLogo";
 import ConnectButton from "./connectButton";
+import Modal from "./modal";
+import ReferrerDialog from "./referrerDialog";
 import svgPaths from "./leaderboard/svgPaths";
+import useConnectWallet from "@/hooks/useConnectWallet";
 
 function NavLink({
   label,
@@ -42,21 +46,36 @@ function NavLink({
 function HeaderSection({
   children,
   className,
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }) {
+  const inner = (
+    <div className="flex items-center justify-center size-full">
+      <div className="flex gap-[4px] items-center justify-center p-[16px] size-full cursor-pointer hover:bg-[#fafafa] transition-colors">
+        {children}
+      </div>
+    </div>
+  );
   return (
     <div className={`h-full relative shrink-0 ${className ?? ""}`}>
       <div
         aria-hidden="true"
         className="absolute border-[#e5e5e5] border-l border-solid inset-[0_0_0_-0.5px] pointer-events-none"
       />
-      <div className="flex items-center justify-center size-full">
-        <div className="flex gap-[4px] items-center justify-center p-[16px] size-full cursor-pointer hover:bg-[#fafafa] transition-colors">
-          {children}
-        </div>
-      </div>
+      {onClick ? (
+        <button
+          type="button"
+          onClick={onClick}
+          className="size-full text-left cursor-pointer"
+        >
+          {inner}
+        </button>
+      ) : (
+        inner
+      )}
     </div>
   );
 }
@@ -71,10 +90,12 @@ function MobileMenu({
   isOpen,
   onClose,
   isActive,
+  onReferralClick,
 }: {
   isOpen: boolean;
   onClose: () => void;
   isActive: (path: string) => boolean;
+  onReferralClick: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -122,16 +143,19 @@ function MobileMenu({
           </svg>
           REWARDS
         </Link>
-        <Link
-          href="#"
-          onClick={onClose}
-          className="flex items-center gap-[8px] px-[16px] py-[12px] font-dmMono font-medium text-[11.67px] uppercase text-[#a3a3a3] hover:bg-[#fafafa] transition-colors"
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            onReferralClick();
+          }}
+          className="flex items-center gap-[8px] px-[16px] py-[12px] font-dmMono font-medium text-[11.67px] uppercase text-[#a3a3a3] hover:bg-[#fafafa] transition-colors text-left"
         >
           <svg className="size-[12px]" fill="none" viewBox="0 0 11.792 7.50114">
             <path d={svgPaths.p3ba8a480} fill="#a3a3a3" />
           </svg>
           REFERRAL
-        </Link>
+        </button>
       </div>
     </div>
   );
@@ -140,6 +164,14 @@ function MobileMenu({
 export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [referralOpen, setReferralOpen] = useState(false);
+  const account = useAppKitAccount();
+  const { connect } = useConnectWallet();
+
+  function handleReferralClick() {
+    if (!account.isConnected) return connect();
+    setReferralOpen(true);
+  }
 
   function isActive(path: string) {
     if (path === "/") {
@@ -200,7 +232,7 @@ export default function Header() {
                 REWARDS
               </p>
             </HeaderSection>
-            <HeaderSection className="hidden md:block">
+            <HeaderSection className="hidden md:block" onClick={handleReferralClick}>
               <svg
                 className="size-[12px]"
                 fill="none"
@@ -238,6 +270,7 @@ export default function Header() {
                 isOpen={mobileMenuOpen}
                 onClose={() => setMobileMenuOpen(false)}
                 isActive={isActive}
+                onReferralClick={handleReferralClick}
               />
             </div>
             {/* Connect wallet */}
@@ -255,6 +288,13 @@ export default function Header() {
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={referralOpen}
+        setIsOpen={setReferralOpen}
+        boxContainerClass="max-w-[520px]"
+      >
+        <ReferrerDialog closeModal={() => setReferralOpen(false)} />
+      </Modal>
     </div>
   );
 }

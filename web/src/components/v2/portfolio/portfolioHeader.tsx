@@ -21,9 +21,7 @@ import WithdrawDialog from "@/components/withdrawDialog";
 import svgPaths from "../leaderboard/svgPaths";
 import { TIERS, getTierIndex } from "../leaderboard/demoData";
 
-import type { MockPortfolioState } from "./mockData";
-
-export default function PortfolioHeader({ overrideTierIdx, mockState }: { overrideTierIdx?: number; mockState?: MockPortfolioState }) {
+export default function PortfolioHeader() {
   const account = useAppKitAccount();
   const { data: balance } = useBalance(account.address);
   const { connect } = useConnectWallet();
@@ -42,18 +40,15 @@ export default function PortfolioHeader({ overrideTierIdx, mockState }: { overri
   });
   const { data: domainOrAddress } = useMeowDomains(account.address ?? "");
 
-  const displayNetWorth = mockState?.netWorth ?? (Number(formatFusdc(Number(balance), 2)) + (positionsValue || 0));
-  const netWorth = displayNetWorth.toFixed(2);
-  const displayPnL = mockState?.pnl ?? totalPnL;
-  const displayVolume = mockState?.volume ?? (totalVolume ?? 0);
-  const displayAvailable = mockState?.available ?? Number(formatFusdc(Number(balance), 2));
-  const displayPositionsValue = mockState?.positionsValue ?? (positionsValue ?? 0);
+  const availableCash = Number(formatFusdc(Number(balance), 2));
+  const netWorth = (availableCash + (positionsValue || 0)).toFixed(2);
+  const displayPnL = totalPnL;
+  const displayPositionsValue = positionsValue ?? 0;
 
   const isProfitable = displayPnL >= 0;
-  const points = mockState?.points ?? (pointsData?.[0]?.amount ?? 0);
-  const rank = mockState?.rank ?? (pointsData?.[0]?.rank ?? 0);
-  const realTierIdx = getTierIndex(points);
-  const tierIdx = overrideTierIdx ?? realTierIdx;
+  const points = pointsData?.[0]?.amount ?? 0;
+  const rank = pointsData?.[0]?.rank ?? 0;
+  const tierIdx = getTierIndex(points);
   const currentTier = TIERS[tierIdx];
 
   // Tier-based hero background colors
@@ -98,24 +93,26 @@ export default function PortfolioHeader({ overrideTierIdx, mockState }: { overri
               ) : (
                 <div className="size-[48px] rounded-full bg-[#333] border-2 border-[#555]" />
               )}
-              <div className="flex flex-col gap-[4px]">
-                <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[16px]">
+              <div className="flex flex-col gap-[4px] min-w-0 flex-1">
+                <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[16px] truncate max-w-full">
                   {account.address
-                    ? (domainOrAddress ?? `${account.address.slice(0, 6)}...${account.address.slice(-4)}`)
+                    ? domainOrAddress && domainOrAddress.endsWith(".meow")
+                      ? domainOrAddress
+                      : `${account.address.slice(0, 6)}...${account.address.slice(-4)}`
                     : "Not Connected"}
                 </span>
-                <div className="flex items-center gap-[8px]">
-                  <span className="font-dmMono text-[9px] uppercase text-[rgba(255,255,255,0.4)] tracking-[0.18px]">
+                <div className="flex flex-wrap items-center gap-[8px]">
+                  <span className="font-dmMono font-medium text-[12px] uppercase text-[rgba(255,255,255,0.65)] tracking-[0.24px]">
                     Rank #{rank}
                   </span>
                   {/* Tier badge */}
-                  <div className="bg-[#ffe8f5] flex items-center gap-[4px] px-[6px] py-[2px] rounded-[4px]">
-                    <div className="flex items-center justify-center overflow-clip shrink-0 size-[12px]">
+                  <div className="bg-[#ffe8f5] flex items-center gap-[6px] px-[10px] py-[4px] rounded-[6px] shadow-[0_0_0_1px_rgba(234,51,194,0.25)]">
+                    <div className="flex items-center justify-center overflow-clip shrink-0 size-[14px]">
                       <svg className="size-full" fill="none" viewBox="0 0 8 6.54545">
                         <path d={svgPaths.p29f36f80} fill="#EA33C2" />
                       </svg>
                     </div>
-                    <span className="font-dmMono font-medium text-[#ea33c2] text-[8px] uppercase tracking-[0.16px]">
+                    <span className="font-dmMono font-semibold text-[#ea33c2] text-[11px] uppercase tracking-[0.3px]">
                       {currentTier.name}
                     </span>
                   </div>
@@ -166,51 +163,51 @@ export default function PortfolioHeader({ overrideTierIdx, mockState }: { overri
           </div>
 
           {/* Stats row */}
-          <div className="flex gap-[2px] flex-wrap">
-            <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-[2px]">
+            <div className="bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px] min-w-0">
               <span className="font-dmMono text-[9px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.18px]">
                 PnL
               </span>
               <span
                 className={combineClass(
-                  "font-overusedGrotesk font-bold text-[18px]",
+                  "font-overusedGrotesk font-bold text-[18px] truncate",
                   isProfitable ? "text-[#4ade80]" : "text-[#fca5a5]",
                 )}
               >
                 {isProfitable ? "+" : ""}${displayPnL.toFixed(2)}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
+            <div className="bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px] min-w-0">
               <span className="font-dmMono text-[9px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.18px]">
                 Volume
               </span>
-              <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px]">
-                ${mockState ? displayVolume.toFixed(2) : formatFusdc(totalVolume ?? 0, 2)}
+              <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px] truncate">
+                ${formatFusdc(totalVolume ?? 0, 2)}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
+            <div className="bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px] min-w-0">
               <span className="font-dmMono text-[9px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.18px]">
                 Available
               </span>
-              <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px]">
-                ${mockState ? displayAvailable.toFixed(2) : formatFusdc(Number(balance), 2)}
+              <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px] truncate">
+                ${formatFusdc(Number(balance), 2)}
               </span>
             </div>
-            <div className="flex-1 min-w-[120px] bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px]">
+            <div className="bg-[rgba(255,255,255,0.06)] rounded-[8px] p-[12px] flex flex-col gap-[4px] min-w-0">
               <span className="font-dmMono text-[9px] uppercase text-[rgba(255,255,255,0.35)] tracking-[0.18px]">
                 Positions
               </span>
-              <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px]">
+              <span className="font-overusedGrotesk font-bold text-[#fdfdfd] text-[18px] truncate">
                 ${displayPositionsValue.toFixed(2)}
               </span>
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-[8px]">
+          <div className="flex flex-wrap gap-[8px]">
             {account.isConnected ? (
               <>
-                <Link href="https://bridge.superposition.so/" target="_blank" className="flex-1">
+                <Link href="https://bridge.superposition.so/" target="_blank" className="flex-1 min-w-[140px]">
                   <button
                     className="w-full bg-[#fdfdfd] text-[#0e0e0e] rounded-[12px] py-[12px] font-overusedGrotesk font-semibold text-[14px] cursor-pointer hover:bg-[#f0f0f0] transition-colors"
                     onClick={() => track(EVENTS.FUNDING_CLICKED, { type: "portfolio" })}
@@ -220,13 +217,13 @@ export default function PortfolioHeader({ overrideTierIdx, mockState }: { overri
                 </Link>
                 {enableWithdraw && (
                   <button
-                    className="flex-1 bg-transparent border border-[rgba(255,255,255,0.3)] text-[#fdfdfd] rounded-[12px] py-[12px] font-overusedGrotesk font-semibold text-[14px] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+                    className="flex-1 min-w-[140px] bg-transparent border border-[rgba(255,255,255,0.3)] text-[#fdfdfd] rounded-[12px] py-[12px] font-overusedGrotesk font-semibold text-[14px] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
                     onClick={() => setIsWithdrawDialogOpen(true)}
                   >
                     Withdraw
                   </button>
                 )}
-                <div className="flex-1">
+                <div className="flex-1 min-w-[140px]">
                   <SimpleClaimAllButton shouldHideOnMobile={false} />
                 </div>
               </>

@@ -1,16 +1,27 @@
 "use client";
 
-import type { PState } from "./types";
+import { useAppKitAccount } from "@reown/appkit/react";
+import use9LivesPoints from "@/hooks/use9LivesPoints";
 import { TIERS, getTierIndex } from "./demoData";
 import svgPaths from "./svgPaths";
 import CatLogo from "./catLogo";
 
-export default function TierCardMobile({ s }: { s: PState }) {
-  const currentTierIdx = getTierIndex(s.totalPts);
+export default function TierCardMobile() {
+  const account = useAppKitAccount();
+  const { data: pointsData } = use9LivesPoints({
+    address: account?.address,
+    enabled: !!account.address,
+  });
+  const points = account.isConnected ? (pointsData?.[0]?.amount ?? 0) : 0;
+  const currentTierIdx = getTierIndex(points);
   const currentTier = TIERS[currentTierIdx];
   const nextTier = TIERS[Math.min(currentTierIdx + 1, TIERS.length - 1)];
-  const ptsToNext = nextTier.minPts - s.totalPts;
-  const progressPct = Math.min((s.tierPx / 400) * 100, 100);
+  const ptsToNext = Math.max(nextTier.minPts - points, 0);
+  const tierSpan = Math.max(nextTier.minPts - currentTier.minPts, 1);
+  const progressPct =
+    currentTierIdx === TIERS.length - 1
+      ? 100
+      : Math.min(((points - currentTier.minPts) / tierSpan) * 100, 100);
 
   return (
     <div className="bg-[#f5f5f5] rounded-[16px] w-full p-[16px]">
@@ -25,7 +36,7 @@ export default function TierCardMobile({ s }: { s: PState }) {
             </div>
             <div className="flex flex-col">
               <span className="font-overusedGrotesk font-bold text-[#0e0e0e] text-[20px] tracking-[-0.4px] leading-tight">
-                {s.totalPts.toLocaleString()}pts
+                {points.toLocaleString()}pts
               </span>
               <span className="font-dmMono font-medium text-[#a3a3a3] text-[9px] uppercase tracking-[0.18px]">
                 TOTAL POINTS
@@ -51,13 +62,13 @@ export default function TierCardMobile({ s }: { s: PState }) {
 
         {/* Progress bar */}
         <div className="mt-[12px]">
-          <div className="h-[28px] relative rounded-[999px] w-full bg-[#0e0e0e]">
+          <div className="h-[28px] relative rounded-[999px] w-full bg-[#e5e5e5] overflow-hidden">
             <div
               className="h-full rounded-[999px] bg-[#0e0e0e] transition-all duration-700"
               style={{ width: `${progressPct}%` }}
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-dmMono font-medium text-[#fdfdfd] text-[10px] uppercase tracking-[0.2px]">
+              <span className="font-dmMono font-medium text-[#fdfdfd] mix-blend-difference text-[10px] uppercase tracking-[0.2px]">
                 {ptsToNext > 0
                   ? `${ptsToNext}PTS UNTIL NEXT TIER`
                   : "MAX TIER REACHED"}

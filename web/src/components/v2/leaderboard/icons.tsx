@@ -1,10 +1,14 @@
 import svgPaths from "./svgPaths";
 
-export function PnlIcon() {
+export function PnlIcon({ positive = true }: { positive?: boolean }) {
   return (
     <div className="flex shrink-0 items-center justify-center overflow-clip p-[2px] size-[18px]">
-      <svg className="size-full" fill="none" viewBox="0 0 10 5.45469">
-        <path d={svgPaths.p14ca1b00} fill="#16A34A" />
+      <svg
+        className={`size-full transition-transform ${positive ? "" : "rotate-180"}`}
+        fill="none"
+        viewBox="0 0 10 5.45469"
+      >
+        <path d={svgPaths.p14ca1b00} fill={positive ? "#16A34A" : "#DC2626"} />
       </svg>
     </div>
   );
