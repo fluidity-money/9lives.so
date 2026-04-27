@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import use9LivesPoints from "@/hooks/use9LivesPoints";
+import { useLeaderboardOverview } from "@/hooks/useLeaderboardRewards";
 import useTotalPnL from "@/hooks/useTotalPnL";
 import { useAppKitAccount } from "@reown/appkit/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
@@ -9,6 +9,7 @@ import { combineClass } from "@/utils/combineClass";
 import formatFusdc from "@/utils/format/formatUsdc";
 import makeBlockie from "ethereum-blockies-base64";
 import { PnlIcon, GlobeIcon, FriendsIcon } from "./icons";
+import type { LeaderboardPeriod } from "@/types/leaderboardRewards";
 
 function truncateWallet(wallet: string) {
   if (wallet.length <= 10) return wallet;
@@ -84,15 +85,21 @@ function LeaderboardRow({
 
 export default function LeaderboardSection() {
   const [scope, setScope] = useState<"global" | "friends">("global");
-  const [period, setPeriod] = useState("Daily");
-  const periods = ["Daily", "Weekly", "Monthly", "Annually"];
-  const { data, isLoading } = use9LivesPoints({});
   const account = useAppKitAccount();
   const { connect } = useConnectWallet();
-
-  const selfEntry = data?.find(
-    (i) => i.wallet.toLowerCase() === account?.address?.toLowerCase(),
+  const periods: Array<{ label: string; value: LeaderboardPeriod }> = [
+    { label: "Daily", value: "daily" },
+    { label: "Weekly", value: "weekly" },
+    { label: "Monthly", value: "monthly" },
+    { label: "Annually", value: "annually" },
+  ];
+  const [period, setPeriod] = useState<LeaderboardPeriod>("daily");
+  const { data, isLoading } = useLeaderboardOverview(
+    period,
+    account?.address,
   );
+
+  const selfEntry = data?.self;
 
   return (
     <div className="flex flex-1 flex-col gap-[16px] items-center min-h-px min-w-0">
@@ -142,11 +149,11 @@ export default function LeaderboardSection() {
         <div className="flex gap-[4px] md:gap-[8px] h-full items-center shrink-0 w-full md:w-auto">
           {periods.map((p) => (
             <div
-              key={p}
+              key={p.value}
               className="h-full relative flex-1 md:flex-none md:shrink-0 md:w-[72px] cursor-pointer"
-              onClick={() => setPeriod(p)}
+              onClick={() => setPeriod(p.value)}
             >
-              {period === p && (
+              {period === p.value && (
                 <div className="absolute border-[#0e0e0e] border-b inset-0 pointer-events-none" />
               )}
               <div className="flex flex-col items-center justify-center size-full">
@@ -154,10 +161,10 @@ export default function LeaderboardSection() {
                   <span
                     className={combineClass(
                       "font-overusedGrotesk font-medium text-[14px] whitespace-nowrap",
-                      period === p ? "text-[#0e0e0e]" : "text-[#a3a3a3]",
+                      period === p.value ? "text-[#0e0e0e]" : "text-[#a3a3a3]",
                     )}
                   >
-                    {p}
+                    {p.label}
                   </span>
                 </div>
               </div>
@@ -206,7 +213,7 @@ export default function LeaderboardSection() {
               <div className="w-full h-[400px] animate-pulse bg-[#f5f5f5] rounded-[8px]" />
             ) : (
               <div className="flex flex-col gap-[12px] items-start w-full overflow-y-auto max-h-[600px]">
-                {data?.map((item) => (
+                {data?.entries.map((item) => (
                   <LeaderboardRow
                     key={item.wallet}
                     rank={item.rank}

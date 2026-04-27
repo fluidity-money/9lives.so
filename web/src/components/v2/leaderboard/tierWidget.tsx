@@ -6,9 +6,40 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
 import useMeowDomains from "@/hooks/useMeowDomains";
-import { TIERS, getTierIndex } from "./demoData";
+import {
+  useLeaderboardTiers,
+  useStreakStatus,
+} from "@/hooks/useLeaderboardRewards";
+import { getTierIndex, toTierData } from "./demoData";
+import type { TierData } from "./types";
 import svgPaths from "./svgPaths";
-import CatLogo from "./catLogo";
+
+function TierArtwork({
+  tier,
+  isActive,
+  isLocked,
+}: {
+  tier: TierData;
+  isActive: boolean;
+  isLocked: boolean;
+}) {
+  return (
+    <div
+      className={`overflow-hidden rounded-[12px] bg-[#f7f7f7] border transition-all duration-500 ${
+        isActive
+          ? "size-[96px] border-[#eeeeee] shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+          : "size-[78px] border-transparent"
+      } ${isLocked ? "grayscale opacity-70" : ""}`}
+    >
+      <img
+        src={tier.iconUrl}
+        alt={`${tier.name} tier`}
+        draggable={false}
+        className="size-full object-contain select-none pointer-events-none"
+      />
+    </div>
+  );
+}
 
 export default function TierWidget() {
   const account = useAppKitAccount();
@@ -19,13 +50,16 @@ export default function TierWidget() {
     enabled: !!account.address,
   });
   const { data: domainOrAddress } = useMeowDomains(account.address ?? "");
+  const { data: tierDefinitions } = useLeaderboardTiers();
+  const { data: streak } = useStreakStatus(account.address);
+  const tiers = toTierData(tierDefinitions);
 
   // When connected, the API returns the current user's entry as index 0.
   // When disconnected, we don't want to show anyone else's data.
   const points = account.isConnected ? (pointsData?.[0]?.amount ?? 0) : 0;
-  const currentTierIdx = getTierIndex(points);
-  const currentTier = TIERS[currentTierIdx];
-  const nextTier = TIERS[currentTierIdx + 1];
+  const currentTierIdx = getTierIndex(points, tiers);
+  const currentTier = tiers[currentTierIdx];
+  const nextTier = tiers[currentTierIdx + 1];
 
   // Real tier progression: distance from current tier floor to next tier floor
   const tierFloor = currentTier.minPts;
@@ -50,7 +84,7 @@ export default function TierWidget() {
       : shortAddress
     : "Not Connected";
 
-  // Tier carousel (teaser-only)
+  // Tier carousel
   const scrollRef = useRef<HTMLDivElement>(null);
   const [dragState, setDragState] = useState({
     isDragging: false,
@@ -153,9 +187,9 @@ export default function TierWidget() {
             </p>
             <div className="flex gap-[4px] items-center justify-end shrink-0">
               <span className="font-overusedGrotesk font-semibold text-[#a3a3a3] text-[14px] tracking-[-0.28px] whitespace-nowrap leading-none">
-                Soon
+                {streak?.activeStreakDays ?? 0}d
               </span>
-              <div className="shrink-0 size-[16px] opacity-40">
+              <div className="shrink-0 size-[16px] opacity-70">
                 <svg className="size-full" fill="none" viewBox="0 0 21 21">
                   <path d={svgPaths.p3f082c80} fill="#FF5E00" />
                 </svg>
@@ -182,20 +216,18 @@ export default function TierWidget() {
         </div>
       </div>
 
-      {/* Tier carousel — TEASER (blurred, coming soon) */}
+      {/* Tier carousel */}
       <div className="flex-1 min-h-px min-w-0 relative rounded-[12px] w-full overflow-hidden">
         <div className="absolute bg-lb-pink inset-0 pointer-events-none rounded-[12px]" />
-        {/* Content (blurred) */}
         <div
           ref={scrollRef}
-          aria-hidden
-          className="flex items-center gap-[12px] overflow-hidden px-[16px] py-[16px] relative size-full select-none blur-[3px] opacity-70 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex items-center gap-[12px] overflow-hidden px-[16px] py-[16px] relative size-full select-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {TIERS.map((tier, i) => {
+          {tiers.map((tier, i) => {
             const isActive = i === currentTierIdx;
             const isLocked = i > currentTierIdx;
             return (
@@ -207,11 +239,10 @@ export default function TierWidget() {
                     : "w-[160px] h-[90%] opacity-70"
                 } ${isLocked ? "bg-[#f0c4df]" : isActive ? "" : "bg-[#f5d0e8]"}`}
               >
-                <CatLogo
-                  color={
-                    isActive ? "#0e0e0e" : isLocked ? "#b07a9e" : "#8b5a7a"
-                  }
-                  size={isActive ? 56 : 44}
+                <TierArtwork
+                  tier={tier}
+                  isActive={isActive}
+                  isLocked={isLocked}
                 />
                 <span
                   className={`font-overusedGrotesk font-semibold text-[14px] tracking-[-0.28px] ${
@@ -238,18 +269,6 @@ export default function TierWidget() {
               </div>
             );
           })}
-        </div>
-        {/* Coming soon overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-[6px] pointer-events-none px-[16px] text-center">
-          <span className="font-dmMono text-[10px] uppercase tracking-[0.5px] text-[#8b5a7a] bg-[#fdfdfd]/70 backdrop-blur-sm rounded-[6px] px-[8px] py-[2px]">
-            Coming Soon
-          </span>
-          <span className="font-overusedGrotesk font-bold text-[18px] text-[#0e0e0e]">
-            Unlockable Tiers
-          </span>
-          <span className="font-overusedGrotesk text-[12px] text-[#525252] max-w-[260px]">
-            Unlock new cat tiers as you earn points and climb the ranks.
-          </span>
         </div>
         <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_1px_1px_2px_0px_rgba(163,163,163,0.3)]" />
         <div className="absolute border border-[#f0c4df] inset-0 pointer-events-none rounded-[12px]" />

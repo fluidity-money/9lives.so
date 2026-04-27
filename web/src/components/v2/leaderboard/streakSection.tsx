@@ -1,19 +1,26 @@
 "use client";
 
 import svgPaths from "./svgPaths";
-
-// Static placeholder — the section sits behind a "Coming Soon" overlay,
-// so this is visual filler only. Real streak data will plug in via a hook
-// once the feature launches.
-const PLACEHOLDER = {
-  streakDays: 3,
-  booster: 1,
-  boosterLabel: "2x",
-};
+import { useStreakStatus } from "@/hooks/useLeaderboardRewards";
+import { useAppKitAccount } from "@reown/appkit/react";
+import useConnectWallet from "@/hooks/useConnectWallet";
 
 export default function StreakSection() {
-  const days = ["M", "T", "W", "T", "F", "S", "S"];
-  const greenDays = PLACEHOLDER.streakDays;
+  const account = useAppKitAccount();
+  const { connect } = useConnectWallet();
+  const { data } = useStreakStatus(account?.address);
+  const days =
+    data?.days ??
+    ["M", "T", "W", "T", "F", "S", "S"].map((label) => ({
+      label,
+      date: "",
+      complete: false,
+    }));
+  const activeDays = data?.activeStreakDays ?? 0;
+  const requiredDays = data?.requiredDays ?? 4;
+  const booster = data?.boosterMultiplier ?? 1;
+  const qualified = data?.qualifiedForJackpot ?? false;
+  const daysNeeded = Math.max(requiredDays - activeDays, 0);
 
   return (
     <div className="bg-[#fdfdfd] md:max-w-[450px] relative rounded-[12px] shrink-0 w-full overflow-hidden">
@@ -21,23 +28,7 @@ export default function StreakSection() {
         aria-hidden="true"
         className="absolute border border-[#e5e5e5] border-solid inset-0 pointer-events-none rounded-[12px] z-[2]"
       />
-      {/* Coming soon overlay */}
-      <div className="absolute inset-0 z-[3] flex flex-col items-center justify-center gap-[8px] pointer-events-none px-[16px] text-center">
-        <span className="font-dmMono text-[10px] uppercase tracking-[0.5px] text-[#525252] bg-[#fdfdfd]/80 backdrop-blur-sm rounded-[6px] px-[10px] py-[3px] shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
-          Coming Soon
-        </span>
-        <span className="font-overusedGrotesk font-bold text-[22px] text-[#0e0e0e]">
-          Daily Streaks
-        </span>
-        <span className="font-overusedGrotesk text-[13px] text-[#525252] max-w-[320px]">
-          Predict every day to build a streak and multiply your points. Keep
-          predicting daily to lock it in when streaks launch.
-        </span>
-      </div>
-      <div
-        aria-hidden
-        className="flex flex-col justify-center max-w-[inherit] size-full blur-[3px] opacity-60 pointer-events-none select-none"
-      >
+      <div className="flex flex-col justify-center max-w-[inherit] size-full">
         <div className="flex flex-col gap-[16px] items-start justify-center max-w-[inherit] p-[12px] md:p-[16px] relative size-full">
           {/* Header */}
           <div className="flex gap-[8px] items-center relative shrink-0 w-full">
@@ -64,7 +55,7 @@ export default function StreakSection() {
             </div>
             <div className="flex flex-col gap-[4px] items-start justify-center relative shrink-0 w-[103px]">
               <span className="font-overusedGrotesk font-semibold text-[#0e0e0e] text-[20.16px] tracking-[-0.4032px]">
-                {PLACEHOLDER.streakDays} days
+                {activeDays} days
               </span>
               <span className="font-overusedGrotesk font-medium text-[#a3a3a3] text-[14px]">
                 My Active Streak
@@ -82,7 +73,7 @@ export default function StreakSection() {
                     <g clipPath="url(#clip_boost)">
                       <path
                         d={svgPaths.pa521700}
-                        fill={PLACEHOLDER.booster > 0 ? "#FF5E00" : "#A3A3A3"}
+                        fill={booster > 1 ? "#FF5E00" : "#A3A3A3"}
                       />
                     </g>
                     <defs>
@@ -93,7 +84,7 @@ export default function StreakSection() {
                   </svg>
                 </div>
                 <span className="font-overusedGrotesk font-bold text-[#0e0e0e] text-[16.8px] leading-[22px] tracking-[-0.336px]">
-                  {PLACEHOLDER.boosterLabel}
+                  {booster.toFixed(booster % 1 === 0 ? 0 : 1)}x
                 </span>
               </div>
               <span className="font-overusedGrotesk font-medium text-[#a3a3a3] text-[14px] text-right w-full">
@@ -107,13 +98,13 @@ export default function StreakSection() {
             <div className="flex flex-[1_0_0] font-overusedGrotesk font-semibold gap-[4px] items-center min-h-px min-w-0 relative text-[#a3a3a3] text-[14px] text-center tracking-[-0.28px] w-full">
               {days.map((d, i) => (
                 <p key={i} className="flex-[1_0_0] min-h-px min-w-0 relative">
-                  {d}
+                  {d.label}
                 </p>
               ))}
             </div>
             <div className="flex gap-[4px] items-center relative shrink-0 w-full">
-              {days.map((_, i) => {
-                const isGreen = i < greenDays;
+              {days.map((day, i) => {
+                const isGreen = day.complete;
                 return (
                   <div
                     key={i}
@@ -136,19 +127,29 @@ export default function StreakSection() {
           {/* Eligibility message */}
           <p className="font-overusedGrotesk font-medium text-[#a3a3a3] text-[14px] text-center w-full">
             <span className="font-semibold text-[14px] tracking-[-0.28px] underline decoration-solid text-[#0e0e0e]">
-              You need 2 more days streak
+              {qualified
+                ? "You are qualified for the weekly jackpot"
+                : `You need ${daysNeeded} more streak day${daysNeeded === 1 ? "" : "s"}`}
             </span>
-            <span className="text-[14px]"> to participate in Weekly Jackpot.</span>
+            {!qualified && (
+              <span className="text-[14px]"> to participate in Weekly Jackpot.</span>
+            )}
           </p>
 
           {/* Action button */}
-          <div className="h-[42px] relative rounded-[12px] shrink-0 w-full bg-[#0e0e0e]">
+          <button
+            type="button"
+            onClick={() => {
+              if (!account?.address) connect();
+            }}
+            className="h-[42px] relative rounded-[12px] shrink-0 w-full bg-[#0e0e0e]"
+          >
             <div className="flex items-center justify-center size-full">
               <p className="font-overusedGrotesk font-medium text-[#fdfdfd] text-[14px] whitespace-nowrap">
-                Continue Streak
+                {account?.address ? "Continue Streak" : "Connect Wallet"}
               </p>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </div>

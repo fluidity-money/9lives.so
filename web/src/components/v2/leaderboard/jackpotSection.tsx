@@ -1,12 +1,33 @@
 "use client";
 import svgPaths from "./svgPaths";
+import { useJackpotStatus } from "@/hooks/useLeaderboardRewards";
+import { useAppKitAccount } from "@reown/appkit/react";
+
+function formatCountdown(weekEnd?: string) {
+  if (!weekEnd) return "This week";
+  const diff = Math.max(new Date(weekEnd).getTime() - Date.now(), 0);
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((diff / (60 * 60 * 1000)) % 24);
+  return `${days}d ${hours}h left`;
+}
 
 export default function JackpotSection() {
-  // Teaser-only: always render the green "qualified" variant with
-  // coming-soon copy. Real data (weekly jackpot amount, countdown,
-  // daily-streak progress) will plug in once the jackpot hook exists.
+  const account = useAppKitAccount();
+  const { data } = useJackpotStatus(account?.address);
+  const qualified = data?.qualified ?? false;
+  const threshold = data?.ticketThreshold ?? 4;
+  const progress = Math.min(data?.eligibleDayCount ?? 0, threshold);
+  const prizeLabel =
+    data?.prizeType === "CASH"
+      ? `$${data.prizeAmount.toLocaleString()}`
+      : `${(data?.prizeAmount ?? 4).toLocaleString()} pts`;
+
   return (
-    <div className="bg-lb-green h-[260px] md:h-[400px] relative shrink-0 w-full transition-colors duration-700">
+    <div
+      className={`h-[260px] md:h-[400px] relative shrink-0 w-full transition-colors duration-700 ${
+        qualified ? "bg-lb-green" : "bg-[#0e0e0e]"
+      }`}
+    >
       <div className="flex items-center justify-center size-full">
         <div className="flex gap-[12px] items-center justify-center p-[16px] md:p-[24px] relative size-full">
           <div className="flex flex-1 flex-col gap-[12px] h-full items-center min-h-px min-w-0">
@@ -34,7 +55,7 @@ export default function JackpotSection() {
                 </div>
                 <div className="flex items-center justify-end px-[8px] py-[3px] rounded-[4px] shrink-0 bg-[#fdfdfd]/15 border border-[#fdfdfd]/30">
                   <span className="font-dmMono font-medium text-[#fdfdfd] text-[9px] md:text-[10px] tracking-[0.2334px] uppercase whitespace-nowrap">
-                    Weekly Jackpot Allocations
+                    {formatCountdown(data?.weekEnd)}
                   </span>
                 </div>
               </div>
@@ -44,15 +65,17 @@ export default function JackpotSection() {
                 </div>
                 <div className="flex flex-col gap-[4px] items-center">
                   <div className="font-overusedGrotesk font-black shrink-0 text-[22px] md:text-[32px] tracking-[-0.66px] md:tracking-[-0.96px] whitespace-nowrap">
-                    Earn more points every week
+                    Weekly jackpot: {prizeLabel}
                   </div>
                   <div className="font-overusedGrotesk font-medium shrink-0 text-[13px] md:text-[14px] text-[#fdfdfd]/80 w-full max-w-[320px] md:max-w-[420px]">
-                    Predict, climb the leaderboard, and share in the weekly jackpot pool.
+                    {qualified
+                      ? `You're in with ${data?.ticketCount ?? 1} ticket.`
+                      : `Complete ${threshold} eligible daily streaks to earn a ticket.`}
                   </div>
                 </div>
               </div>
             </div>
-            {/* Bottom row: coming-soon progress teaser */}
+            {/* Bottom row: progress */}
             <div className="flex items-center justify-center shrink-0 w-full">
               <div className="flex flex-1 flex-col gap-[4px] items-center justify-center max-w-[500px] min-h-px min-w-0">
                 <div className="flex font-overusedGrotesk font-medium items-center justify-between shrink-0 text-[#fdfdfd] text-[14px] w-full whitespace-nowrap">
@@ -61,17 +84,21 @@ export default function JackpotSection() {
                   </span>
                   <div className="flex items-center gap-[6px] px-[10px] py-[3px] rounded-[999px] bg-[#fdfdfd]/15 border border-[#fdfdfd]/30">
                     <span className="font-dmMono font-medium text-[#fdfdfd] text-[10px] uppercase tracking-[0.2334px]">
-                      Coming Soon
+                      {progress}/{threshold} streaks
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-[2px] items-center shrink-0 w-full opacity-60">
-                  {[0, 1, 2, 3, 4].map((i) => (
+                <div className="flex gap-[2px] items-center shrink-0 w-full">
+                  {Array.from({ length: threshold }).map((_, i) => (
                     <div
                       key={i}
-                      className="flex-1 h-[8px] md:h-[10px] min-h-px min-w-0 relative rounded-[4px]"
+                      className={`flex-1 h-[8px] md:h-[10px] min-h-px min-w-0 relative rounded-[4px] ${
+                        i < progress ? "bg-[#fdfdfd]" : ""
+                      }`}
                     >
-                      <div className="absolute border border-[#fdfdfd]/40 inset-0 pointer-events-none rounded-[4px]" />
+                      {i >= progress && (
+                        <div className="absolute border border-[#fdfdfd]/40 inset-0 pointer-events-none rounded-[4px]" />
+                      )}
                     </div>
                   ))}
                 </div>

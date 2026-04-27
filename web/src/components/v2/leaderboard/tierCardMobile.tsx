@@ -2,9 +2,9 @@
 
 import { useAppKitAccount } from "@reown/appkit/react";
 import use9LivesPoints from "@/hooks/use9LivesPoints";
-import { TIERS, getTierIndex } from "./demoData";
+import { useLeaderboardTiers } from "@/hooks/useLeaderboardRewards";
+import { getTierIndex, toTierData } from "./demoData";
 import svgPaths from "./svgPaths";
-import CatLogo from "./catLogo";
 
 export default function TierCardMobile() {
   const account = useAppKitAccount();
@@ -12,14 +12,16 @@ export default function TierCardMobile() {
     address: account?.address,
     enabled: !!account.address,
   });
+  const { data: tierDefinitions } = useLeaderboardTiers();
+  const tiers = toTierData(tierDefinitions);
   const points = account.isConnected ? (pointsData?.[0]?.amount ?? 0) : 0;
-  const currentTierIdx = getTierIndex(points);
-  const currentTier = TIERS[currentTierIdx];
-  const nextTier = TIERS[Math.min(currentTierIdx + 1, TIERS.length - 1)];
+  const currentTierIdx = getTierIndex(points, tiers);
+  const currentTier = tiers[currentTierIdx];
+  const nextTier = tiers[Math.min(currentTierIdx + 1, tiers.length - 1)];
   const ptsToNext = Math.max(nextTier.minPts - points, 0);
   const tierSpan = Math.max(nextTier.minPts - currentTier.minPts, 1);
   const progressPct =
-    currentTierIdx === TIERS.length - 1
+    currentTierIdx === tiers.length - 1
       ? 100
       : Math.min(((points - currentTier.minPts) / tierSpan) * 100, 100);
 
@@ -54,8 +56,13 @@ export default function TierCardMobile() {
                 {currentTier.requirement}
               </span>
             </div>
-            <div className="shrink-0">
-              <CatLogo color="#0e0e0e" size={36} />
+            <div className="size-[46px] shrink-0 overflow-hidden rounded-[10px] border border-[#e0d4eb] bg-[#f7f7f7]">
+              <img
+                src={currentTier.iconUrl}
+                alt={`${currentTier.name} tier`}
+                draggable={false}
+                className="size-full object-contain select-none pointer-events-none"
+              />
             </div>
           </div>
         </div>

@@ -12,6 +12,7 @@ const socials = [
 const links = [
   { title: "Terms & conditions", page: "#" },
   { title: "Privacy Policy", page: "https://static.9lives.so/privacy.pdf" },
+  { title: "Admin", page: "/admin/leaderboard" },
 ];
 
 export default function Footer() {
@@ -79,8 +80,8 @@ export default function Footer() {
               <Link
                 key={item.title}
                 href={item.page}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={item.page.startsWith("http") ? "_blank" : undefined}
+                rel={item.page.startsWith("http") ? "noopener noreferrer" : undefined}
                 className="flex gap-[4px] items-center justify-center p-[4px] shrink-0 cursor-pointer hover:underline"
               >
                 <p className="font-overusedGrotesk font-medium text-[#0e0e0e] text-[14px] whitespace-nowrap">
