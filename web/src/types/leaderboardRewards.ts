@@ -97,7 +97,7 @@ export interface JackpotStatus {
   totalTickets: number;
 }
 
-export interface LeaderboardAdminConfig {
+export interface LeaderboardRewardsConfig {
   missions: MissionDefinition[];
   tiers: TierDefinition[];
   jackpot: {

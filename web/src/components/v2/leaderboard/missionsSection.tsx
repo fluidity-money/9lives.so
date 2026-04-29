@@ -1,16 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import { useMissionProgress } from "@/hooks/useLeaderboardRewards";
+import {
+  recordWalletConnectMission,
+  useMissionProgress,
+} from "@/hooks/useLeaderboardRewards";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSignMessage } from "wagmi";
 
 export default function MissionsSection() {
   const [tab, setTab] = useState<"daily" | "weekly">("daily");
+  const [verifyingMissionId, setVerifyingMissionId] = useState<string | null>(
+    null,
+  );
   const account = useAppKitAccount();
+  const queryClient = useQueryClient();
+  const { signMessageAsync } = useSignMessage();
   const { data: missions = [], isLoading } = useMissionProgress(
     tab,
     account?.address,
   );
+
+  const verifyWalletConnect = async (missionId: string) => {
+    if (!account?.address) return;
+    setVerifyingMissionId(missionId);
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const message = `Record my 9Lives daily wallet connect mission for ${today}.`;
+      const signature = await signMessageAsync({ message });
+      await recordWalletConnectMission({
+        wallet: account.address,
+        message,
+        signature,
+      });
+      await queryClient.invalidateQueries({ queryKey: ["leaderboard-missions"] });
+      await queryClient.invalidateQueries({ queryKey: ["leaderboard-streak"] });
+      await queryClient.invalidateQueries({ queryKey: ["leaderboard-jackpot"] });
+    } finally {
+      setVerifyingMissionId(null);
+    }
+  };
 
   return (
     <div className="bg-[#fafafa] relative rounded-[12px] w-full overflow-hidden">
@@ -106,6 +136,17 @@ export default function MissionsSection() {
                         +{m.pointReward}pt
                       </span>
                     </div>
+                    {m.template === "daily_wallet_connect" &&
+                      account?.address &&
+                      !complete && (
+                        <button
+                          onClick={() => verifyWalletConnect(m.id)}
+                          disabled={verifyingMissionId === m.id}
+                          className="h-[30px] self-start rounded-[8px] border border-[#0e0e0e] px-[10px] font-overusedGrotesk text-[12px] font-semibold text-[#0e0e0e] disabled:border-[#d4d4d4] disabled:text-[#a3a3a3]"
+                        >
+                          {verifyingMissionId === m.id ? "Verifying" : "Verify"}
+                        </button>
+                      )}
                     <div className="flex items-center gap-[8px]">
                       <div className="flex-1 h-[4px] rounded-[2px] bg-[#e5e5e5] overflow-hidden">
                         <div

@@ -1,6 +1,5 @@
 import type {
   JackpotStatus,
-  LeaderboardAdminConfig,
   LeaderboardEntry,
   LeaderboardOverview,
   LeaderboardPeriod,
@@ -11,6 +10,7 @@ import type {
   MissionProgress,
   StreakStatus,
   TierDefinition,
+  LeaderboardRewardsConfig,
 } from "@/types/leaderboardRewards";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -307,7 +307,7 @@ export const DEFAULT_MISSIONS: MissionDefinition[] = [
   },
 ];
 
-export const DEFAULT_ADMIN_CONFIG: LeaderboardAdminConfig = {
+export const DEFAULT_REWARDS_CONFIG: LeaderboardRewardsConfig = {
   missions: DEFAULT_MISSIONS,
   tiers: DEFAULT_TIERS,
   jackpot: {
@@ -322,9 +322,9 @@ export function getMissionIcon(mission: Pick<MissionDefinition, "icon" | "templa
   return mission.icon || DEFAULT_MISSION_ICONS[mission.template] || "🎯";
 }
 
-export function normalizeLeaderboardAdminConfig(
-  config: LeaderboardAdminConfig,
-): LeaderboardAdminConfig {
+export function normalizeLeaderboardRewardsConfig(
+  config: LeaderboardRewardsConfig,
+): LeaderboardRewardsConfig {
   const missionIds = new Set(config.missions.map((mission) => mission.id));
   const upgradedMissions = [
     ...config.missions,
@@ -432,7 +432,7 @@ function fallbackProgressForMission(
 export function buildFallbackMissionProgress(
   cadence: MissionCadence,
   wallet?: string,
-  config = DEFAULT_ADMIN_CONFIG,
+  config = DEFAULT_REWARDS_CONFIG,
 ): MissionProgress[] {
   const now = new Date();
   const dailyStart = getTodayStart(now);
@@ -443,7 +443,7 @@ export function buildFallbackMissionProgress(
       ? new Date(dailyStart.getTime() + DAY_MS)
       : new Date(weeklyStart.getTime() + 7 * DAY_MS);
 
-  return normalizeLeaderboardAdminConfig(config).missions
+  return normalizeLeaderboardRewardsConfig(config).missions
     .filter((mission) => mission.status === "active" && mission.cadence === cadence)
     .sort((a, b) => a.displayOrder - b.displayOrder)
     .map((mission) => {
@@ -460,7 +460,7 @@ export function buildFallbackMissionProgress(
 
 export function buildFallbackStreakStatus(
   wallet?: string,
-  config = DEFAULT_ADMIN_CONFIG,
+  config = DEFAULT_REWARDS_CONFIG,
 ): StreakStatus {
   const weekStart = getWeekStart();
   const eligibleDays = wallet ? Math.min(config.jackpot.ticketThreshold, 1 + (hashWallet(wallet) % 4)) : 0;
@@ -486,7 +486,7 @@ export function buildFallbackStreakStatus(
 
 export function buildFallbackJackpotStatus(
   wallet?: string,
-  config = DEFAULT_ADMIN_CONFIG,
+  config = DEFAULT_REWARDS_CONFIG,
 ): JackpotStatus {
   const streak = buildFallbackStreakStatus(wallet, config);
   return {

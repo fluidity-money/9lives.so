@@ -12,7 +12,6 @@ const socials = [
 const links = [
   { title: "Terms & conditions", page: "#" },
   { title: "Privacy Policy", page: "https://static.9lives.so/privacy.pdf" },
-  { title: "Admin", page: "/admin/leaderboard" },
 ];
 
 export default function Footer() {
