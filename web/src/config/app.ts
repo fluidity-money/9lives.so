@@ -238,7 +238,7 @@ const simpleMarkets = {
   xyzcl: {
     slug: "xyzcl",
     logo: OIL,
-    title: "Oil (xyz:CL)",
+    title: "WTIOIL",
     tabTitle: "OIL",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
@@ -250,7 +250,7 @@ const simpleMarkets = {
   xyzcbrs: {
     slug: "xyzcbrs",
     logo: CBRS,
-    title: "Cerebras (xyz:CBRS)",
+    title: "Cerebras",
     tabTitle: "CBRS",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
