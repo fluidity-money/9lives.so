@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <circle cx="90" cy="90" r="88" fill="#005288"/>
+  <path d="M40 110 C40 110 55 60 90 50 C125 40 145 55 145 55 L130 65 C130 65 115 55 95 60 C75 65 55 100 55 100 Z" fill="white"/>
+  <path d="M55 100 L40 110 L65 105 Z" fill="white"/>
+  <text x="90" y="145" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="22" fill="white">SPACEX</text>
+</svg>
