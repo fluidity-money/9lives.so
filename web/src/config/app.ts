@@ -124,10 +124,10 @@ const simpleMarkets = {
     listed: false,
   },
   vntlspacex: {
-    slug: "vntlspacex",
+    slug: "xyzspcx",
     logo: SPACEX,
-    title: "SpaceX IPO",
-    tabTitle: "SPCX",
+    title: "SpaceX",
+    tabTitle: "XYZSPCX",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
     periods: ["15mins"],
