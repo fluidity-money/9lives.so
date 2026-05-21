@@ -123,7 +123,7 @@ const simpleMarkets = {
     tz: "UTC",
     listed: false,
   },
-  vntlspacex: {
+  xyzspcx: {
     slug: "xyzspcx",
     logo: SPACEX,
     title: "SpaceX",
