@@ -14,6 +14,7 @@ import SPY from "#/images/tokens/spy.png";
 import OIL from "#/images/tokens/oil.png";
 import CBRS from "#/images/tokens/cbrs.svg";
 import SPACEX from "#/images/tokens/spacex.svg";
+import IBM from "#/images/tokens/ibm.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -135,6 +136,17 @@ const simpleMarkets = {
     tz: "UTC",
     listed: true,
   },
+  xyzibm: {
+    slug: "xyzibm",
+    logo: IBM,
+    title: "IBM",
+    tabTitle: "IBM",
+    decimals: 2,
+    periods: ["15mins"],
+    openHours: ["00:00", "23:59"],
+    tz: "America/New_York",
+    listed: true,
+  },
   paxg: {
     slug: "paxg",
     logo: PAXG,
@@ -145,7 +157,7 @@ const simpleMarkets = {
     periods: ["hourly", "15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
   nvidia: {
     slug: "nvidia",
