@@ -145,7 +145,7 @@ const simpleMarkets = {
     periods: ["hourly", "15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
   nvidia: {
     slug: "nvidia",
