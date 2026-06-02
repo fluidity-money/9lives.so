@@ -128,7 +128,7 @@ const simpleMarkets = {
     slug: "xyzspcx",
     logo: SPACEX,
     title: "SpaceX",
-    tabTitle: "XYZSPCX",
+    tabTitle: "SpaceX",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
     periods: ["15mins"],
