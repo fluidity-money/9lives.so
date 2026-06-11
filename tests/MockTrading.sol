@@ -80,13 +80,6 @@ contract MockTrading is INineLivesTrading {
         return 0;
     }
 
-    function claimScheduledExcess(
-        uint256 from,
-        uint256 until
-    ) external returns (uint256) {
-        return 0;
-    }
-
     function burn854CC96E(
         bytes8 outcome,
         uint256 /* maxShareOut */,

@@ -605,6 +605,12 @@ pub enum Error {
 
     /// Bad denominator for the rooti
     BadDenom,
+
+    /// Zero recipient!
+    ZeroRecipient,
+
+    /// Not enclave!
+    NotEnclave,
 }
 
 #[cfg(any(

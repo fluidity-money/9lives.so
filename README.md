@@ -242,8 +242,8 @@ See [audits/README.md](audits/README.md) for details.
 | Trading DPPM extras impl      | `0x7289a31ca767883d6ad711e634c2591a16e6ef74` |
 | Trading DPPM price impl       | `0xb6c29b66bb663f3cd6a733b77927ba09cefa8d5a` |
 | Trading DPPM quotes impl      | `0xa516f91f100cbd796d2351acbf11f857402d2204` |
-| Trading AMM mint impl         | `0x693c9ccd004eae3e1cb550ff67e0d3c3bf9e7a1b` |
-| Trading AMM extras impl       | `0xc3a8d88116536a9ba34893489a2c75f9a16c3263` |
+| Trading AMM mint impl         | `0x7596b33a6842585d6a11162b9c54e9ecc7fda0ce` |
+| Trading AMM extras impl       | `0x7d9e78370cc8f8124b0cad7b9fa87b7f424a839c` |
 | Trading AMM price impl        | `0x3be11d59fe73c0b516f821ec4ea6d37499e68a65` |
 | Trading AMM quotes impl       | `0x097e45ee7a05e470ee7c884d558cfb4ad0d3cf87` |
 | Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |

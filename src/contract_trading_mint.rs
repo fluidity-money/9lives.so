@@ -12,7 +12,6 @@ use crate::{
     utils::{block_timestamp, msg_sender},
 };
 
-#[cfg(not(feature = "trading-backend-dppm"))]
 use crate::immutables;
 
 // This exports user_entrypoint, which we need to have the entrypoint code.
@@ -90,13 +89,18 @@ impl StorageTrading {
         _referrer: Address,
         _recipient: Address,
     ) -> R<U256> {
-        #[cfg(feature = "trading-backend-amm")]
-        return Err(Error::DPPMOnly);
-        #[cfg(not(feature = "trading-backend-amm"))]
-        {
-            self.scheduled_payouts.push(_recipient);
-            self.mint_8_A_059_B_6_E(_outcome, _value, _referrer, _recipient)
+        assert_or!(msg_sender() == immutables::ENCLAVE_ADDR, Error::NotEnclave);
+        if _recipient.is_zero() {
+            return Err(Error::ZeroRecipient);
         }
+        if !self.scheduled_payouts_seen.get(_recipient) {
+            self.scheduled_payouts.push(_recipient);
+            self.scheduled_payouts_seen.setter(_recipient).set(true);
+            evm::log(events::ScheduledPayout {
+                recipient: _recipient,
+            });
+        }
+        self.mint_8_A_059_B_6_E(_outcome, _value, _referrer, _recipient)
     }
 
     /// Burn, preventing us from blowing past and below the amounts given.

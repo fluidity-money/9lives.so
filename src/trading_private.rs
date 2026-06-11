@@ -95,7 +95,7 @@ impl StorageTrading {
         return self.internal_amm_ctor(outcomes, seed_liq);
     }
 
-    pub fn internal_shutdown(&mut self, _outcome: FixedBytes<8>) -> R<U256> {
+    pub fn internal_shutdown(&mut self, winning_outcome: FixedBytes<8>) -> R<U256> {
         assert_or!(!self.is_shutdown.get(), Error::IsShutdown);
         // If we're using the vault, we ask the vault for funds at the end, not
         // assuming the factory funded it for us. The DPPM is the only
@@ -131,8 +131,8 @@ impl StorageTrading {
                 .set(U256::ZERO);
             // We assume each winning share is worth $1, since that's how the model
             // works in this context:
-            let amm_total_shares = self.amm_total_shares.get(_outcome);
-            let amm_shares = self.amm_shares.get(_outcome);
+            let amm_total_shares = self.amm_total_shares.get(winning_outcome);
+            let amm_shares = self.amm_shares.get(winning_outcome);
             let needed = amm_total_shares
                 .checked_sub(amm_shares)
                 .ok_or(Error::CheckedSubOverflow(amm_total_shares, amm_shares))?;
@@ -173,7 +173,12 @@ impl StorageTrading {
                     recipient,
                 )?;
             } else {
-                // Not implemented here!
+                self.internal_amm_payoff(
+                    recipient,
+                    winning_outcome,
+                    U256::MAX,
+                    recipient,
+                )?;
             }
         }
         self.scheduled_payout_processed

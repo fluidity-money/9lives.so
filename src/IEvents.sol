@@ -140,6 +140,8 @@ interface IEvents {
 
     event SeedLiquidityAdded(uint256 indexed fusdcAmt);
 
+    event ScheduledPayout(address indexed recipient);
+
     /* INFRASTRUCTURE MARKET */
 
     event InfraMarketEnabled(bool indexed status);

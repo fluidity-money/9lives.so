@@ -152,12 +152,11 @@ pub struct StorageTrading {
     /// Internal accounting of token balances.
     pub __unused_4: StorageMap<FixedBytes<8>, StorageMap<Address, StorageU256>>,
 
-    /// Scheduled payouts on the market conclusion:
+    /// Scheduled payouts on the market conclusion (the recipients only):
     pub scheduled_payouts: StorageVec<StorageAddress>,
 
     /// Scheduled payouts that were processed:
     pub scheduled_payout_processed: StorageU32,
-
 
     /* ~~~~~~~~~~ AMM SHORTTERM MARKETS ONLY ~~~~~~~~~~ */
     //
@@ -165,6 +164,11 @@ pub struct StorageTrading {
     /// track the liquidity shortfall during the claims process for a shortterm
     /// market.
     pub shortterm_amm_usd_liq: StorageU256,
+
+    /* ~~~~~~~~~~ ANOTHER SCHEDULING FOR PAYOUTS FIELD ~~~~~~~~~~ */
+    //
+    /// Seen recipients in the list of the recipients to schedule.
+    pub scheduled_payouts_seen: StorageMap<Address, StorageBool>,
 }
 
 // Storage accessors to simplify lookup.

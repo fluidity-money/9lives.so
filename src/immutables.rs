@@ -2,7 +2,7 @@
 /// variable, and are in some cases (ie, the Factory), configured based on
 /// nonce management. We have a preference for online keccak256,
 /// but we use a constant function here to simplify CREATE2 interaction.
-use stylus_sdk::alloy_primitives::{Address, address, U256, U64};
+use stylus_sdk::alloy_primitives::{address, Address, U256, U64};
 
 use array_concat::{concat_arrays, concat_arrays_size};
 
@@ -67,11 +67,7 @@ env_addr!(
 );
 
 // Liquidity and fees management middleware.
-env_addr!(
-    VAULT_ADDR,
-    "SPN_VAULT_ADDR",
-    VAULT
-);
+env_addr!(VAULT_ADDR, "SPN_VAULT_ADDR", VAULT);
 
 // Address that's allowed to create new campaigns using the dppm (the one
 // hour creator):
@@ -99,12 +95,10 @@ env_addr!(
 
 // Hardcoded share implementation address for the gradual release of the
 // internal erc20.
-env_addr!(
-    SHARE_IMPL_ADDR,
-    "SPN_SHARE_IMPL_ADDR",
-    SHARE_IMPL
-);
+env_addr!(SHARE_IMPL_ADDR, "SPN_SHARE_IMPL_ADDR", SHARE_IMPL);
 
+// Address of the RPC service that performs the role of the enclave.
+env_addr!(ENCLAVE_ADDR, "SPN_ENCLAVE_ADDR", ENCLAVE);
 
 // Scaling amount for checking if a bad predictor went above 50% in their
 // incorrect bets relative ot the winning outcome.
