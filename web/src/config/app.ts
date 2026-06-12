@@ -274,14 +274,7 @@ const appSchema = z.object({
   }),
   simpleMarkets: z.object(simpleMarketSchemas),
   categories: z.array(
-    z.enum([
-      "All",
-      "15mins",
-      "Crypto",
-      "Opinion Poll",
-      "Sports",
-      "Politics",
-    ]),
+    z.enum(["All", "15mins", "Crypto", "Opinion Poll", "Sports", "Politics"]),
   ),
   frame: z.any(),
   weekDuration: z.number(),
