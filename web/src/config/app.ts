@@ -76,7 +76,6 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
 } as const;
 const categories = [
   "All",
-  "5mins",
   "15mins",
   "Hourly",
   "Crypto",
@@ -211,42 +210,6 @@ const simpleMarkets = {
     tz: "UTC",
     listed: false,
   },
-  kag: {
-    slug: "kag",
-    logo: KAG,
-    title: "Silver (KAG)",
-    tabTitle: "SILVER",
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    decimals: 2,
-    periods: ["5mins"],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-    listed: false,
-  },
-  eth: {
-    slug: "eth",
-    logo: ETH,
-    title: "ETH",
-    tabTitle: "ETH",
-    decimals: 2,
-    periods: ["5mins"],
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-    listed: false,
-  },
-  sol: {
-    slug: "sol",
-    logo: SOL,
-    title: "SOL",
-    tabTitle: "SOL",
-    decimals: 2,
-    periods: ["5mins"],
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-    listed: false,
-  },
   cvx: {
     slug: "cvx",
     logo: CVX,
@@ -324,7 +287,6 @@ const simpleMarketSchema = z.object({
   periods: z.array(
     z.union([
       z.literal("hourly"),
-      z.literal("5mins"),
       z.literal("15mins"),
       z.literal("daily"),
     ]),
@@ -365,7 +327,6 @@ const appSchema = z.object({
   categories: z.array(
     z.enum([
       "All",
-      "5mins",
       "15mins",
       "Hourly",
       "Crypto",
