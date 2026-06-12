@@ -41,30 +41,13 @@ export default function SimpleNavMenu({
   assets: RawAsset[];
 }) {
   const { data: assets } = useAssets(initialAssets);
-  const mins5Markets = Object.values(config.simpleMarkets)
-    .filter((i) => i.periods.includes("5mins") && i.listed)
-    .map((i) => i.slug);
   const mins15Markets = Object.values(config.simpleMarkets)
     .filter((i) => i.periods.includes("15mins") && i.listed)
     .map((i) => i.slug);
-  const hourlyMarkets = Object.values(config.simpleMarkets)
-    .filter((i) => i.periods.includes("hourly") && i.listed)
-    .map((i) => i.slug);
-  const is5Min = period.toLowerCase() === "5mins";
   const is15Min = period.toLowerCase() === "15mins";
-  const isHourly = period.toLowerCase() === "hourly";
   return (
     <div className="flex flex-col gap-4">
       <div className="flex w-full gap-2">
-        <Link
-          href={`/v1/simple/campaign/${mins5Markets[0]}/5mins`}
-          className="flex flex-auto"
-        >
-          <TabRadioButton
-            selected={is5Min}
-            title={is5Min ? "5 Min Markets" : "5 Mins"}
-          />
-        </Link>
         <Link
           href={`/v1/simple/campaign/${mins15Markets[0]}/15mins`}
           className="flex flex-auto"
@@ -72,15 +55,6 @@ export default function SimpleNavMenu({
           <TabRadioButton
             selected={is15Min}
             title={is15Min ? "15 Min Markets" : "15 Mins"}
-          />
-        </Link>
-        <Link
-          href={`/v1/simple/campaign/${hourlyMarkets[0]}/hourly`}
-          className="flex flex-auto"
-        >
-          <TabRadioButton
-            selected={isHourly}
-            title={isHourly ? "Hourly Markets" : "Hourly"}
           />
         </Link>
       </div>

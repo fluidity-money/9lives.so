@@ -41,7 +41,7 @@ function SimpleTabMenuButton({
     </Link>
   );
 }
-export const periodOrder = ["15mins", "5mins", "hourly"] as const;
+export const periodOrder = ["15mins"] as const;
 export default function AssetNav({
   assets: initialAssets,
 }: {
@@ -50,18 +50,10 @@ export default function AssetNav({
   const { period, symbol } = useContext(NavContext);
   const { data: assets } = useAssets(initialAssets);
   const router = useRouter();
-  const mins5Markets = Object.values(config.simpleMarkets)
-    .filter((i) => i.periods.includes("5mins") && i.listed)
-    .map((i) => i.slug);
   const mins15Markets = Object.values(config.simpleMarkets)
     .filter((i) => i.periods.includes("15mins") && i.listed)
     .map((i) => i.slug);
-  const hourlyMarkets = Object.values(config.simpleMarkets)
-    .filter((i) => i.periods.includes("hourly") && i.listed)
-    .map((i) => i.slug);
-  const is5Min = period.toLowerCase() === "5mins";
   const is15Min = period.toLowerCase() === "15mins";
-  const isHourly = period.toLowerCase() === "hourly";
   const buttons: (GroupButtonProps & { slug: (typeof periodOrder)[number] })[] =
     [
       {
@@ -69,18 +61,6 @@ export default function AssetNav({
         title: is15Min ? "15 Min Markets" : "15 Mins",
         mobileTitle: "15 Min",
         callback: () => router.push(`/campaign/${mins15Markets[0]}/15mins`),
-      },
-      {
-        slug: "5mins",
-        title: is5Min ? "5 Min Markets" : "5 Mins",
-        mobileTitle: "5 Min",
-        callback: () => router.push(`/campaign/${mins5Markets[0]}/5mins`),
-      },
-      {
-        slug: "hourly",
-        title: isHourly ? "Hourly Markets" : "Hourly",
-        mobileTitle: "1 Hr",
-        callback: () => router.push(`/campaign/${hourlyMarkets[0]}/hourly`),
       },
     ];
   const orderedButtons = periodOrder.map(

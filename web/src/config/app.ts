@@ -2,13 +2,7 @@ import z from "zod";
 import { farcasterChains } from "./chains";
 import BTC from "#/images/tokens/btc.webp";
 import PAXG from "#/images/tokens/paxg.svg";
-import NVIDIA from "#/images/tokens/nvidia.svg";
-import GOOGLE from "#/images/tokens/google.svg";
 import QQQ from "#/images/tokens/qqq.svg";
-import MONAD from "#/images/tokens/mon.svg";
-import KAG from "#/images/tokens/kag.png";
-import ETH from "#/images/tokens/eth.svg";
-import SOL from "#/images/tokens/sol.svg";
 import CVX from "#/images/tokens/cvx.png";
 import SPY from "#/images/tokens/spy.png";
 import OIL from "#/images/tokens/oil.png";
@@ -76,9 +70,7 @@ const infraMarketStateFees: Record<InfraMarketState, bigint> = {
 } as const;
 const categories = [
   "All",
-  "5mins",
   "15mins",
-  "Hourly",
   "Crypto",
   "Opinion Poll",
   "Sports",
@@ -155,35 +147,9 @@ const simpleMarkets = {
     tabTitle: "GOLD",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 2,
-    periods: ["hourly", "15mins"],
+    periods: ["15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: false,
-  },
-  nvidia: {
-    slug: "nvidia",
-    logo: NVIDIA,
-    title: "NVIDIA",
-    tabTitle: "NVIDIA",
-    decimals: 2,
-    periods: ["hourly"],
-    openDays: stockMarketOpenDaysUS,
-    openHours: stockMarketOpenHoursUS,
-    closeDays: stockMarketCloseDaysUS,
-    tz: "America/New_York",
-    listed: false,
-  },
-  goog: {
-    slug: "goog",
-    logo: GOOGLE,
-    title: "GOOGLE",
-    tabTitle: "GOOGLE",
-    decimals: 2,
-    periods: ["hourly"],
-    openDays: stockMarketOpenDaysUS,
-    openHours: stockMarketOpenHoursUS,
-    closeDays: stockMarketCloseDaysUS,
-    tz: "America/New_York",
     listed: false,
   },
   qqq: {
@@ -197,54 +163,6 @@ const simpleMarkets = {
     openHours: stockMarketOpenHoursUS,
     closeDays: stockMarketCloseDaysUS,
     tz: "America/New_York",
-    listed: false,
-  },
-  mon: {
-    slug: "mon",
-    logo: MONAD,
-    title: "MONAD",
-    tabTitle: "MONAD",
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    decimals: 6,
-    periods: ["hourly"],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-    listed: false,
-  },
-  kag: {
-    slug: "kag",
-    logo: KAG,
-    title: "Silver (KAG)",
-    tabTitle: "SILVER",
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    decimals: 2,
-    periods: ["5mins"],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-    listed: false,
-  },
-  eth: {
-    slug: "eth",
-    logo: ETH,
-    title: "ETH",
-    tabTitle: "ETH",
-    decimals: 2,
-    periods: ["5mins"],
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
-    listed: false,
-  },
-  sol: {
-    slug: "sol",
-    logo: SOL,
-    title: "SOL",
-    tabTitle: "SOL",
-    decimals: 2,
-    periods: ["5mins"],
-    openDays: [0, 1, 2, 3, 4, 5, 6],
-    openHours: ["00:00", "23:59"],
-    tz: "UTC",
     listed: false,
   },
   cvx: {
@@ -321,14 +239,7 @@ const simpleMarketSchema = z.object({
   title: z.string(),
   decimals: z.number(),
   tabTitle: z.string(),
-  periods: z.array(
-    z.union([
-      z.literal("hourly"),
-      z.literal("5mins"),
-      z.literal("15mins"),
-      z.literal("daily"),
-    ]),
-  ),
+  periods: z.array(z.union([z.literal("15mins"), z.literal("daily")])),
   openDays: z.array(z.number()),
   closeDays: z.optional(z.array(z.string())),
   openHours: z.array(z.string()),
@@ -365,9 +276,7 @@ const appSchema = z.object({
   categories: z.array(
     z.enum([
       "All",
-      "5mins",
       "15mins",
-      "Hourly",
       "Crypto",
       "Opinion Poll",
       "Sports",

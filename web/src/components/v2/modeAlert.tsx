@@ -24,7 +24,7 @@ export default function SimpleModeAlert() {
   return (
     <div className="flex flex-col gap-2 rounded-[3px] border-[1.5px] border-9black bg-white px-2 py-1 text-center text-xs md:px-4 md:py-3">
       <h4 className="font-chicago">
-        Simple Mode: Get started predicting the future with hourly markets
+        Simple Mode: Get started predicting the future with 15 min markets
       </h4>
       <h5>
         Once you&apos;re ready, create your own markets and trade using{" "}

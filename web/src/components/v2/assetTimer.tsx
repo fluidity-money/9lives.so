@@ -13,12 +13,8 @@ export default function AssetTimer({
 
   const getPeriodMs = (period: SimpleMarketPeriod) => {
     switch (period) {
-      case "5mins":
-        return 5 * 60 * 1000;
       case "15mins":
         return 15 * 60 * 1000;
-      case "hourly":
-        return 60 * 60 * 1000;
       default:
         return 0;
     }

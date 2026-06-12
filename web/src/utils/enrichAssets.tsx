@@ -6,8 +6,6 @@ const periodMap: Record<
   string
 > = {
   "15mins": "15",
-  "5mins": "5",
-  hourly: "H",
   daily: "D",
 };
 
