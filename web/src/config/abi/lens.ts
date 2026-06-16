@@ -30,19 +30,6 @@ const lensAbi = [
   },
   {
     type: "function",
-    name: "LONGTAIL",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "contract ILongtail",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "balancesForAll",
     inputs: [
       {

@@ -3,7 +3,6 @@ pragma solidity 0.8.20;
 
 import { INineLivesTrading } from "./INineLivesTrading.sol";
 import { INineLivesFactory } from "./INineLivesFactory.sol";
-import { ILongtail } from "./ILongtail.sol";
 import { IWETH10 } from "./IWETH10.sol";
 import  { ICamelotSwapRouter, ExactInputSingleParams } from "./ICamelotSwapRouter.sol";
 
@@ -31,7 +30,6 @@ struct AddLiquidityTokens {
 
 contract BuyHelper2 {
     INineLivesFactory immutable public FACTORY;
-    ILongtail immutable public LONGTAIL;
     IERC20 immutable public FUSDC;
     IWETH10 immutable public WETH;
     ICamelotSwapRouter immutable public CAMELOT_SWAP_ROUTER;
@@ -40,13 +38,11 @@ contract BuyHelper2 {
 
     constructor(
         INineLivesFactory _factory,
-        ILongtail _longtail,
         address _fusdc,
         IWETH10 _weth,
         ICamelotSwapRouter _camelotSwapRouter
     ) {
         FACTORY = _factory;
-        LONGTAIL = _longtail;
         FUSDC = IERC20(_fusdc);
         WETH = _weth;
         CAMELOT_SWAP_ROUTER = _camelotSwapRouter;

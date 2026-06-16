@@ -2,7 +2,6 @@
 pragma solidity ^0.8.20;
 
 import { INineLivesFactory } from "./INineLivesFactory.sol";
-import { ILongtail } from "./ILongtail.sol";
 import { WordPackingLib } from "./WordPackingLib.sol";
 import { INineLivesTrading } from "./INineLivesTrading.sol";
 
@@ -14,31 +13,10 @@ interface IERC20 {
 contract LensesV1 {
     using WordPackingLib for bytes32;
 
-    ILongtail immutable public LONGTAIL;
     INineLivesFactory immutable public FACTORY;
 
-    constructor(ILongtail _longtail, INineLivesFactory _factory) {
-        LONGTAIL = _longtail;
+    constructor(INineLivesFactory _factory) {
         FACTORY = _factory;
-    }
-
-    function getLongtailQuote(
-        address _pool,
-        bool _zeroForOne,
-        int256 _amount,
-        uint256 _priceLimit
-    ) external returns (string memory data) {
-        try
-            LONGTAIL.quote72E2ADE7(_pool, _zeroForOne, _amount, _priceLimit)
-        {} catch (bytes memory rc) {
-            if (rc.length < 68) {
-                revert("unexpected error");
-            }
-            assembly {
-                rc := add(rc, 0x04)
-            }
-            return abi.decode(rc, (string));
-        }
     }
 
     function getShareAddr(

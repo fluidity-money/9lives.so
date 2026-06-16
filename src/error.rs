@@ -626,7 +626,6 @@ pub(crate) fn rename_addr(v: Address) -> String {
         #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
         return match v {
             immutables::FUSDC_ADDR => "fusdc".to_string(),
-            immutables::LONGTAIL_ADDR => "longtail contract".to_string(),
             immutables::STAKED_ARB_ADDR => "staked arb addr".to_string(),
             immutables::DAO_OP_ADDR => "testing op dao".to_string(),
             immutables::DAO_EARN_ADDR => "testing earn dao".to_string(),

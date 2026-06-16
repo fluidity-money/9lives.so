@@ -15,7 +15,6 @@ const {
 const {execSync} = require("node:child_process");
 
 const TestERC20 = require("../out/TestERC20.sol/TestERC20.json");
-const MockLongtail = require("../out/MockLongtail.sol/MockLongtail.json");
 const Factory = require("../out/INineLivesFactory.sol/INineLivesFactory.json");
 const Trading = require("../out/INineLivesTrading.sol/INineLivesTrading.json");
 const LensesV1 = require("../out/LensesV1.sol/LensesV1.json");
@@ -68,19 +67,6 @@ describe("End to end tests", async () => {
 
   console.log("stakedArb:", stakedArb);
 
-  // Deploy a mocked out Longtail.
-
-  const longtailFactory = new ContractFactory(
-    MockLongtail.abi,
-    MockLongtail.bytecode,
-    signer
-  );
-  const longtailDeploy = await longtailFactory.deploy();
-  await longtailDeploy.waitForDeployment();
-  const longtailAddress = await longtailDeploy.getAddress();
-
-  console.log("longtailAddress:", longtailAddress);
-
   const deployStr = execSync(
     "./build-and-deploy.sh",
     {
@@ -88,7 +74,6 @@ describe("End to end tests", async () => {
         "PATH": process.env.PATH,
         "SPN_SUPERPOSITION_URL": RPC_URL,
         "SPN_SUPERPOSITION_KEY": DEPLOY_KEY,
-        "SPN_LONGTAIL_ADDR": longtailAddress,
         "SPN_FUSDC_ADDR": fusdcAddress,
         "SPN_STAKED_ARB_ADDR": stakedArbAddress,
         "SPN_PROXY_ADMIN": defaultAccountAddr,

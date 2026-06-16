@@ -17,7 +17,6 @@ defaults! {
     MSG_SENDER,
     CONTRACT,
     FUSDC,
-    LONGTAIL,
     STAKED_ARB,
     DAO_OPS,
     DAO_EARN,
@@ -44,11 +43,10 @@ defaults! {
     MARKO
 }
 
-pub const TESTING_ADDRS: [Address; 18] = [
+pub const TESTING_ADDRS: [Address; 17] = [
     MSG_SENDER,
     CONTRACT,
     FUSDC,
-    LONGTAIL,
     STAKED_ARB,
     DAO_OPS,
     DAO_EARN,

@@ -29,9 +29,6 @@ macro_rules! env_addr {
 // fUSDC address to use as the base asset for everything.
 env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR", FUSDC);
 
-// Longtail's address as deployed.
-env_addr!(LONGTAIL_ADDR, "SPN_LONGTAIL_ADDR", LONGTAIL);
-
 // Staked ARB address to use for taking amounts for Infrastructure Markets.
 env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
 
@@ -176,12 +173,6 @@ pub const STAKED_ARB_DECIMALS: u8 = 18;
 
 // 1e18
 pub const STAKED_ARB_DECIMALS_EXP: U256 = U256::from_limbs([1000000000000000000, 0, 0, 0]);
-
-pub const LONGTAIL_FEE: u32 = 3000;
-
-pub const LONGTAIL_TICK_SPACING: u8 = 10;
-
-pub const LONGTAIL_MAX_LIQ_PER_TICK: u128 = u128::MAX;
 
 /// Minimum amount of fUSDC that can be minted with.
 pub const MINIMUM_MINT_AMT: i64 = 0;
