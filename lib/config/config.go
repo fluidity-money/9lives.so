@@ -52,21 +52,9 @@ func Get() C {
 	if factoryAddr == "" {
 		setup.Exitf("SPN_FACTORY_ADDR not set")
 	}
-	infraMarketAddr := strings.ToLower(os.Getenv("SPN_INFRA_MARKET_ADDR"))
-	if infraMarketAddr == "" {
-		setup.Exitf("SPN_INFRA_MARKET_ADDR not set")
-	}
-	beautyContestAddr := strings.ToLower(os.Getenv("SPN_BEAUTY_CONTEST_ADDR"))
-	if beautyContestAddr == "" {
-		setup.Exitf("SPN_BEAUTY_CONTEST_ADDR not set")
-	}
 	sarpAiAddr := strings.ToLower(os.Getenv("SPN_SARP_AI_ADDR"))
 	if sarpAiAddr == "" {
 		setup.Exitf("SPN_SARP_AI_ADDR not set")
-	}
-	lockupAddr := strings.ToLower(os.Getenv("SPN_LOCKUP_PROXY_ADDR"))
-	if lockupAddr == "" {
-		setup.Exitf("SPN_LOCKUP_PROXY_ADDR not set")
 	}
 	sarpAiSignallerAddr := strings.ToLower(os.Getenv("SPN_SARP_AI_SIGNALLER_ADDR"))
 	if sarpAiSignallerAddr == "" {

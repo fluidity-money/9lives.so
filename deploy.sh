@@ -32,9 +32,6 @@ export SPN_SHARE_IMPL_ADDR="${SPN_SHARE_IMPL_ADDR:-$(./deploy-share-impl.sh)}"
 [ -z "$SPN_SHARE_IMPL_ADDR" ] && exit 1
 log "SPN_SHARE_IMPL_ADDR=$SPN_SHARE_IMPL_ADDR"
 
-export SPN_LOCKUP_TOKEN_IMPL_ADDR="${SPN_LOCKUP_TOKEN_IMPL_ADDR:-$(./deploy-lockup-token-impl.sh)}"
-log "SPN_LOCKUP_TOKEN_IMPL_ADDR=$SPN_LOCKUP_TOKEN_IMPL_ADDR"
-
 export SPN_FACTORY_1_IMPL_ADDR="${SPN_FACTORY_1_IMPL_ADDR:-$(./deploy-stylus.sh contract-factory-1.wasm)}"
 [ -z "$SPN_FACTORY_1_IMPL_ADDR" ] && exit 1
 log "SPN_FACTORY_1_IMPL_ADDR=$SPN_FACTORY_1_IMPL_ADDR"
@@ -42,14 +39,6 @@ log "SPN_FACTORY_1_IMPL_ADDR=$SPN_FACTORY_1_IMPL_ADDR"
 export SPN_FACTORY_2_IMPL_ADDR="${SPN_FACTORY_2_IMPL_ADDR:-$(./deploy-stylus.sh contract-factory-2.wasm)}"
 [ -z "$SPN_FACTORY_2_IMPL_ADDR" ] && exit 1
 log "SPN_FACTORY_2_IMPL_ADDR=$SPN_FACTORY_2_IMPL_ADDR"
-
-export SPN_INFRA_MARKET_IMPL_ADDR="${SPN_INFRA_MARKET_IMPL_ADDR:-$(./deploy-stylus.sh contract-infra-market.wasm)}"
-[ -z "$SPN_INFRA_MARKET_IMPL_ADDR" ] && exit 1
-log "SPN_INFRA_MARKET_IMPL_ADDR=$SPN_INFRA_MARKET_IMPL_ADDR"
-
-export SPN_LOCKUP_IMPL_ADDR="${SPN_LOCKUP_IMPL_ADDR:-$(./deploy-stylus.sh contract-lockup.wasm)}"
-[ -z "$SPN_LOCKUP_IMPL_ADDR" ] && exit 1
-log "SPN_LOCKUP_IMPL_ADDR=$SPN_LOCKUP_IMPL_ADDR"
 
 export SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR="${SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dppm-extras.wasm)}"
 [ -z "$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR" ] && exit 1
@@ -129,13 +118,11 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Factory proxy                 | \`$SPN_FACTORY_PROXY_ADDR\` |
 | Helper factory                | \`$SPN_HELPER_FACTORY\` |
 | LensesV1                      | \`$SPN_LENSESV1\` |
-| Beauty contest implementation | \`$SPN_BEAUTY_CONTEST_IMPL_ADDR\` |
-| Beauty contest proxy          | \`$SPN_BEAUTY_CONTEST_PROXY_ADDR\` |
 | Sarp AI Resolver              | \`$SPN_SARP_AI\` |
 | Claimant helper               | \`$SPN_CLAIMANT_HELPER_ADDR\` |
 | Paymaster                     | \`$SPN_PAYMASTER_ADDR\` |
 EOF
 
 cat <<EOF
-{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "lockupImplementation":"$SPN_LOCKUP_IMPL_ADDR", "optimisticInfraMarketImplementation":"$SPN_INFRA_MARKET_IMPL_ADDR", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "lockupTokenImplementation":"$SPN_LOCKUP_TOKEN_IMPL_ADDR", "beautyContest": "$SPN_BEAUTY_CONTEST_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "lockupProxyImpl":"$SPN_LOCKUP_PROXY_ADDR", "lockupProxyToken": "$SPN_FACTORY_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "beautyContestProxy": "$SPN_BEAUTY_CONTEST_PROXY_ADDR", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
+{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "beautyContest": "$SPN_BEAUTY_CONTEST_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "beautyContestProxy": "$SPN_BEAUTY_CONTEST_PROXY_ADDR", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
 EOF
