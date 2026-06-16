@@ -54,21 +54,6 @@ Each Trading contract is split into four facets, each compiled as a separate WAS
 - Shares can be both minted (bought) and burned (sold) before resolution
 - A "shortterm AMM" variant exists for markets using the price resolver oracle, where the Vault provides and reclaims liquidity at resolution
 
-### Oracles (resolution mechanisms)
-
-Markets must specify an oracle at creation time. The oracle is the only address allowed to call `decide()` on a Trading contract, which locks in the winning outcome.
-
-**Beauty Contest** ([`contract_beauty_contest.rs`](src/contract_beauty_contest.rs)):
-- The simplest oracle -- anyone can call `resolve()` after the market's deadline passes
-- For DPPM: picks the outcome with the most shares purchased
-- For AMM: picks the outcome with the highest price
-- Pays a fee to the caller who triggers resolution
-
-**Price Resolver Oracle** (external contract at `ORACLE_ADDR`):
-- Used for short-term markets where the outcome is determined by an external data source (e.g., asset prices via LayerZero)
-- The oracle contract calls `decide()` when the condition is met
-- If not activated by the deadline, defaults to a preconfigured outcome
-
 ### Supporting contracts
 
 **Vault** ([`Vault.sol`](src/Vault.sol)):
@@ -120,8 +105,6 @@ src/
   trading_dppm.rs                 # DPPM backend: mint, payoff, price logic
   trading_amm.rs                  # AMM backend: mint, burn, liquidity, price logic
   trading_private.rs              # Shared trading internals: ctor, decide, fees, shutdown
-  contract_beauty_contest.rs      # Beauty Contest oracle: resolve by popularity
-  storage_beauty_contest.rs       # Beauty Contest storage layout
   immutables.rs                   # Compile-time addresses and constants
   fees.rs                         # Fee constants (bonds, incentives, protocol %)
   maths.rs                        # Math helpers (DPPM share calc, sqrt, mul_div)
@@ -151,7 +134,6 @@ Each contract facet is compiled as a separate WASM binary using Cargo feature fl
 | `contract-trading-extras` + backend | Extras facet |
 | `contract-trading-quotes` + backend | Quotes facet |
 | `contract-trading-price` + backend | Price facet |
-| `contract-beauty-contest` | Beauty Contest oracle |
 | `testing` | Required for non-WASM builds (unit/property tests) |
 
 ---

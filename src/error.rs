@@ -67,10 +67,8 @@ err_pre!(ERR_ERC20_PERMIT_PREAMBLE, 0x05);
 err_pre!(ERR_ERC20_BALANCE_OF_PREAMBLE, 0x06);
 err_pre!(ERR_LOCKED_ARB_PREAMBLE, 0x07);
 err_pre!(ERR_FACTORY_PREAMBLE, 0x07);
-err_pre!(ERR_INFRA_MARKET_PREAMBLE, 0x08);
 err_pre!(ERR_GENERAL_PREAMBLE, 0x09);
-err_pre!(ERR_LOCKED_PREAMBLE, 0x0a);
-err_pre!(ERR_TRADING_DECIDE_PREAMBLE, 0x0b);
+err_pre!(ERR_TRADING_DECIDE_PREAMBLE, 0x0a);
 err_pre!(ERR_TRADING_GLOBAL_SHARES_PREAMBLE, 0x0c);
 err_pre!(ERR_TRADING_DETAILS_PREAMBLE, 0x0d);
 err_pre!(ERR_TRADING_ESCAPE_PREAMBLE, 0x0e);
@@ -267,9 +265,6 @@ pub enum Error {
     /// Infrastructure market has expired!
     InfraMarketHasExpired,
 
-    /// Error interacting with the lockup contract!
-    LockupError(Address, Vec<u8>),
-
     /// The infrastructure market has not expired!
     NotInsideSweepingPeriod,
 
@@ -296,9 +291,6 @@ pub enum Error {
 
     /// The contract is disabled!
     NotEnabled,
-
-    /// Unable to unpack from a Lockup call!
-    LockupUnableToUnpack,
 
     /// The victim did not predict incorrectly!
     BadVictim,
@@ -381,9 +373,6 @@ pub enum Error {
     /// Unable to unpack a response from the Trading contract.
     TradingUnableToUnpack(Address, Vec<u8>),
 
-    /// Beauty contest had bad outcome calldata submitted to it.
-    BeautyContestBadOutcomes,
-
     /// We're below the three hour buyin for someone to enter the Trading contract!
     BelowThreeHourBuyin,
 
@@ -422,9 +411,6 @@ pub enum Error {
 
     /// The user's recorded staked ARB balance right now is less than theirs at inception.
     StakedArbUnusual,
-
-    /// It's too early to withdraw from the Lockup contract!
-    TooEarlyToWithdraw,
 
     /// The victim has too low of a balance to have their amount slashed!
     VictimLowBal,
@@ -761,7 +747,6 @@ impl From<Error> for Vec<u8> {
                 ext(&ERR_ERC20_BALANCE_OF_PREAMBLE, &[&b, addr.as_slice()])
             }
             Error::LockedARBError(addr, b) => ext(&ERR_LOCKED_ARB_PREAMBLE, &[&b, addr.as_slice()]),
-            Error::LockupError(addr, b) => ext(&ERR_LOCKED_PREAMBLE, &[addr.as_slice(), &b]),
             Error::ShareError(b) => ext(&ERR_SHARE_PREAMBLE, &[&b]),
             Error::TradingErrorCtor(b) => ext(&ERR_TRADING_CTOR_PREAMBLE, &[&b]),
             Error::TradingErrorDecide(b) => ext(&ERR_TRADING_DECIDE_PREAMBLE, &[&b]),
@@ -774,7 +759,6 @@ impl From<Error> for Vec<u8> {
             Error::TradingErrorAddLiq(b) => ext(&ERR_TRADING_ADD_LIQ, &[&b]),
             Error::TradingPrice(b) => ext(&ERR_TRADING_PRICE, &[&b]),
             Error::FactoryCallError(b) => ext(&ERR_FACTORY_PREAMBLE, &[&b]),
-            Error::InfraMarketCallError(b) => ext(&ERR_INFRA_MARKET_PREAMBLE, &[&b]),
             Error::NotInCommitReveal(whinge_ts, cur_ts) => {
                 ext_general(&[&[v.into()], &whinge_ts.to_be_bytes(), &cur_ts.to_be_bytes()])
             }

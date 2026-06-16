@@ -82,9 +82,6 @@ pub use contract_factory_2::user_entrypoint;
 
 pub use contract_trading::*;
 
-#[cfg(feature = "contract-infra-market-testing")]
-pub use contract_infra_market_testing::user_entrypoint;
-
 #[cfg(all(target_arch = "wasm32", feature = "harness-stylus-interpreter"))]
 #[link(wasm_import_module = "stylus_interpreter")]
 extern "C" {

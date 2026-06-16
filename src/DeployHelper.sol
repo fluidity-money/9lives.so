@@ -41,9 +41,6 @@ struct DeployArgs {
 
 contract DeployHelper {
     event FactoryDeployed(address indexed addr);
-    event InfraMarketDeployed(address indexed addr);
-    event LockupDeployed(address indexed addr);
-    event BeautyContestDeployed(address indexed addr);
 
     constructor(DeployArgs memory _a) {
         // First, we deploy the factory proxy, but we don't do any setup on it.

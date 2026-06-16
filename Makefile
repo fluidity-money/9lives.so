@@ -102,7 +102,6 @@ contract-trading-amm-extras-admin.wasm: $(shell find src -type f -name '*.rs')
 
 clean:
 	@rm -rf \
-		contract-beauty-contest.wasm \
 		contract-factory-1.wasm \
 		contract-factory-2.wasm \
 		contract-trading-amm-extras.wasm \

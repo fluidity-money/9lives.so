@@ -32,32 +32,6 @@ const helperAbi = [
   },
   {
     type: "function",
-    name: "BEAUTY_CONTEST",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "INFRA_MARKET",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "SARP_AI",
     inputs: [],
     outputs: [
