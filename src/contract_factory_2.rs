@@ -11,10 +11,6 @@ use alloc::vec::Vec;
 
 pub use crate::storage_factory::*;
 
-use array_concat::concat_arrays;
-
-use stylus_sdk::call::RawCall;
-
 use bobcat_features::BOBCAT_FEATURES;
 
 BOBCAT_FEATURES!(shortterm_amm);
@@ -107,51 +103,4 @@ impl StorageFactory {
     }
 
     pub fn disable_shares(&self, _: Vec<FixedBytes<8>>) {}
-
-    // The following methods are deprecated methods from the previous
-    // proxy pattern. These will be removed eventually!
-
-    // The quotes address for some proxies to use. Needed for backwards
-    // compatibility with deployments before the 15th of October 2025,
-    // the time of which we shifted to a new Huff proxy.
-    pub fn quotes_addr(&self, is_dppm: bool) -> Address {
-        let x: [u8; 32 + 4] = concat_arrays!([0x63, 0x61, 0x29, 0xf8], [0u8; 31], [is_dppm as u8]);
-        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
-        Address::from(&w[32 - 20..].try_into().unwrap())
-    }
-
-    // The price address for some proxies to use. Needed for backwards compatibility.
-    pub fn price_addr(&self, is_dppm: bool) -> Address {
-        let x: [u8; 4 + 32] = concat_arrays!([0x8c, 0x6a, 0x96, 0x38], [0u8; 31], [is_dppm as u8]);
-        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
-        Address::from(&w[32 - 20..].try_into().unwrap())
-    }
-
-    // The mint address for some proxies to use. Needed for backwards compatibility.
-    pub fn mint_addr(&self, is_dppm: bool) -> Address {
-        let x: [u8; 32 + 4] = concat_arrays!([0x92, 0x08, 0x6b, 0x25], [0u8; 31], [is_dppm as u8]);
-        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
-        Address::from(&w[32 - 20..].try_into().unwrap())
-    }
-
-    // The extras address for some proxies to use. Needed for backwards compatibility.
-    pub fn extras_addr(&self, is_dppm: bool) -> Address {
-        let x: [u8; 4 + 32] = concat_arrays!([0x74, 0x8e, 0x94, 0x30], [0u8; 31], [is_dppm as u8]);
-        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &x) }.unwrap();
-        Address::from(&w[32 - 20..].try_into().unwrap())
-    }
-
-    // The AMM implementation address.
-    pub fn amm_impl(&self, x: FixedBytes<4>) -> Address {
-        let b: [u8; 32 + 4] = concat_arrays!([0x6b, 0x8e, 0x8d, 0x96], *x, [0u8; 32 - 4]);
-        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &b) }.unwrap();
-        Address::from(&w[32 - 20..].try_into().unwrap())
-    }
-
-    // The DPPM implementation address.
-    pub fn dppm_impl(&self, x: FixedBytes<4>) -> Address {
-        let b: [u8; 32 + 4] = concat_arrays!([0x6f, 0x73, 0xcb, 0xd8], *x, [0u8; 32 - 4]);
-        let w = unsafe { RawCall::new().call(TRADING_BEACON_ADDR, &b) }.unwrap();
-        Address::from(&w[32 - 20..].try_into().unwrap())
-    }
 }
