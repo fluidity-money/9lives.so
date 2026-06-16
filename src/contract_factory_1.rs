@@ -10,14 +10,7 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    error::*,
-    events,
-    fees::*,
-    fusdc_call,
-    immutables::*,
-    infra_market_call, proxy, share_call, trading_call,
-    utils::{block_timestamp, msg_sender},
-    vault_call,
+    error::*, events, immutables::*, proxy, share_call, trading_call, utils::msg_sender, vault_call,
 };
 
 pub use crate::storage_factory::*;
@@ -28,6 +21,8 @@ impl StorageFactory {
     // and their day 1 odds. We use these to seed the liquidity but only take
     // as much as the amount that the pool was made for. For now, we take the
     // default winner as the first outcome that was supplied to this function.
+    // The oracle and documentation fields are unused, relics from when the
+    // other resolution methods were supported.
     #[allow(non_snake_case, clippy::too_many_arguments)]
     pub fn new_trading_37_E_9_F_4_B_E(
         &mut self,
@@ -35,7 +30,7 @@ impl StorageFactory {
         oracle: Address,
         time_start: u64,
         time_ending: u64,
-        documentation: FixedBytes<32>,
+        _documentation: FixedBytes<32>,
         fee_recipient: Address,
         fee_creator: u64,
         fee_lp: u64,
@@ -106,29 +101,6 @@ impl StorageFactory {
         // doing so, the fee accounting internally will always prefer to take no
         // fees. The moderation fee can only be enabled with an upgrade.
 
-        // Take the full amount to use as incentives for calling cranks.
-        let mod_fee = if self.should_take_mod_fee.get() {
-            INCENTIVE_AMT_MODERATION
-        } else {
-            U256::ZERO
-        };
-        let setup_fee = mod_fee + {
-            if oracle == self.infra_market.get() {
-                // Make sure to take the amount that we need for the infra market.
-                INCENTIVE_AMT_CALL + INCENTIVE_AMT_CLOSE + INCENTIVE_AMT_DECLARE
-            } else {
-                U256::ZERO
-            }
-        };
-        if !setup_fee.is_zero() {
-            fusdc_call::take_from_sender(setup_fee)?;
-        }
-        if self.should_take_mod_fee.get() {
-            // Bump the amount that we need to track as a part of our operation revenue.
-            self.dao_claimable
-                .set(self.dao_claimable.get() + INCENTIVE_AMT_MODERATION);
-        }
-
         for (outcome_identifier, _sqrt_price, outcome_name) in outcomes.iter() {
             // We used to do deployment of tokens here. Now we don't:
             let erc20_identifier =
@@ -143,7 +115,6 @@ impl StorageFactory {
                 erc20Addr: erc20_addr,
             });
         }
-
         c!(trading_call::ctor(
             trading_addr,
             outcome_ids.clone(),
@@ -158,27 +129,6 @@ impl StorageFactory {
             fee_referrer,
             seed_liq
         ));
-
-        // If the infra market wasn't chosen, then we assume that the caller has done
-        // some setup work to ensure that this is fine. The caller should be very
-        // careful regarding the circumstances of their oracle choice, and it should be
-        // explained in the UI if this is the case or not.
-        if oracle == self.infra_market.get() {
-            let deadline_add_two_weeks = if time_ending < u64::MAX {
-                time_ending
-                    .checked_add(1209600)
-                    .ok_or(Error::CheckedAddOverflow)?
-            } else {
-                time_ending
-            };
-            infra_market_call::register(
-                self.infra_market.get(),
-                trading_addr,
-                documentation,
-                block_timestamp() + 1,
-                deadline_add_two_weeks,
-            )?;
-        }
 
         Ok(trading_addr)
     }

@@ -77,7 +77,6 @@ src/contract_trading.rs
 src/fees.rs
 src/maths.rs
 src/outcome.rs
-src/storage_lockup.rs
 src/storage_trading.rs
 src/trading_dppm.rs
 src/trading_amm.rs
@@ -98,7 +97,6 @@ src/contract_trading.rs
 src/fees.rs
 src/maths.rs
 src/outcome.rs
-src/storage_lockup.rs
 src/storage_trading.rs
 src/trading_dppm.rs
 src/trading_private.rs

@@ -40,7 +40,7 @@ pub struct StorageFactory {
     /// Is the contract currently in an enabled state (not an emergency)?
     pub enabled: StorageBool,
 
-    /// Infrastructure market address.
+    /// Infrastructure market address. UNUSED.
     pub infra_market: StorageAddress,
 
     /// Implementation of ERC20 for the Shares that we give out. Not set any

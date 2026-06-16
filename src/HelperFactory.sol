@@ -44,21 +44,15 @@ struct CreateArgs {
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
-    address immutable public INFRA_MARKET;
-    address immutable public BEAUTY_CONTEST;
     address immutable public SARP_AI;
 
     constructor(
         IERC20Permit _fusdc,
         INineLivesFactory _factory,
-        address _infraMarket,
-        address _beautyContest,
         address _sarpAi
     ) {
         FACTORY = _factory;
-        INFRA_MARKET = _infraMarket;
         FUSDC = _fusdc;
-        BEAUTY_CONTEST = _beautyContest;
         SARP_AI = _sarpAi;
         FUSDC.approve(address(_factory), type(uint256).max);
     }
@@ -87,10 +81,6 @@ contract HelperFactory {
             t.addLiquidityB9DDA952(_a.seedLiquidity, msg.sender, 0, type(uint256).max);
         }
         return address(t);
-    }
-
-    function createWithBeautyContest(CreateArgs calldata _a) public returns (address tradingAddr) {
-        return create(BEAUTY_CONTEST, _a);
     }
 
     function createWithAI(CreateArgs calldata _a) public returns (address tradingAddr) {

@@ -13,9 +13,6 @@ pub mod events;
 pub mod fees;
 pub mod immutables;
 
-pub mod timing_infra_market;
-pub use timing_infra_market::InfraMarketState;
-
 pub mod outcome;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -47,20 +44,6 @@ pub mod vault_call;
 pub mod wasm_vault_call;
 
 pub mod fusdc_call;
-
-pub mod host_lockup_call;
-pub mod lockup_call;
-pub mod wasm_lockup_call;
-
-#[cfg(not(target_arch = "wasm32"))]
-pub mod host_nineliveslockedarb_call;
-
-pub mod nineliveslockedarb_call;
-pub mod wasm_nineliveslockedarb_call;
-
-pub mod host_infra_market_call;
-pub mod infra_market_call;
-pub mod wasm_infra_market_call;
 
 #[cfg(all(feature = "testing", not(target_arch = "wasm32")))]
 pub mod host;
@@ -97,10 +80,6 @@ pub use contract_factory_1::user_entrypoint;
 #[cfg(feature = "contract-factory-2")]
 pub use contract_factory_2::user_entrypoint;
 
-// The following imports should all bring in user_entrypoint if the flag is enabled:
-pub use contract_beauty_contest::*;
-pub use contract_infra_market::*;
-pub use contract_lockup::*;
 pub use contract_trading::*;
 
 #[cfg(feature = "contract-infra-market-testing")]
@@ -156,10 +135,6 @@ macro_rules! harness_dbg {
         feature = "contract-trading-mint",
         feature = "contract-trading-quotes",
         feature = "contract-trading-price",
-        feature = "contract-lockup",
-        feature = "contract-infra-market",
-        feature = "contract-beauty-contest",
-        feature = "contract-infra-market-testing",
         feature = "contract-trading-dumper",
         // These are only enabled under special circumstances, and aren't
         // included in the default scaffolding.

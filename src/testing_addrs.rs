@@ -21,8 +21,6 @@ defaults! {
     DAO_OPS,
     DAO_EARN,
     SHARE,
-    LOCKUP_CONTRACT,
-    LOCKUP_TOKEN,
     ZERO_FOR_MINT_ADDR,
     CLAIMANT,
     PAYMASTER,
@@ -43,7 +41,7 @@ defaults! {
     MARKO
 }
 
-pub const TESTING_ADDRS: [Address; 17] = [
+pub const TESTING_ADDRS: [Address; 15] = [
     MSG_SENDER,
     CONTRACT,
     FUSDC,
@@ -51,8 +49,6 @@ pub const TESTING_ADDRS: [Address; 17] = [
     DAO_OPS,
     DAO_EARN,
     SHARE,
-    LOCKUP_CONTRACT,
-    LOCKUP_TOKEN,
     // This is used to denominate a mint/burn that's taken place, and is
     // treated specially by the transfer functions.
     ZERO_FOR_MINT_ADDR,

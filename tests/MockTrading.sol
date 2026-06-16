@@ -46,7 +46,6 @@ contract MockTrading is INineLivesTrading {
             s.ctor("Test Share", address(this));
             shares_[_a.outcomes[i]] = s;
         }
-        oracle_ = _a.oracle;
         timeStart_ = _a.timeStart;
         timeEnding_ = _a.timeEnding;
         require(timeEnding_ > block.timestamp, "ending in the past");

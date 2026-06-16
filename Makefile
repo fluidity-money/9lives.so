@@ -30,11 +30,7 @@ build: \
 	contract-trading-amm-mint \
 	contract-trading-amm-extras \
 	contract-trading-amm-quotes \
-	contract-trading-amm-price \
-	contract-lockup \
-	contract-infra-market \
-	contract-beauty-contest \
-	contract-infra-market-testing
+	contract-trading-amm-price
 
 solidity: ${OUT_SHARE}
 
@@ -59,14 +55,6 @@ contract-trading-amm-quotes: contract-trading-amm-quotes.wasm
 contract-trading-amm-price: contract-trading-amm-price.wasm
 
 contract-trading-amm-extras-admin: contract-trading-amm-extras-admin.wasm
-
-contract-lockup: contract-lockup.wasm
-
-contract-infra-market: contract-infra-market.wasm
-
-contract-beauty-contest: contract-beauty-contest.wasm
-
-contract-infra-market-testing: contract-infra-market-testing.wasm
 
 contract-factory-1.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-factory-1${CARGO_EXTRA_FEATURES}
@@ -108,22 +96,6 @@ contract-trading-amm-price.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-trading-price,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_POST} contract-trading-amm-price.wasm
 
-contract-lockup.wasm: $(shell find src -type f -name '*.rs')
-	@${CARGO_BUILD_STYLUS} contract-lockup${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_POST} contract-lockup.wasm
-
-contract-infra-market.wasm: $(shell find src -type f -name '*.rs')
-	@${CARGO_BUILD_STYLUS} contract-infra-market${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_POST} contract-infra-market.wasm
-
-contract-beauty-contest.wasm: $(shell find src -type f -name '*.rs')
-	@${CARGO_BUILD_STYLUS} contract-beauty-contest${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_POST} contract-beauty-contest.wasm
-
-contract-infra-market-testing.wasm: $(shell find src -type f -name '*.rs')
-	@${CARGO_BUILD_STYLUS} contract-infra-market-testing${CARGO_EXTRA_FEATURES}
-	@${RELEASE_WASM_POST} contract-infra-market-testing.wasm
-
 contract-trading-amm-extras-admin.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-trading-extras-admin,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_POST} contract-trading-amm-extras-admin.wasm
@@ -133,8 +105,6 @@ clean:
 		contract-beauty-contest.wasm \
 		contract-factory-1.wasm \
 		contract-factory-2.wasm \
-		contract-infra-market.wasm \
-		contract-lockup.wasm \
 		contract-trading-amm-extras.wasm \
 		contract-trading-amm-extras-admin.wasm \
 		contract-trading-amm-mint.wasm \
@@ -142,12 +112,8 @@ clean:
 		contract-trading-dppm-mint.wasm \
 		contract-trading-dppm-trading-extras.wasm \
 		contract-trading-dppm-trading-mint.wasm \
-		contract-infra-market-testing.wasm \
-		contract-beauty-contest.wasm.wasm-opt \
 		contract-factory-1.wasm.wasm-opt \
 		contract-factory-2.wasm.wasm-opt \
-		contract-infra-market.wasm.wasm-opt \
-		contract-lockup.wasm.wasm-opt \
 		contract-trading-amm-extras.wasm.wasm-opt \
 		contract-trading-amm-extras-admin.wasm.wasm-opt \
 		contract-trading-amm-mint.wasm.wasm-opt \
@@ -155,12 +121,8 @@ clean:
 		contract-trading-dppm-mint.wasm.wasm-opt \
 		contract-trading-dppm-trading-extras.wasm.wasm-opt \
 		contract-trading-dppm-trading-mint.wasm.wasm-opt \
-		contract-infra-market-testing.wasm.wasm-opt \
-		contract-beauty-contest.wasm.wat \
 		contract-factory-1.wasm.wat \
 		contract-factory-2.wasm.wat \
-		contract-infra-market.wasm.wat \
-		contract-lockup.wasm.wat \
 		contract-trading-amm-extras.wasm.wat \
 		contract-trading-amm-extras-admin.wasm.wat \
 		contract-trading-amm-mint.wasm.wat \
@@ -168,7 +130,6 @@ clean:
 		contract-trading-dppm-mint.wasm.wat \
 		contract-trading-dppm-trading-extras.wasm.wat \
 		contract-trading-dppm-trading-mint.wasm.wat \
-		contract-infra-market-testing.wasm.wat \
 		liblib9lives.rlib \
 		ninelives.wasm \
 		target

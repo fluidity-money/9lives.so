@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 interface IEvents {
-    /* LOCKUP CONTRACT */
+    /* LOCKUP CONTRACT: UNUSED */
 
     event LockupTokenProxyDeployed(address indexed token);
 
@@ -142,7 +142,7 @@ interface IEvents {
 
     event ScheduledPayout(address indexed recipient);
 
-    /* INFRASTRUCTURE MARKET */
+    /* INFRASTRUCTURE MARKET: UNUSED */
 
     event InfraMarketEnabled(bool indexed status);
 
@@ -204,7 +204,7 @@ interface IEvents {
         address indexed feeRecipient
     );
 
-    /* LOCKUP CONTRACT */
+    /* LOCKUP CONTRACT: UNUSED */
 
     event LockupEnabled(bool indexed status);
 

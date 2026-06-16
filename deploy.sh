@@ -105,7 +105,6 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Proxy admin                   | \`$SPN_PROXY_ADMIN\` |
 | Factory 1 implementation      | \`$SPN_FACTORY_1_IMPL_ADDR\` |
 | Factory 2 implementation      | \`$SPN_FACTORY_2_IMPL_ADDR\` |
-| Optimistic infra predict impl | \`$SPN_INFRA_MARKET_IMPL_ADDR\` |
 | Trading DPPM mint impl        | \`$SPN_TRADING_DPPM_MINT_IMPL_ADDR\` |
 | Trading DPPM extras impl      | \`$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR\` |
 | Trading DPPM quotes impl      | \`$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR\` |
@@ -124,5 +123,5 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 EOF
 
 cat <<EOF
-{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "beautyContest": "$SPN_BEAUTY_CONTEST_IMPL_ADDR", "infrastructureMarketProxy":"$SPN_INFRA_MARKET_PROXY_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "beautyContestProxy": "$SPN_BEAUTY_CONTEST_PROXY_ADDR", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
+{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "beautyContestProxy": "$SPN_BEAUTY_CONTEST_PROXY_ADDR", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
 EOF

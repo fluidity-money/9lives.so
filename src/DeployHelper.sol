@@ -19,7 +19,6 @@ interface Factory {
         address tradingAMMMintImpl,
         address tradingAmmQuotesImpl,
         address tradingAmmPriceImpl,
-        address infraMarketOracle,
         address operator
     ) external;
 }
@@ -27,7 +26,6 @@ interface Factory {
 struct DeployArgs {
     address admin;
     address emergencyCouncil;
-    address lockupTokenImpl;
     address shareImpl;
     address factory1Impl;
     address factory2Impl;
@@ -39,7 +37,6 @@ struct DeployArgs {
     address tradingAmmMintImpl;
     address tradingAmmQuotesImpl;
     address tradingAmmPriceImpl;
-    address beautyContestImpl;
 }
 
 contract DeployHelper {
@@ -68,7 +65,6 @@ contract DeployHelper {
             _a.tradingAmmMintImpl,
             _a.tradingAmmQuotesImpl,
             _a.tradingAmmPriceImpl,
-            address(infraMarket),
             _a.admin
         );
     }
