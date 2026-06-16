@@ -7,21 +7,6 @@ import {
     TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 import {INineLivesFactory} from "./INineLivesFactory.sol";
-import {ILockup} from "./ILockup.sol";
-
-interface InfraMarket {
-    function ctor(
-        address admin,
-        address emergency,
-        ILockup lockup,
-        address lockedArbToken,
-        INineLivesFactory factoryAddr
-    ) external;
-}
-
-interface Lockup {
-    function ctor(address tokenImpl, address infraMarket, address operator) external;
-}
 
 interface Factory {
     function ctor(
@@ -46,8 +31,6 @@ struct DeployArgs {
     address shareImpl;
     address factory1Impl;
     address factory2Impl;
-    address infraMarketImpl;
-    address lockupImpl;
     address tradingDpmExtrasImpl;
     address tradingDpmMintImpl;
     address tradingDpmQuotesImpl;
@@ -74,38 +57,6 @@ contract DeployHelper {
             ""
         )));
         emit FactoryDeployed(address(factory));
-        // Here we deploy the infra market proxy, but we don't do any setup on it (yet).
-        InfraMarket infraMarket = InfraMarket(address(new TransparentUpgradeableProxy(
-            _a.infraMarketImpl,
-            _a.admin,
-            ""
-        )));
-        emit InfraMarketDeployed(address(infraMarket));
-        // Then, we deploy the lockup proxy.
-        ILockup lockup = ILockup(address(new TransparentUpgradeableProxy(
-            _a.lockupImpl,
-            _a.admin,
-            abi.encodeWithSelector(
-                Lockup.ctor.selector,
-                _a.lockupTokenImpl,
-                address(infraMarket),
-                _a.admin
-            )
-        )));
-        emit LockupDeployed(address(lockup));
-        emit BeautyContestDeployed(address(new TransparentUpgradeableProxy(
-            _a.beautyContestImpl,
-            _a.admin,
-            ""
-        )));
-        // Then, we do some setup on the infra market proxy.
-        infraMarket.ctor(
-            _a.admin,
-            _a.emergencyCouncil,
-            lockup,
-            lockup.tokenAddr(),
-            INineLivesFactory(address(factory))
-        );
         // It's time to set up the factory!
         factory.ctor(
             _a.shareImpl,

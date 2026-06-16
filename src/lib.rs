@@ -42,8 +42,8 @@ pub mod erc20_call;
 pub mod host_erc20_call;
 pub mod wasm_erc20_call;
 
-pub mod vault_call;
 pub mod host_vault_call;
+pub mod vault_call;
 pub mod wasm_vault_call;
 
 pub mod fusdc_call;
@@ -81,16 +81,6 @@ pub mod contract_trading_mint;
 pub mod contract_trading_price;
 pub mod contract_trading_quotes;
 pub mod storage_trading;
-
-pub mod contract_lockup;
-pub mod storage_lockup;
-
-pub mod contract_infra_market;
-pub mod contract_infra_market_testing;
-pub mod storage_infra_market;
-
-pub mod contract_beauty_contest;
-pub mod storage_beauty_contest;
 
 pub mod contract_trading_dumper;
 

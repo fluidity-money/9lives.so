@@ -83,10 +83,6 @@ export SPN_TRADING_AMM_PRICE_IMPL_ADDR="${SPN_TRADING_AMM_PRICE_IMPL_ADDR:-$(./d
 [ -z "$SPN_TRADING_AMM_PRICE_IMPL_ADDR" ] && exit 1
 log "SPN_TRADING_AMM_PRICE_IMPL_ADDR=$SPN_TRADING_AMM_PRICE_IMPL_ADDR"
 
-export SPN_BEAUTY_CONTEST_IMPL_ADDR="${SPN_BEAUTY_CONTEST_IMPL_ADDR:-$(./deploy-stylus.sh contract-beauty-contest.wasm)}"
-[ -z "$SPN_BEAUTY_CONTEST_IMPL_ADDR" ] && exit 1
-log "SPN_BEAUTY_CONTEST_IMPL_ADDR=$SPN_BEAUTY_CONTEST_IMPL_ADDR"
-
 json="$(./deploy-proxies.sh)"
 
 cast send \
@@ -103,20 +99,8 @@ cast send \
 	"$SPN_TRADING_AMM_QUOTES" \
 	"$SPN_TRADING_AMM_PRICE"
 
-export SPN_INFRA_MARKET_PROXY_ADDR="$(echo "$json" | jq -r .infraMarketAddr)"
-log "SPN_INFRA_MARKET_PROXY_ADDR=$SPN_INFRA_MARKET_PROXY_ADDR"
-
-export SPN_LOCKUP_PROXY_ADDR="$(echo "$json" | jq -r .lockupAddr)"
-log "SPN_LOCKUP_PROXY_ADDR=$SPN_LOCKUP_PROXY_ADDR"
-
 export SPN_FACTORY_PROXY_ADDR="$(echo "$json" | jq -r .factoryAddr)"
 log "SPN_FACTORY_PROXY_ADDR=$SPN_FACTORY_PROXY_ADDR"
-
-export SPN_BEAUTY_CONTEST_PROXY_ADDR="$(echo "$json" | jq -r .beautyContestProxyAddr)"
-log "SPN_BEAUTY_CONTEST_PROXY_ADDR=$SPN_BEAUTY_CONTEST_PROXY_ADDR"
-
-export SPN_LOCKUP_TOKEN_PROXY_ADDR="$(echo "$json" | jq -r .lockupTokenProxyAddr)"
-log "SPN_LOCKUP_TOKEN_PROXY_ADDR=$SPN_LOCKUP_TOKEN_PROXY_ADDR"
 
 export SPN_HELPER_FACTORY="${SPN_HELPER_FACTORY:-$(./deploy-helper-factory.sh)}"
 [ -z "$SPN_HELPER_FACTORY" ] && exit 1
@@ -132,7 +116,6 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Proxy admin                   | \`$SPN_PROXY_ADMIN\` |
 | Factory 1 implementation      | \`$SPN_FACTORY_1_IMPL_ADDR\` |
 | Factory 2 implementation      | \`$SPN_FACTORY_2_IMPL_ADDR\` |
-| Lockup implementation         | \`$SPN_LOCKUP_IMPL_ADDR\` |
 | Optimistic infra predict impl | \`$SPN_INFRA_MARKET_IMPL_ADDR\` |
 | Trading DPPM mint impl        | \`$SPN_TRADING_DPPM_MINT_IMPL_ADDR\` |
 | Trading DPPM extras impl      | \`$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR\` |
@@ -143,10 +126,6 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Trading AMM quotes impl       | \`$SPN_TRADING_AMM_QUOTES_IMPL_ADDR\` |
 | Trading AMM price impl        | \`$SPN_TRADING_AMM_PRICE_IMPL_ADDR\` |
 | Share implementation          | \`$SPN_SHARE_IMPL_ADDR\` |
-| Lockup token implementation   | \`$SPN_LOCKUP_TOKEN_IMPL_ADDR\` |
-| Infrastructure market proxy   | \`$SPN_INFRA_MARKET_PROXY_ADDR\` |
-| Lockup proxy                  | \`$SPN_LOCKUP_PROXY_ADDR\` |
-| Lockup token proxy            | \`$SPN_LOCKUP_TOKEN_PROXY_ADDR\` |
 | Factory proxy                 | \`$SPN_FACTORY_PROXY_ADDR\` |
 | Helper factory                | \`$SPN_HELPER_FACTORY\` |
 | LensesV1                      | \`$SPN_LENSESV1\` |
