@@ -172,12 +172,7 @@ impl StorageTrading {
                     recipient,
                 )?;
             } else {
-                self.internal_amm_payoff(
-                    recipient,
-                    winning_outcome,
-                    U256::MAX,
-                    recipient,
-                )?;
+                self.internal_amm_payoff(recipient, winning_outcome, U256::MAX, recipient)?;
             }
         }
         self.scheduled_payout_processed
