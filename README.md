@@ -23,7 +23,6 @@ flowchart TD
     TradingBeacon -->|Routes to| QuotesImpl[Quotes Impl]
     TradingBeacon -->|Routes to| PriceImpl[Price Impl]
     ShareERC20s -->|Minted/burned by| MintImpl
-    Oracle[Oracle: Beauty Contest / Price Resolver] -->|Calls decide on| TradingProxy
 ```
 
 ### Contract facets

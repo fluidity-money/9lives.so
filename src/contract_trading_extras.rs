@@ -138,7 +138,7 @@ impl StorageTrading {
         Ok(proxy::get_share_addr(
             self.factory_addr.get(),
             contract_address(),
-            self.share_impl.get(),
+            SHARE_IMPL_ADDR,
             outcome,
         ))
     }
@@ -174,7 +174,7 @@ impl StorageTrading {
                 proxy::get_share_addr(
                     self.factory_addr.get(),
                     contract_address(),
-                    self.share_impl.get(),
+                    SHARE_IMPL_ADDR,
                     _outcome_id,
                 ),
                 _spender,

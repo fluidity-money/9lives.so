@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash -eu
+#!/usr/bin/env -S bash -eux
 
 cat >/dev/null <<EOF
 $SPN_SUPERPOSITION_URL

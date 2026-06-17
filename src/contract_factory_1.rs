@@ -10,7 +10,7 @@ use stylus_sdk::{
 use alloc::{string::String, vec::Vec};
 
 use crate::{
-    error::*, events, immutables::*, proxy, share_call, trading_call, utils::msg_sender, vault_call,
+    error::*, events, immutables, proxy, share_call, trading_call, utils::msg_sender, vault_call,
 };
 
 pub use crate::storage_factory::*;
@@ -58,7 +58,7 @@ impl StorageFactory {
         // Deploy the contract, and emit a log that it was created.
         let trading_addr =
             c!(
-                proxy::deploy_trading(TRADING_BEACON_ADDR, backend_is_dppm, trading_id)
+                proxy::deploy_trading(immutables::TRADING_BEACON_ADDR, backend_is_dppm, trading_id)
                     .map_err(Error::DeployError)
             );
 
@@ -85,15 +85,17 @@ impl StorageFactory {
             // resolution. It lets us accumulate DAO-earned fees to the address to
             // also pay off the initial liquidity, reducing time spent on management.
             match msg_sender() {
-                DPPM_HOUR_CREATOR_ADDR | DPPM_15_MIN_CREATOR_ADDR | DPPM_5_MIN_CREATOR_ADDR => {}
+                immutables::DPPM_HOUR_CREATOR_ADDR
+                | immutables::DPPM_15_MIN_CREATOR_ADDR
+                | immutables::DPPM_5_MIN_CREATOR_ADDR => {}
                 _ => return Err(Error::NotDppmCreator),
             };
-            vault_call::borrow(VAULT_ADDR, trading_addr, seed_liq)?;
+            vault_call::borrow(immutables::VAULT_ADDR, trading_addr, seed_liq)?;
         }
 
         // If these flags are enabled, then this is a shortterm AMM market:
-        if !backend_is_dppm && oracle == ORACLE_ADDR && seed_liq > U256::ZERO {
-            vault_call::amm_register(VAULT_ADDR, trading_addr)?;
+        if !backend_is_dppm && oracle == immutables::ORACLE_ADDR && seed_liq > U256::ZERO {
+            vault_call::amm_register(immutables::VAULT_ADDR, trading_addr)?;
         }
 
         // This code is in a weird place, the UX no longer supports doing setup
@@ -105,7 +107,7 @@ impl StorageFactory {
             // We used to do deployment of tokens here. Now we don't:
             let erc20_identifier =
                 proxy::create_identifier(&[trading_addr.as_ref(), outcome_identifier.as_slice()]);
-            let erc20_addr = proxy::deploy_erc20(self.share_impl.get(), erc20_identifier)
+            let erc20_addr = proxy::deploy_erc20(immutables::SHARE_IMPL_ADDR, erc20_identifier)
                 .map_err(Error::DeployError)?;
             // Set up the share ERC20 asset, with the description.
             share_call::ctor(erc20_addr, outcome_name.clone(), trading_addr)?;

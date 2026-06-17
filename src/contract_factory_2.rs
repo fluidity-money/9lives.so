@@ -54,13 +54,11 @@ impl StorageFactory {
     }
 
     pub fn erc20_hash(&self) -> R<FixedBytes<32>> {
-        Ok(FixedBytes::from_slice(&erc20_proxy_hash(
-            self.share_impl.get(),
-        )))
+        Ok(FixedBytes::from_slice(&erc20_proxy_hash(SHARE_IMPL_ADDR)))
     }
 
     pub fn share_impl(&self) -> R<Address> {
-        Ok(self.share_impl.get())
+        Ok(SHARE_IMPL_ADDR)
     }
 
     pub fn fusdc_addr(&self) -> R<Address> {

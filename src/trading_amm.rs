@@ -160,7 +160,7 @@ impl StorageTrading {
                     proxy::get_share_addr(
                         self.factory_addr.get(),
                         contract_address(),
-                        self.share_impl.get(),
+                        SHARE_IMPL_ADDR,
                         *outcome_id,
                     ),
                     recipient,
@@ -299,7 +299,7 @@ impl StorageTrading {
                     proxy::get_share_addr(
                         self.factory_addr.get(),
                         contract_address(),
-                        self.share_impl.get(),
+                        SHARE_IMPL_ADDR,
                         *outcome_id,
                     ),
                     recipient,
@@ -402,7 +402,7 @@ impl StorageTrading {
             proxy::get_share_addr(
                 self.factory_addr.get(),
                 contract_address(),
-                self.share_impl.get(),
+                SHARE_IMPL_ADDR,
                 outcome_id,
             ),
             sender,
@@ -547,7 +547,7 @@ impl StorageTrading {
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
             contract_address(), // Address of this contract, the Trading contract.
-            self.share_impl.get(),
+            SHARE_IMPL_ADDR,
             outcome_id,
         );
         // If the user gave us a U256::MAX, we claim everything they have.
@@ -636,7 +636,7 @@ impl StorageTrading {
             proxy::get_share_addr(
                 self.factory_addr.get(),
                 contract_address(),
-                self.share_impl.get(),
+                SHARE_IMPL_ADDR,
                 outcome_id,
             ),
             recipient,

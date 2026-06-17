@@ -1,7 +1,7 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
 #[cfg(not(target_arch = "wasm32"))]
-use crate::utils::msg_sender;
+use crate::{immutables, utils::msg_sender};
 
 #[cfg_attr(
     any(
@@ -46,8 +46,8 @@ pub struct StorageTrading {
 
     /// The recorded share implementation that's needed to reconstruct the
     /// location of the share contract. Stored here to prevent extra calls later
-    /// during the construction of this.
-    pub share_impl: StorageAddress,
+    /// during the construction of this. UNUSED.
+    pub _share_impl: StorageAddress,
 
     /// Outcomes inside this contract.
     pub outcome_list: StorageVec<StorageFixedBytes<8>>,
@@ -207,7 +207,7 @@ impl std::fmt::Debug for StorageTrading {
             self.time_start,
             self.time_ending,
             self.oracle,
-            self.share_impl,
+            immutables::SHARE_ADDR,
             self.amm_liquidity,
             self.dppm_global_invested,
             self.winner,

@@ -1,6 +1,8 @@
 use crate::{
     error::*,
-    events, fusdc_call, maths, proxy, share_call,
+    events, fusdc_call,
+    immutables::SHARE_IMPL_ADDR,
+    maths, proxy, share_call,
     storage_trading::*,
     utils::{block_timestamp, contract_address, msg_sender},
 };
@@ -106,7 +108,7 @@ impl StorageTrading {
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
             contract_address(),
-            self.share_impl.get(),
+            SHARE_IMPL_ADDR,
             outcome_id,
         );
         {
@@ -218,7 +220,7 @@ impl StorageTrading {
         let share_addr = proxy::get_share_addr(
             self.factory_addr.get(),
             contract_address(), // Address of this contract, the Trading contract.
-            self.share_impl.get(),
+            SHARE_IMPL_ADDR,
             outcome_id,
         );
         // Start to burn their share of the supply to convert to a payoff amount.

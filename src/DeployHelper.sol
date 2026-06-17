@@ -9,18 +9,7 @@ import {
 import {INineLivesFactory} from "./INineLivesFactory.sol";
 
 interface Factory {
-    function ctor(
-        address shareImpl,
-        address tradingDpmExtrasImpl,
-        address tradingDpmMintImpl,
-        address tradingDpmQuotesImpl,
-        address tradingDpmPriceImpl,
-        address tradingAMMExtrasImpl,
-        address tradingAMMMintImpl,
-        address tradingAmmQuotesImpl,
-        address tradingAmmPriceImpl,
-        address operator
-    ) external;
+    function ctor(address operator) external;
 }
 
 struct DeployArgs {
@@ -29,14 +18,6 @@ struct DeployArgs {
     address shareImpl;
     address factory1Impl;
     address factory2Impl;
-    address tradingDpmExtrasImpl;
-    address tradingDpmMintImpl;
-    address tradingDpmQuotesImpl;
-    address tradingDpmPriceImpl;
-    address tradingAmmExtrasImpl;
-    address tradingAmmMintImpl;
-    address tradingAmmQuotesImpl;
-    address tradingAmmPriceImpl;
 }
 
 contract DeployHelper {
@@ -52,17 +33,6 @@ contract DeployHelper {
         )));
         emit FactoryDeployed(address(factory));
         // It's time to set up the factory!
-        factory.ctor(
-            _a.shareImpl,
-            _a.tradingDpmExtrasImpl,
-            _a.tradingDpmMintImpl,
-            _a.tradingDpmQuotesImpl,
-            _a.tradingDpmPriceImpl,
-            _a.tradingAmmExtrasImpl,
-            _a.tradingAmmMintImpl,
-            _a.tradingAmmQuotesImpl,
-            _a.tradingAmmPriceImpl,
-            _a.admin
-        );
+        factory.ctor(_a.admin);
     }
 }

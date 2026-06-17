@@ -4,7 +4,7 @@ use stylus_sdk::block;
 
 use alloc::{format, string::String, string::ToString, vec::Vec};
 
-use crate::{error::*, fusdc_call, proxy, share_call, utils::*};
+use crate::{error::*, fusdc_call, immutables::SHARE_IMPL_ADDR, proxy, share_call, utils::*};
 
 pub use crate::storage_trading::*;
 
@@ -47,15 +47,10 @@ impl StorageTrading {
             .join(", ");
         let sender = msg_sender();
         let factory_addr = self.factory_addr.get();
-        let share_impl = self.share_impl.get();
         let mut user_outcome_shares = String::new();
         for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
-            let share_addr = proxy::get_share_addr(
-                factory_addr,
-                contract_address(),
-                share_impl,
-                outcome_id,
-            );
+            let share_addr =
+                proxy::get_share_addr(factory_addr, contract_address(), SHARE_IMPL_ADDR, outcome_id);
             #[allow(deprecated)]
             let bal = share_call::balance_of(share_addr, sender)?;
             if bal.is_zero() {
@@ -139,7 +134,6 @@ fn test_amm_reproduction_{addr}_{bn}() {{
             host::set_contract_address(address!({addr}));
             setup_contract!(&mut c, &outcomes);
             c.factory_addr.set(address!("{factory_addr}"));
-            c.share_impl.set(address!("{share_impl}"));
             //c.fee_creator.set(U256::from({fee_creator}));
             //c.fee_minter.set(U256::from({fee_minter}));
             //c.fee_lp.set(U256::from({fee_lp}));

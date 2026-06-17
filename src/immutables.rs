@@ -29,9 +29,6 @@ macro_rules! env_addr {
 // fUSDC address to use as the base asset for everything.
 env_addr!(FUSDC_ADDR, "SPN_FUSDC_ADDR", FUSDC);
 
-// Staked ARB address to use for taking amounts for Infrastructure Markets.
-env_addr!(STAKED_ARB_ADDR, "SPN_STAKED_ARB_ADDR", STAKED_ARB);
-
 // Address of the team fee recipient from the Trading contract. Used as the
 // recipient address for fees, but is unable to claim the fees! The operator
 // address must claim the fees, which are sent to this recipient.
