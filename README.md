@@ -210,6 +210,35 @@ See [audits/README.md](audits/README.md) for details.
 
 ## Deployments
 
+### Arbitrum mainnet
+
+|        Deployment name        |              Deployment address            |
+|-------------------------------|--------------------------------------------|
+| Proxy admin                   | `0x58A5f520FF7A6F59863e8a73b066A975799d5d48` |
+| Emergency council             | `0x6221a9c005f6e47eb398fd867784cacfdcfff4e7` |
+| Factory 1 implementation      | `0xbdc804d72ae7aa612d41f7fa1a504e7560ad8ee2` |
+| Factory 2 implementation      | `0x691c80c2df59555df928307efe1fbac2b14053b2` |
+| Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
+| Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
+| Trading AMM mint impl         | `0x1ade5cd6b4498f1ae1d497e1dbf6c3540f76d884` |
+| Trading AMM extras impl       | `0xfa0e60a1f1750dd5dcc5f038ceaf46882adf21c3` |
+| Trading AMM quotes impl       | `0x68af4f3cc7fec6b5a33b765eb811728853a2c982` |
+| Trading AMM price impl        | `0x3a218fa553395728338f4e17499a21ffeccf72e9` |
+| Share implementation          | `0x87f03D061C1e92802e2A9969E93Ff30f0C178230` |
+| Factory proxy                 | `0x068bd86029bdc43ca9bc03bbe5b9fd8113519589` |
+| Helper factory                | `0x6e8C54C8B1d6C8b9E63F201058E011f26415EA30` |
+| Trading beacon                | `0x5F2BD61Bb7e4a8008e0725F8AbB977cbe41FcfD5` |
+| LensesV1                      | `0xfc20C0C9deB8Af7e99957Fd323B60EC93E9e13C7` |
+| Sarp AI Resolver              | `0xa81a0adab3492dae14c45c39d322a78a24c8b683` |
+| Claimant helper               | `0x8e9c34b5ce311314e2324178ffeb7a03743cb072` |
+| Paymaster                     | `0x4e2Dd16F9e0376555bcca2266233578422C56771` |
+| Paymaster caller              | `0x132abdc1eca9b55a2ce3a48cec4a3d443301dc06` |
+| fUSDC                         | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
+| Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
+| Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
+
 ### Superposition mainnet
 
 |        Deployment name        |              Deployment address              |

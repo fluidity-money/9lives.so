@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash -eux
+#!/usr/bin/env -S bash -eu
 
 cat >/dev/null <<EOF
 $SPN_SUPERPOSITION_URL
@@ -10,7 +10,7 @@ $SPN_SARP_AI
 $SPN_CAMELOT_SWAP_ROUTER
 $SPN_STARGATE_ADDR
 $SPN_PAYMASTER_CALLER_ADDR
-$SPN_TRADING_BEACON
+$SPN_WETH_ADDR
 EOF
 
 log() {
@@ -19,6 +19,10 @@ log() {
 
 log "SPN_PROXY_ADMIN=$SPN_PROXY_ADMIN"
 log "SPN_EMERGENCY_COUNCIL=$SPN_EMERGENCY_COUNCIL"
+
+export SPN_TRADING_BEACON="${SPN_TRADING_BEACON:-$(./deploy-trading-beacon.sh)}"
+[ -z "$SPN_TRADING_BEACON" ] && exit 1
+log "SPN_TRADING_BEACON=$SPN_TRADING_BEACON"
 
 export SPN_PAYMASTER_ADDR="${SPN_PAYMASTER_ADDR:-$(./deploy-paymaster.sh)}"
 [ -z "$SPN_PAYMASTER_ADDR" ] && exit 1
@@ -103,6 +107,7 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 |        Deployment name        |              Deployment address            |
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | \`$SPN_PROXY_ADMIN\` |
+| Emergency council             | \`$SPN_EMERGENCY_COUNCIL\` |
 | Factory 1 implementation      | \`$SPN_FACTORY_1_IMPL_ADDR\` |
 | Factory 2 implementation      | \`$SPN_FACTORY_2_IMPL_ADDR\` |
 | Trading DPPM mint impl        | \`$SPN_TRADING_DPPM_MINT_IMPL_ADDR\` |
@@ -116,10 +121,15 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Share implementation          | \`$SPN_SHARE_IMPL_ADDR\` |
 | Factory proxy                 | \`$SPN_FACTORY_PROXY_ADDR\` |
 | Helper factory                | \`$SPN_HELPER_FACTORY\` |
+| Trading beacon                | \`$SPN_TRADING_BEACON\` |
 | LensesV1                      | \`$SPN_LENSESV1\` |
 | Sarp AI Resolver              | \`$SPN_SARP_AI\` |
 | Claimant helper               | \`$SPN_CLAIMANT_HELPER_ADDR\` |
 | Paymaster                     | \`$SPN_PAYMASTER_ADDR\` |
+| Paymaster caller              | \`$SPN_PAYMASTER_CALLER_ADDR\` |
+| fUSDC                         | \`$SPN_FUSDC_ADDR\` |
+| Camelot swap router           | \`$SPN_CAMELOT_SWAP_ROUTER\` |
+| Stargate                      | \`$SPN_STARGATE_ADDR\` |
 EOF
 
 cat <<EOF
