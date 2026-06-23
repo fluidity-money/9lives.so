@@ -44,10 +44,10 @@ if(~ $SPN_IS_DPPM '') {
 	SPN_IS_DPPM=true
 }
 
-backend_is_dppm=true
+cur_ts=`{date +%s}
 
-if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=`{date +%s}
-if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=`{date +%s}
+if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=$cur_ts_0
+if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=$cur_ts_1
 
 fn usage_args {
 	echo `{basename $0} '([0-9]+),?..' >[1=2]

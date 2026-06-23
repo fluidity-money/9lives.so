@@ -187,7 +187,6 @@ contract NineLivesFactory is IEvents, INineLivesFactory {
         s.outcomes = new bytes8[](factoryOutcomes.length);
         for (uint256 i = 0; i < factoryOutcomes.length; ++i) {
             s.outcomes[i] = factoryOutcomes[i].identifier;
-            if (i > 0) require(s.outcomes[i] > s.outcomes[i - 1], "array not sorted");
         }
         s.tradingId = createTradingId(s.outcomes);
         trading = deployTrading(backendIsDppm, s.tradingId);
