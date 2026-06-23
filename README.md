@@ -238,6 +238,8 @@ See [audits/README.md](audits/README.md) for details.
 | USDC                          | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
 | Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
 | Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
+| Vault                         | `0x4E1fd0869639Fa329e028eab098E0ac50eB5cd82` |
+| Price markets oracle          | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
 
 ### Superposition mainnet
 

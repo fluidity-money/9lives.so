@@ -38,7 +38,7 @@ contract NineLivesFactory is IEvents, INineLivesFactory {
 
     address public operator;
 
-    address public enabled;
+    bool public enabled;
 
     bool public shouldTakeModFee;
 
@@ -66,6 +66,13 @@ contract NineLivesFactory is IEvents, INineLivesFactory {
         ORACLE_ADDR = oracleAddr;
         VAULT_ADDR = INineLivesVault(vaultAddr);
         SHARE_IMPL_ADDR = shareImplAddr;
+    }
+
+    function ctor(address _operator) external {
+        require(version == 0, "already upgraded");
+        enabled = true;
+        version = 1;
+        operator = _operator;
     }
 
     /// @inheritdoc INineLivesFactory
