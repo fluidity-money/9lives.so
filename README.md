@@ -216,8 +216,7 @@ See [audits/README.md](audits/README.md) for details.
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0x58A5f520FF7A6F59863e8a73b066A975799d5d48` |
 | Emergency council             | `0x6221a9c005f6e47eb398fd867784cacfdcfff4e7` |
-| Factory 1 implementation      | `0xbdc804d72ae7aa612d41f7fa1a504e7560ad8ee2` |
-| Factory 2 implementation      | `0x691c80c2df59555df928307efe1fbac2b14053b2` |
+| Factory proxy                 | `0x5054bbda05cd47f785ebcad8baea0599c28b7177` |
 | Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
