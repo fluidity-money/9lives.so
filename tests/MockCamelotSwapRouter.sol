@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
-import { MockWETH10 } from "./MockWETH10.sol";
+import {MockWETH10} from "./MockWETH10.sol";
 
-import {
-    ICamelotSwapRouter,
-    ExactInputSingleParams,
-    ExactOutputSingleParams } from "../src/ICamelotSwapRouter.sol";
+import {ICamelotSwapRouter, ExactInputSingleParams, ExactOutputSingleParams} from "../src/ICamelotSwapRouter.sol";
 
 contract MockCamelotSwapRouter is ICamelotSwapRouter {
     MockWETH10 public WETH;
@@ -17,13 +14,15 @@ contract MockCamelotSwapRouter is ICamelotSwapRouter {
 
     function exactInputSingle(
         ExactInputSingleParams memory /* params */
-    ) external payable returns (uint256) {
+    )
+        external
+        payable
+        returns (uint256)
+    {
         revert("unimplemented");
     }
 
-    function exactOutputSingle(
-        ExactOutputSingleParams memory params
-    ) external payable returns (uint256 amountIn) {
+    function exactOutputSingle(ExactOutputSingleParams memory params) external payable returns (uint256 amountIn) {
         // Stargate messaging fee:
         require(params.amountOut == 76973247383465, "not mocked");
         // Assuming we're already prefunded here!

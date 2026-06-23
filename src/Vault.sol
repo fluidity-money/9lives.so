@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
+
+import {INineLivesVault} from "./INineLivesVault.sol";
 
 import {IEvents} from "./IEvents.sol";
 
 interface IERC20 {
-    function transferFrom(address from, address to ,uint256 amount) external;
+    function transferFrom(address from, address to, uint256 amount) external;
     function transfer(address recipient, uint256 amount) external;
     function balanceOf(address spender) external view returns (uint256);
 }
@@ -13,7 +15,7 @@ interface IERC20 {
 ///         shared bucket of liquidity. Dao-earned fees are repaid to this vault
 ///         when the market is resolved, subtracting what's needed to earn more
 ///         than the fees.
-contract Vault is IEvents {
+contract Vault is INineLivesVault, IEvents {
     uint8 public version;
 
     IERC20 public ERC20;

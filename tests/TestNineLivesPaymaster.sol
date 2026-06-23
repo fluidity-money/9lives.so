@@ -1,23 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
-import { Test } from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
-import {
-    NineLivesPaymaster,
-    PaymasterType,
-    Operation } from "../src/NineLivesPaymaster.sol";
+import {NineLivesPaymaster, PaymasterType, Operation} from "../src/NineLivesPaymaster.sol";
 
-import { CtorArgs } from "../src/INineLivesTrading.sol";
-import { IStargate } from "../src/IStargate.sol";
-import { ICamelotSwapRouter } from "../src/ICamelotSwapRouter.sol";
-import { IWETH10 } from "../src/IWETH10.sol";
+import {CtorArgs} from "../src/INineLivesTrading.sol";
+import {IStargate} from "../src/IStargate.sol";
+import {ICamelotSwapRouter} from "../src/ICamelotSwapRouter.sol";
+import {IWETH10} from "../src/IWETH10.sol";
 
-import { MockStargate } from "./MockStargate.sol";
-import { MockTrading } from "./MockTrading.sol";
-import { TestERC20 } from "./TestERC20.sol";
-import { MockCamelotSwapRouter } from "./MockCamelotSwapRouter.sol";
-import { MockWETH10 } from "./MockWETH10.sol";
+import {MockStargate} from "./MockStargate.sol";
+import {MockTrading} from "./MockTrading.sol";
+import {TestERC20} from "./TestERC20.sol";
+import {MockCamelotSwapRouter} from "./MockCamelotSwapRouter.sol";
+import {MockWETH10} from "./MockWETH10.sol";
 
 contract TestNineLivesPaymaster is Test {
     TestERC20 ERC20;
@@ -47,28 +44,25 @@ contract TestNineLivesPaymaster is Test {
         bytes8[] memory outcomes = new bytes8[](2);
         outcomes[0] = OUTCOME;
         outcomes[1] = bytes8(keccak256(abi.encodePacked(block.timestamp)));
-        m.ctor(CtorArgs({
-            outcomes: outcomes,
-            oracle: address(0),
-            timeStart: 0,
-            timeEnding: type(uint64).max,
-            feeRecipient: address(0),
-            shouldBufferTime: false,
-            feeCreator: 0,
-            feeMinter: 0,
-            feeLp: 0,
-            feeReferrer: 0,
-            startingLiq: 2e6
-        }));
+        m.ctor(
+            CtorArgs({
+                outcomes: outcomes,
+                oracle: address(0),
+                timeStart: 0,
+                timeEnding: type(uint64).max,
+                feeRecipient: address(0),
+                shouldBufferTime: false,
+                feeCreator: 0,
+                feeMinter: 0,
+                feeLp: 0,
+                feeReferrer: 0,
+                startingLiq: 2e6
+            })
+        );
         (ivan, ivanPk) = makeAddrAndKey("ivan");
     }
 
-    function computePermit(
-        address p,
-        address sender,
-        uint256 nonce,
-        uint256 value
-    ) public view returns (bytes32 hash) {
+    function computePermit(address p, address sender, uint256 nonce, uint256 value) public view returns (bytes32 hash) {
         bytes32 domainSeparator = ERC20.DOMAIN_SEPARATOR();
         hash = keccak256(
             abi.encodePacked(
@@ -76,9 +70,7 @@ contract TestNineLivesPaymaster is Test {
                 domainSeparator,
                 keccak256(
                     abi.encode(
-                        keccak256(
-                            "Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"
-                        ),
+                        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
                         sender,
                         p,
                         value,
@@ -133,12 +125,7 @@ contract TestNineLivesPaymaster is Test {
 
     function testMintEndToEnd() external {
         ERC20.transfer(ivan, 2e6);
-        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(
-            address(P),
-            ivan,
-            0,
-            2e6
-        ));
+        (uint8 permitV, bytes32 permitR, bytes32 permitS) = vm.sign(ivanPk, computePermit(address(P), ivan, 0, 2e6));
         bytes32 hash = computePaymasterHash(
             address(P),
             block.chainid,
@@ -214,10 +201,12 @@ contract TestNineLivesPaymaster is Test {
             outgoingChainEid: 0,
             maxOutgoing: type(uint256).max
         });
-        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        (, address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
-        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+        for (uint256 i = 0; i < statuses.length; ++i) {
+            assert(statuses[i]);
+        }
     }
 
     function testBurnEndToEnd() external {
@@ -264,10 +253,12 @@ contract TestNineLivesPaymaster is Test {
             outgoingChainEid: 0,
             maxOutgoing: type(uint256).max
         });
-        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        (, address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
-        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+        for (uint256 i = 0; i < statuses.length; ++i) {
+            assert(statuses[i]);
+        }
     }
 
     function testWithdrawEndToEnd() external {
@@ -312,10 +303,12 @@ contract TestNineLivesPaymaster is Test {
             outgoingChainEid: 0,
             maxOutgoing: type(uint256).max
         });
-        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        (, address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
-        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+        for (uint256 i = 0; i < statuses.length; ++i) {
+            assert(statuses[i]);
+        }
     }
 
     function testWithdrawEndToEnd2() external {
@@ -360,9 +353,11 @@ contract TestNineLivesPaymaster is Test {
             outgoingChainEid: 30110,
             maxOutgoing: type(uint256).max
         });
-        (,address recovered) = P.recoverAddressNewChain(ops[0]);
+        (, address recovered) = P.recoverAddressNewChain(ops[0]);
         assertEq(ivan, recovered);
         bool[] memory statuses = P.multicall(ops);
-        for (uint i = 0; i < statuses.length; ++i) assert(statuses[i]);
+        for (uint256 i = 0; i < statuses.length; ++i) {
+            assert(statuses[i]);
+        }
     }
 }

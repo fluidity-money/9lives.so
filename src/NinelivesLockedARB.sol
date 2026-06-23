@@ -1,23 +1,36 @@
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import {ERC20BurnableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
-import {ERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
-import {ERC20VotesUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import {
+    ERC20BurnableUpgradeable
+} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import {
+    ERC20PermitUpgradeable
+} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20PermitUpgradeable.sol";
+import {
+    ERC20VotesUpgradeable
+} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import {NoncesUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
 
-contract NinelivesLockedARB is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, OwnableUpgradeable, ERC20PermitUpgradeable, ERC20VotesUpgradeable {
+contract NinelivesLockedARB is
+    Initializable,
+    ERC20Upgradeable,
+    ERC20BurnableUpgradeable,
+    OwnableUpgradeable,
+    ERC20PermitUpgradeable,
+    ERC20VotesUpgradeable
+{
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function ctor(address initialOwner) initializer public {
+    function ctor(address initialOwner) public initializer {
         __ERC20_init("Ninelives Locked ARB", "NLA");
         __ERC20Burnable_init();
         __Ownable_init(initialOwner);
@@ -47,20 +60,35 @@ contract NinelivesLockedARB is Initializable, ERC20Upgradeable, ERC20BurnableUpg
         super._update(from, to, value);
     }
 
-    function nonces(address owner)
-        public
-        view
-        override(ERC20PermitUpgradeable, NoncesUpgradeable)
-        returns (uint256)
-    {
+    function nonces(address owner) public view override(ERC20PermitUpgradeable, NoncesUpgradeable) returns (uint256) {
         return super.nonces(owner);
     }
 
-    function transfer(address /* to */, uint256 /* value */) public override pure returns (bool) {
+    function transfer(
+        address,
+        /* to */
+        uint256 /* value */
+    )
+        public
+        pure
+        override
+        returns (bool)
+    {
         revert("transfers disabled");
     }
 
-    function transferFrom(address /* from */, address /* to */, uint256 /* value */) public override pure returns (bool) {
+    function transferFrom(
+        address,
+        /* from */
+        address,
+        /* to */
+        uint256 /* value */
+    )
+        public
+        pure
+        override
+        returns (bool)
+    {
         revert("transfers disabled");
     }
 }

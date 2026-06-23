@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.30;
+
+import {INineLivesTrading} from "./INineLivesTrading.sol";
 
 struct FactoryOutcome {
     bytes8 identifier;
@@ -42,7 +44,7 @@ interface INineLivesFactory {
         uint64 feeReferrer,
         bool backendIsDppm,
         uint256 seedLiq
-    ) external returns (address tradingAddr);
+    ) external returns (INineLivesTrading);
 
     /**
      * @notice is the current fee that's taken for moderation reasons active?
@@ -59,7 +61,7 @@ interface INineLivesFactory {
 
     function getTradingAddr(bytes32 id) external view returns (address);
 
-    function shareImpl() external pure returns (address);
+    function shareImpl() external view returns (address);
 
     /**
      * @notice return the keccak256 hash of the trading contract in DPPM form.

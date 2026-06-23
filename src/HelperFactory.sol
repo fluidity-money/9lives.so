@@ -1,20 +1,13 @@
 // SPDX-Identifier: MIT
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
-import { INineLivesFactory, FactoryOutcome } from "./INineLivesFactory.sol";
-import { INineLivesTrading } from "./INineLivesTrading.sol";
+import {INineLivesFactory, FactoryOutcome} from "./INineLivesFactory.sol";
+import {INineLivesTrading} from "./INineLivesTrading.sol";
 
 interface IERC20Permit {
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        external;
     function approve(address spender, uint256 amount) external;
     function transferFrom(address owner, address spender, uint256 amount) external;
 }
@@ -44,13 +37,9 @@ struct CreateArgs {
 contract HelperFactory {
     IERC20Permit immutable FUSDC;
     INineLivesFactory immutable FACTORY;
-    address immutable public SARP_AI;
+    address public immutable SARP_AI;
 
-    constructor(
-        IERC20Permit _fusdc,
-        INineLivesFactory _factory,
-        address _sarpAi
-    ) {
+    constructor(IERC20Permit _fusdc, INineLivesFactory _factory, address _sarpAi) {
         FACTORY = _factory;
         FUSDC = _fusdc;
         SARP_AI = _sarpAi;
@@ -60,21 +49,23 @@ contract HelperFactory {
     /// Create a new campaign, ignoring the CreateArgs oracle argument.
     function create(address _oracle, CreateArgs calldata _a) internal returns (address) {
         require(_a.timeEnding > block.timestamp, "time ending before timestamp");
-        INineLivesTrading t = INineLivesTrading(FACTORY.newTrading37E9F4BE(
-            _a.outcomes,
-            _oracle,
-            uint64(block.timestamp),
-            _a.timeEnding,
-            _a.documentation,
-            _a.feeRecipient,
-            _a.feeCreator,
-            _a.feeLp,
-            _a.feeMinter,
-            _a.feeReferrer,
-            _a.isDppm,
-            // TODO: hardcoded since we don't use this to create DPPM markets.
-            0
-        ));
+        INineLivesTrading t = INineLivesTrading(
+            FACTORY.newTrading37E9F4BE(
+                _a.outcomes,
+                _oracle,
+                uint64(block.timestamp),
+                _a.timeEnding,
+                _a.documentation,
+                _a.feeRecipient,
+                _a.feeCreator,
+                _a.feeLp,
+                _a.feeMinter,
+                _a.feeReferrer,
+                _a.isDppm,
+                // TODO: hardcoded since we don't use this to create DPPM markets.
+                0
+            )
+        );
         if (_a.seedLiquidity > 0) {
             FUSDC.transferFrom(msg.sender, address(this), _a.seedLiquidity);
             FUSDC.approve(address(t), _a.seedLiquidity);

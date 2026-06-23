@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.30;
 
 interface IEvents {
     /* LOCKUP CONTRACT: UNUSED */
@@ -8,27 +8,15 @@ interface IEvents {
 
     /* FACTORY CONTRACT */
 
-    event NewTrading2(
-        bytes32 indexed identifier,
-        address indexed addr,
-        address indexed oracle,
-        uint8 backend
-    );
+    event NewTrading2(bytes32 indexed identifier, address indexed addr, address indexed oracle, uint8 backend);
 
-    event OutcomeCreated(
-        bytes32 indexed tradingIdentifier,
-        bytes32 indexed erc20Identifier,
-        address indexed erc20Addr
-    );
+    event OutcomeCreated(bytes32 indexed tradingIdentifier, bytes32 indexed erc20Identifier, address indexed erc20Addr);
 
     event ClaimedDAOFunds(address indexed recipient, uint256 indexed amount);
 
     /* TRADING CONTRACTS */
 
-    event OutcomeDecided(
-        bytes8 indexed identifier,
-        address indexed oracle
-    );
+    event OutcomeDecided(bytes8 indexed identifier, address indexed oracle);
 
     event SharesMinted(
         bytes8 indexed identifier,
@@ -55,48 +43,25 @@ interface IEvents {
         uint256 fusdcReceived
     );
 
-    event DeadlineExtension(
-        uint64 indexed timeBefore,
-        uint64 indexed timeAfter
-    );
+    event DeadlineExtension(uint64 indexed timeBefore, uint64 indexed timeAfter);
 
     event LiquidityAdded(
-        address indexed sender,
-        uint256 indexed fusdcAmt,
-        address indexed recipient,
-        uint256 liquidityShares
+        address indexed sender, uint256 indexed fusdcAmt, address indexed recipient, uint256 liquidityShares
     );
 
-    event LiquidityRemoved(
-        uint256 indexed fusdcAmt,
-        address indexed recipient,
-        uint256 indexed liquidityAmt
-    );
+    event LiquidityRemoved(uint256 indexed fusdcAmt, address indexed recipient, uint256 indexed liquidityAmt);
 
     event LiquidityClaimed(
-        address indexed sender,
-        address indexed recipient,
-        uint256 indexed fusdcAmt,
-        uint256 sharesAmount
+        address indexed sender, address indexed recipient, uint256 indexed fusdcAmt, uint256 sharesAmount
     );
 
     event LPFeesClaimed(
-        address indexed sender,
-        address indexed recipient,
-        uint256 indexed feesEarned,
-        uint256 senderLiquidityShares
+        address indexed sender, address indexed recipient, uint256 indexed feesEarned, uint256 senderLiquidityShares
     );
 
-    event AddressFeesClaimed(
-        address indexed recipient,
-        uint256 indexed amount
-    );
+    event AddressFeesClaimed(address indexed recipient, uint256 indexed amount);
 
-    event ReferrerEarnedFees(
-        address indexed referrer,
-        uint256 indexed fees,
-        uint256 indexed volume
-    );
+    event ReferrerEarnedFees(address indexed referrer, uint256 indexed fees, uint256 indexed volume);
 
     event TimeExtension(uint64 indexed newDeadline);
 
@@ -105,16 +70,10 @@ interface IEvents {
         bytes8 identifier;
     }
 
-    event AmmDetails(
-        uint256 indexed product,
-        ShareDetail[] shares
-    );
+    event AmmDetails(uint256 indexed product, ShareDetail[] shares);
 
     event NinetailsBoostedSharesReceived(
-        address indexed spender,
-        address indexed recipient,
-        uint256 indexed amountReceived,
-        bytes8 outcome
+        address indexed spender, address indexed recipient, uint256 indexed amountReceived, bytes8 outcome
     );
 
     event NinetailsCumulativeWinnerPayoff(
@@ -133,10 +92,7 @@ interface IEvents {
         bytes8 outcome
     );
 
-    event DppmClawback(
-        address indexed recipient,
-        uint256 indexed fusdcClawedback
-    );
+    event DppmClawback(address indexed recipient, uint256 indexed fusdcClawedback);
 
     event SeedLiquidityAdded(uint256 indexed fusdcAmt);
 
@@ -154,88 +110,45 @@ interface IEvents {
         uint64 callDeadline
     );
 
-    event CallMade(
-        address indexed tradingAddr,
-        bytes8 indexed winner,
-        address indexed incentiveRecipient
-    );
+    event CallMade(address indexed tradingAddr, bytes8 indexed winner, address indexed incentiveRecipient);
 
-    event InfraMarketClosed(
-        address indexed incentiveRecipient,
-        address indexed tradingAddr,
-        bytes8 indexed winner
-    );
+    event InfraMarketClosed(address indexed incentiveRecipient, address indexed tradingAddr, bytes8 indexed winner);
 
-    event DAOMoneyDistributed(
-        uint256 indexed amount,
-        address indexed recipient
-    );
+    event DAOMoneyDistributed(uint256 indexed amount, address indexed recipient);
 
-    event Committed(
-        address indexed trading,
-        address indexed predictor,
-        bytes32 indexed commitment
-    );
+    event Committed(address indexed trading, address indexed predictor, bytes32 indexed commitment);
 
     event CommitmentRevealed(
-        address indexed trading,
-        address indexed revealer,
-        bytes8 indexed outcome,
-        address caller,
-        uint256 bal
+        address indexed trading, address indexed revealer, bytes8 indexed outcome, address caller, uint256 bal
     );
 
-    event Whinged(
-        address indexed trading,
-        bytes8 indexed preferredOutcome,
-        address indexed whinger
-    );
+    event Whinged(address indexed trading, bytes8 indexed preferredOutcome, address indexed whinger);
 
-     /// @notice CampaignEscaped, because a campaign is in an
-     /// indeterminate state! The DAO may be needed to step in.
+    /// @notice CampaignEscaped, because a campaign is in an
+    /// indeterminate state! The DAO may be needed to step in.
     event CampaignEscaped(address indexed tradingAddr);
 
     event InfraMarketUpdated(address indexed old, address indexed new_);
 
     /// @notice Declare was called on a market in the infra market.
-    event Declared(
-        address indexed trading,
-        bytes8 indexed winningOutcome,
-        address indexed feeRecipient
-    );
+    event Declared(address indexed trading, bytes8 indexed winningOutcome, address indexed feeRecipient);
 
     /* LOCKUP CONTRACT: UNUSED */
 
     event LockupEnabled(bool indexed status);
 
-    event LockedUp(
-        uint256 indexed amount,
-        address indexed recipient
-    );
+    event LockedUp(uint256 indexed amount, address indexed recipient);
 
-    event Withdrew(
-        uint256 indexed amount,
-        address indexed recipient
-    );
+    event Withdrew(uint256 indexed amount, address indexed recipient);
 
-    event Slashed(
-        address indexed victim,
-        address indexed recipient,
-        uint256 indexed slashedAmount
-    );
+    event Slashed(address indexed victim, address indexed recipient, uint256 indexed slashedAmount);
 
-    event Frozen(
-        address indexed victim,
-        uint64 indexed until
-    );
+    event Frozen(address indexed victim, uint64 indexed until);
 
     /* ON-CHAIN SARP SIGNALLER */
 
     /// @notice Outstanding ticket requested by a user for SARP to resolve a market.
-    event Requested(
-        address indexed trading,
-        uint256 indexed ticket
-    );
+    event Requested(address indexed trading, uint256 indexed ticket);
 
     /// @notice A request from a submitter was appropriate and resulted in a
     /// non-indeterminate state. Refund the investor.
@@ -243,17 +156,9 @@ interface IEvents {
 
     /* VAULT FOR 9lives DPPM STARTING LIQUIDITY */
 
-    event DebtTaken(
-        address indexed supplier,
-        address indexed forAddr,
-        uint256 indexed amount
-    );
+    event DebtTaken(address indexed supplier, address indexed forAddr, uint256 indexed amount);
 
-    event DebtRepaid(
-        address indexed repayer,
-        uint256 indexed surplus,
-        uint256 indexed deficit
-    );
+    event DebtRepaid(address indexed repayer, uint256 indexed surplus, uint256 indexed deficit);
 
     event VaultDrained(uint256 indexed amount, address indexed recipient);
 

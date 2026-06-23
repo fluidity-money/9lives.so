@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
 contract TradingBeacon {
     event AdminChanged(address previousAdmin, address newAdmin);
@@ -44,12 +44,7 @@ contract TradingBeacon {
         upgradeAmmContracts(_ammExtras, _ammMint, _ammQuotes, _ammPrice);
     }
 
-    function upgradeDppmContracts(
-        address _extras,
-        address _mint,
-        address _quotes,
-        address _price
-    ) public {
+    function upgradeDppmContracts(address _extras, address _mint, address _quotes, address _price) public {
         require(msg.sender == operator, "not operator");
         if (_extras != address(0)) {
             emit UpgradedExtras(_extras, true);
@@ -69,12 +64,7 @@ contract TradingBeacon {
         }
     }
 
-    function upgradeAmmContracts(
-        address _extras,
-        address _mint,
-        address _quotes,
-        address _price
-    ) public {
+    function upgradeAmmContracts(address _extras, address _mint, address _quotes, address _price) public {
         require(msg.sender == operator, "not operator");
         if (_extras != address(0)) {
             emit UpgradedExtras(_extras, false);

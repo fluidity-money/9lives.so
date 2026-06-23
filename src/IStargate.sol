@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
 struct SendParam {
     uint32 dstEid; // Destination endpoint ID.
@@ -50,28 +50,17 @@ struct OFTFeeDetail {
 }
 
 interface IStargate {
-    function sendToken(
-        SendParam calldata _sendParam,
-        MessagingFee calldata _fee,
-        address _refundAddress
-    ) external payable returns (
-        MessagingReceipt memory msgReceipt,
-        OFTReceipt memory oftReceipt,
-        Ticket memory ticket
-    );
+    function sendToken(SendParam calldata _sendParam, MessagingFee calldata _fee, address _refundAddress)
+        external
+        payable
+        returns (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt, Ticket memory ticket);
 
     function stargateType() external pure returns (StargateType);
 
-    function quoteOFT(
-        SendParam calldata _sendParam
-    ) external view returns (
-        OFTLimit memory limit,
-        OFTFeeDetail[] memory oftFeeDetails,
-        OFTReceipt memory receipt
-    );
+    function quoteOFT(SendParam calldata _sendParam)
+        external
+        view
+        returns (OFTLimit memory limit, OFTFeeDetail[] memory oftFeeDetails, OFTReceipt memory receipt);
 
-    function quoteSend(
-        SendParam calldata _sendParam,
-        bool _payInLzToken
-    ) external view returns (MessagingFee memory);
+    function quoteSend(SendParam calldata _sendParam, bool _payInLzToken) external view returns (MessagingFee memory);
 }

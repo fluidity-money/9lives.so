@@ -1,17 +1,13 @@
 // SPDX-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
-import { INineLivesTrading } from "./INineLivesTrading.sol";
-import { INineLivesFactory } from "./INineLivesFactory.sol";
-import { IWETH10 } from "./IWETH10.sol";
-import  { ICamelotSwapRouter, ExactInputSingleParams } from "./ICamelotSwapRouter.sol";
+import {INineLivesTrading} from "./INineLivesTrading.sol";
+import {INineLivesFactory} from "./INineLivesFactory.sol";
+import {IWETH10} from "./IWETH10.sol";
+import {ICamelotSwapRouter, ExactInputSingleParams} from "./ICamelotSwapRouter.sol";
 
 interface IERC20 {
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 value
-    ) external;
+    function transferFrom(address sender, address recipient, uint256 value) external;
 
     function approve(address recipient, uint256 amount) external;
     function balanceOf(address spender) external view returns (uint256);
@@ -19,7 +15,7 @@ interface IERC20 {
 }
 
 interface DPMOld {
-    function mintPermitE90275AB(bytes8,uint256,address,uint256,uint8,bytes32,bytes32) external returns (uint256);
+    function mintPermitE90275AB(bytes8, uint256, address, uint256, uint8, bytes32, bytes32) external returns (uint256);
 }
 
 struct AddLiquidityTokens {
@@ -29,19 +25,14 @@ struct AddLiquidityTokens {
 }
 
 contract BuyHelper2 {
-    INineLivesFactory immutable public FACTORY;
-    IERC20 immutable public FUSDC;
-    IWETH10 immutable public WETH;
-    ICamelotSwapRouter immutable public CAMELOT_SWAP_ROUTER;
+    INineLivesFactory public immutable FACTORY;
+    IERC20 public immutable FUSDC;
+    IWETH10 public immutable WETH;
+    ICamelotSwapRouter public immutable CAMELOT_SWAP_ROUTER;
 
-    bytes32 immutable public ERC20_HASH;
+    bytes32 public immutable ERC20_HASH;
 
-    constructor(
-        INineLivesFactory _factory,
-        address _fusdc,
-        IWETH10 _weth,
-        ICamelotSwapRouter _camelotSwapRouter
-    ) {
+    constructor(INineLivesFactory _factory, address _fusdc, IWETH10 _weth, ICamelotSwapRouter _camelotSwapRouter) {
         FACTORY = _factory;
         FUSDC = IERC20(_fusdc);
         WETH = _weth;
@@ -65,8 +56,8 @@ contract BuyHelper2 {
         uint256 _deadline,
         address _recipient
     ) external payable returns (uint256) {
-       uint256 amountIn  = _amount - _rebate;
-       // TODO: Relay hack (fix)
+        uint256 amountIn = _amount - _rebate;
+        // TODO: Relay hack (fix)
         if (msg.value == 0) {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
@@ -79,15 +70,17 @@ contract BuyHelper2 {
         uint256 fusdc;
         if (_asset != address(FUSDC)) {
             IERC20(_asset).approve(address(CAMELOT_SWAP_ROUTER), amountIn);
-            fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(ExactInputSingleParams({
-                tokenIn: _asset,
-                tokenOut: address(FUSDC),
-                recipient: address(this),
-                deadline: _deadline,
-                amountIn: amountIn,
-                amountOutMinimum: 0,
-                limitSqrtPrice: 0
-            }));
+            fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(
+                ExactInputSingleParams({
+                    tokenIn: _asset,
+                    tokenOut: address(FUSDC),
+                    recipient: address(this),
+                    deadline: _deadline,
+                    amountIn: amountIn,
+                    amountOutMinimum: 0,
+                    limitSqrtPrice: 0
+                })
+            );
         } else {
             fusdc = _amount;
         }
@@ -96,22 +89,9 @@ contract BuyHelper2 {
         INineLivesTrading t = INineLivesTrading(_tradingAddr);
         // The DPM is currently on the old signature.
         if (t.isDpm()) {
-             shares = DPMOld(address(t)).mintPermitE90275AB(
-                _outcome,
-                fusdc,
-                _recipient,
-                0,
-                0,
-                bytes32(0),
-                bytes32(0)
-            );
+            shares = DPMOld(address(t)).mintPermitE90275AB(_outcome, fusdc, _recipient, 0, 0, bytes32(0), bytes32(0));
         } else {
-             shares = t.mint8A059B6E(
-                _outcome,
-                fusdc,
-                _referrer,
-                _recipient
-            );
+            shares = t.mint8A059B6E(_outcome, fusdc, _referrer, _recipient);
         }
         // This is enough to prevent slippage.
         require(shares >= _minShareOut, "not enough shares");
@@ -132,21 +112,16 @@ contract BuyHelper2 {
      * @notice Mint more than one outcome at once, without any protections for slippage.
      *         Best used when the market was created for the first time.
      */
-    function mintTwice(
-        address _tradingAddr,
-        MintTwice[] memory _outcomes,
-        address _recipient
-    ) external {
+    function mintTwice(address _tradingAddr, MintTwice[] memory _outcomes, address _recipient) external {
         uint256 amt;
-        for (uint i = 0; i < _outcomes.length; ++i) amt += _outcomes[i].amount;
+        for (uint256 i = 0; i < _outcomes.length; ++i) {
+            amt += _outcomes[i].amount;
+        }
         FUSDC.transferFrom(msg.sender, address(this), amt);
-        for (uint i = 0; i < _outcomes.length; ++i)
-             INineLivesTrading(_tradingAddr).mint8A059B6E(
-                _outcomes[i].outcome,
-                _outcomes[i].amount,
-                address(0),
-                _recipient
-            );
+        for (uint256 i = 0; i < _outcomes.length; ++i) {
+            INineLivesTrading(_tradingAddr)
+                .mint8A059B6E(_outcomes[i].outcome, _outcomes[i].amount, address(0), _recipient);
+        }
     }
 
     function burn(
@@ -162,14 +137,8 @@ contract BuyHelper2 {
         INineLivesTrading tradingAddr = INineLivesTrading(_tradingAddr);
         IERC20 shareAddr = IERC20(tradingAddr.shareAddr(_outcome));
         shareAddr.transferFrom(msg.sender, address(this), _sharesToBurn);
-        (uint256 burnedShares, uint256 fusdcReturned) = tradingAddr.burn854CC96E(
-            _outcome,
-            _sharesToBurn,
-            true,
-            _minShareOut,
-            _referrer,
-            msg.sender
-        );
+        (uint256 burnedShares, uint256 fusdcReturned) =
+            tradingAddr.burn854CC96E(_outcome, _sharesToBurn, true, _minShareOut, _referrer, msg.sender);
         require(fusdcReturned >= _minFusdc, "not enough fusdc returned");
         require(burnedShares <= _maxShareBurned, "too many shares burned");
         uint256 toSend = shareAddr.balanceOf(address(this));
@@ -187,20 +156,24 @@ contract BuyHelper2 {
         AddLiquidityResToken[] tokens;
     }
 
-    function getShareAddr(
-         INineLivesFactory _factory,
-        address _tradingAddr,
-        bytes8 _outcomeId
-    ) public view returns (IERC20) {
-        return IERC20(address(uint160(uint256(keccak256(abi.encodePacked(
-            hex"ff",
-            _factory,
-            keccak256(abi.encodePacked(
-                _outcomeId,
-                _tradingAddr
-            )),
-            ERC20_HASH
-        ))))));
+    function getShareAddr(INineLivesFactory _factory, address _tradingAddr, bytes8 _outcomeId)
+        public
+        view
+        returns (IERC20)
+    {
+        return IERC20(
+            address(
+                uint160(
+                    uint256(
+                        keccak256(
+                            abi.encodePacked(
+                                hex"ff", _factory, keccak256(abi.encodePacked(_outcomeId, _tradingAddr)), ERC20_HASH
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
 
     function addLiquidity(
@@ -214,7 +187,7 @@ contract BuyHelper2 {
         AddLiquidityTokens[] calldata _tokens,
         uint256 _deadline
     ) external payable returns (AddLiquidityRes memory res) {
-       uint256 amountIn  = _amount - _rebate;
+        uint256 amountIn = _amount - _rebate;
         if (msg.value == 0) {
             require(_rebate == 0, "rebate not possible for erc20");
             IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
@@ -228,27 +201,24 @@ contract BuyHelper2 {
         uint256 fusdc;
         if (_asset != address(FUSDC)) {
             IERC20(_asset).approve(address(CAMELOT_SWAP_ROUTER), amountIn);
-            fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(ExactInputSingleParams({
-                tokenIn: _asset,
-                tokenOut: address(FUSDC),
-                recipient: address(this),
-                deadline: _deadline,
-                amountIn: amountIn,
-                amountOutMinimum: 0,
-                limitSqrtPrice: 0
-            }));
+            fusdc = CAMELOT_SWAP_ROUTER.exactInputSingle(
+                ExactInputSingleParams({
+                    tokenIn: _asset,
+                    tokenOut: address(FUSDC),
+                    recipient: address(this),
+                    deadline: _deadline,
+                    amountIn: amountIn,
+                    amountOutMinimum: 0,
+                    limitSqrtPrice: 0
+                })
+            );
         } else {
             fusdc = _amount;
         }
         FUSDC.approve(_tradingAddr, fusdc);
-        res.liq = INineLivesTrading(_tradingAddr).addLiquidityB9DDA952(
-            fusdc,
-            _recipient,
-            _minLiquidity,
-            _maxLiquidity
-        );
+        res.liq = INineLivesTrading(_tradingAddr).addLiquidityB9DDA952(fusdc, _recipient, _minLiquidity, _maxLiquidity);
         res.tokens = new AddLiquidityResToken[](_tokens.length);
-        for (uint i = 0; i < _tokens.length; ++i) {
+        for (uint256 i = 0; i < _tokens.length; ++i) {
             IERC20 t = getShareAddr(FACTORY, _tradingAddr, _tokens[i].identifier);
             uint256 b = t.balanceOf(address(this));
             res.tokens[i].token = _tokens[i].identifier;

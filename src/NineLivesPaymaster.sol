@@ -1,24 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-import { INineLivesTrading } from "./INineLivesTrading.sol";
-import {
-    IStargate,
-    MessagingFee,
-    SendParam,
-    MessagingReceipt,
-    OFTReceipt } from "./IStargate.sol";
+import {INineLivesTrading} from "./INineLivesTrading.sol";
+import {IStargate, MessagingFee, SendParam, MessagingReceipt, OFTReceipt} from "./IStargate.sol";
 
-import {
-    ICamelotSwapRouter,
-    ExactOutputSingleParams } from "./ICamelotSwapRouter.sol";
+import {ICamelotSwapRouter, ExactOutputSingleParams} from "./ICamelotSwapRouter.sol";
 
-import { IWETH10 } from "./IWETH10.sol";
+import {IWETH10} from "./IWETH10.sol";
 
-bytes32 constant PAYMASTER_TYPEHASH =
-    keccak256("NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome,uint256 maxOutgoing)");
+bytes32 constant PAYMASTER_TYPEHASH = keccak256(
+    "NineLivesPaymaster(address owner,uint256 nonce,uint256 deadline,uint8 typ,address market,uint256 maximumFee,uint256 amountToSpend,uint256 minimumBack,address referrer,bytes8 outcome,uint256 maxOutgoing)"
+);
 
 enum PaymasterType {
     MINT,
@@ -54,15 +48,8 @@ struct Operation {
 }
 
 interface IERC20 {
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        external;
 
     function approve(address spender, uint256 amount) external;
 
@@ -74,7 +61,7 @@ interface IERC20 {
 }
 
 interface DPMOld {
-    function mintPermitE90275AB(bytes8,uint256,address,uint256,uint8,bytes32,bytes32) external returns (uint256);
+    function mintPermitE90275AB(bytes8, uint256, address, uint256, uint8, bytes32, bytes32) external returns (uint256);
 }
 
 contract NineLivesPaymaster {
@@ -134,9 +121,7 @@ contract NineLivesPaymaster {
         USDC = IERC20(_erc20);
         INITIAL_CHAIN_ID = block.chainid;
         INITIAL_SALT = keccak256(abi.encode(INITIAL_CHAIN_ID));
-        domainSeparators[INITIAL_CHAIN_ID] = computeDomainSeparator(
-            INITIAL_CHAIN_ID
-        );
+        domainSeparators[INITIAL_CHAIN_ID] = computeDomainSeparator(INITIAL_CHAIN_ID);
         ADMIN = _admin;
         STARGATE = _stargate;
         CAMELOT_SWAP_ROUTER = _swapRouter;
@@ -153,17 +138,18 @@ contract NineLivesPaymaster {
     }
 
     function computeDomainSeparator(uint256 _chainId) public view returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)"),
-                    keccak256(bytes(NAME)),
-                    keccak256("1"),
-                    _chainId,
-                    address(this),
-                    INITIAL_SALT
-                )
-            );
+        return keccak256(
+            abi.encode(
+                keccak256(
+                    "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)"
+                ),
+                keccak256(bytes(NAME)),
+                keccak256("1"),
+                _chainId,
+                address(this),
+                INITIAL_SALT
+            )
+        );
     }
 
     function recoverAddress(bytes32 domain, Operation calldata op) public view returns (address recovered) {
@@ -196,31 +182,20 @@ contract NineLivesPaymaster {
         );
     }
 
-    function recoverAddressNewChain(
-        Operation calldata op
-    ) public returns (bytes32 domain, address recovered) {
+    function recoverAddressNewChain(Operation calldata op) public returns (bytes32 domain, address recovered) {
         domain = NEW_DOMAIN_SEPARATOR(op.originatingChainId);
         return (domain, recoverAddress(domain, op));
     }
 
-    function stargateSendAmount(
-        SendParam memory _sendParam,
-        MessagingFee memory _messagingFee,
-        Operation memory _op
-    ) internal returns (uint256, bool) {
+    function stargateSendAmount(SendParam memory _sendParam, MessagingFee memory _messagingFee, Operation memory _op)
+        internal
+        returns (uint256, bool)
+    {
         (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt,) =
-            STARGATE.sendToken{value: _messagingFee.nativeFee}(
-                _sendParam,
-                _messagingFee,
-                _op.owner
-            );
+            STARGATE.sendToken{value: _messagingFee.nativeFee}(_sendParam, _messagingFee, _op.owner);
         if (_op.minimumBack > oftReceipt.amountReceivedLD) return (0, false);
         emit StargateBridged(
-            msgReceipt.guid,
-            _op.owner,
-            oftReceipt.amountReceivedLD,
-            _messagingFee.nativeFee,
-            _sendParam.dstEid
+            msgReceipt.guid, _op.owner, oftReceipt.amountReceivedLD, _messagingFee.nativeFee, _sendParam.dstEid
         );
         return (_op.maximumFee, true);
     }
@@ -231,59 +206,27 @@ contract NineLivesPaymaster {
         if (op.owner != recovered) revert("bad address recovery");
         nonces[domain][op.owner]++;
         uint256 amountInclusiveOfFee = op.amountToSpend + op.maximumFee;
-        if (op.permitR != bytes32(0))
-                USDC.permit(
-                    op.owner,
-                    address(this),
-                    op.permitAmount,
-                    op.deadline,
-                    op.permitV,
-                    op.permitR,
-                    op.permitS
-                );
+        if (op.permitR != bytes32(0)) {
+            USDC.permit(op.owner, address(this), op.permitAmount, op.deadline, op.permitV, op.permitR, op.permitS);
+        }
         if (op.typ == PaymasterType.MINT) {
             USDC.transferFrom(op.owner, address(this), amountInclusiveOfFee);
             USDC.approve(address(op.market), op.amountToSpend);
             try op.market.isDpm() returns (bool isDpm) {
-                if (isDpm)
-                    DPMOld(address(op.market)).mintPermitE90275AB(
-                        op.outcome,
-                        op.amountToSpend,
-                        op.owner,
-                        0,
-                        0,
-                        bytes32(0),
-                        bytes32(0)
-                    );
-                else
-                    op.market.mint8A059B6E(
-                        op.outcome,
-                        op.amountToSpend,
-                        op.referrer,
-                        op.owner
-                    );
+                if (isDpm) {
+                    DPMOld(address(op.market))
+                        .mintPermitE90275AB(op.outcome, op.amountToSpend, op.owner, 0, 0, bytes32(0), bytes32(0));
+                } else {
+                    op.market.mint8A059B6E(op.outcome, op.amountToSpend, op.referrer, op.owner);
+                }
                 return (op.maximumFee, true);
             } catch {
-                DPMOld(address(op.market)).mintPermitE90275AB(
-                    op.outcome,
-                    op.amountToSpend,
-                    op.owner,
-                    0,
-                    0,
-                    bytes32(0),
-                    bytes32(0)
-                );
+                DPMOld(address(op.market))
+                    .mintPermitE90275AB(op.outcome, op.amountToSpend, op.owner, 0, 0, bytes32(0), bytes32(0));
             }
         } else if (op.typ == PaymasterType.BURN) {
             // For selling, we don't take a fee.
-            op.market.burn854CC96E(
-                op.outcome,
-                op.amountToSpend,
-                true,
-                op.minimumBack,
-                op.referrer,
-                op.owner
-            );
+            op.market.burn854CC96E(op.outcome, op.amountToSpend, true, op.minimumBack, op.referrer, op.owner);
             return (0, true);
         } else if (op.typ == PaymasterType.ADD_LIQUIDITY) {
             return (0, false);
@@ -304,35 +247,35 @@ contract NineLivesPaymaster {
             });
             MessagingFee memory messagingFee = STARGATE.quoteSend(sendParam, false);
             USDC.approve(address(CAMELOT_SWAP_ROUTER), op.amountToSpend);
-            uint256 amountForFee = CAMELOT_SWAP_ROUTER.exactOutputSingle(ExactOutputSingleParams({
-                tokenIn: address(USDC),
-                tokenOut: address(WETH),
-                fee: 0,
-                recipient: address(this),
-                deadline: type(uint256).max,
-                amountOut: messagingFee.nativeFee,
-                amountInMaximum: op.amountToSpend,
-                limitSqrtPrice: type(uint160).min
-            }));
+            uint256 amountForFee = CAMELOT_SWAP_ROUTER.exactOutputSingle(
+                ExactOutputSingleParams({
+                    tokenIn: address(USDC),
+                    tokenOut: address(WETH),
+                    fee: 0,
+                    recipient: address(this),
+                    deadline: type(uint256).max,
+                    amountOut: messagingFee.nativeFee,
+                    amountInMaximum: op.amountToSpend,
+                    limitSqrtPrice: type(uint160).min
+                })
+            );
             WETH.withdraw(messagingFee.nativeFee);
             sendParam.amountLD = op.amountToSpend - amountForFee;
-            (, , OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
+            (,, OFTReceipt memory receipt) = STARGATE.quoteOFT(sendParam);
             sendParam.minAmountLD = receipt.amountReceivedLD;
             USDC.approve(address(STARGATE), sendParam.amountLD);
             return stargateSendAmount(sendParam, messagingFee, op);
         }
         return (0, false);
-}
+    }
 
     error MulticallFailure(uint256);
 
-    function multicall(
-        Operation[] calldata operations
-    ) external returns (bool[] memory statuses) {
+    function multicall(Operation[] calldata operations) external returns (bool[] memory statuses) {
         require(msg.sender == ADMIN, "not admin");
         statuses = new bool[](operations.length);
         uint256 acc;
-        for (uint i = 0; i < operations.length; ++i) {
+        for (uint256 i = 0; i < operations.length; ++i) {
             (uint256 amt, bool rd) = execute(operations[i]);
             if (!rd) revert MulticallFailure(i);
             statuses[i] = true;

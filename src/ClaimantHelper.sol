@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.30;
 
-import { INineLivesTrading } from "./INineLivesTrading.sol";
+import {INineLivesTrading} from "./INineLivesTrading.sol";
 
 contract ClaimantHelper {
-    function _claim(
-        address[] calldata _pools,
-        address _recipient
-     ) internal returns (uint256[] memory results) {
+    function _claim(address[] calldata _pools, address _recipient) internal returns (uint256[] memory results) {
         results = new uint256[](_pools.length);
-        for (uint i = 0; i < _pools.length; ++i) results[i] =
-            INineLivesTrading(_pools[i]).claimAllFees332D7968(_recipient);
+        for (uint256 i = 0; i < _pools.length; ++i) {
+            results[i] = INineLivesTrading(_pools[i]).claimAllFees332D7968(_recipient);
+        }
     }
 
     function claimForOther(address[] calldata _pools, address _recipient) external {
@@ -28,20 +26,18 @@ contract ClaimantHelper {
 
     function _payoff(address[] calldata _pools, address _recipient) internal returns (uint256[] memory results) {
         results = new uint256[](_pools.length);
-        for (uint i = 0; i < _pools.length; ++i) {
+        for (uint256 i = 0; i < _pools.length; ++i) {
             INineLivesTrading p = INineLivesTrading(_pools[i]);
             try p.isDppm() returns (bool d) {
                 if (d) {
-                    (uint256 o1, uint256 o2) =
-                        p.dppmPayoffForAll58633B6E(_recipient);
+                    (uint256 o1, uint256 o2) = p.dppmPayoffForAll58633B6E(_recipient);
                     results[i] = o1 + o2;
                     continue;
                 }
             } catch {}
             bytes8[] memory outcomes = p.outcomeList();
-            for (uint x = 0; x < outcomes.length; ++x) {
-                try p.payoffCB6F2565(outcomes[x], type(uint256).max, _recipient)
-                returns (uint256 amt) {
+            for (uint256 x = 0; x < outcomes.length; ++x) {
+                try p.payoffCB6F2565(outcomes[x], type(uint256).max, _recipient) returns (uint256 amt) {
                     results[i] += amt;
                 } catch {}
             }

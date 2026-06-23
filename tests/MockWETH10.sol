@@ -1,9 +1,9 @@
 // SPDX-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
 // Mocked since I don't like the GPL licensing in the original contract.
 
-import { IWETH10 } from "../src/IWETH10.sol";
+import {IWETH10} from "../src/IWETH10.sol";
 
 contract MockWETH10 is IWETH10 {
     mapping(address => uint256) public balanceOf;

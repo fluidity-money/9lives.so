@@ -62,7 +62,7 @@ pub struct StorageFactory {
     /// The chosen trading contract backend for this Trading instance.
     pub trading_backends: StorageMap<Address, StorageU8>,
 
-    /// Utility for getting trading addresses quickly based on their inputs.
+    /// Utility for getting trading addresses quickly based on their inputs. UNUSED.
     pub trading_addresses: StorageMap<FixedBytes<32>, StorageAddress>,
 
     /// Amounts claimable by the DAO for moderation operations.

@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import { Share } from "../src/Share.sol";
+import {Share} from "../src/Share.sol";
 
-import { INineLivesTrading, CtorArgs } from "../src/INineLivesTrading.sol";
+import {INineLivesTrading, CtorArgs} from "../src/INineLivesTrading.sol";
 
-import {
-    TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-
+import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 interface IERC20TransferFrom {
     function transfer(address recipient, uint256 value) external;
@@ -37,12 +35,8 @@ contract MockTrading is INineLivesTrading {
 
     function ctor(CtorArgs calldata _a) external {
         require(timeStart_ == 0, "already created");
-        for (uint i = 0; i < _a.outcomes.length; ++i) {
-            Share s = Share(address(new TransparentUpgradeableProxy(
-                address(new Share()),
-                msg.sender,
-                ""
-            )));
+        for (uint256 i = 0; i < _a.outcomes.length; ++i) {
+            Share s = Share(address(new TransparentUpgradeableProxy(address(new Share()), msg.sender, "")));
             s.ctor("Test Share", address(this));
             shares_[_a.outcomes[i]] = s;
         }
@@ -60,9 +54,13 @@ contract MockTrading is INineLivesTrading {
     function mint8A059B6E(
         bytes8 outcome,
         uint256 value,
-        address /* referrer */,
+        address,
+        /* referrer */
         address recipient
-    ) external returns (uint256) {
+    )
+        external
+        returns (uint256)
+    {
         require(block.timestamp > timeStart_, "hasn't started");
         require(block.timestamp < timeEnding_, "has ended");
         IERC20TransferFrom(FUSDC_ADDR).transferFrom(msg.sender, address(this), value);
@@ -71,20 +69,29 @@ contract MockTrading is INineLivesTrading {
     }
 
     function mintScheduleClaimC8A5591F(
-        bytes8 outcome,
-        uint256 value,
-        address referrer,
-        address recipient
-    ) external returns (uint256) {
+        bytes8,
+        /* outcome */
+        uint256,
+        /* value */
+        address,
+        /* referrer */
+        address /* recipient */
+    )
+        external
+        returns (uint256)
+    {
         return 0;
     }
 
     function burn854CC96E(
         bytes8 outcome,
-        uint256 /* maxShareOut */,
-        bool /* shouldTakeShares */,
+        uint256,
+        /* maxShareOut */
+        bool,
+        /* shouldTakeShares */
         uint256 minShares,
-        address /* referrer */,
+        address,
+        /* referrer */
         address recipient
     ) external returns (uint256 burnedShares, uint256 fusdcReturned) {
         address sender = msg.sender;
@@ -96,30 +103,47 @@ contract MockTrading is INineLivesTrading {
     }
 
     function quoteC0E17FC7(
-        bytes8 /* outcome */,
+        bytes8,
+        /* outcome */
         uint256 value
-    ) external returns (uint256, uint256, uint256) {
+    )
+        external
+        returns (uint256, uint256, uint256)
+    {
         ++counter_;
         return (value, 5, 0);
     }
 
     function estimateBurnC04425D3(
-        bytes8 /* outcome */,
+        bytes8,
+        /* outcome */
         uint256 shareAmount
-    ) external returns (uint256) {
+    )
+        external
+        returns (uint256)
+    {
         ++counter_;
         return shareAmount;
     }
 
-    function rescue276DD9AB(address /* recipient */) external returns (uint256) {
+    function rescue276DD9AB(
+        address /* recipient */
+    )
+        external
+        returns (uint256)
+    {
         ++counter_;
         return 0;
     }
 
     function estimateBurnE9B09A17(
-        bytes8 /* outcome */,
+        bytes8,
+        /* outcome */
         uint256 shareAmount
-    ) external returns (uint256) {
+    )
+        external
+        returns (uint256)
+    {
         ++counter_;
         return shareAmount;
     }
@@ -127,33 +151,45 @@ contract MockTrading is INineLivesTrading {
     function addLiquidityB9DDA952(
         uint256 liquidity,
         address recipient,
-        uint256 /* _minSharesBack */,
+        uint256,
+        /* _minSharesBack */
         uint256 /* _maxShares */
-    ) external returns (
-        uint256 userLiquidity
-    ) {
+    )
+        external
+        returns (uint256 userLiquidity)
+    {
         ++counter_;
         IERC20TransferFrom(FUSDC_ADDR).transferFrom(msg.sender, address(this), liquidity);
         providedLiquidity_[recipient] += liquidity;
         return liquidity;
     }
 
-    function removeLiquidity3C857A15(uint256 liquidity, address recipient) external returns (
-        uint256 fusdcAmount,
-        uint256 feesEarned
-    ) {
+    function removeLiquidity3C857A15(uint256 liquidity, address recipient)
+        external
+        returns (uint256 fusdcAmount, uint256 feesEarned)
+    {
         ++counter_;
         providedLiquidity_[recipient] -= liquidity;
         IERC20TransferFrom(FUSDC_ADDR).transfer(recipient, liquidity);
         return (liquidity, 0);
     }
 
-    function claimAllFees332D7968(address /* recipient */) external returns (uint256) {
+    function claimAllFees332D7968(
+        address /* recipient */
+    )
+        external
+        returns (uint256)
+    {
         ++counter_;
         return counter_;
     }
 
-    function priceA827ED27(bytes8 /* outcome */) external returns (uint256) {
+    function priceA827ED27(
+        bytes8 /* outcome */
+    )
+        external
+        returns (uint256)
+    {
         ++counter_;
         return uint256(keccak256(abi.encodePacked(block.timestamp)));
     }
@@ -163,26 +199,23 @@ contract MockTrading is INineLivesTrading {
         calledOutcome_ = outcome;
     }
 
-    function payoffCB6F2565(
-        bytes8 outcome,
-        uint256 amount,
-        address recipient
-    ) external returns (uint256) {
+    function payoffCB6F2565(bytes8 outcome, uint256 amount, address recipient) external returns (uint256) {
         IERC20TransferFrom(FUSDC_ADDR).transfer(recipient, amount);
         shares_[outcome].burn(msg.sender, amount);
         return amount;
     }
 
-    function details(bytes8 /* outcomeId */) external pure returns (
-        uint256 shares,
-        uint256 investedAmt,
-        uint256 globalInvested,
-        bytes8 winner
-    ) {
+    function details(
+        bytes8 /* outcomeId */
+    )
+        external
+        pure
+        returns (uint256 shares, uint256 investedAmt, uint256 globalInvested, bytes8 winner)
+    {
         return (100, 10_000, 19291, bytes8(uint64(1)));
     }
 
-     function outcomeList() external view returns (bytes8[] memory outcomes) {}
+    function outcomeList() external view returns (bytes8[] memory outcomes) {}
 
     function escape() external {
         ++counter_;
@@ -220,15 +253,16 @@ contract MockTrading is INineLivesTrading {
         return "";
     }
 
-    function dppmPayoffForAll58633B6E(address recipient) external returns (
-        uint256 outcome0Fusdc,
-        uint256 outcome1Fusdc
-    ) {
+    function dppmPayoffForAll58633B6E(
+        address /* recipient */
+    )
+        external
+        returns (uint256 outcome0Fusdc, uint256 outcome1Fusdc)
+    {
         return (0, 0);
     }
 
-    function fees62DAA154() external view returns (Fees memory f) {
-    }
+    function fees62DAA154() external view returns (Fees memory f) {}
 
     function userLiquidityShares(address spender) external pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(spender)));
@@ -242,11 +276,11 @@ contract MockTrading is INineLivesTrading {
         return (0, 0, 0);
     }
 
-    function dppmSimulatePayoffForAddressAll(address) external view returns (
-         SimulatedPayoff memory outcome1,
-         SimulatedPayoff memory outcome2
-    ) {
-    }
+    function dppmSimulatePayoffForAddressAll(address)
+        external
+        view
+        returns (SimulatedPayoff memory outcome1, SimulatedPayoff memory outcome2)
+    {}
 
     function features() external view returns (uint256 word) {
         return 0;

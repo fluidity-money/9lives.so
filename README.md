@@ -235,7 +235,7 @@ See [audits/README.md](audits/README.md) for details.
 | Claimant helper               | `0x8e9c34b5ce311314e2324178ffeb7a03743cb072` |
 | Paymaster                     | `0x4e2Dd16F9e0376555bcca2266233578422C56771` |
 | Paymaster caller              | `0x132abdc1eca9b55a2ce3a48cec4a3d443301dc06` |
-| fUSDC                         | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
+| USDC                          | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
 | Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
 | Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
 

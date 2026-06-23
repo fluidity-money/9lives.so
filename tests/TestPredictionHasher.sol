@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
 // Helper contract to simplify obtaining a commitment (and also to show
 // how to do so in Solidity).

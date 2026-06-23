@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.30;
 
 struct ExactInputSingleParams {
     address tokenIn;
@@ -23,11 +23,7 @@ struct ExactOutputSingleParams {
 }
 
 interface ICamelotSwapRouter {
-    function exactInputSingle(
-        ExactInputSingleParams memory params
-    ) external payable returns (uint256 amountOut);
+    function exactInputSingle(ExactInputSingleParams memory params) external payable returns (uint256 amountOut);
 
-    function exactOutputSingle(
-        ExactOutputSingleParams memory params
-    ) external payable returns (uint256 amountIn);
+    function exactOutputSingle(ExactOutputSingleParams memory params) external payable returns (uint256 amountIn);
 }

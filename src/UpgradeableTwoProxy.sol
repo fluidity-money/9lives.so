@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.30;
 
-import { TwoProxyAdmin, IProxy } from "./TwoProxyAdmin.sol";
+import {TwoProxyAdmin, IProxy} from "./TwoProxyAdmin.sol";
 
-bytes32 constant ADMIN_SLOT = bytes32(uint256(keccak256('eip1967.proxy.admin')) - 1);
-bytes32 constant IMPL_1_SLOT = bytes32(uint256(keccak256('eip1967.proxy.implementation.1')) - 1);
-bytes32 constant IMPL_2_SLOT = bytes32(uint256(keccak256('eip1967.proxy.implementation.2')) - 1);
+bytes32 constant ADMIN_SLOT = bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1);
+bytes32 constant IMPL_1_SLOT = bytes32(uint256(keccak256("eip1967.proxy.implementation.1")) - 1);
+bytes32 constant IMPL_2_SLOT = bytes32(uint256(keccak256("eip1967.proxy.implementation.2")) - 1);
 
 library StorageSlot {
     struct AddressSlot {
         address value;
     }
+
     function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
         assembly {
             r.slot := slot
@@ -81,10 +82,11 @@ contract UpgradeableTwoProxy {
         } else {
             bool success;
             bytes memory data;
-            if (uint8(msg.data[2]) == 1)
+            if (uint8(msg.data[2]) == 1) {
                 (success, data) = StorageSlot.getAddressSlot(IMPL_1_SLOT).value.delegatecall(msg.data);
-            else
+            } else {
                 (success, data) = StorageSlot.getAddressSlot(IMPL_2_SLOT).value.delegatecall(msg.data);
+            }
             if (data.length > 0 && !success) {
                 assembly {
                     revert(add(data, 0x20), mload(data))

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.30;
 
 /// @param outcomes to use to use as betting outcomes in this contract.
 /// @param oracle to use as the resolver for this contract.
@@ -38,22 +38,14 @@ interface INineLivesTrading {
 
     /// @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
     /// classic approval based on the deadline argument (if set to 0, assumes approval)
-    function mint8A059B6E(
-        bytes8 outcome,
-        uint256 value,
-        address referrer,
-        address recipient
-    ) external returns (uint256);
+    function mint8A059B6E(bytes8 outcome, uint256 value, address referrer, address recipient) external returns (uint256);
 
     /// @notice Mint some shares in exchange for fUSDC. Optionally branches to permit or a
     /// classic approval based on the deadline argument (if set to 0, assumes approval).
     /// Also schedules the payoff feature.
-    function mintScheduleClaimC8A5591F(
-        bytes8 outcome,
-        uint256 value,
-        address referrer,
-        address recipient
-    ) external returns (uint256);
+    function mintScheduleClaimC8A5591F(bytes8 outcome, uint256 value, address referrer, address recipient)
+        external
+        returns (uint256);
 
     /// @notice Burn some shares by inverting the AMM function using the
     /// fUSDC amount, or the shares, depending on the shouldEstimateShares
@@ -70,41 +62,27 @@ interface INineLivesTrading {
     /// @notice Quote function for testing the amount that could be minted.
     /// @param outcome to test for
     /// @param fusdcValue to test spending for
-    function quoteC0E17FC7(
-        bytes8 outcome,
-        uint256 fusdcValue
-    ) external returns (
-        uint256 purchased,
-        uint256 fees,
-        uint256 boostedShares
-    );
+    function quoteC0E17FC7(bytes8 outcome, uint256 fusdcValue)
+        external
+        returns (uint256 purchased, uint256 fees, uint256 boostedShares);
 
-    function estimateBurnE9B09A17(
-        bytes8 outcome,
-        uint256 shareAmount
-    ) external returns (uint256);
+    function estimateBurnE9B09A17(bytes8 outcome, uint256 shareAmount) external returns (uint256);
 
     function rescue276DD9AB(address recipient) external returns (uint256);
 
     function claimAllFees332D7968(address recipient) external returns (uint256);
 
-    function addLiquidityB9DDA952(
-        uint256 liquidity,
-        address recipient,
-        uint256 minShares,
-        uint256 maxShares
-    ) external returns (
-        uint256 userLiquidity
-    );
+    function addLiquidityB9DDA952(uint256 liquidity, address recipient, uint256 minShares, uint256 maxShares)
+        external
+        returns (uint256 userLiquidity);
 
-     /// @notice Remove liquidity, or claim it if the market has concluded. Will try to
-     /// claim the user's max LP position if the liquidity value is set to 0 and the market is
-     /// over. Trying to pass 0 to a market that has not concluded will cause the contrat
-     /// to revert, so setting this to 0 can replicate normal claim behaviour.
-    function removeLiquidity3C857A15(uint256 liquidity, address recipient) external returns (
-        uint256 fusdcAmount,
-        uint256 lpFeesEarned
-    );
+    /// @notice Remove liquidity, or claim it if the market has concluded. Will try to
+    /// claim the user's max LP position if the liquidity value is set to 0 and the market is
+    /// over. Trying to pass 0 to a market that has not concluded will cause the contrat
+    /// to revert, so setting this to 0 can replicate normal claim behaviour.
+    function removeLiquidity3C857A15(uint256 liquidity, address recipient)
+        external
+        returns (uint256 fusdcAmount, uint256 lpFeesEarned);
 
     /// @notice Get the price of an outcome in fUSDC.
     /// @param outcome to test for
@@ -118,20 +96,14 @@ interface INineLivesTrading {
     /// @param outcomeId to collect the payoff for.
     /// @param amount of share to use for receiving the payoff.
     /// @param recipient to send the winnings to.
-    function payoffCB6F2565(
-        bytes8 outcomeId,
-        uint256 amount,
-        address recipient
-    ) external returns (uint256);
+    function payoffCB6F2565(bytes8 outcomeId, uint256 amount, address recipient) external returns (uint256);
 
     /// @notice Details that're available for this outcome.
     /// @param outcomeId to get the details for
-    function details(bytes8 outcomeId) external view returns (
-        uint256 shares,
-        uint256 invested,
-        uint256 globalInvested,
-        bytes8 winner
-    );
+    function details(bytes8 outcomeId)
+        external
+        view
+        returns (uint256 shares, uint256 invested, uint256 globalInvested, bytes8 winner);
 
     function escape() external;
 
@@ -163,10 +135,7 @@ interface INineLivesTrading {
 
     function version() external pure returns (string memory);
 
-    function dppmPayoffForAll58633B6E(address recipient) external returns (
-        uint256 outcome0Fusdc,
-        uint256 outcome1Fusdc
-    );
+    function dppmPayoffForAll58633B6E(address recipient) external returns (uint256 outcome0Fusdc, uint256 outcome1Fusdc);
 
     /// @notice fees currently set in the market. Scaled by FEE_SCALING.
     function fees62DAA154() external view returns (Fees memory);
@@ -175,23 +144,13 @@ interface INineLivesTrading {
 
     function outcomeList() external view returns (bytes8[] memory outcomes);
 
-    function dppmSimulateEarningsB866B112(
-        uint256 invested,
-        bytes8 outcome
-    ) external returns (
-        uint256 dppmFusdc,
-        uint256 ninetailsWinnerFusdc,
-        uint256 ninetailsLoserFusdc
-    );
+    function dppmSimulateEarningsB866B112(uint256 invested, bytes8 outcome)
+        external
+        returns (uint256 dppmFusdc, uint256 ninetailsWinnerFusdc, uint256 ninetailsLoserFusdc);
 
-    function dppmSimulatePayoffForAddress(
-        address spender,
-        bytes8 outcome
-    ) external returns (
-        uint256 dppmFusdc,
-        uint256 ninetailsWinnerFusdc,
-        uint256 ninetailsLoserFusdc
-    );
+    function dppmSimulatePayoffForAddress(address spender, bytes8 outcome)
+        external
+        returns (uint256 dppmFusdc, uint256 ninetailsWinnerFusdc, uint256 ninetailsLoserFusdc);
 
     struct SimulatedPayoff {
         bytes8 identifier;
@@ -200,10 +159,10 @@ interface INineLivesTrading {
         uint256 ninetailsLoserFusd;
     }
 
-    function dppmSimulatePayoffForAddressAll(address spender) external view returns (
-         SimulatedPayoff memory outcome1,
-         SimulatedPayoff memory outcome2
-    );
+    function dppmSimulatePayoffForAddressAll(address spender)
+        external
+        view
+        returns (SimulatedPayoff memory outcome1, SimulatedPayoff memory outcome2);
 
     /// @notice features to support copying enabled feature flags from one contract (if they
     /// support the features function)
