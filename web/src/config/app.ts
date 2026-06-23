@@ -29,7 +29,6 @@ const metadata = {
     "prediction market",
     "predict",
     "onchain",
-    "superposition",
     "blockchain",
     "arbitrum",
     "web3",

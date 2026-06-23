@@ -116,12 +116,12 @@ export default function SimpleBuyDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       supply: "",
-      toChain: config.chains.superposition.id,
+      toChain: config.chains.arbitrum.id,
       toToken: zeroAddress,
       usdValue: 0,
       fromChain: isInMiniApp
         ? config.chains.base.id
-        : config.chains.superposition.id,
+        : config.chains.arbitrum.id,
       fromToken: isInMiniApp
         ? "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // Base USDC
         : zeroAddress,

@@ -40,8 +40,8 @@ export default function useTokens(fromChain: number) {
       };
       const items = data.tokens?.[fromChain];
       if (!items) return [];
-      // only display usdc if selected chain is SPN
-      if (fromChain === config.chains.superposition.id) {
+      // only display usdc if selected chain is Arbitrum
+      if (fromChain === config.chains.arbitrum.id) {
         return items.filter(
           (t) =>
             t.address.toLowerCase() ===
