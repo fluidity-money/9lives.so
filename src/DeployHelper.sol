@@ -1,9 +1,10 @@
 // SPDX-Identifier: MIT
 pragma solidity 0.8.30;
 
-import {UpgradeableTwoProxy} from "./UpgradeableTwoProxy.sol";
+import {
+    TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {NineLivesFactory} from "./NineLivesFactory.sol";
 
 import {INineLivesFactory} from "./INineLivesFactory.sol";
 
@@ -15,18 +16,32 @@ struct DeployArgs {
     address admin;
     address emergencyCouncil;
     address shareImpl;
-    address factory1Impl;
-    address factory2Impl;
+    address beaconAddr;
+    address dppmHourCreatorAddr;
+    address dppm15MinCreatorAddr;
+    address dppm5MinCreatorAddr;
+    address oracleAddr;
+    address vaultAddr;
+    address shareImplAddr;
 }
 
 contract DeployHelper {
     event FactoryDeployed(address indexed addr);
 
     constructor(DeployArgs memory _a) {
-        // First, we deploy the factory proxy, but we don't do any setup on it.
-        Factory factory = Factory(address(new UpgradeableTwoProxy(_a.admin, _a.factory1Impl, _a.factory2Impl, "")));
+        INineLivesFactory factory = INineLivesFactory(address(new TransparentUpgradeableProxy(
+            address(new NineLivesFactory(
+                _a.beaconAddr,
+                _a.dppmHourCreatorAddr,
+                _a.dppm15MinCreatorAddr,
+                _a.dppm5MinCreatorAddr,
+                _a.oracleAddr,
+                _a.vaultAddr,
+                _a.shareImplAddr
+            )),
+            _a.admin,
+            abi.encodeWithSelector(Factory.ctor.selector, _a.admin)
+        )));
         emit FactoryDeployed(address(factory));
-        // It's time to set up the factory!
-        factory.ctor(_a.admin);
     }
 }

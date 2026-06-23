@@ -175,6 +175,7 @@ contract NineLivesFactory is IEvents, INineLivesFactory {
         bool backendIsDppm,
         uint256 seedLiq
     ) external returns (INineLivesTrading trading) {
+        require(factoryOutcomes.length > 0, "no outcomes");
         NewTradingState memory s;
         s.outcomes = new bytes8[](factoryOutcomes.length);
         for (uint256 i = 0; i < factoryOutcomes.length; ++i) {
