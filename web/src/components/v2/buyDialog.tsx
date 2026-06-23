@@ -194,7 +194,7 @@ export default function SimpleBuyDialog({
   }: FormData) {
     try {
       setIsMinting(true);
-      if (fromChain !== config.chains.superposition.id) {
+      if (fromChain !== config.chains.arbitrum.id) {
         if (!account.address) return connect();
         await buyWithRelay(
           account.address,

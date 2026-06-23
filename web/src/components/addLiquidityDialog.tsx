@@ -56,11 +56,9 @@ export default function AddLiquidityDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       amount: 0,
-      toChain: config.chains.superposition.id,
+      toChain: config.chains.arbitrum.id,
       toToken: zeroAddress,
-      fromChain: isInMiniApp
-        ? config.chains.arbitrum.id
-        : config.chains.superposition.id,
+      fromChain: config.chains.base.id,
       fromToken: zeroAddress,
     },
   });
@@ -91,7 +89,7 @@ export default function AddLiquidityDialog({
   const onSubmit = async (input: FormData) => {
     try {
       setIsFunding(true);
-      if (enabledRelay && input.fromChain !== config.chains.superposition.id) {
+      if (enabledRelay && input.fromChain !== config.chains.arbitrum.id) {
         await addWithRelay({ ...input }, fromDecimals);
       } else {
         const action = enabledPaymaster ? addWithPaymaster : add;

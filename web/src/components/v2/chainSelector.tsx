@@ -26,9 +26,6 @@ export default function ChainSelectorDropdown({
   const chains = isInMiniApp
     ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
-  if (removeSPN) {
-    delete chains.superposition;
-  }
   const chainList = Object.values(chains);
   const selectedChain = chainList.find((c) => c.id === selectedChainId);
 
