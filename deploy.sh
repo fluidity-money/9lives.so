@@ -11,6 +11,10 @@ $SPN_CAMELOT_SWAP_ROUTER
 $SPN_STARGATE_ADDR
 $SPN_PAYMASTER_CALLER_ADDR
 $SPN_WETH_ADDR
+$SPN_DPPM_HOUR_CREATOR_ADDR
+$SPN_DPPM_15_MIN_CREATOR_ADDR
+$SPN_DPPM_5_MIN_CREATOR_ADDR
+$SPN_ORACLE_ADDR
 EOF
 
 log() {
@@ -35,14 +39,6 @@ log "SPN_CLAIMANT_HELPER_ADDR=$SPN_CLAIMANT_HELPER_ADDR"
 export SPN_SHARE_IMPL_ADDR="${SPN_SHARE_IMPL_ADDR:-$(./deploy-share-impl.sh)}"
 [ -z "$SPN_SHARE_IMPL_ADDR" ] && exit 1
 log "SPN_SHARE_IMPL_ADDR=$SPN_SHARE_IMPL_ADDR"
-
-export SPN_FACTORY_1_IMPL_ADDR="${SPN_FACTORY_1_IMPL_ADDR:-$(./deploy-stylus.sh contract-factory-1.wasm)}"
-[ -z "$SPN_FACTORY_1_IMPL_ADDR" ] && exit 1
-log "SPN_FACTORY_1_IMPL_ADDR=$SPN_FACTORY_1_IMPL_ADDR"
-
-export SPN_FACTORY_2_IMPL_ADDR="${SPN_FACTORY_2_IMPL_ADDR:-$(./deploy-stylus.sh contract-factory-2.wasm)}"
-[ -z "$SPN_FACTORY_2_IMPL_ADDR" ] && exit 1
-log "SPN_FACTORY_2_IMPL_ADDR=$SPN_FACTORY_2_IMPL_ADDR"
 
 export SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR="${SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR:-$(./deploy-stylus.sh contract-trading-dppm-extras.wasm)}"
 [ -z "$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR" ] && exit 1
@@ -108,8 +104,6 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | \`$SPN_PROXY_ADMIN\` |
 | Emergency council             | \`$SPN_EMERGENCY_COUNCIL\` |
-| Factory 1 implementation      | \`$SPN_FACTORY_1_IMPL_ADDR\` |
-| Factory 2 implementation      | \`$SPN_FACTORY_2_IMPL_ADDR\` |
 | Trading DPPM mint impl        | \`$SPN_TRADING_DPPM_MINT_IMPL_ADDR\` |
 | Trading DPPM extras impl      | \`$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR\` |
 | Trading DPPM quotes impl      | \`$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR\` |
@@ -128,10 +122,17 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Paymaster                     | \`$SPN_PAYMASTER_ADDR\` |
 | Paymaster caller              | \`$SPN_PAYMASTER_CALLER_ADDR\` |
 | fUSDC                         | \`$SPN_FUSDC_ADDR\` |
-| Camelot swap router           | \`$SPN_CAMELOT_SWAP_ROUTER\` |
-| Stargate                      | \`$SPN_STARGATE_ADDR\` |
+|| Camelot swap router           | \`$SPN_CAMELOT_SWAP_ROUTER\` |
+|| Stargate                      | \`$SPN_STARGATE_ADDR\` |
+|| WETH                          | \`$SPN_WETH_ADDR\` |
+|| DPPM hour creator             | \`$SPN_DPPM_HOUR_CREATOR_ADDR\` |
+|| DPPM 15 min creator           | \`$SPN_DPPM_15_MIN_CREATOR_ADDR\` |
+|| DPPM 5 min creator            | \`$SPN_DPPM_5_MIN_CREATOR_ADDR\` |
+|| Oracle                        | \`$SPN_ORACLE_ADDR\` |
+|| Superposition URL             | \`$SPN_SUPERPOSITION_URL\` |
+|| Superposition key             | \`$SPN_SUPERPOSITION_KEY\` |
 EOF
 
 cat <<EOF
-{"proxyAdmin":"$SPN_PROXY_ADMIN", "factory1Implementation":"$SPN_FACTORY_1_IMPL_ADDR", "factory2Implementation":"$SPN_FACTORY_2_IMPL_ADDR", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
+{"proxyAdmin":"$SPN_PROXY_ADMIN", "tradingDppmMintImplementation":"$SPN_TRADING_DPPM_MINT_IMPL_ADDR", "tradingDppmExtrasImplementation":"$SPN_TRADING_DPPM_EXTRAS_IMPL_ADDR", "tradingDppmPriceImplementation":"$SPN_TRADING_DPPM_PRICE_IMPL_ADDR", "tradingDppmQuotesImplementation":"$SPN_TRADING_DPPM_QUOTES_IMPL_ADDR", "tradingAmmMintImplementation":"$SPN_TRADING_AMM_MINT_IMPL_ADDR", "tradingAmmExtrasImplementation":"$SPN_TRADING_AMM_EXTRAS_IMPL_ADDR", "tradingAmmPriceImplementation":"$SPN_TRADING_AMM_PRICE_IMPL_ADDR", "tradingAmmQuotesImplementation":"$SPN_TRADING_AMM_QUOTES_IMPL_ADDR", "shareImplementation":"$SPN_SHARE_IMPL_ADDR", "factoryProxy":"$SPN_FACTORY_PROXY_ADDR", "helperFactory": "$SPN_HELPER_FACTORY", "lensesV1": "$SPN_LENSESV1", "sarpAi": "$SPN_SARP_AI", "claimantHelper": "$SPN_CLAIMANT_HELPER_ADDR", "paymaster": "$SPN_PAYMASTER_ADDR" }
 EOF
