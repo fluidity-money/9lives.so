@@ -14,6 +14,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/types"
 
 	"github.com/fluidity-money/9lives.so/lib/events"
+	"github.com/fluidity-money/9lives.so/lib/events/arb-gateway"
 	"github.com/fluidity-money/9lives.so/lib/events/arb-sys"
 	"github.com/fluidity-money/9lives.so/lib/events/dinero"
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
@@ -101,6 +102,8 @@ var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic 
 	punk_domains.TopicDefaultDomainChanged,
 	// ArbSys
 	arb_sys.TopicL2ToL1Tx,
+	// ArbGateway
+	arb_gateway.TopicWithdrawalInitiated,
 }
 
 type IngestorArgs struct {
@@ -357,7 +360,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 	// There may be more Stargate OFTs in the future, so we insert everything
 	// we see with this topic, and we trust the consumer to validate that
 	// everything is correct themselves by verifying the emitter.
-	var fromTrading, isStargateOft, isOnchainGm, isVendor bool
+	var fromTrading, isStargateOft, isOnchainGm, isVendor, isArbGateway bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
@@ -620,6 +623,11 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		a, err = arb_sys.UnpackL2ToL1Tx(topic1, topic2, topic3, data)
 		table = "arb_sys_events_l2_to_l1_tx"
 		logEvent("L2ToL1Tx")
+	case arb_gateway.TopicWithdrawalInitiated:
+		a, err = arb_gateway.UnpackWithdrawalInitiated(topic1, topic2, topic3, data)
+		table = "arb_gateway_events_withdrawal_initiated"
+		logEvent("WithdrawalInitiated")
+		isArbGateway = true
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -650,7 +658,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
 		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld,
-		isPaymaster, isVault:
+		isPaymaster, isVault, isArbGateway:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
