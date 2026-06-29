@@ -10,7 +10,7 @@ jobs:
     environment: mainnet
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_ARB_PROJECT_ID }}
       NEXT_PUBLIC_WC_ID: ${{ vars.NEXT_PUBLIC_WC_ID }}
       NEXT_PUBLIC_GRAPHQL_URL: "https://9lives-arb.stellate.sh"
       NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
