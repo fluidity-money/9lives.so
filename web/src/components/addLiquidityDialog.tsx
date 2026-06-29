@@ -195,7 +195,7 @@ export default function AddLiquidityDialog({
                 "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
               )}
             >
-              <Image src={USDCImg} alt="fusdc" width={20} />
+              <Image src={USDCImg} alt="usdc" width={20} />
               <span className="font-chicago">{"USDC"}</span>
             </div>
           )}

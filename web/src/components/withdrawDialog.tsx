@@ -73,7 +73,7 @@ export default function WithdrawDialog() {
         Withdraw USDC to Other Chains
       </p>
       <p className="text-center text-xs">
-        You can bridge your usdc from Arbitrum to listed networks.
+        You can bridge your USDC to listed networks.
       </p>
       <p className="text-center font-chicago text-xl">{`${maxBalance} USDC`}</p>
       <div className="flex items-center justify-between">
@@ -118,7 +118,7 @@ export default function WithdrawDialog() {
         isInMiniApp={isInMiniApp}
         handleNetworkChange={handleNetworkChange}
         selectedChainId={selectedChainId}
-        exclude={["superposition", "megaeth"]}
+        exclude={["megaeth"]}
       />
       <Button
         intent={"no"}

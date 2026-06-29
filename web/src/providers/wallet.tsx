@@ -7,11 +7,10 @@ import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
 import clientEnv from "../config/clientEnv";
 import config from "@/config";
 import allChains, { destinationChain } from "@/config/chains";
-const { superposition: _, ...otherChains } = allChains;
 createAppKit({
   adapters: [wagmiAdapter],
   projectId: clientEnv.NEXT_PUBLIC_WC_ID,
-  networks: [destinationChain, ...Object.values(otherChains)],
+  networks: [destinationChain, ...Object.values(allChains)],
   defaultNetwork: destinationChain,
   metadata: {
     name: config.metadata.title,
@@ -21,7 +20,7 @@ createAppKit({
   },
   chainImages: {
     [destinationChain.id]: destinationChain.icon.src,
-    [otherChains.megaeth.id]: otherChains.megaeth.icon.src,
+    [allChains.megaeth.id]: allChains.megaeth.icon.src,
   },
   features: {
     analytics: true,

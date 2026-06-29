@@ -291,7 +291,7 @@ export default function SimpleBuyDialog({
             Bridge from any chain, instantly.
           </p>
           <p className="text-center font-arial text-xs text-[#808080]">
-            Transactions on Superposition cost no gas.
+            Transactions cost no gas.
           </p>
           <div className="flex items-center justify-center gap-2">
             <span className="font-chicago text-xs">From</span>

@@ -40,7 +40,7 @@ export default function useTokens(fromChain: number) {
       };
       const items = data.tokens?.[fromChain];
       if (!items) return [];
-      // only display usdc if selected chain is Arbitrum
+      // only display usdc if selected chain is the destination chain
       if (fromChain === config.chains.arbitrum.id) {
         return items.filter(
           (t) =>

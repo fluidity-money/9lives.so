@@ -14,13 +14,13 @@ export default function ChainSelectorDropdown({
   selectedChainId,
   handleNetworkChange,
   isInMiniApp,
-  removeSPN,
+  removeDestination,
   variant = "default",
 }: {
   selectedChainId: number;
   isInMiniApp: boolean;
   handleNetworkChange: (chain: Chain) => void;
-  removeSPN?: boolean;
+  removeDestination?: boolean;
   variant?: "default" | "small";
 }) {
   const chains = isInMiniApp
