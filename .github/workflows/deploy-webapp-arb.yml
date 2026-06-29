@@ -1,0 +1,72 @@
+name: Deploy webapp (Arbitrum)
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: mainnet
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      NEXT_PUBLIC_WC_ID: ${{ vars.NEXT_PUBLIC_WC_ID }}
+      NEXT_PUBLIC_GRAPHQL_URL: "https://9lives-arb.stellate.sh"
+      NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
+      NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"
+      NEXT_PUBLIC_ACCOUNTS_URL: "https://accounts.superposition.so/"
+      NEXT_PUBLIC_FUSDC_ADDR: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+      NEXT_PUBLIC_AMM_ADDR: "0x0000000000000000000000000000000000000000"
+      NEXT_PUBLIC_LENS_ADDR: "0xd4c43Fbd7138e43180890f4CB0A87a7a62053220"
+      NEXT_PUBLIC_HELPER_FACTORY_ADDR: "0x635c878346bE8B4A268Ec0bB2076266a4AA5ebF2"
+      NEXT_PUBLIC_BUY_HELPER_ADDR: "0xEb94D21F8C08552a51f9AE862098841FF1bEb1f4"
+      NEXT_PUBLIC_INFRA_ADDR: "0x0000000000000000000000000000000000000000"
+      NEXT_PUBLIC_AI_ADDR: "0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB"
+      NEXT_PUBLIC_BEAUTY_ADDR: "0x0000000000000000000000000000000000000000"
+      NEXT_PUBLIC_SARP_SIGNALLER_ADDR: "0xa81a0adab3492dae14c45c39d322a78a24c8b683"
+      NEXT_PUBLIC_MEOW_DOMAINS_ADDR: "0x0000000000000000000000000000000000000000"
+      NEXT_PUBLIC_POSTHOG_KEY: "phc_wFN8nVjgKYNURCUsE7MEFUdAjgKE6aDC01AAEXLUGyt"
+      NEXT_PUBLIC_POSTHOG_HOST: "https://events.9lives.so"
+      NEXT_PUBLIC_WS_URL: "wss://websocket.9lives.so"
+      NEXT_PUBLIC_CHAIN: "mainnet"
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+      POSTHOG_ENV_ID: ${{ secrets.POSTHOG_ENV_ID }}
+      NEXT_PUBLIC_SNITCH_ENDPOINT: "https://snitch.superposition.so"
+      NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: ""
+      NEXT_PUBLIC_BUY_HELPER2_ADDR: "0xEb94D21F8C08552a51f9AE862098841FF1bEb1f4"
+      NEXT_PUBLIC_PAYMASTER_ADDR: "0x4e2Dd16F9e0376555bcca2266233578422C56771"
+      NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR: "0xa80AdFC480BdB9dB308999760Fec8fA567cdB87D"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: "true"
+
+      - uses: actions/setup-node@v4
+        with:
+           node-version: 22.x
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: true
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.json') }}-
+
+      - name: Install Vercel CLI
+        run: pnpm add --global vercel@latest
+
+      - name: Build Project Artifacts
+        run: vercel build --yes --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --archive=tgz --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
