@@ -56,8 +56,7 @@ jobs:
 
       - name: Build Project Artifacts
         run: vercel build --yes --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: web
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --archive=tgz --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        working-directory: web
+
