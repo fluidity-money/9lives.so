@@ -46,8 +46,8 @@ if(~ $SPN_IS_DPPM '') {
 
 cur_ts=`{date +%s}
 
-if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=$cur_ts'_0'
-if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=$cur_ts'_1'
+if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=`{echo $cur_ts '- 1' | bc}
+if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=$cur_ts
 
 fn usage_args {
 	echo `{basename $0} '([0-9]+),?..' >[1=2]
