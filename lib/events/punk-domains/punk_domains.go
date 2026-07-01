@@ -1,9 +1,9 @@
 package punk_domains
 
 import (
+	"bytes"
 	_ "embed"
 	"fmt"
-	"bytes"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
@@ -35,7 +35,7 @@ func UnpackDefaultDomainChanged(topic1 ethCommon.Hash, d []byte) (*EventDefaultD
 		return nil, fmt.Errorf("defaultDomain type: %T", i[0])
 	}
 	return &EventDefaultDomainChanged{
-		Address: hashToAddr(topic1),
+		Address:       hashToAddr(topic1),
 		DefaultDomain: n,
 	}, nil
 }

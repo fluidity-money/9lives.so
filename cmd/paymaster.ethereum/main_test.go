@@ -1,8 +1,8 @@
 package main
 
 import (
-	"math/big"
 	"database/sql"
+	"math/big"
 	"math/rand"
 	"testing"
 

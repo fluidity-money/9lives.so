@@ -1,9 +1,9 @@
 package events
 
 import (
-	"testing"
 	"encoding/hex"
 	"math/big"
+	"testing"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 

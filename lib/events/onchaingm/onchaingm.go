@@ -1,8 +1,8 @@
 package onchaingm
 
 import (
-	_ "embed"
 	"bytes"
+	_ "embed"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
@@ -25,8 +25,8 @@ type EventOnchainGM struct {
 }
 
 func UnpackOnchainGm(topic1, topic2 ethCommon.Hash) (*EventOnchainGM, error) {
-	return &EventOnchainGM {
-		Sender: hashToAddr(topic1),
+	return &EventOnchainGM{
+		Sender:   hashToAddr(topic1),
 		Referrer: hashToAddr(topic2),
 	}, nil
 }

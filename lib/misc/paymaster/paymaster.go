@@ -1,8 +1,8 @@
 package paymaster
 
 import (
-	_ "embed"
 	"bytes"
+	_ "embed"
 
 	ethAbi "github.com/ethereum/go-ethereum/accounts/abi"
 )

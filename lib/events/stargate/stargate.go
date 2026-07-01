@@ -19,7 +19,7 @@ var abi, abiErr = ethAbi.JSON(bytes.NewReader(abiB))
 
 var (
 	TopicStargateOFTReceived = abi.Events["OFTReceived"].ID
-	TopicStargateOFTSent              = abi.Events["OFTSent"].ID
+	TopicStargateOFTSent     = abi.Events["OFTSent"].ID
 )
 
 type (

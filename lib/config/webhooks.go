@@ -1,8 +1,8 @@
 package config
 
 import (
-	"strings"
 	"os"
+	"strings"
 
 	"github.com/fluidity-money/9lives.so/lib/webhooks"
 )

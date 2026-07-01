@@ -1,9 +1,9 @@
 package main
 
 import (
-	"testing"
 	"math/big"
 	"os"
+	"testing"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 

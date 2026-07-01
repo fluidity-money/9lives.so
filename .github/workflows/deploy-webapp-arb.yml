@@ -33,7 +33,7 @@ jobs:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
       POSTHOG_ENV_ID: ${{ secrets.POSTHOG_ENV_ID }}
       NEXT_PUBLIC_SNITCH_ENDPOINT: "https://snitch.superposition.so"
-      NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: "0x8e9c34b5ce311314e2324178ffeb7a03743cb072"
+      NEXT_PUBLIC_CLAIMANT_HELPER_ADDR: ""
       NEXT_PUBLIC_BUY_HELPER2_ADDR: "0xEb94D21F8C08552a51f9AE862098841FF1bEb1f4"
       NEXT_PUBLIC_PAYMASTER_ADDR: "0x4e2Dd16F9e0376555bcca2266233578422C56771"
       NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR: "0xa80AdFC480BdB9dB308999760Fec8fA567cdB87D"
@@ -59,4 +59,3 @@ jobs:
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --archive=tgz --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-

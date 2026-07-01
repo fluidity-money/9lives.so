@@ -86,10 +86,10 @@ func UnpackStargateBridged(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*Ev
 		return nil, fmt.Errorf("destinationEid: %v", err)
 	}
 	return &EventStargateBridged{
-		Guid: hashToBytes32(topic1),
-		Spender: hashToAddr(topic2),
+		Guid:           hashToBytes32(topic1),
+		Spender:        hashToAddr(topic2),
 		AmountReceived: hashToNumber(topic3),
-		AmountFee: events.NumberFromBig(amountFee),
+		AmountFee:      events.NumberFromBig(amountFee),
 		DestinationEid: destinationEid,
 	}, nil
 }

@@ -32,7 +32,7 @@ type (
 		Borrower            events.Address `json:"borrower"`
 		VendorFees          events.Number  `json:"vendor_fees"`
 		LenderFees          events.Number  `json:"lender_fees"`
-		BorrowRate          events.Number            `json:"borrow_rate"`
+		BorrowRate          events.Number  `json:"borrow_rate"`
 		AdditionalColAmount events.Number  `json:"additional_col_amount"`
 		AdditionalDebt      events.Number  `json:"additional_debt"`
 	}

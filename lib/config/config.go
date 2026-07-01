@@ -16,6 +16,9 @@ import (
 // DefaultChainId to use for all interactions.
 const DefaultChainId = 55244
 
+// ArbSysAddr to use for receiving messages to bridge out.
+const ArbSysAddr = "0x0000000000000000000000000000000000000064"
+
 // C is configuration for each service, and globally.
 type C struct {
 	W                                       webhooks.Webhooks
@@ -27,7 +30,8 @@ type C struct {
 	LifiDiamondAddress, PaymasterAddress    string
 	LayerzeroEndpointAddress, DineroAddress string
 	SudoswapFactoryAddress, PunkDomainsTld  string
-	PriceResolverAddress                    string
+	PriceResolverAddress, VaultAddress      string
+	ArbSysAddress                           string
 	ChainId                                 int
 }
 
@@ -88,6 +92,10 @@ func Get() C {
 	if priceResolverAddr == "" {
 		setup.Exitf("SPN_PRICE_RESOLVER_ADDR not set")
 	}
+	vaultAddr := strings.ToLower(os.Getenv("SPN_VAULT_ADDR"))
+	if vaultAddr == "" {
+		setup.Exitf("SPN_VAULT_ADDR not set")
+	}
 	return C{
 		W:                        w,
 		GethUrls:                 gethUrls,
@@ -101,6 +109,8 @@ func Get() C {
 		DineroAddress:            dineroAddr,
 		PunkDomainsTld:           punkDomainsTldAddr,
 		PriceResolverAddress:     priceResolverAddr,
+		VaultAddress: vaultAddr,
+		ArbSysAddress: ArbSysAddr,
 		ChainId:                  DefaultChainId,
 	}
 }

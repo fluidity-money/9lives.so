@@ -7,16 +7,16 @@ import (
 	"bufio"
 	"io"
 	"log/slog"
-	"strings"
 	"os"
+	"strings"
 
-	"github.com/fluidity-money/9lives.so/lib/types/newsfeed"
-	"github.com/fluidity-money/9lives.so/lib/setup"
 	"github.com/fluidity-money/9lives.so/lib/config"
+	"github.com/fluidity-money/9lives.so/lib/setup"
+	"github.com/fluidity-money/9lives.so/lib/types/newsfeed"
 
-	"gorm.io/gorm"
 	gormSlog "github.com/orandin/slog-gorm"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {

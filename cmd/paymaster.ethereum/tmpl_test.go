@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"database/sql"
+	"testing"
 )
 
 func TestGenIds(t *testing.T) {

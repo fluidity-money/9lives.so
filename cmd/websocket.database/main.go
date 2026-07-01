@@ -161,7 +161,7 @@ func main() {
 		Password: timescalePassword,
 		Database: strings.TrimPrefix(u.Path, "/"),
 		Port:     port,
-		ExtensionSupport: cdcConfig.ExtensionSupport {
+		ExtensionSupport: cdcConfig.ExtensionSupport{
 			EnableTimeScaleDB: true,
 		},
 		Publication: cdcPublication.Config{
@@ -187,7 +187,7 @@ func main() {
 	dumpChan := make(chan dumpRequest)
 
 	go func() {
-		bufferMsgsChan := make(chan TableContent, 100 * 60)
+		bufferMsgsChan := make(chan TableContent, 100*60)
 		bufferCookie := broadcast.Subscribe(bufferMsgsChan)
 
 		// Clean up when this goroutine exits.
@@ -294,7 +294,7 @@ func main() {
 			shutdown chan<- error,
 			requestShutdown <-chan bool,
 		) {
-			sink := make(chan TableContent, 5 * 60)
+			sink := make(chan TableContent, 5*60)
 			cookie := broadcast.Subscribe(sink)
 			defer broadcast.Unsubscribe(cookie)
 
@@ -343,7 +343,6 @@ func main() {
 							"table", m.Table,
 						)
 					}
-
 
 				case msg, ok := <-replies:
 					if !ok {

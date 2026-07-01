@@ -68,10 +68,11 @@ func main() {
 			LifiDiamond:     ethCommon.HexToAddress(config.LifiDiamondAddress),
 			Layerzero:       ethCommon.HexToAddress(config.LayerzeroEndpointAddress),
 			Dinero:          ethCommon.HexToAddress(config.DineroAddress),
-			PunkDomainsTld: ethCommon.HexToAddress(config.PunkDomainsTld),
+			PunkDomainsTld:  ethCommon.HexToAddress(config.PunkDomainsTld),
 			SudoswapFactory: ethCommon.HexToAddress(config.SudoswapFactoryAddress),
-			Paymaster: ethCommon.HexToAddress(config.PaymasterAddress),
-			Vault: ethCommon.HexToAddress("0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14"),
+			Paymaster:       ethCommon.HexToAddress(config.PaymasterAddress),
+			Vault:           ethCommon.HexToAddress(config.VaultAddress),
+			ArbSys:          ethCommon.HexToAddress(config.ArbSysAddress),
 		},
 	)
 }
