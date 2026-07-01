@@ -24,13 +24,13 @@ type EventL2ToL1Tx struct {
 
 	Caller      events.Address `json:"caller"`
 	Destination events.Address `json:"destination"`
-	Hash        events.Number  `json:"hash"`
+	Hash        events.Bytes  `json:"hash"`
 	Position    events.Number  `json:"position"`
 	ArbBlockNum events.Number  `json:"arb_block_num"`
 	EthBlockNum events.Number  `json:"eth_block_num"`
 	Timestamp   events.Number  `json:"timestamp"`
 	Callvalue   events.Number  `json:"callvalue"`
-	Data        []byte         `json:"data"`
+	Data        events.Bytes         `json:"data"`
 }
 
 func UnpackL2ToL1Tx(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*EventL2ToL1Tx, error) {
@@ -62,16 +62,17 @@ func UnpackL2ToL1Tx(topic1, topic2, topic3 ethCommon.Hash, d []byte) (*EventL2To
 	if !ok {
 		return nil, fmt.Errorf("data: %T", i[5])
 	}
+	hash := events.BytesFromSlice(topic2.Bytes())
 	return &EventL2ToL1Tx{
 		Caller:      events.Address(caller.Hex()),
 		Destination: hashToAddr(topic1),
-		Hash:        events.NumberFromBig(topic2.Big()),
+		Hash:        hash,
 		Position:    events.NumberFromBig(topic3.Big()),
 		ArbBlockNum: events.NumberFromBig(arbBlockNum),
 		EthBlockNum: events.NumberFromBig(ethBlockNum),
 		Timestamp:   events.NumberFromBig(timestamp),
 		Callvalue:   events.NumberFromBig(callvalue),
-		Data:        data,
+		Data:        events.BytesFromSlice(data),
 	}, nil
 }
 
