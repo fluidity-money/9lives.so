@@ -2,6 +2,7 @@
 import { SimpleMarketKey } from "@/types";
 import { HeaderBox } from "./headerBox";
 import useFinalPrice from "@/hooks/useFinalPrice";
+import config from "@/config";
 
 export default function DetailCurrentPriceBox({
   symbol,
@@ -26,7 +27,7 @@ export default function DetailCurrentPriceBox({
   return (
     <HeaderBox
       title={isEnded ? "Final" : "Current"}
-      value={`$${Number(finalPrice).toFixed(2)}`}
+      value={`$${Number(finalPrice).toFixed(config.simpleMarkets[symbol].decimals)}`}
     />
   );
 }
