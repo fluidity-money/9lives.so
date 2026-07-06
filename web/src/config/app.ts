@@ -9,6 +9,7 @@ import OIL from "#/images/tokens/oil.png";
 import CBRS from "#/images/tokens/cbrs.svg";
 import SPACEX from "#/images/tokens/spacex.svg";
 import IBM from "#/images/tokens/ibm.svg";
+import DRAM from "#/images/tokens/dram.svg";
 import { StaticImageData } from "next/image";
 enum InfraMarketState {
   Callable,
@@ -126,7 +127,7 @@ const simpleMarkets = {
     periods: ["15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
   xyzibm: {
     slug: "xyzibm",
@@ -139,6 +140,18 @@ const simpleMarkets = {
     openHours: ["00:00", "23:59"],
     tz: "America/New_York",
     listed: false,
+  },
+  xyzdram: {
+    slug: "xyzdram",
+    logo: DRAM,
+    title: "DRAM Memory ETF",
+    tabTitle: "DRAM",
+    openDays: [0, 1, 2, 3, 4, 5, 6],
+    decimals: 3,
+    periods: ["15mins"],
+    openHours: ["00:00", "23:59"],
+    tz: "UTC",
+    listed: true,
   },
   paxg: {
     slug: "paxg",
