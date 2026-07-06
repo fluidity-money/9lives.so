@@ -144,7 +144,7 @@ const simpleMarkets = {
   xyzdram: {
     slug: "xyzdram",
     logo: DRAM,
-    title: "DRAM",
+    title: "DRAM Memory ETF",
     tabTitle: "DRAM",
     openDays: [0, 1, 2, 3, 4, 5, 6],
     decimals: 3,
