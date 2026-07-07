@@ -65,9 +65,13 @@ type partitionedBuffer struct {
 
 // dumpRequest wraps the snapshot reply channel with a context so the
 // buffer goroutine can abandon the send when the requester is gone.
+// filters carries the requester's snapshot constraints so the buffer
+// goroutine only copies the tables (and, for the prices table, the
+// single partition) actually asked for.
 type dumpRequest struct {
-	ctx   context.Context
-	reply chan []TableContent
+	ctx     context.Context
+	reply   chan []TableContent
+	filters map[string]map[string]*FilterConstraint
 }
 
 func newPartitionedBuffer() *partitionedBuffer {
@@ -310,8 +314,27 @@ func main() {
 				if !ok {
 					return
 				}
-				content := make([]TableContent, 0, len(buffer))
+				// Only copy what the requester asked for: dumps
+				// are per connection, and copying every partition
+				// of every table for each request made reconnect
+				// storms expensive.
+				content := make([]TableContent, 0, len(req.filters))
 				for k, pb := range buffer {
+					tableFilter, requested := req.filters[k]
+					if !requested {
+						continue
+					}
+					if k == PricesTable {
+						if c := tableFilter[PricesPartitionKey]; c != nil {
+							if rb := pb.buffers[fmt.Sprintf("%v", c.Et)]; rb != nil {
+								content = append(content, TableContent{
+									Table:    k,
+									Snapshot: rb.itemsInOrder(),
+								})
+							}
+							continue
+						}
+					}
 					content = append(content, TableContent{
 						Table:    k,
 						Snapshot: pb.allItems(),
@@ -476,7 +499,7 @@ func main() {
 							// Send the dump request, giving up if the
 							// connection or process is shutting down.
 							select {
-							case dumpChan <- dumpRequest{ctx: connCtx, reply: replyChan}:
+							case dumpChan <- dumpRequest{ctx: connCtx, reply: replyChan, filters: snapshotFilters}:
 							case <-connCtx.Done():
 								return
 							case <-masterCtx.Done():

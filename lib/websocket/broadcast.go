@@ -20,7 +20,9 @@ type (
 
 func NewBroadcast[A any]() *Broadcast[A] {
 	var (
-		broadcastRequests      = make(chan A)
+		// Buffered so publishers (the CDC ack path) don't stall
+		// while the broadcast goroutine fans out to subscribers.
+		broadcastRequests      = make(chan A, 1024)
 		subscriptionRequests   = make(chan registration[A])
 		unsubscriptionRequests = make(chan uint64)
 		shutdownRequests       = make(chan bool)

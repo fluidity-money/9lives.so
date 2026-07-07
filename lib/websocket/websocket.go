@@ -12,6 +12,26 @@ import (
 
 const DeadlinePong = 3 * time.Minute
 
+// Keepalive tuning. Without read deadlines and server pings, a client
+// that vanishes without closing TCP (mobile network drop, NAT reset,
+// laptop sleep) leaves its reader goroutine blocked in ReadMessage
+// forever, and without a write deadline a client that stops reading
+// blocks the writer forever once the socket buffer fills. The
+// connection is hijacked, so the request context never fires either:
+// the goroutines, buffers, and broadcast subscription of every such
+// connection leak for the life of the process. Vars rather than
+// consts so tests can shrink them.
+var (
+	// WriteWait is the deadline applied to any single write.
+	WriteWait = 10 * time.Second
+	// PongWait is how long we go without hearing anything from
+	// the client before considering the connection dead.
+	PongWait = 60 * time.Second
+	// PingPeriod is how often the writer pings the client. Must
+	// be comfortably less than PongWait.
+	PingPeriod = 25 * time.Second
+)
+
 var websocketUpgrader = websocket.Upgrader{
 	ReadBufferSize:  4096,
 	WriteBufferSize: 4096,
@@ -38,6 +58,14 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 
 		ipAddress := r.RemoteAddr
 
+		// Any inbound traffic (pongs included) proves the client
+		// is alive; a quiet PongWait means it's gone and the
+		// reader should error out so the connection tears down.
+		websocketConn.SetReadDeadline(time.Now().Add(PongWait))
+		websocketConn.SetPongHandler(func(string) error {
+			return websocketConn.SetReadDeadline(time.Now().Add(PongWait))
+		})
+
 		// connCtx is cancelled when any part of this connection tears down.
 		// All spawned goroutines should select on connCtx.Done().
 		connCtx, connCancel := context.WithCancel(r.Context())
@@ -60,7 +88,7 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 			for {
 				msgType, content, err := websocketConn.ReadMessage()
 				if err != nil {
-					slog.Error("failed to read websocket message",
+					slog.Debug("failed to read websocket message",
 						"ip", ipAddress,
 						"err", err,
 					)
@@ -70,6 +98,7 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 					}
 					return
 				}
+				websocketConn.SetReadDeadline(time.Now().Add(PongWait))
 				switch msgType {
 				case websocket.PongMessage:
 					continue
@@ -109,6 +138,8 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 		// Writer goroutine
 		go func() {
 			defer connCancel() // ensure everything tears down when writer exits
+			pingTicker := time.NewTicker(PingPeriod)
+			defer pingTicker.Stop()
 			for {
 				select {
 				case <-connCtx.Done():
@@ -116,6 +147,15 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 						"ip", ipAddress,
 					)
 					return
+				case <-pingTicker.C:
+					deadline := time.Now().Add(WriteWait)
+					if err := websocketConn.WriteControl(websocket.PingMessage, nil, deadline); err != nil {
+						slog.Debug("failed to ping client",
+							"ip", ipAddress,
+							"err", err,
+						)
+						return
+					}
 				case <-chanPongs:
 					deadline := time.Now().Add(DeadlinePong)
 					if err := websocketConn.WriteControl(websocket.PongMessage, nil, deadline); err != nil {
@@ -129,8 +169,9 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 					if !ok {
 						return
 					}
+					websocketConn.SetWriteDeadline(time.Now().Add(WriteWait))
 					if err := websocketConn.WriteMessage(websocket.TextMessage, message); err != nil {
-						slog.Error("failed to write websocket message",
+						slog.Debug("failed to write websocket message",
 							"ip", ipAddress,
 							"err", err,
 						)
