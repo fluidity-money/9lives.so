@@ -1,9 +1,12 @@
 import { PricePoint, SimpleCampaignDetail } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AssetPriceChartMask from "./assetPriceChartMask";
 import AssetPriceChart from "./assetPriceChart";
 import { useState } from "react";
 import LiveTrades from "../trades";
+import config from "@/config";
+import mergePricePoints from "@/utils/mergePricePoints";
+import { requestAssetPrices } from "@/providers/graphqlClient";
 import { useWSForDetail } from "@/hooks/useWSForDetail";
 
 export default function PriceChartWrapper({
@@ -23,14 +26,35 @@ export default function PriceChartWrapper({
     previousData: campaignData,
     simple,
   });
+  const queryClient = useQueryClient();
   const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
+    // Seed the chart over HTTP so it renders immediately; the
+    // websocket stream keeps it live afterwards.
     queryFn: async () => {
-      throw new Error(
-        "This function should be called. This query is being updated by websocket.",
+      const fetched = await requestAssetPrices(
+        symbol.toUpperCase(),
+        Math.floor(starting / 1000),
+        Math.ceil(Math.min(Date.now(), ending) / 1000),
       );
+      const decimals = config.simpleMarkets[symbol].decimals;
+      const points = (fetched ?? []).map((i) => ({
+        price: Number(i.amount.toFixed(decimals)),
+        id: i.id,
+        timestamp: i.createdAt * 1000,
+      }));
+      // Live points may have landed over the websocket while this
+      // request was in flight; never drop them.
+      const live = queryClient.getQueryData<PricePoint[]>([
+        "assetPrices",
+        symbol,
+        starting,
+        ending,
+      ]);
+      return mergePricePoints(live, points);
     },
-    enabled: false,
+    staleTime: Infinity,
+    retry: 1,
   });
 
   const [simpleChart, setSimpleChart] = useState(simple);

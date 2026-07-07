@@ -55,6 +55,7 @@ export namespace Schema {
       totalPnL: Query.totalPnL;
       getFinalPrice: Query.getFinalPrice;
       assetsDeltaHour: Query.assetsDeltaHour;
+      assetPrices: Query.assetPrices;
     };
   }
 
@@ -633,6 +634,38 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [0]];
       namedType: $$NamedTypes.$$AssetMetadata;
+    }
+
+    /**
+     * Historical spot prices for an asset between two unix timestamps
+     * (seconds), oldest first. Returns at most the most recent 5000 points
+     * in the window. Used to seed price charts instantly over HTTP; the
+     * websocket stream keeps them live afterwards.
+     */
+    export interface assetPrices extends $.OutputField {
+      name: "assetPrices";
+      arguments: {
+        base: {
+          kind: "InputField";
+          name: "base";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$String;
+        };
+        from: {
+          kind: "InputField";
+          name: "from";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+        until: {
+          kind: "InputField";
+          name: "until";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+      };
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$AssetPricePoint;
     }
   }
 
@@ -1467,6 +1500,53 @@ export namespace Schema {
 
     export interface hourAgoPriceCreatedAt extends $.OutputField {
       name: "hourAgoPriceCreatedAt";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+  }
+
+  //                                          AssetPricePoint
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface AssetPricePoint extends $.OutputObject {
+    name: "AssetPricePoint";
+    fields: {
+      __typename: AssetPricePoint.__typename;
+      id: AssetPricePoint.id;
+      amount: AssetPricePoint.amount;
+      createdAt: AssetPricePoint.createdAt;
+    };
+  }
+
+  export namespace AssetPricePoint {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "AssetPricePoint";
+      };
+    }
+
+    export interface id extends $.OutputField {
+      name: "id";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Int;
+    }
+
+    export interface amount extends $.OutputField {
+      name: "amount";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$Float;
+    }
+
+    export interface createdAt extends $.OutputField {
+      name: "createdAt";
       arguments: {};
       inlineType: [1];
       namedType: $$NamedTypes.$$Int;
@@ -3285,6 +3365,12 @@ export namespace Schema {
 
   export type Boolean = $.StandardTypes.Boolean;
 
+  //                                               Float
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export type Float = $.StandardTypes.Float;
+
   //                                                 ID
   // --------------------------------------------------------------------------------------------------
   //
@@ -3319,6 +3405,7 @@ export namespace Schema {
     export type $$Query = Query;
     export type $$Mutation = Mutation;
     export type $$AssetMetadata = AssetMetadata;
+    export type $$AssetPricePoint = AssetPricePoint;
     export type $$Pnl = Pnl;
     export type $$Asset = Asset;
     export type $$UnclaimedCampaign = UnclaimedCampaign;
@@ -3351,6 +3438,7 @@ export namespace Schema {
     export type $$String = String;
     export type $$Int = Int;
     export type $$Boolean = Boolean;
+    export type $$Float = Float;
     export type $$ID = ID;
   }
 }
@@ -3390,6 +3478,7 @@ export interface Schema<
     SettlementType: Schema.SettlementType;
     ActivityType: Schema.ActivityType;
     AssetMetadata: Schema.AssetMetadata;
+    AssetPricePoint: Schema.AssetPricePoint;
     Pnl: Schema.Pnl;
     Asset: Schema.Asset;
     UnclaimedCampaign: Schema.UnclaimedCampaign;
@@ -3415,6 +3504,7 @@ export interface Schema<
   };
   objects: {
     AssetMetadata: Schema.AssetMetadata;
+    AssetPricePoint: Schema.AssetPricePoint;
     Pnl: Schema.Pnl;
     Asset: Schema.Asset;
     UnclaimedCampaign: Schema.UnclaimedCampaign;
@@ -3440,12 +3530,13 @@ export interface Schema<
   };
   unions: {};
   interfaces: {};
-  scalarNamesUnion: "Odds" | "String" | "Int" | "Boolean" | "ID";
+  scalarNamesUnion: "Odds" | "String" | "Int" | "Boolean" | "Float" | "ID";
   scalars: {
     Odds: Schema.Odds;
     String: Schema.String;
     Int: Schema.Int;
     Boolean: Schema.Boolean;
+    Float: Schema.Float;
     ID: Schema.ID;
   };
   scalarRegistry: $Scalars;

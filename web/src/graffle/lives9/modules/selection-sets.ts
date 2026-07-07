@@ -269,6 +269,14 @@ export interface Query<
   assetsDeltaHour?:
     | Query.assetsDeltaHour$Expanded<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.assetsDeltaHour<_$Scalars>>;
+  /**
+   *
+   * Select the `assetPrices` field on the `Query` object. Its type is `AssetPricePoint` (a `OutputObject` kind of type).
+   *
+   */
+  assetPrices?:
+    | Query.assetPrices<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Query.assetPrices<_$Scalars>>;
 
   /**
    *
@@ -1322,6 +1330,47 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<assetsDeltaHour$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type assetPrices<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = assetPrices$SelectionSet<_$Scalars>;
+
+  export interface assetPrices$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base, $NamedTypes.$AssetPricePoint<_$Scalars> {
+    /**
+     * Arguments for `assetPrices` field. All arguments are required so you must include this.
+     */
+    $: assetPrices$Arguments<_$Scalars>;
+  }
+
+  export interface assetPrices$Arguments<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    base: string;
+    from: number;
+    until: number;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `assetPrices` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type assetPrices$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<assetPrices$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -2401,6 +2450,165 @@ export namespace AssetMetadata {
   > = $$Utilities.Simplify<
     | $Select.Indicator.NoArgsIndicator
     | hourAgoPriceCreatedAt$SelectionSet<_$Scalars>
+  >;
+}
+
+//                                          AssetPricePoint
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface AssetPricePoint<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `id` field on the `AssetPricePoint` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  id?:
+    | AssetPricePoint.id$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetPricePoint.id<_$Scalars>>;
+  /**
+   *
+   * Select the `amount` field on the `AssetPricePoint` object. Its type is `Float` (a `ScalarStandard` kind of type).
+   *
+   */
+  amount?:
+    | AssetPricePoint.amount$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetPricePoint.amount<_$Scalars>>;
+  /**
+   *
+   * Select the `createdAt` field on the `AssetPricePoint` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  createdAt?:
+    | AssetPricePoint.createdAt$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<AssetPricePoint.createdAt<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?:
+    | AssetPricePoint$FragmentInline<_$Scalars>
+    | AssetPricePoint$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface AssetPricePoint$FragmentInline<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends
+    AssetPricePoint<_$Scalars>,
+    $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace AssetPricePoint {
+  export type id<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
+
+  export interface id$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `id` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type id$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type amount<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>;
+
+  export interface amount$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `amount` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type amount$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | amount$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type createdAt<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>;
+
+  export interface createdAt$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `createdAt` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type createdAt$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | createdAt$SelectionSet<_$Scalars>
   >;
 }
 
@@ -7099,6 +7307,10 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = AssetMetadata<_$Scalars>;
+  export type $AssetPricePoint<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = AssetPricePoint<_$Scalars>;
   export type $Pnl<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

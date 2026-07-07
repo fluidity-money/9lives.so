@@ -116,6 +116,14 @@ func (r *assetMetadataResolver) HourAgoPriceCreatedAt(ctx context.Context, obj *
 	return int(obj.HourAgoPriceCreatedAt.Unix()), nil
 }
 
+// CreatedAt is the resolver for the createdAt field.
+func (r *assetPricePointResolver) CreatedAt(ctx context.Context, obj *types.AssetPricePoint) (int, error) {
+	if obj == nil {
+		return 0, fmt.Errorf("no asset price point")
+	}
+	return int(obj.CreatedAt.Unix()), nil
+}
+
 // Name is the resolver for the name field.
 func (r *campaignResolver) Name(ctx context.Context, obj *types.Campaign) (string, error) {
 	if obj == nil {
@@ -2196,6 +2204,30 @@ func (r *queryResolver) AssetsDeltaHour(ctx context.Context) ([]*types.AssetMeta
 	return assets, nil
 }
 
+// AssetPrices is the resolver for the assetPrices field.
+func (r *queryResolver) AssetPrices(ctx context.Context, base string, from int, until int) ([]types.AssetPricePoint, error) {
+	var points []types.AssetPricePoint
+	// Most recent points in the window, capped, then flipped so the
+	// caller receives them oldest first.
+	err := r.DB.Raw(`
+	select id, amount, created_by as created_at
+	from (
+	    select id, amount, created_by
+	    from oracles_ninelives_prices_2
+	    where base = ?
+	    and created_by >= to_timestamp(?)
+	    and created_by <= to_timestamp(?)
+	    order by created_by desc
+	    limit 5000
+	) latest
+	order by created_by asc
+	`, strings.ToUpper(base), from, until).Scan(&points).Error
+	if err != nil {
+		return nil, fmt.Errorf("error getting asset prices: %w", err)
+	}
+	return points, nil
+}
+
 // Refererr is the resolver for the refererr field.
 func (r *settingsResolver) Refererr(ctx context.Context, obj *types.Settings) (*string, error) {
 	if obj == nil {
@@ -2209,6 +2241,9 @@ func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 
 // AssetMetadata returns AssetMetadataResolver implementation.
 func (r *Resolver) AssetMetadata() AssetMetadataResolver { return &assetMetadataResolver{r} }
+
+// AssetPricePoint returns AssetPricePointResolver implementation.
+func (r *Resolver) AssetPricePoint() AssetPricePointResolver { return &assetPricePointResolver{r} }
 
 // Campaign returns CampaignResolver implementation.
 func (r *Resolver) Campaign() CampaignResolver { return &campaignResolver{r} }
@@ -2239,6 +2274,7 @@ func (r *Resolver) Settings() SettingsResolver { return &settingsResolver{r} }
 
 type activityResolver struct{ *Resolver }
 type assetMetadataResolver struct{ *Resolver }
+type assetPricePointResolver struct{ *Resolver }
 type campaignResolver struct{ *Resolver }
 type changelogResolver struct{ *Resolver }
 type claimResolver struct{ *Resolver }

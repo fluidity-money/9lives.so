@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   CampaignDetail,
   SimpleCampaignDetail,
@@ -26,6 +26,12 @@ export function useWSForTrades({
 }) {
   const queryClient = useQueryClient();
   const account = useAppKitAccount();
+  // This handler rewrites the simpleCampaign cache entry on every
+  // trade, which feeds back into previousData; read it through a ref
+  // so those updates don't tear down and reconnect the socket.
+  const previousDataRef = useRef(previousData);
+  previousDataRef.current = previousData;
+  const poolAddress = previousData.poolAddress;
   useEffect(() => {
     if (!queryClient) return;
 
@@ -47,7 +53,7 @@ export function useWSForTrades({
                 fields: [
                   {
                     name: "emitter_addr",
-                    filter_constraints: { et: previousData.poolAddress },
+                    filter_constraints: { et: poolAddress },
                   },
                 ],
               },
@@ -61,6 +67,7 @@ export function useWSForTrades({
           const msg: Message = JSON.parse(raw.data);
 
           if (msg.table === "ninelives_buys_and_sells_1") {
+            const campaignData = previousDataRef.current;
             // Update Live Trades
             queryClient.setQueryData<Trade[]>(
               ["campaignTrades", msg.content.campaign_id],
@@ -109,9 +116,9 @@ export function useWSForTrades({
             );
 
             // Update Simple Campaign Detail
-            const period = getPeriodOfCampaign(previousData);
+            const period = getPeriodOfCampaign(campaignData);
             queryClient.setQueryData<SimpleCampaignDetail>(
-              ["simpleCampaign", previousData.priceMetadata.baseAsset, period],
+              ["simpleCampaign", campaignData.priceMetadata.baseAsset, period],
               (data) =>
                 ({
                   ...data,
@@ -137,8 +144,8 @@ export function useWSForTrades({
               queryClient.invalidateQueries({
                 queryKey: [
                   "positions",
-                  previousData.poolAddress,
-                  previousData.outcomes,
+                  campaignData.poolAddress,
+                  campaignData.outcomes,
                   account.address,
                   isDpm,
                 ],
@@ -146,7 +153,7 @@ export function useWSForTrades({
               queryClient.invalidateQueries({
                 queryKey: [
                   "dppmShareEstimation",
-                  previousData.poolAddress,
+                  campaignData.poolAddress,
                   account.address,
                   `0x${msg.content.outcome_id}`,
                   true,
@@ -155,7 +162,7 @@ export function useWSForTrades({
               queryClient.invalidateQueries({
                 queryKey: [
                   "dppmShareEstimation",
-                  previousData.poolAddress,
+                  campaignData.poolAddress,
                   account.address,
                   `0x${msg.content.outcome_id}`,
                   false,
@@ -171,8 +178,8 @@ export function useWSForTrades({
               queryClient.invalidateQueries({
                 queryKey: [
                   "prices",
-                  previousData.poolAddress,
-                  previousData.outcomes,
+                  campaignData.poolAddress,
+                  campaignData.outcomes,
                 ],
               });
             }
@@ -206,5 +213,5 @@ export function useWSForTrades({
 
       ws?.close();
     };
-  }, [previousData, simple, queryClient, account.address, isDpm]);
+  }, [poolAddress, queryClient, account.address, isDpm]);
 }

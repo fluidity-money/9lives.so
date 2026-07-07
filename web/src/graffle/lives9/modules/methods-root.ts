@@ -627,6 +627,31 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
         >
     >
   >;
+  /**
+   * Historical spot prices for an asset between two unix timestamps
+   * (seconds), oldest first. Returns at most the most recent 5000 points
+   * in the window. Used to seed price charts instantly over HTTP; the
+   * websocket stream keeps them live afterwards.
+   */
+  assetPrices: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Query.assetPrices<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationQuery<
+            { assetPrices: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "assetPrices"
+        >
+    >
+  >;
 }
 
 export interface MutationMethods<$Context extends $$Utilities.Context> {

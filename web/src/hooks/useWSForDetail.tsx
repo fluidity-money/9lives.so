@@ -1,20 +1,25 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   CampaignMessage,
   PriceMessage,
   PricePoint,
   PriceSnapshot,
+  RawPricePoint,
   SimpleCampaignDetail,
   SimpleMarketKey,
 } from "@/types";
 import config from "@/config";
 import { formatSimpleCampaignDetail } from "@/utils/format/formatCampaign";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
+import mergePricePoints from "@/utils/mergePricePoints";
 
 type Message = PriceMessage | CampaignMessage | PriceSnapshot;
+
+const PRICES_TABLE = "oracles_ninelives_prices_2";
+
 export function useWSForDetail({
   asset,
   starting,
@@ -29,6 +34,12 @@ export function useWSForDetail({
   simple: boolean;
 }) {
   const queryClient = useQueryClient();
+  // The campaign object is rewritten in the query cache on every trade;
+  // read it through a ref so those updates don't tear down the socket.
+  const previousDataRef = useRef(previousData);
+  previousDataRef.current = previousData;
+  const poolAddress = previousData.poolAddress;
+
   useEffect(() => {
     if (!queryClient) return;
 
@@ -37,6 +48,13 @@ export function useWSForDetail({
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let campaignTimer: ReturnType<typeof setTimeout> | null = null;
     let destroyed = false;
+
+    const base = asset.toUpperCase();
+    const toPoint = (i: RawPricePoint): PricePoint => ({
+      price: Number(i.amount.toFixed(config.simpleMarkets[asset].decimals)),
+      id: i.id,
+      timestamp: new Date(i.created_by).getTime(),
+    });
 
     const connect = () => {
       if (destroyed) return;
@@ -50,22 +68,22 @@ export function useWSForDetail({
           JSON.stringify({
             ask_for_snapshot: [
               {
-                table: "oracles_ninelives_prices_2",
+                table: PRICES_TABLE,
                 fields: [
                   {
                     name: "base",
-                    filter_constraints: { et: asset.toUpperCase() },
+                    filter_constraints: { et: base },
                   },
                 ],
               },
             ],
             add: [
               {
-                table: "oracles_ninelives_prices_2",
+                table: PRICES_TABLE,
                 fields: [
                   {
                     name: "base",
-                    filter_constraints: { et: asset.toUpperCase() },
+                    filter_constraints: { et: base },
                   },
                 ],
               },
@@ -75,7 +93,7 @@ export function useWSForDetail({
                 fields: [
                   {
                     name: "emitter_addr",
-                    filter_constraints: { et: previousData.poolAddress },
+                    filter_constraints: { et: poolAddress },
                   },
                 ],
               },
@@ -88,67 +106,50 @@ export function useWSForDetail({
         try {
           const msg: Message = JSON.parse(raw.data);
 
-          if (
-            msg.table === "" &&
-            msg.snapshot_toplevel &&
-            msg.snapshot_toplevel[0].table === "oracles_ninelives_prices_2"
-          ) {
+          if (msg.table === "") {
+            const prices = msg.snapshot_toplevel?.find(
+              (t) => t.table === PRICES_TABLE,
+            );
+            if (!prices) return;
+            const points = prices.snapshot
+              .filter((i) => {
+                if (String(i.base).toUpperCase() !== base) return false;
+                const ts = new Date(i.created_by).getTime();
+                return ts >= starting && ending >= ts;
+              })
+              .map(toPoint);
+            if (points.length === 0) return;
             queryClient.setQueryData<PricePoint[] | undefined>(
               ["assetPrices", asset, starting, ending],
-              () =>
-                msg
-                  .snapshot_toplevel![0].snapshot.filter((i) => {
-                    const ts = new Date(i.created_by).getTime();
-                    return ts >= starting && ending >= ts;
-                  })
-                  .map((i) => ({
-                    price: Number(
-                      i.amount.toFixed(config.simpleMarkets[asset].decimals),
-                    ),
-                    id: i.id,
-                    timestamp: new Date(i.created_by).getTime(),
-                  }))
-                  .sort((a, b) => a.timestamp - b.timestamp),
+              (previous) => mergePricePoints(previous, points),
             );
             return;
           }
 
-          if (msg.table === "oracles_ninelives_prices_2") {
-            const ts = new Date(msg.content.created_by).getTime();
+          if (msg.table === PRICES_TABLE) {
+            // The server only filters rows by base when its table
+            // filtering feature is enabled, so drop other assets here.
+            if (String(msg.content.base).toUpperCase() !== base) return;
 
+            const ts = new Date(msg.content.created_by).getTime();
             if (ts <= starting || ts > ending) return;
 
-            const newPoint: PricePoint = {
-              price: Number(
-                msg.content.amount.toFixed(
-                  config.simpleMarkets[asset].decimals,
-                ),
-              ),
-              id: msg.content.id,
-              timestamp: ts,
-            };
-
             queryClient.setQueryData<PricePoint[] | undefined>(
               ["assetPrices", asset, starting, ending],
-              (previousData) => {
-                if (!previousData) {
-                  return [newPoint];
-                }
-
-                return [...previousData, newPoint];
-              },
+              (previous) => mergePricePoints(previous, [toPoint(msg.content)]),
             );
             return;
           }
 
+          const campaignData = previousDataRef.current;
           if (
             msg.table === "ninelives_campaigns_1" &&
             simple &&
             msg.content.content.priceMetadata &&
             msg.content.content.priceMetadata.baseAsset.toLowerCase() ===
               asset &&
-            msg.content.id !== previousData.identifier &&
-            previousData.ending !== msg.content.content.ending * 1000
+            msg.content.id !== campaignData.identifier &&
+            campaignData.ending !== msg.content.content.ending * 1000
           ) {
             const content = msg.content.content;
             const identifier = msg.content.id as `0x${string}`;
@@ -157,7 +158,7 @@ export function useWSForDetail({
               ...content,
               identifier,
             });
-            const prevPeriod = getPeriodOfCampaign(previousData);
+            const prevPeriod = getPeriodOfCampaign(campaignData);
             const nextPeriod = getPeriodOfCampaign(nextData);
 
             if (nextPeriod !== prevPeriod) {
@@ -166,6 +167,7 @@ export function useWSForDetail({
 
             const timeleft = content.starting * 1000 - Date.now();
 
+            if (campaignTimer) clearTimeout(campaignTimer);
             campaignTimer = setTimeout(
               () =>
                 queryClient.setQueryData(
@@ -207,5 +209,5 @@ export function useWSForDetail({
 
       ws?.close();
     };
-  }, [asset, starting, ending, previousData, simple, queryClient]);
+  }, [asset, starting, ending, poolAddress, simple, queryClient]);
 }

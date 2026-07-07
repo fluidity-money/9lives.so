@@ -22,6 +22,8 @@ const Int = $$Scalar.Int;
 
 const Boolean = $$Scalar.Boolean;
 
+const Float = $$Scalar.Float;
+
 const ID = $$Scalar.ID;
 
 //
@@ -135,6 +137,14 @@ const AssetMetadata: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     priceCreatedAt: {},
     hourAgoPrice: {},
     hourAgoPriceCreatedAt: {},
+  },
+};
+
+const AssetPricePoint: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    id: {},
+    amount: {},
+    createdAt: {},
   },
 };
 
@@ -736,6 +746,23 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
     assetsDeltaHour: {
       // nt: AssetMetadata, <-- Assigned later to avoid potential circular dependency.
     },
+    assetPrices: {
+      a: {
+        base: {
+          nt: String,
+          it: [1],
+        },
+        from: {
+          nt: Int,
+          it: [1],
+        },
+        until: {
+          nt: Int,
+          it: [1],
+        },
+      },
+      // nt: AssetPricePoint, <-- Assigned later to avoid potential circular dependency.
+    },
   },
 };
 
@@ -1121,6 +1148,7 @@ Query.f[`unclaimedCampaigns`]!.nt = UnclaimedCampaign;
 Query.f[`assets`]!.nt = Asset;
 Query.f[`totalPnL`]!.nt = Pnl;
 Query.f[`assetsDeltaHour`]!.nt = AssetMetadata;
+Query.f[`assetPrices`]!.nt = AssetPricePoint;
 
 //
 //
@@ -1148,6 +1176,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     String,
     Int,
     Boolean,
+    Float,
     ID,
     Odds,
     PaymasterOperation,
@@ -1157,6 +1186,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     OutcomeInput,
     PriceMetadataInput,
     AssetMetadata,
+    AssetPricePoint,
     Pnl,
     Asset,
     UnclaimedCampaign,

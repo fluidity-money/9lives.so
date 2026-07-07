@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -25,6 +26,8 @@ import (
 	cdcPublication "github.com/Trendyol/go-pq-cdc/pq/publication"
 	cdcReplication "github.com/Trendyol/go-pq-cdc/pq/replication"
 	cdcSlot "github.com/Trendyol/go-pq-cdc/pq/slot"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 const (
@@ -84,16 +87,24 @@ func (pb *partitionedBuffer) insert(partitionKey string, content map[string]any)
 	x.i++
 }
 
+// itemsInOrder returns the buffered items oldest first. rb.i is the
+// next write position, so once the ring has wrapped the slots from
+// rb.i onwards hold the oldest entries.
+func (rb *ringBuffer) itemsInOrder() []map[string]any {
+	start := rb.i % PrivateSnapshotLookback
+	out := make([]map[string]any, 0, PrivateSnapshotLookback)
+	for j := 0; j < PrivateSnapshotLookback; j++ {
+		if item := rb.items[(start+j)%PrivateSnapshotLookback]; item != nil {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
 func (pb *partitionedBuffer) allItems() []map[string]any {
 	var out []map[string]any
 	for _, rb := range pb.buffers {
-		snapshot := make([]map[string]any, PrivateSnapshotLookback)
-		copy(snapshot, rb.items[:])
-		for _, item := range snapshot {
-			if item != nil {
-				out = append(out, item)
-			}
-		}
+		out = append(out, rb.itemsInOrder()...)
 	}
 	return out
 }
@@ -103,6 +114,56 @@ func compareFmt(v1, v2 any) bool {
 		return true
 	}
 	return fmt.Sprintf("%v", v1) == fmt.Sprintf("%v", v2)
+}
+
+// loadRecentPrices fetches the most recent price rows per asset from
+// the database, oldest first, shaped like the CDC-decoded rows the
+// buffer normally receives. The ring buffer is memory-only, so
+// without this every restart of this process would leave snapshots
+// with no history until it re-accumulates from the live stream.
+func loadRecentPrices(ctx context.Context, timescaleUrl string) ([]map[string]any, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
+	db, err := sql.Open("pgx", timescaleUrl)
+	if err != nil {
+		return nil, fmt.Errorf("open: %w", err)
+	}
+	defer db.Close()
+	rows, err := db.QueryContext(ctx, `
+	select p.id, p.base, p.amount, p.created_by
+	from (select distinct base from `+PricesTable+`) b
+	cross join lateral (
+	    select id, base, amount, created_by
+	    from `+PricesTable+`
+	    where base = b.base
+	    order by created_by desc
+	    limit $1
+	) p
+	order by p.created_by asc
+	`, PrivateSnapshotLookback)
+	if err != nil {
+		return nil, fmt.Errorf("query: %w", err)
+	}
+	defer rows.Close()
+	var out []map[string]any
+	for rows.Next() {
+		var (
+			id        int64
+			base      string
+			amount    float64
+			createdBy time.Time
+		)
+		if err := rows.Scan(&id, &base, &amount, &createdBy); err != nil {
+			return nil, fmt.Errorf("scan: %w", err)
+		}
+		out = append(out, map[string]any{
+			"id":         id,
+			"base":       base,
+			"amount":     amount,
+			"created_by": createdBy,
+		})
+	}
+	return out, rows.Err()
 }
 
 func main() {
@@ -186,6 +247,21 @@ func main() {
 
 	dumpChan := make(chan dumpRequest)
 
+	// Seed the prices buffer from the database so snapshots are
+	// complete immediately after a restart. Failure is non-fatal: we
+	// fall back to accumulating from the live stream only. The CDC
+	// slot may re-deliver some backfilled rows; clients dedupe by id.
+	backfill, err := loadRecentPrices(masterCtx, config.PickTimescaleUrl())
+	if err != nil {
+		slog.Warn("failed to backfill prices from the database",
+			"err", err,
+		)
+	} else {
+		slog.Info("backfilled prices from the database",
+			"rows", len(backfill),
+		)
+	}
+
 	go func() {
 		bufferMsgsChan := make(chan TableContent, 100*60)
 		bufferCookie := broadcast.Subscribe(bufferMsgsChan)
@@ -194,6 +270,17 @@ func main() {
 		defer broadcast.Unsubscribe(bufferCookie)
 
 		buffer := make(map[string]*partitionedBuffer)
+
+		for _, row := range backfill {
+			pb := buffer[PricesTable]
+			if pb == nil {
+				pb = newPartitionedBuffer()
+				buffer[PricesTable] = pb
+			}
+			if base, ok := row[PricesPartitionKey]; ok {
+				pb.insert(fmt.Sprintf("%v", base), row)
+			}
+		}
 
 		for {
 			select {

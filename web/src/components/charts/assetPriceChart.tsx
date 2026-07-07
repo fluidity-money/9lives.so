@@ -87,7 +87,7 @@ export default function AssetPriceChart({
   ];
   const uniquePoints = Array.from(
     new Map(pointsData.map((p) => [p.timestamp, p])).values(),
-  );
+  ).sort((a, b) => a.timestamp - b.timestamp);
   if (!simple) {
     let divider;
     switch (true) {
@@ -193,9 +193,10 @@ export default function AssetPriceChart({
           dot={false}
           dataKey={"price"}
           zIndex={99}
-          type="monotone"
+          type="linear"
           stroke={priceIsAbove ? "#5dd341" : "#f96565"}
           strokeWidth={2}
+          isAnimationActive={false}
           name={symbol.toUpperCase()}
         />
         {simple ? (

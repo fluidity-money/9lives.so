@@ -1,6 +1,7 @@
 "use client";
 import config from "@/config";
 import { PricePoint, SimpleMarketKey } from "@/types";
+import { memo } from "react";
 import {
   ComposedChart,
   ResponsiveContainer,
@@ -13,12 +14,11 @@ import {
   ReferenceDot,
 } from "recharts";
 
-export default function AssetPriceChart({
+function AssetPriceChart({
   symbol,
   basePrice,
   starting,
   ending,
-  volume,
   assetPrices,
 }: {
   id: string;
@@ -26,7 +26,6 @@ export default function AssetPriceChart({
   basePrice: number;
   starting: number;
   ending: number;
-  volume: string;
   assetPrices: PricePoint[];
 }) {
   const chartHeight = 300;
@@ -84,7 +83,7 @@ export default function AssetPriceChart({
   ];
   const uniquePoints = Array.from(
     new Map(pointsData.map((p) => [p.timestamp, p])).values(),
-  );
+  ).sort((a, b) => a.timestamp - b.timestamp);
 
   const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
     return (
@@ -173,7 +172,7 @@ export default function AssetPriceChart({
           shape={PulseDot}
         />
         <Area
-          type="monotone"
+          type="linear"
           dataKey="price"
           stroke="none"
           fill={priceIsAbove ? "#16A34A" : "#DC2828"}
@@ -185,9 +184,10 @@ export default function AssetPriceChart({
           dot={false}
           dataKey={"price"}
           zIndex={99}
-          type="monotone"
+          type="linear"
           stroke={priceIsAbove ? "#16A34A" : "#DC2828"}
           strokeWidth={2}
+          isAnimationActive={false}
           name={symbol.toUpperCase()}
         />
         <ReferenceLine
@@ -300,9 +300,10 @@ export default function AssetPriceChart({
           }}
         />
       </ComposedChart>
-      <span className="absolute inset-x-0 -bottom-1 block text-center text-xs text-neutral-400">
-        ${volume} Vol.
-      </span>
     </ResponsiveContainer>
   );
 }
+
+// Only re-render the plot when its own inputs change; trades update the
+// surrounding campaign object every few seconds and must not touch it.
+export default memo(AssetPriceChart);

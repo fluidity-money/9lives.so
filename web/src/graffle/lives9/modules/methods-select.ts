@@ -21,6 +21,7 @@ export interface $MethodsSelect {
   Query: Query;
   Mutation: Mutation;
   AssetMetadata: AssetMetadata;
+  AssetPricePoint: AssetPricePoint;
   Pnl: Pnl;
   Asset: Asset;
   UnclaimedCampaign: UnclaimedCampaign;
@@ -94,6 +95,15 @@ export interface AssetMetadata {
     selectionSet: $$Utilities.Exact<
       $SelectionSet,
       $$SelectionSets.AssetMetadata
+    >,
+  ): $SelectionSet;
+}
+
+export interface AssetPricePoint {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<
+      $SelectionSet,
+      $$SelectionSets.AssetPricePoint
     >,
   ): $SelectionSet;
 }

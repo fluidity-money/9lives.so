@@ -610,6 +610,14 @@ export const requestPriceChanges = (poolAddress: string) =>
     shares: { shares: true, identifier: true },
   });
 
+export const requestAssetPrices = (base: string, from: number, until: number) =>
+  graph9Lives.query.assetPrices({
+    $: { base, from, until },
+    id: true,
+    amount: true,
+    createdAt: true,
+  });
+
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
 

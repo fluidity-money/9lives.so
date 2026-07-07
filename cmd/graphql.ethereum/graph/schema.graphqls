@@ -132,6 +132,14 @@ type Query {
   Return all assets with their lastest price and one hour ago prices
   """
   assetsDeltaHour: [AssetMetadata]!
+
+  """
+  Historical spot prices for an asset between two unix timestamps
+  (seconds), oldest first. Returns at most the most recent 5000 points
+  in the window. Used to seed price charts instantly over HTTP; the
+  websocket stream keeps them live afterwards.
+  """
+  assetPrices(base: String!, from: Int!, until: Int!): [AssetPricePoint!]!
 }
 
 type AssetMetadata {
@@ -140,6 +148,12 @@ type AssetMetadata {
   priceCreatedAt: Int!
   hourAgoPrice: String!
   hourAgoPriceCreatedAt: Int!
+}
+
+type AssetPricePoint {
+  id: Int!
+  amount: Float!
+  createdAt: Int!
 }
 
 type Pnl {

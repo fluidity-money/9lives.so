@@ -278,6 +278,12 @@ type (
 		HourAgoPrice          string    `json:"hourAgoPrice"`
 		HourAgoPriceCreatedAt time.Time `json:"hourAgoPriceCreatedAt"`
 	}
+
+	AssetPricePoint struct {
+		Id        int64     `json:"id"`
+		Amount    float64   `json:"amount"`
+		CreatedAt time.Time `json:"createdAt"`
+	}
 )
 
 const (
