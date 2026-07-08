@@ -33,7 +33,7 @@ export default function PriceChartWrapper({
     isDpm: !!campaignData.isDpm,
   });
   const queryClient = useQueryClient();
-  const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
+  const { data: assetPrices } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
     // Seed the chart over HTTP so it renders immediately; the
     // websocket stream keeps it live afterwards.
@@ -67,9 +67,6 @@ export default function PriceChartWrapper({
     : "0";
   const formattedVolume = formatFusdc(totalVolume, 2);
 
-  if (!assetPrices || 1 > assetPrices.length || isLoading)
-    return <div className="skeleton" style={{ height: 320 }} />;
-
   return (
     <div className="relative">
       <AssetPriceChartMask simple={simple} campaignData={campaignData} />
@@ -77,7 +74,7 @@ export default function PriceChartWrapper({
         starting={starting}
         ending={ending}
         symbol={symbol}
-        assetPrices={assetPrices}
+        assetPrices={assetPrices ?? []}
         basePrice={+campaignData.priceMetadata.priceTargetForUp}
         id={campaignData.identifier}
       />
