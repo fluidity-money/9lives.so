@@ -12,6 +12,20 @@ import (
 
 const DeadlinePong = 3 * time.Minute
 
+// WriteWait bounds every write to the client. Without it, the writer
+// goroutine is the one place a channel stops draining: WriteMessage
+// on a client that stopped reading (or whose network vanished with
+// the TCP connection still open) blocks forever once the socket
+// buffer fills, so the messages channel backs up with encoded rows,
+// its connection never tears down, and the process accumulates these
+// wedged connections until it has to be killed. With a deadline the
+// write errors instead, the writer exits, and the whole connection
+// (goroutines, buffers, broadcast subscription) is torn down. Since
+// this service pushes rows to every subscriber continuously, a write
+// deadline alone is enough to reap dead subscribers within seconds.
+// A var, not a const, so tests can shrink it.
+var WriteWait = 30 * time.Second
+
 var websocketUpgrader = websocket.Upgrader{
 	ReadBufferSize:  4096,
 	WriteBufferSize: 4096,
@@ -129,6 +143,7 @@ func Endpoint(endpoint string, handler func(ctx context.Context, ipAddr string, 
 					if !ok {
 						return
 					}
+					websocketConn.SetWriteDeadline(time.Now().Add(WriteWait))
 					if err := websocketConn.WriteMessage(websocket.TextMessage, message); err != nil {
 						slog.Error("failed to write websocket message",
 							"ip", ipAddress,
