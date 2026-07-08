@@ -8,12 +8,19 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 )
 
 // EnvHeartbeatUrl to optionally send a GET to on request.
 const EnvHeartbeatUrl = "SPN_HEARTBEAT_URL"
 
 var urls = make(chan string)
+
+// client bounds the heartbeat request. The default client has no
+// timeout, so a hung request wedges the caller's pulse loop forever:
+// pulses stop even though the process is healthy, and anything
+// watching the heartbeat kills it for no reason.
+var client = &http.Client{Timeout: 10 * time.Second}
 
 func Pulse() {
 	u := <-urls
@@ -22,7 +29,7 @@ func Pulse() {
 		return
 	}
 	slog.Debug("sending a heartbeat message")
-	resp, err := http.Get(u)
+	resp, err := client.Get(u)
 	if err != nil {
 		slog.Error("error reporting to heartbeat", "err", err)
 		return
