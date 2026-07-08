@@ -29,7 +29,7 @@ export default function PriceChartWrapper({
     simple,
     isDpm: !!campaignData.isDpm,
   });
-  const { data: assetPrices, isLoading } = useQuery<PricePoint[]>({
+  const { data: assetPrices } = useQuery<PricePoint[]>({
     queryKey: ["assetPrices", symbol, starting, ending],
     queryFn: async () => {
       throw new Error(
@@ -43,21 +43,20 @@ export default function PriceChartWrapper({
     : "0";
   const formattedVolume = formatFusdc(totalVolume, 2);
 
-  if (!assetPrices || 1 > assetPrices.length || isLoading)
-    return <div className="skeleton" style={{ height: 320 }} />;
-
   return (
     <div className="relative">
       <AssetPriceChartMask simple={simple} campaignData={campaignData} />
       <AssetPriceChart
-        volume={formattedVolume}
         starting={starting}
         ending={ending}
         symbol={symbol}
-        assetPrices={assetPrices}
+        assetPrices={assetPrices ?? []}
         basePrice={+campaignData.priceMetadata.priceTargetForUp}
         id={campaignData.identifier}
       />
+      <span className="absolute inset-x-0 -bottom-1 block text-center text-xs text-neutral-400">
+        ${formattedVolume} Vol.
+      </span>
       <div className="absolute bottom-4 left-px z-[9] md:left-[-51px]">
         <LiveTrades campaignId={campaignData.identifier} />
       </div>
