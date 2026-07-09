@@ -34,9 +34,17 @@ function AssetPriceChart({
   );
   const latestPrice = data.length > 0 ? data[data.length - 1].value : basePrice;
   const priceIsAbove = latestPrice > basePrice;
-  // Trailing window sized to the campaign, so every point stays in
-  // view for the market's whole lifetime.
-  const windowSecs = Math.max(60, Math.round((ending - starting) / 1000));
+  // Liveline's window trails the live edge, so size it to the span
+  // of the data we actually have: the first available point sits at
+  // the left edge and the line stretches the full width, however
+  // little history the websocket delivered. Capped to the campaign
+  // duration, with a floor so the first ticks aren't absurdly zoomed.
+  const campaignSecs = Math.max(60, Math.round((ending - starting) / 1000));
+  const windowSecs = useMemo(() => {
+    if (data.length < 2) return 30;
+    const span = Math.ceil(data[data.length - 1].time - data[0].time);
+    return Math.min(Math.max(30, span), campaignSecs);
+  }, [data, campaignSecs]);
 
   return (
     <div style={{ height: chartHeight }}>
