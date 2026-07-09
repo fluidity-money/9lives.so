@@ -226,10 +226,10 @@ See [audits/README.md](audits/README.md) for details.
 | Trading AMM quotes impl       | `0x68af4f3cc7fec6b5a33b765eb811728853a2c982` |
 | Trading AMM price impl        | `0x3a218fa553395728338f4e17499a21ffeccf72e9` |
 | Share implementation          | `0x87f03D061C1e92802e2A9969E93Ff30f0C178230` |
-| Factory proxy                 | `0x068bd86029bdc43ca9bc03bbe5b9fd8113519589` |
-| Helper factory                | `0x6e8C54C8B1d6C8b9E63F201058E011f26415EA30` |
+| Factory proxy                 | `` |
+| Helper factory                | `` |
 | Trading beacon                | `0x5F2BD61Bb7e4a8008e0725F8AbB977cbe41FcfD5` |
-| LensesV1                      | `0xfc20C0C9deB8Af7e99957Fd323B60EC93E9e13C7` |
+| LensesV1                      | `` |
 | Sarp AI Resolver              | `0xa81a0adab3492dae14c45c39d322a78a24c8b683` |
 | Claimant helper               | `0x8e9c34b5ce311314e2324178ffeb7a03743cb072` |
 | Paymaster                     | `0x4e2Dd16F9e0376555bcca2266233578422C56771` |
@@ -237,9 +237,9 @@ See [audits/README.md](audits/README.md) for details.
 | USDC                          | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
 | Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
 | Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
-| Vault                         | `0x4E1fd0869639Fa329e028eab098E0ac50eB5cd82` |
+| Vault                         | `` |
 | Price markets oracle          | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
-| Buy helper                    | `0xEb94D21F8C08552a51f9AE862098841FF1bEb1f4` |
+| Buy helper                    | `` |
 
 ### Superposition mainnet
 
