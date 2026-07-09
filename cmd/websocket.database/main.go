@@ -32,6 +32,15 @@ const (
 	EnvPublicationName       = "SPN_PUBLICATION_NAME"
 	EnvPublicationSlot       = "SPN_PUBLICATION_SLOT"
 	EnvPublicationMetricSlot = "SPN_PUBLICATION_PORT"
+
+	// EnvPricesBases optionally limits which price bases are kept in
+	// the snapshot ring buffers, comma separated. The oracle feeds
+	// rows for over a thousand bases while the markets use a handful,
+	// and retaining 4000 rows for every one of them grows the heap
+	// without bound. Live broadcasting is unaffected; only snapshot
+	// history is limited. Empty keeps the old buffer-everything
+	// behavior.
+	EnvPricesBases = "SPN_PRICES_BASES"
 )
 
 const PrivateSnapshotLookback = 4000
@@ -40,10 +49,10 @@ const PricesTable = "oracles_ninelives_prices_2"
 const PricesPartitionKey = "base"
 
 type TableContent struct {
-	Table            string           `json:"table"`
-	Content          map[string]any   `json:"content,omitempty"`
-	Snapshot         []map[string]any `json:"snapshot,omitempty"`
-	SnapshotToplevel []TableContent   `json:"snapshot_toplevel,omitempty"`
+	Table            string         `json:"table"`
+	Content          map[string]any `json:"content,omitempty"`
+	Snapshot         []any          `json:"snapshot,omitempty"`
+	SnapshotToplevel []TableContent `json:"snapshot_toplevel,omitempty"`
 	encoded          []byte
 }
 
@@ -51,9 +60,56 @@ type FilterConstraint struct {
 	Et any `json:"et"`
 }
 
+// priceRow is the compact retained form of a prices table row: one
+// small struct instead of a map[string]any and its boxed values,
+// which cost several times more per row. It marshals to the same
+// JSON shape as the decoded map.
+type priceRow struct {
+	Id        int64     `json:"id"`
+	Base      string    `json:"base"`
+	Amount    float64   `json:"amount"`
+	CreatedBy time.Time `json:"created_by"`
+}
+
+// compactPriceRow converts a decoded prices row to its compact form,
+// falling back to the map unchanged if the decoded types are ever
+// not what we expect.
+func compactPriceRow(m map[string]any) any {
+	id, ok1 := m["id"].(int64)
+	base, ok2 := m["base"].(string)
+	amount, ok3 := m["amount"].(float64)
+	createdBy, ok4 := m["created_by"].(time.Time)
+	if !ok1 || !ok2 || !ok3 || !ok4 {
+		return m
+	}
+	return priceRow{Id: id, Base: base, Amount: amount, CreatedBy: createdBy}
+}
+
+// itemField reads a field from a buffered row, which is either a
+// decoded map or a compact priceRow.
+func itemField(item any, k string) (any, bool) {
+	switch it := item.(type) {
+	case map[string]any:
+		v, ok := it[k]
+		return v, ok
+	case priceRow:
+		switch k {
+		case "id":
+			return it.Id, true
+		case "base":
+			return it.Base, true
+		case "amount":
+			return it.Amount, true
+		case "created_by":
+			return it.CreatedBy, true
+		}
+	}
+	return nil, false
+}
+
 type ringBuffer struct {
 	i     int
-	items [PrivateSnapshotLookback]map[string]any
+	items [PrivateSnapshotLookback]any
 }
 
 type partitionedBuffer struct {
@@ -71,7 +127,7 @@ func newPartitionedBuffer() *partitionedBuffer {
 	return &partitionedBuffer{buffers: make(map[string]*ringBuffer)}
 }
 
-func (pb *partitionedBuffer) insert(partitionKey string, content map[string]any) {
+func (pb *partitionedBuffer) insert(partitionKey string, content any) {
 	x := pb.buffers[partitionKey]
 	if x == nil {
 		x = &ringBuffer{}
@@ -84,10 +140,10 @@ func (pb *partitionedBuffer) insert(partitionKey string, content map[string]any)
 	x.i++
 }
 
-func (pb *partitionedBuffer) allItems() []map[string]any {
-	var out []map[string]any
+func (pb *partitionedBuffer) allItems() []any {
+	var out []any
 	for _, rb := range pb.buffers {
-		snapshot := make([]map[string]any, PrivateSnapshotLookback)
+		snapshot := make([]any, PrivateSnapshotLookback)
 		copy(snapshot, rb.items[:])
 		for _, item := range snapshot {
 			if item != nil {
@@ -186,6 +242,13 @@ func main() {
 
 	dumpChan := make(chan dumpRequest)
 
+	pricesBases := make(map[string]bool)
+	for _, b := range strings.Split(os.Getenv(EnvPricesBases), ",") {
+		if b = strings.ToUpper(strings.TrimSpace(b)); b != "" {
+			pricesBases[b] = true
+		}
+	}
+
 	go func() {
 		bufferMsgsChan := make(chan TableContent, 100*60)
 		bufferCookie := broadcast.Subscribe(bufferMsgsChan)
@@ -211,13 +274,18 @@ func main() {
 				}
 
 				partitionKey := ""
+				row := any(v.Content)
 				if v.Table == PricesTable {
 					if base, ok := v.Content[PricesPartitionKey]; ok {
 						partitionKey = fmt.Sprintf("%v", base)
 					}
+					if len(pricesBases) > 0 && !pricesBases[strings.ToUpper(partitionKey)] {
+						continue
+					}
+					row = compactPriceRow(v.Content)
 				}
 
-				pb.insert(partitionKey, v.Content)
+				pb.insert(partitionKey, row)
 
 			case req, ok := <-dumpChan:
 				if !ok {
@@ -420,14 +488,14 @@ func main() {
 									continue
 								}
 
-								var filteredItems []map[string]any
+								var filteredItems []any
 								for _, item := range tableContent.Snapshot {
 									if item == nil {
 										continue
 									}
 									include := true
 									for k, c := range tableFilter {
-										v, exists := item[k]
+										v, exists := itemField(item, k)
 										if !exists || !compareFmt(v, c.Et) {
 											include = false
 											break
