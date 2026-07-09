@@ -123,13 +123,13 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 | Paymaster                     | \`$SPN_PAYMASTER_ADDR\` |
 | Paymaster caller              | \`$SPN_PAYMASTER_CALLER_ADDR\` |
 | fUSDC                         | \`$SPN_FUSDC_ADDR\` |
-|| Camelot swap router           | \`$SPN_CAMELOT_SWAP_ROUTER\` |
-|| Stargate                      | \`$SPN_STARGATE_ADDR\` |
-|| WETH                          | \`$SPN_WETH_ADDR\` |
-|| DPPM hour creator             | \`$SPN_DPPM_HOUR_CREATOR_ADDR\` |
-|| DPPM 15 min creator           | \`$SPN_DPPM_15_MIN_CREATOR_ADDR\` |
-|| DPPM 5 min creator            | \`$SPN_DPPM_5_MIN_CREATOR_ADDR\` |
-|| Oracle                        | \`$SPN_ORACLE_ADDR\` |
+| Camelot swap router           | \`$SPN_CAMELOT_SWAP_ROUTER\` |
+| Stargate                      | \`$SPN_STARGATE_ADDR\` |
+| WETH                          | \`$SPN_WETH_ADDR\` |
+| DPPM hour creator             | \`$SPN_DPPM_HOUR_CREATOR_ADDR\` |
+| DPPM 15 min creator           | \`$SPN_DPPM_15_MIN_CREATOR_ADDR\` |
+| DPPM 5 min creator            | \`$SPN_DPPM_5_MIN_CREATOR_ADDR\` |
+| Oracle                        | \`$SPN_ORACLE_ADDR\` |
 EOF
 
 cat <<EOF

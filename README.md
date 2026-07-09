@@ -233,7 +233,7 @@ See [audits/README.md](audits/README.md) for details.
 | Claimant helper               | `0xf8Da8d65120b317331C79092Bf65e99bed6e65dE` |
 | Paymaster                     | `0xA19B3a76d5744825c3672a5FFE1F4F5Aee3F28dE` |
 | Paymaster caller              | `0x132abdc1eca9b55a2ce3a48cec4a3d443301dc06` |
-| fUSDC                         | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
+| USDC                          | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
 | Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
 | Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
 | WETH                          | `0x82af49447d8a07e3bd95bd0d56f35241523fbab1` |
@@ -242,6 +242,7 @@ See [audits/README.md](audits/README.md) for details.
 | DPPM 5 min creator            | `0xF42cC58DA660e0f04e318372280ECCc26733757c` |
 | Oracle                        | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
 | Buy helper                    | `0xAa901219528e22aC1E3a3bDc40a34Eab7983d240` |
+| Vault                         | `0xE45C182512e18982522B620EDfF0D9C56c294C08` |
 
 ### Superposition mainnet
 
