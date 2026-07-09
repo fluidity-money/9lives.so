@@ -15,7 +15,6 @@ interface Factory {
 struct DeployArgs {
     address admin;
     address emergencyCouncil;
-    address shareImpl;
     address beaconAddr;
     address dppmHourCreatorAddr;
     address dppm15MinCreatorAddr;

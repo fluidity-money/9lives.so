@@ -216,30 +216,31 @@ See [audits/README.md](audits/README.md) for details.
 |-------------------------------|--------------------------------------------|
 | Proxy admin                   | `0x58A5f520FF7A6F59863e8a73b066A975799d5d48` |
 | Emergency council             | `0x6221a9c005f6e47eb398fd867784cacfdcfff4e7` |
-| Factory proxy                 | `0x5054bbda05cd47f785ebcad8baea0599c28b7177` |
 | Trading DPPM mint impl        | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
-| Trading AMM mint impl         | `0x1ade5cd6b4498f1ae1d497e1dbf6c3540f76d884` |
-| Trading AMM extras impl       | `0xfa0e60a1f1750dd5dcc5f038ceaf46882adf21c3` |
-| Trading AMM quotes impl       | `0x68af4f3cc7fec6b5a33b765eb811728853a2c982` |
-| Trading AMM price impl        | `0x3a218fa553395728338f4e17499a21ffeccf72e9` |
+| Trading AMM mint impl         | `0xd596980809661b029b9c414b17d29dd5606eefeb` |
+| Trading AMM extras impl       | `0x001da572372fbda0bf9db37116bcf8fc99930e05` |
+| Trading AMM quotes impl       | `0x971428d8579a8462f07c2ebc3e01f491b07ed152` |
+| Trading AMM price impl        | `0x5b60a793bccac54a2430420e6e8cc814e97ad85e` |
 | Share implementation          | `0x87f03D061C1e92802e2A9969E93Ff30f0C178230` |
-| Factory proxy                 | `` |
-| Helper factory                | `` |
+| Factory proxy                 | `0x90234c942f335df8c055b9c1a2e0babf060a31ad` |
+| Helper factory                | `0x263735150e8b48FF6bF471DB94f113e9994C333d` |
 | Trading beacon                | `0x5F2BD61Bb7e4a8008e0725F8AbB977cbe41FcfD5` |
-| LensesV1                      | `` |
+| LensesV1                      | `0xF0dd060f469A2445736Df0EAE97e24113faCe0d6` |
 | Sarp AI Resolver              | `0xa81a0adab3492dae14c45c39d322a78a24c8b683` |
-| Claimant helper               | `0x8e9c34b5ce311314e2324178ffeb7a03743cb072` |
-| Paymaster                     | `0x4e2Dd16F9e0376555bcca2266233578422C56771` |
+| Claimant helper               | `0xf8Da8d65120b317331C79092Bf65e99bed6e65dE` |
+| Paymaster                     | `0xA19B3a76d5744825c3672a5FFE1F4F5Aee3F28dE` |
 | Paymaster caller              | `0x132abdc1eca9b55a2ce3a48cec4a3d443301dc06` |
-| USDC                          | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
-| Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
-| Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
-| Vault                         | `` |
-| Price markets oracle          | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
-| Buy helper                    | `` |
+| fUSDC                         | `0xaf88d065e77c8cC2239327C5EDb3A432268e5831` |
+|| Camelot swap router           | `0x1f721e2e82f6676fce4ea07a5958cf098d339e18` |
+|| Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
+|| WETH                          | `0x82af49447d8a07e3bd95bd0d56f35241523fbab1` |
+|| DPPM hour creator             | `0xF42cC58DA660e0f04e318372280ECCc26733757c` |
+|| DPPM 15 min creator           | `0xF42cC58DA660e0f04e318372280ECCc26733757c` |
+|| DPPM 5 min creator            | `0xF42cC58DA660e0f04e318372280ECCc26733757c` |
+|| Oracle                        | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
 
 ### Superposition mainnet
 

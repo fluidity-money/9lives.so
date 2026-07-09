@@ -15,6 +15,7 @@ $SPN_DPPM_HOUR_CREATOR_ADDR
 $SPN_DPPM_15_MIN_CREATOR_ADDR
 $SPN_DPPM_5_MIN_CREATOR_ADDR
 $SPN_ORACLE_ADDR
+$SPN_VAULT_ADDR
 EOF
 
 log() {
@@ -129,8 +130,6 @@ log "SPN_LENSESV1=$SPN_LENSESV1"
 || DPPM 15 min creator           | \`$SPN_DPPM_15_MIN_CREATOR_ADDR\` |
 || DPPM 5 min creator            | \`$SPN_DPPM_5_MIN_CREATOR_ADDR\` |
 || Oracle                        | \`$SPN_ORACLE_ADDR\` |
-|| Superposition URL             | \`$SPN_SUPERPOSITION_URL\` |
-|| Superposition key             | \`$SPN_SUPERPOSITION_KEY\` |
 EOF
 
 cat <<EOF
