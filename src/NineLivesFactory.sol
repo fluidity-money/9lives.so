@@ -172,8 +172,7 @@ contract NineLivesFactory is IEvents, INineLivesFactory {
         address oracle,
         uint64 timeStart,
         uint64 timeEnding,
-        bytes32,
-        /* documentation */
+        bytes32 /* documentation */,
         address feeRecipient,
         uint64 feeCreator,
         uint64 feeLp,

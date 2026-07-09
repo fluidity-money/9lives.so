@@ -17,7 +17,7 @@
 # to restart from the point after which they were printed.
 
 if(~ $SPN_SUPERPOSITION_9LIVES_GRAPH '') \
-	SPN_SUPERPOSITION_9LIVES_GRAPH=htps://graph.9lives.so
+	SPN_SUPERPOSITION_9LIVES_GRAPH=https://graph.9lives.so
 
 if(~ $SPN_FEE_CREATOR '') {
 	fee_creator=3

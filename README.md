@@ -239,6 +239,7 @@ See [audits/README.md](audits/README.md) for details.
 | Stargate                      | `0xe8CDF27AcD73a434D661C84887215F7598e7d0d3` |
 | Vault                         | `0x4E1fd0869639Fa329e028eab098E0ac50eB5cd82` |
 | Price markets oracle          | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
+| Buy helper                    | `0xEb94D21F8C08552a51f9AE862098841FF1bEb1f4` |
 
 ### Superposition mainnet
 
