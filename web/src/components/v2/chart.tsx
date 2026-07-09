@@ -37,122 +37,17 @@ export default function AssetPriceChart({
   const latestPrice = latestPoint.price;
   const latestTimestamp = latestPoint.timestamp;
   const priceIsAbove = latestPrice > basePrice;
-  const timeDiff = ending - starting;
-  const MIN = 1000 * 60;
-  const HOUR = MIN * 60;
-  const DAY = HOUR * 24;
-  const MONTH = DAY * 30;
-  const YEAR = MONTH * 12;
-  const prices = assetPrices.map((i) => i.price);
-  const minPrice = Math.min(...prices, basePrice);
-  const maxPrice = Math.max(...prices, basePrice);
-  const simpleDiff = Math.max(
-    Math.abs(basePrice - minPrice),
-    Math.abs(basePrice - maxPrice),
-  );
-  const minY = basePrice - simpleDiff;
-  const maxY = basePrice + simpleDiff;
-  const isDailyMarket = DAY >= timeDiff && timeDiff > HOUR;
-  const formatFn = (ts: number) => {
-    const date = new Date(ts);
-    switch (true) {
-      case timeDiff > MONTH:
-        return date.toLocaleString("default", {
-          month: "short",
-          year: timeDiff > YEAR ? "2-digit" : undefined,
-        });
-      case MONTH >= timeDiff && timeDiff > DAY:
-        return date.toLocaleString("default", {
-          day: "numeric",
-          month: "short",
-        });
-      case isDailyMarket:
-        return date.toLocaleString("default", {
-          day: "numeric",
-          month: "short",
-        });
-      default:
-        return date.toLocaleString("default", {
-          hour: "numeric",
-          minute: "2-digit",
-        });
-    }
-  };
-  const pointsData = [
-    { id: 1, timestamp: starting, price: basePrice },
-    ...assetPrices,
-  ];
-  const uniquePoints = Array.from(
-    new Map(pointsData.map((p) => [p.timestamp, p])).values(),
-  );
-
-  const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
-    return (
-      <circle
-        cx={cx}
-        r="10"
-        cy={cy}
-        fill={priceIsAbove ? "#DCFCE7" : "#fecaca"}
-      >
-        <animate
-          attributeName="r"
-          from="8"
-          to="20"
-          dur="1.5s"
-          begin="0s"
-          repeatCount="indefinite"
-        />
-      </circle>
-    );
-  };
-
-  const Dot = ({ cx, cy }: { cx: number; cy: number }) => {
-    return (
-      <circle
-        cx={cx}
-        r="4"
-        cy={cy}
-        stroke="#fff"
-        strokeWidth={2}
-        fill={priceIsAbove ? "#16A34A" : "#DC2828"}
-      />
-    );
-  };
-
-  const PriceInd = ({ cx, cy }: { cx: number; cy: number }) => (
-    <g transform="translate(0,-32)">
-      <rect
-        x={cx - 45}
-        y={cy - 10}
-        width={90}
-        height={20}
-        fill={priceIsAbove ? "#16A34A" : "#DC2828"}
-        rx={8}
-        stroke={priceIsAbove ? "#16A34A" : "#DC2828"}
-        strokeWidth={1}
-      />
-      <rect
-        x={cx - 41}
-        y={cy - 3.5}
-        width={6}
-        height={6}
-        fill={priceIsAbove ? "#16A34A" : "#DC2828"}
-        stroke="#FFF"
-        strokeWidth={1}
-        rx={3}
-      />
-      <text
-        x={cx}
-        y={cy + 4}
-        textAnchor="middle"
-        fontSize="12"
-        fontWeight="bold"
-        fill={"#FFF"}
-      >
-        ${latestPrice.toFixed(config.simpleMarkets[symbol].decimals)}
-      </text>
-    </g>
-  );
+  // Liveline's window trails the live edge, so size it to the span
+  // of the data we actually have: the first available point sits at
+  // the left edge and the line stretches the full width, however
+  // little history the websocket delivered. Capped to the campaign
+  // duration, with a floor so the first ticks aren't absurdly zoomed.
+  const campaignSecs = Math.max(60, Math.round((ending - starting) / 1000));
+  const windowSecs = useMemo(() => {
+    if (data.length < 2) return 30;
+    const span = Math.ceil(data[data.length - 1].time - data[0].time);
+    return Math.min(Math.max(30, span), campaignSecs);
+  }, [data, campaignSecs]);
 
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>
