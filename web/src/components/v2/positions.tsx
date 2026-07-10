@@ -192,7 +192,7 @@ export default function SimplePositions({
       ) : (
         <div className="rounded-lg bg-neutral-200 p-1">
           <div className="flex h-[90px] flex-1 flex-col items-center justify-center gap-2 rounded-md bg-2white px-2 py-1">
-            <p className="text-sm text-neutral-400">No Positons Yet</p>
+            <p className="text-sm text-neutral-400">No Positions Yet</p>
             <Button
               title="Buy a Position"
               intent="inverted"
