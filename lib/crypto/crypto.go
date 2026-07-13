@@ -63,11 +63,20 @@ func GetOutcomeIds(outcomes []Outcome) (ids [][]byte, err error) {
 }
 
 func GetMarketId(outcomes []Outcome) []byte {
-	ids, err := GetOutcomeIds(outcomes)
+	idsX, err := GetOutcomeIds(outcomes)
 	if err != nil {
 		return nil
 	}
-	return ethCrypto.Keccak256(ids...)
+	idsY := make([][]byte, len(idsX))
+	// We changed the behaviour of the factory by using Solidity over
+	// time. Now, the code needs to pad on the right side the ids
+	// when it concatenates them to have parity with the id
+	// generation:
+	for i, x := range idsX {
+		idsY[i] = make([]byte, 32)
+		copy(idsY[i], x)
+	}
+	return ethCrypto.Keccak256(idsY...)
 }
 
 type PaymasterOperation struct {
