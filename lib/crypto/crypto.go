@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
-	"sort"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 	"github.com/fluidity-money/9lives.so/lib/types/paymaster"
