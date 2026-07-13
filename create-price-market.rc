@@ -142,7 +142,7 @@ documentation=''
 
 documentation_h=0x`{echo -n $documentation | shasum -a256 | cut -f1 -d' '}
 
-echo documentation hash $documentation_h >[1=2]
+echo documentation hash $documentation_h outcome 0 $outcome_0_id outcome 1 $outcome_1_id >[1=2]
 
 while(~ $SPN_TRADING_ADDR '') {
 	SPN_TRADING_ADDR=`{
