@@ -712,6 +712,10 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	marketId := crypto.GetMarketId(outcomes_)
+	slog.Debug("About to get the trading address",
+		"market id", marketId,
+		"outcomes", outcomes_,
+	)
 	zeroAddr := ethCommon.HexToAddress("0x0000000000000000000000000000000000000000")
 	var (
 		tradingAddr *ethCommon.Address = &zeroAddr

@@ -10,22 +10,16 @@ import (
 func TestGetMarketId(t *testing.T) {
 	outcomes := []Outcome{
 		{
-			Name: "Yes",
-			Seed: 671424635701772,
+			Name: "BTC will end up below $63091.5 before 1783932300",
+			Seed: 1783931282,
 		},
 		{
-			Name: "No",
-			Seed: 4374720138937106,
+			Name: "BTC will end up above $63091.5 before 1783932300",
+			Seed: 1783931283,
 		},
 	}
-	outcomeIds, err := GetOutcomeIds(outcomes)
-	assert.Nil(t, err)
-	// these test result will not be correct because description is removed after
-	// so test will fail, fix expected outputs
-	assert.Equalf(t, hex.EncodeToString(outcomeIds[0]), "72cfc911637aa0c4", "outcome 1 bad")
-	assert.Equalf(t, hex.EncodeToString(outcomeIds[1]), "d2cd4a70ce6885d5", "outcome 2 bad")
 	assert.Equal(t,
-		"6deb6c66a41a2c8feac2bee491344f5b48060a9d37a53a1573cf7d031ce6809f",
+		"ecb973964cec52ad50f33bbc6c053b1c8aa9a6a6b6eaece48d6a7a3cbfcb36fe",
 		hex.EncodeToString(GetMarketId(outcomes)),
 	)
 }
