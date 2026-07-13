@@ -5,7 +5,7 @@ use stylus_sdk::{
 
 use alloc::vec::Vec;
 
-use crate::immutables::{erc20_proxy_hash, trading_proxy_hash};
+use crate::immutables::erc20_proxy_hash;
 
 #[cfg(target_arch = "wasm32")]
 pub use crate::wasm_proxy::*;
@@ -20,22 +20,6 @@ pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
     let mut seeds = Vec::from(seeds);
     seeds.sort_by(|a, b| a.len().cmp(&b.len()).then(a.cmp(b)));
     crypto::keccak(seeds.concat())
-}
-
-pub fn get_trading_addr(
-    factory_addr: Address,
-    is_dppm: bool,
-    outcome_ids: &[FixedBytes<8>],
-) -> Address {
-    let trading_id =
-        create_identifier(&outcome_ids.iter().map(|c| c.as_slice()).collect::<Vec<_>>());
-    let mut b = [0_u8; 85];
-    b[0] = 0xff;
-    b[1..21].copy_from_slice(factory_addr.as_slice());
-    // Leaving some spacing so that we can have an empty part of the word.
-    b[21..53].copy_from_slice(trading_id.as_slice());
-    b[53..85].copy_from_slice(&trading_proxy_hash(factory_addr, is_dppm));
-    Address::from_slice(&crypto::keccak(b).as_slice()[12..])
 }
 
 /// Get the share address, using the address of the deployed Trading

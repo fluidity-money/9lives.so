@@ -50,10 +50,6 @@ pub mod host;
 
 pub extern crate alloc;
 
-pub mod contract_factory_1;
-pub mod contract_factory_2;
-pub mod storage_factory;
-
 mod trading_amm;
 mod trading_dppm;
 mod trading_private;
@@ -71,8 +67,6 @@ pub mod contract_trading_extras_admin;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod actions;
-
-pub use storage_factory::StorageFactory;
 
 #[cfg(feature = "contract-factory-1")]
 pub use contract_factory_1::user_entrypoint;
