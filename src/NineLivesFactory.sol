@@ -14,7 +14,6 @@ interface IERC20 {
 struct NewTradingState {
     bytes32 tradingId;
     bytes32 erc20Id;
-    address tradingAddr;
     IShare erc20Addr;
     bytes8[] outcomes;
 }
@@ -190,7 +189,7 @@ contract NineLivesFactory is IEvents, INineLivesFactory {
         s.tradingId = createTradingId(s.outcomes);
         trading = deployTrading(backendIsDppm, s.tradingId);
         {
-            tradingOwners[s.tradingAddr] = feeRecipient;
+            tradingOwners[address(trading)] = feeRecipient;
             if (backendIsDppm) {
                 emit NewTrading2(s.tradingId, address(trading), oracle, 0);
             } else {
