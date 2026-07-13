@@ -142,6 +142,8 @@ documentation=''
 
 documentation_h=0x`{echo -n $documentation | shasum -a256 | cut -f1 -d' '}
 
+echo documentation hash $documentation_h >[1=2]
+
 while(~ $SPN_TRADING_ADDR '') {
 	SPN_TRADING_ADDR=`{
 		call_and_send \
