@@ -31,6 +31,7 @@ defaults! {
     DPPM_5_MIN_CREATOR,
     DPPM_15_MIN_CREATOR,
     SHARE_IMPL,
+    ENCLAVE,
 
     IVAN,
     ERIK,

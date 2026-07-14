@@ -1,7 +1,7 @@
 use stylus_sdk::{alloy_primitives::*, prelude::*, storage::*};
 
 #[cfg(not(target_arch = "wasm32"))]
-use crate::{immutables, utils::msg_sender};
+use crate::utils::msg_sender;
 
 #[cfg_attr(
     any(
@@ -198,7 +198,7 @@ impl std::fmt::Debug for StorageTrading {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         write!(
             f,
-            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, share impl: {:?}, .., dppm seed invested: {:?}, dppm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
+            "StorageTrading {{ created: {:?}, factory addr: {:?}, when decided: {:?}, is shutdown: {:?}, fee recipient: {:?}, time start: {:?}, time ending: {:?}, oracle: {:?}, .., dppm seed invested: {:?}, dppm global invested: {:?}, .., winner: {:?}, should buffer time: {:?}, amm liquidity: {:?}, amm shares: {:?}, amm total shares: {:?}, amm sender user liquidity shares for msg sender: {:?} }}",
             self.created,
             self.factory_addr,
             self.when_decided,
@@ -207,7 +207,6 @@ impl std::fmt::Debug for StorageTrading {
             self.time_start,
             self.time_ending,
             self.oracle,
-            immutables::SHARE_ADDR,
             self.amm_liquidity,
             self.dppm_global_invested,
             self.winner,
@@ -231,7 +230,6 @@ pub fn strat_storage_trading(
     use proptest::prelude::*;
     (
         any::<Address>(),
-        any::<Address>(),
         strat_small_u256(),
         // We only test two outcomes for now.
         proptest::collection::vec(
@@ -241,7 +239,7 @@ pub fn strat_storage_trading(
         any::<bool>(),
     )
         .prop_flat_map(
-            move |(oracle, share_impl, amm_liquidity, outcomes, should_buffer_time)| {
+            move |(oracle, amm_liquidity, outcomes, should_buffer_time)| {
                 (
                     strat_large_u256().no_shrink(),
                     any::<bool>(),
@@ -274,7 +272,6 @@ pub fn strat_storage_trading(
                                 time_start,
                                 time_ending,
                                 oracle,
-                                share_impl,
                                 amm_liquidity,
                                 should_buffer_time
                             });
