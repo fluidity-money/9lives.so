@@ -247,23 +247,25 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorAr
 	err = db.Transaction(func(db *gorm.DB) error {
 		biggestBlockNo := from
 		var (
-			hasChanged bool
+			anyChanged bool
 			err        error
 		)
 		for _, l := range logs {
-			hasChanged, err = handleLog(f, db, ingestorArgs, l)
+			hasChanged, err := handleLog(f, db, ingestorArgs, l)
 			if err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
+			anyChanged = anyChanged || hasChanged
 			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
 		}
 		// Update the checkpoint to use the latest block, if that's more than our
-		// request.
-		if hasChanged {
+		// request. We use to+1 so the next poll's FromBlock (inclusive) doesn't
+		// re-query the boundary block we already processed.
+		if anyChanged {
 			biggestBlockNo++
 		}
 		if to < latestBlockNo {
-			biggestBlockNo = to
+			biggestBlockNo = to + 1
 		}
 		// Update checkpoint here with the latest that we saw.
 		if err := updateCheckpoint(db, biggestBlockNo); err != nil {
