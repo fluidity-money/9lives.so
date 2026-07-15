@@ -280,6 +280,37 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorAr
 }
 
 func handleLog(f features.F, db *gorm.DB, ingestorArgs IngestorArgs, l ethTypes.Log) (bool, error) {
+	if len(l.Topics) == 0 {
+		return false, nil
+	}
+	topic0 := l.Topics[0]
+	// Check feature flags to opt out of specific event sources.
+	switch {
+	case f.Is(features.FeatureIngestorDisableLayerzero) && (topic0 == layerzero.TopicPacketBurnt ||
+		topic0 == layerzero.TopicPacketDelivered ||
+		topic0 == layerzero.TopicPacketNilified ||
+		topic0 == layerzero.TopicPacketSent ||
+		topic0 == layerzero.TopicPacketVerified):
+		return false, nil
+	case f.Is(features.FeatureIngestorDisableVendor) && (topic0 == vendor.TopicBorrow ||
+		topic0 == vendor.TopicDeposit ||
+		topic0 == vendor.TopicRepay ||
+		topic0 == vendor.TopicRollIn ||
+		topic0 == vendor.TopicWithdraw):
+		return false, nil
+	case f.Is(features.FeatureIngestorDisableOnchaingm) && topic0 == onchaingm.TopicOnchainGm:
+		return false, nil
+	case f.Is(features.FeatureIngestorDisableSudoswap) && topic0 == sudoswap.TopicNewERC721Pair:
+		return false, nil
+	case f.Is(features.FeatureIngestorDisableArbsys) && topic0 == arb_sys.TopicL2ToL1Tx:
+		return false, nil
+	case f.Is(features.FeatureIngestorDisablePunkDomains) && topic0 == punk_domains.TopicDefaultDomainChanged:
+		return false, nil
+	case f.Is(features.FeatureIngestorDisableArbGateway) && topic0 == arb_gateway.TopicWithdrawalInitiated:
+		return false, nil
+	case f.Is(features.FeatureIngestorDisableLifi) && topic0 == lifi.TopicLifiGenericSwapCompleted:
+		return false, nil
+	}
 	return handleLogCallback(
 		ingestorArgs,
 		l,

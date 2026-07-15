@@ -60,4 +60,31 @@ const (
 
 	// FeatureStreamBlocks instead of polling
 	FeatureStreamBlocks = "should stream using websocket instead of polling"
+
+	// Ingestor opt-out flags. When enabled, the ingestor skips collecting
+	// events from the corresponding source.
+
+	// FeatureIngestorDisableLayerzero skips LayerZero packet events.
+	FeatureIngestorDisableLayerzero = "ingestor disable layerzero"
+
+	// FeatureIngestorDisableVendor skips Vendor (borrow/deposit/repay/rollin/withdraw) events.
+	FeatureIngestorDisableVendor = "ingestor disable vendor"
+
+	// FeatureIngestorDisableOnchaingm skips OnchainGM events.
+	FeatureIngestorDisableOnchaingm = "ingestor disable onchaingm"
+
+	// FeatureIngestorDisableSudoswap skips Sudoswap pair events.
+	FeatureIngestorDisableSudoswap = "ingestor disable sudoswap"
+
+	// FeatureIngestorDisableArbsys skips ArbSys L2ToL1Tx events.
+	FeatureIngestorDisableArbsys = "ingestor disable arbsys"
+
+	// FeatureIngestorDisablePunkDomains skips Punk Domains events.
+	FeatureIngestorDisablePunkDomains = "ingestor disable punk domains"
+
+	// FeatureIngestorDisableArbGateway skips Arb Gateway withdrawal events.
+	FeatureIngestorDisableArbGateway = "ingestor disable arb gateway"
+
+	// FeatureIngestorDisableLifi skips LiFi swap events.
+	FeatureIngestorDisableLifi = "ingestor disable lifi"
 )
