@@ -301,7 +301,6 @@ func handleLog(f features.F, db *gorm.DB, ingestorArgs IngestorArgs, l ethTypes.
 	if len(l.Topics) == 0 {
 		return false, nil
 	}
-	topic0 := l.Topics[0]
 	return handleLogCallback(
 		ingestorArgs,
 		l,
