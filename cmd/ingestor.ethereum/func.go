@@ -34,76 +34,94 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-// FilterTopics to filter for using the Websocket/HTTP collection of logs.
-var FilterTopics = []ethCommon.Hash{ // Matches any of these in the first topic position.
-	events.TopicNewTrading2,
-	events.TopicOutcomeCreated,
-	events.TopicOutcomeDecided,
-	events.TopicSharesMinted,
-	events.TopicSharesBurned,
-	events.TopicPayoffActivated,
-	events.TopicDeadlineExtension,
-	events.TopicMarketCreated2,
-	events.TopicCallMade,
-	events.TopicInfraMarketClosed,
-	events.TopicDAOMoneyDistributed,
-	events.TopicCommitted,
-	events.TopicCommitmentRevealed,
-	events.TopicWhinged,
-	events.TopicCampaignEscaped,
-	events.TopicLockedUp,
-	events.TopicWithdrew,
-	events.TopicSlashed,
-	events.TopicFrozen,
-	events.TopicRequested,
-	events.TopicConcluded,
-	events.TopicLiquidityAdded,
-	events.TopicLiquidityAddedSharesSent,
-	events.TopicLiquidityRemoved,
-	events.TopicLiquidityRemovedSharesSent,
-	events.TopicLiquidityClaimed,
-	events.TopicLPFeesClaimed,
-	events.TopicAddressFeesClaimed,
-	events.TopicReferrerEarnedFees,
-	events.TopicAmmDetails,
-	events.TopicNinetailsBoostedSharesReceived,
-	events.TopicNinetailsCumulativeWinnerPayoff,
-	events.TopicNinetailsLoserPayoff,
-	events.TopicDppmClawback,
-	events.TopicDebtRepaid,
-	events.TopicSeedLiquidityAdded,
-	// Paymaster
-	paymaster.TopicPaymasterPaidFor,
-	paymaster.TopicStargateBridged,
-	// Lifi
-	lifi.TopicLifiGenericSwapCompleted,
-	// Stargate
-	stargate.TopicStargateOFTReceived,
-	stargate.TopicStargateOFTSent,
-	// Onchain GM
-	onchaingm.TopicOnchainGm,
-	// Layerzero
-	layerzero.TopicPacketBurnt,
-	layerzero.TopicPacketDelivered,
-	layerzero.TopicPacketNilified,
-	layerzero.TopicPacketSent,
-	layerzero.TopicPacketVerified,
-	// Dinero
-	dinero.TopicOwnershipTransferred,
-	// Vendor
-	vendor.TopicBorrow,
-	vendor.TopicDeposit,
-	vendor.TopicRepay,
-	vendor.TopicRollIn,
-	vendor.TopicWithdraw,
-	// Sudoswap
-	sudoswap.TopicNewERC721Pair,
-	// Punk Domains
-	punk_domains.TopicDefaultDomainChanged,
-	// ArbSys
-	arb_sys.TopicL2ToL1Tx,
-	// ArbGateway
-	arb_gateway.TopicWithdrawalInitiated,
+// FilterTopics builds the list of topic0 hashes to filter for, excluding
+// any sources disabled by feature flags at runtime.
+func FilterTopics(f features.F) []ethCommon.Hash {
+	// Core 9lives topics are always included.
+	topics := []ethCommon.Hash{
+		events.TopicNewTrading2,
+		events.TopicOutcomeCreated,
+		events.TopicOutcomeDecided,
+		events.TopicSharesMinted,
+		events.TopicSharesBurned,
+		events.TopicPayoffActivated,
+		events.TopicDeadlineExtension,
+		events.TopicMarketCreated2,
+		events.TopicCallMade,
+		events.TopicInfraMarketClosed,
+		events.TopicDAOMoneyDistributed,
+		events.TopicCommitted,
+		events.TopicCommitmentRevealed,
+		events.TopicWhinged,
+		events.TopicCampaignEscaped,
+		events.TopicLockedUp,
+		events.TopicWithdrew,
+		events.TopicSlashed,
+		events.TopicFrozen,
+		events.TopicRequested,
+		events.TopicConcluded,
+		events.TopicLiquidityAdded,
+		events.TopicLiquidityAddedSharesSent,
+		events.TopicLiquidityRemoved,
+		events.TopicLiquidityRemovedSharesSent,
+		events.TopicLiquidityClaimed,
+		events.TopicLPFeesClaimed,
+		events.TopicAddressFeesClaimed,
+		events.TopicReferrerEarnedFees,
+		events.TopicAmmDetails,
+		events.TopicNinetailsBoostedSharesReceived,
+		events.TopicNinetailsCumulativeWinnerPayoff,
+		events.TopicNinetailsLoserPayoff,
+		events.TopicDppmClawback,
+		events.TopicDebtRepaid,
+		events.TopicSeedLiquidityAdded,
+		// Paymaster
+		paymaster.TopicPaymasterPaidFor,
+		paymaster.TopicStargateBridged,
+		// Stargate
+		stargate.TopicStargateOFTReceived,
+		stargate.TopicStargateOFTSent,
+		// Dinero
+		dinero.TopicOwnershipTransferred,
+	}
+	// Conditionally include sources that have feature-flag opt-outs.
+	if !f.Is(features.FeatureIngestorDisableLifi) {
+		topics = append(topics, lifi.TopicLifiGenericSwapCompleted)
+	}
+	if !f.Is(features.FeatureIngestorDisableOnchaingm) {
+		topics = append(topics, onchaingm.TopicOnchainGm)
+	}
+	if !f.Is(features.FeatureIngestorDisableLayerzero) {
+		topics = append(topics,
+			layerzero.TopicPacketBurnt,
+			layerzero.TopicPacketDelivered,
+			layerzero.TopicPacketNilified,
+			layerzero.TopicPacketSent,
+			layerzero.TopicPacketVerified,
+		)
+	}
+	if !f.Is(features.FeatureIngestorDisableVendor) {
+		topics = append(topics,
+			vendor.TopicBorrow,
+			vendor.TopicDeposit,
+			vendor.TopicRepay,
+			vendor.TopicRollIn,
+			vendor.TopicWithdraw,
+		)
+	}
+	if !f.Is(features.FeatureIngestorDisableSudoswap) {
+		topics = append(topics, sudoswap.TopicNewERC721Pair)
+	}
+	if !f.Is(features.FeatureIngestorDisablePunkDomains) {
+		topics = append(topics, punk_domains.TopicDefaultDomainChanged)
+	}
+	if !f.Is(features.FeatureIngestorDisableArbsys) {
+		topics = append(topics, arb_sys.TopicL2ToL1Tx)
+	}
+	if !f.Is(features.FeatureIngestorDisableArbGateway) {
+		topics = append(topics, arb_gateway.TopicWithdrawalInitiated)
+	}
+	return topics
 }
 
 type IngestorArgs struct {
@@ -133,7 +151,7 @@ func IngestStreaming(f features.F, c *ethclient.Client, db *gorm.DB, ingestorArg
 	)
 	query := ethereum.FilterQuery{
 		FromBlock: new(big.Int).SetUint64(from),
-		Topics:    [][]ethCommon.Hash{FilterTopics},
+		Topics:    [][]ethCommon.Hash{FilterTopics(f)},
 	}
 	logs := make(chan ethTypes.Log)
 	sub, err := c.SubscribeFilterLogs(context.Background(), query, logs)
@@ -242,7 +260,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorAr
 	logs, err := c.FilterLogs(context.Background(), ethereum.FilterQuery{
 		FromBlock: new(big.Int).SetUint64(from),
 		ToBlock:   new(big.Int).SetUint64(to),
-		Topics:    [][]ethCommon.Hash{FilterTopics},
+		Topics:    [][]ethCommon.Hash{FilterTopics(f)},
 	})
 	if err != nil {
 		setup.Exitf("failed to filter logs: %v", err)
@@ -284,33 +302,6 @@ func handleLog(f features.F, db *gorm.DB, ingestorArgs IngestorArgs, l ethTypes.
 		return false, nil
 	}
 	topic0 := l.Topics[0]
-	// Check feature flags to opt out of specific event sources.
-	switch {
-	case f.Is(features.FeatureIngestorDisableLayerzero) && (topic0 == layerzero.TopicPacketBurnt ||
-		topic0 == layerzero.TopicPacketDelivered ||
-		topic0 == layerzero.TopicPacketNilified ||
-		topic0 == layerzero.TopicPacketSent ||
-		topic0 == layerzero.TopicPacketVerified):
-		return false, nil
-	case f.Is(features.FeatureIngestorDisableVendor) && (topic0 == vendor.TopicBorrow ||
-		topic0 == vendor.TopicDeposit ||
-		topic0 == vendor.TopicRepay ||
-		topic0 == vendor.TopicRollIn ||
-		topic0 == vendor.TopicWithdraw):
-		return false, nil
-	case f.Is(features.FeatureIngestorDisableOnchaingm) && topic0 == onchaingm.TopicOnchainGm:
-		return false, nil
-	case f.Is(features.FeatureIngestorDisableSudoswap) && topic0 == sudoswap.TopicNewERC721Pair:
-		return false, nil
-	case f.Is(features.FeatureIngestorDisableArbsys) && topic0 == arb_sys.TopicL2ToL1Tx:
-		return false, nil
-	case f.Is(features.FeatureIngestorDisablePunkDomains) && topic0 == punk_domains.TopicDefaultDomainChanged:
-		return false, nil
-	case f.Is(features.FeatureIngestorDisableArbGateway) && topic0 == arb_gateway.TopicWithdrawalInitiated:
-		return false, nil
-	case f.Is(features.FeatureIngestorDisableLifi) && topic0 == lifi.TopicLifiGenericSwapCompleted:
-		return false, nil
-	}
 	return handleLogCallback(
 		ingestorArgs,
 		l,

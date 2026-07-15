@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
+	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ func testIngestorArgsZero() IngestorArgs {
 
 func TestTopicsAreOkay(t *testing.T) {
 	var z [32]byte
-	assert.NotContains(t, z[:], FilterTopics)
+	assert.NotContains(t, z[:], FilterTopics(features.F{}))
 }
 
 func TestSharesMinted(t *testing.T) {
