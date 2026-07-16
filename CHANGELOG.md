@@ -1,3 +1,13 @@
+## 16-06-2026 Arbitrum
+
+Welcome to our sneaky Arbitrum deployment.
+
+That's right, we'll be supporting Arbitrum on 9lives! This includes a few new features we maybe couldn't have taken live otherwise. Very exciting!
+
+Anyway, if you encounter any issues, be sure to share it with the team via a ticket please.
+
+Have fun predicting!
+
 ## 18-03-2026 Shortterm AMM
 
 It's been a while since our last update!
