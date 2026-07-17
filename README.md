@@ -220,15 +220,15 @@ See [audits/README.md](audits/README.md) for details.
 | Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
-| Trading AMM mint impl         | `0xd596980809661b029b9c414b17d29dd5606eefeb` |
-| Trading AMM extras impl       | `0x001da572372fbda0bf9db37116bcf8fc99930e05` |
+| Trading AMM mint impl         | `0x18ff22a43e9f4f28f04660041f8bd07f0c6a197a` |
+| Trading AMM extras impl       | `0xe421ea1da03c45207437a53fc3b5cea6017f2368` |
 | Trading AMM quotes impl       | `0x971428d8579a8462f07c2ebc3e01f491b07ed152` |
 | Trading AMM price impl        | `0x5b60a793bccac54a2430420e6e8cc814e97ad85e` |
 | Share implementation          | `0x87f03D061C1e92802e2A9969E93Ff30f0C178230` |
 | Factory proxy                 | `0x90234c942f335df8c055b9c1a2e0babf060a31ad` |
 | Helper factory                | `0x263735150e8b48FF6bF471DB94f113e9994C333d` |
 | Trading beacon                | `0x5F2BD61Bb7e4a8008e0725F8AbB977cbe41FcfD5` |
-| LensesV1                      | `0xF0dd060f469A2445736Df0EAE97e24113faCe0d6` |
+| LensesV1                      | `0xA28CCAf4E66276AA8e1635596cc9494107A0fDA9` |
 | Sarp AI Resolver              | `0xa81a0adab3492dae14c45c39d322a78a24c8b683` |
 | Claimant helper               | `0xf8Da8d65120b317331C79092Bf65e99bed6e65dE` |
 | Paymaster                     | `0xA19B3a76d5744825c3672a5FFE1F4F5Aee3F28dE` |
