@@ -19,7 +19,6 @@ pub mod outcome;
 pub mod host_proxy;
 
 pub mod proxy;
-pub mod wasm_proxy;
 
 pub mod calldata;
 

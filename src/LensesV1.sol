@@ -29,7 +29,7 @@ contract LensesV1 {
                 uint256(
                     keccak256(
                         abi.encodePacked(
-                            hex"ff", _factory, keccak256(abi.encodePacked(_outcomeId, _tradingAddr)), _hash
+                            hex"ff", _factory, keccak256(abi.encodePacked(_tradingAddr, _outcomeId)), _hash
                         )
                     )
                 )

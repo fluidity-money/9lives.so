@@ -3,24 +3,7 @@ use stylus_sdk::{
     crypto,
 };
 
-use alloc::vec::Vec;
-
 use crate::immutables::erc20_proxy_hash;
-
-#[cfg(target_arch = "wasm32")]
-pub use crate::wasm_proxy::*;
-
-#[cfg(not(target_arch = "wasm32"))]
-pub use crate::host_proxy::*;
-
-// Sort and concatenate the seeds given, ABI format them, then hash them,
-// using an online keccak256 calculation with the native operation.
-pub fn create_identifier(seeds: &[&[u8]]) -> FixedBytes<32> {
-    // Sort the seeds in a new vector by length first, then by default.
-    let mut seeds = Vec::from(seeds);
-    seeds.sort_by(|a, b| a.len().cmp(&b.len()).then(a.cmp(b)));
-    crypto::keccak(seeds.concat())
-}
 
 /// Get the share address, using the address of the deployed Trading
 /// contract, and the id associated with the winning outcome.
@@ -30,7 +13,7 @@ pub fn get_share_addr(
     erc20_impl: Address,
     outcome_id: FixedBytes<8>,
 ) -> Address {
-    let erc20_id = create_identifier(&[trading_addr.as_slice(), outcome_id.as_slice()]);
+    let erc20_id = crypto::keccak([trading_addr.as_slice(), outcome_id.as_slice()].concat());
     let mut b = [0_u8; 85];
     b[0] = 0xff;
     b[1..21].copy_from_slice(factory_addr.as_slice());

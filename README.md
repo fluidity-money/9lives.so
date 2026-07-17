@@ -220,8 +220,8 @@ See [audits/README.md](audits/README.md) for details.
 | Trading DPPM extras impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM quotes impl      | `0x0000000000000000000000000000000000000000` |
 | Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
-| Trading AMM mint impl         | `0xd596980809661b029b9c414b17d29dd5606eefeb` |
-| Trading AMM extras impl       | `0x001da572372fbda0bf9db37116bcf8fc99930e05` |
+| Trading AMM mint impl         | `0x94dc085b9a0d458924895cd1edf4351921be305b` |
+| Trading AMM extras impl       | `0xe421ea1da03c45207437a53fc3b5cea6017f2368` |
 | Trading AMM quotes impl       | `0x971428d8579a8462f07c2ebc3e01f491b07ed152` |
 | Trading AMM price impl        | `0x5b60a793bccac54a2430420e6e8cc814e97ad85e` |
 | Share implementation          | `0x87f03D061C1e92802e2A9969E93Ff30f0C178230` |
@@ -243,6 +243,7 @@ See [audits/README.md](audits/README.md) for details.
 | Oracle                        | `0xA2cFa0E8dD8abD255343c9ab6D36f3306Ad3A6aB` |
 | Buy helper                    | `0xAa901219528e22aC1E3a3bDc40a34Eab7983d240` |
 | Vault                         | `0xE45C182512e18982522B620EDfF0D9C56c294C08` |
+| Authority                     | `0x982158348B3f1Af92DB33671BC7C70c46ee2cbb8` |
 
 ### Superposition mainnet
 
