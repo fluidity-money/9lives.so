@@ -167,7 +167,7 @@ contract BuyHelper2 {
                     uint256(
                         keccak256(
                             abi.encodePacked(
-                                hex"ff", _factory, keccak256(abi.encodePacked(_outcomeId, _tradingAddr)), ERC20_HASH
+                                hex"ff", _factory, keccak256(abi.encodePacked(_tradingAddr, _outcomeId)), ERC20_HASH
                             )
                         )
                     )
