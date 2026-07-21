@@ -222,7 +222,7 @@ See [audits/README.md](audits/README.md) for details.
 | Trading DPPM price impl       | `0x0000000000000000000000000000000000000000` |
 | Trading AMM mint impl         | `0x18ff22a43e9f4f28f04660041f8bd07f0c6a197a` |
 | Trading AMM extras impl       | `0xe421ea1da03c45207437a53fc3b5cea6017f2368` |
-| Trading AMM quotes impl       | `0x971428d8579a8462f07c2ebc3e01f491b07ed152` |
+| Trading AMM quotes impl       | `0x5a592a787a925aaf8dfcee8e99c591095bb3045c` |
 | Trading AMM price impl        | `0x5b60a793bccac54a2430420e6e8cc814e97ad85e` |
 | Share implementation          | `0x87f03D061C1e92802e2A9969E93Ff30f0C178230` |
 | Factory proxy                 | `0x90234c942f335df8c055b9c1a2e0babf060a31ad` |
