@@ -59,15 +59,15 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
 export default function Footer() {
   const router = useRouter();
   const pathname = usePathname();
-  const enableV1FooterButton = useFeatureFlag("enable v1 footer button");
+  const disableV1Markets = useFeatureFlag("disable v1 markets") ?? true;
   const versionButtons = [
-    ...(enableV1FooterButton
+    ...(!disableV1Markets
       ? [{ title: "v1", callback: () => router.push("/v1") }]
       : []),
     { title: "v2", callback: () => router.push("/") },
   ];
   const activeVersionIndex =
-    enableV1FooterButton && pathname.startsWith("/v1")
+    !disableV1Markets && pathname.startsWith("/v1")
       ? 0
       : versionButtons.length - 1;
 

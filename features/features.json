@@ -21,7 +21,7 @@
 	"enable relay create": false,
 	"enable relay add liquidity": true,
 	"enable simple mode": true,
-	"enable v1 footer button": false,
+	"disable v1 markets": true,
 	"enable campaign create": true,
 	"enable paymaster dppm buy": true,
 	"dppm markets must be made by admin": true,
