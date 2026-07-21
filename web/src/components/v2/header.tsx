@@ -42,7 +42,7 @@ export default function Header() {
         <Link
           data-test="header-logo"
           href="/"
-          className="flex h-10 items-center justify-center px-0 md:px-4"
+          className="night-theme-logo flex h-10 items-center justify-center px-0 md:px-4"
         >
           <HeaderLogo />
         </Link>

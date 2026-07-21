@@ -11,7 +11,7 @@ const button = cva("text-2black disabled:opacity-40", {
       yes: "bg-green-400 font-bold text-green-700",
       no: "bg-red-400 font-bold text-red-700",
       cta: "bg-2black text-2white",
-      reward: "border border-yellow-400 bg-yellow-200",
+      reward: "border border-yellow-400 bg-yellow-200 text-[#181818]",
       inverted: "border border-neutral-400 bg-2white",
     },
     size: {

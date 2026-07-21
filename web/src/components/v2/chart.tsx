@@ -193,7 +193,7 @@ export default function AssetPriceChart({
         <ReferenceLine
           x={starting}
           strokeWidth={2}
-          stroke="#D4D4D4"
+          stroke="rgb(var(--color-neutral-300))"
           strokeDasharray="5 5"
           zIndex={100}
           label={{
@@ -206,7 +206,7 @@ export default function AssetPriceChart({
             }),
             fontSize: 12,
             fontWeight: "500",
-            fill: "#A3A3A3",
+            fill: "rgb(var(--color-neutral-400))",
             position: "insideBottomLeft",
             dx: 0,
             dy: 16,
@@ -218,7 +218,7 @@ export default function AssetPriceChart({
           label={{
             value: `$${basePrice}`,
             position: "centerBottom",
-            fill: "#525252",
+            fill: "rgb(var(--color-neutral-600))",
             dy: 10,
             fontSize: 12,
             fontWeight: "bold",
@@ -226,13 +226,13 @@ export default function AssetPriceChart({
         />
         <ReferenceLine
           y={basePrice}
-          stroke="#E5E5E5"
+          stroke="rgb(var(--color-neutral-200))"
           strokeWidth={2}
           zIndex={0}
           label={{
             value: "BASE",
             position: "centerBottom",
-            fill: "#A3A3A3",
+            fill: "rgb(var(--color-neutral-400))",
             dy: -10,
             fontSize: 12,
             fontWeight: "bold",
@@ -241,12 +241,12 @@ export default function AssetPriceChart({
         <YAxis
           tick={{
             fontSize: 12,
-            fill: "#0C0C0C",
+            fill: "rgb(var(--color-2black))",
           }}
           domain={[minY, maxY]}
           dataKey="price"
           axisLine={{
-            stroke: "#D4D4D4",
+            stroke: "rgb(var(--color-neutral-300))",
             strokeWidth: 2,
             strokeDasharray: "5 5",
           }}
@@ -257,7 +257,7 @@ export default function AssetPriceChart({
         <XAxis
           tick={{
             fontSize: 12,
-            fill: "#A3A3A3",
+            fill: "rgb(var(--color-neutral-400))",
             transform: "translate(-6,-6)",
             fontWeight: "500",
           }}

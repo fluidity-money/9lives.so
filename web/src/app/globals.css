@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-2black: 24 24 24;
+  --color-2white: 253 253 253;
+  --color-neutral-50: 250 250 250;
+  --color-neutral-100: 245 245 245;
+  --color-neutral-200: 229 229 229;
+  --color-neutral-300: 212 212 212;
+  --color-neutral-400: 163 163 163;
+  --color-neutral-500: 115 115 115;
+  --color-neutral-600: 82 82 82;
+  --color-neutral-700: 64 64 64;
+  --color-neutral-800: 38 38 38;
+  --color-neutral-900: 23 23 23;
+  --color-neutral-950: 10 10 10;
+}
+
+html[data-theme="night"] {
+  color-scheme: dark;
+  --color-2black: 245 247 250;
+  --color-2white: 13 17 23;
+  --color-neutral-50: 10 14 20;
+  --color-neutral-100: 23 29 38;
+  --color-neutral-200: 36 45 58;
+  --color-neutral-300: 55 68 85;
+  --color-neutral-400: 148 163 184;
+  --color-neutral-500: 163 177 196;
+  --color-neutral-600: 203 213 225;
+  --color-neutral-700: 226 232 240;
+  --color-neutral-800: 241 245 249;
+  --color-neutral-900: 248 250 252;
+  --color-neutral-950: 253 253 253;
+}
+
+html[data-theme="night"] .night-theme-logo {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 @layer utilities {
   .skeleton {
     @apply relative overflow-hidden rounded-lg bg-gray-200;

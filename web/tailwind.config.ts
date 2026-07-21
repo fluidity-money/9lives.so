@@ -21,6 +21,19 @@ const config: Config = {
         watchlistRemove: "url('/icons/x.svg')",
       },
       colors: {
+        neutral: {
+          50: "rgb(var(--color-neutral-50) / <alpha-value>)",
+          100: "rgb(var(--color-neutral-100) / <alpha-value>)",
+          200: "rgb(var(--color-neutral-200) / <alpha-value>)",
+          300: "rgb(var(--color-neutral-300) / <alpha-value>)",
+          400: "rgb(var(--color-neutral-400) / <alpha-value>)",
+          500: "rgb(var(--color-neutral-500) / <alpha-value>)",
+          600: "rgb(var(--color-neutral-600) / <alpha-value>)",
+          700: "rgb(var(--color-neutral-700) / <alpha-value>)",
+          800: "rgb(var(--color-neutral-800) / <alpha-value>)",
+          900: "rgb(var(--color-neutral-900) / <alpha-value>)",
+          950: "rgb(var(--color-neutral-950) / <alpha-value>)",
+        },
         "9green": "#B8F2AA",
         "9red": "#FFB3B3",
         "9blueLight": "#DDEAEF",
@@ -31,8 +44,8 @@ const config: Config = {
         "9black": "#0C0C0C",
         "9gray": "#EEEEEE",
         "9layer": "#F5F5F5",
-        "2black": "#181818",
-        "2white": "#FDFDFD",
+        "2black": "rgb(var(--color-2black) / <alpha-value>)",
+        "2white": "rgb(var(--color-2white) / <alpha-value>)",
       },
       boxShadow: {
         "9btnPrimaryIdle":
