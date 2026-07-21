@@ -3,6 +3,7 @@ import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
 import GroupButton from "./groupButton";
 import { usePathname, useRouter } from "next/navigation";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
@@ -58,15 +59,24 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
 export default function Footer() {
   const router = useRouter();
   const pathname = usePathname();
+  const enableV1FooterButton = useFeatureFlag("enable v1 footer button");
+  const versionButtons = [
+    ...(enableV1FooterButton
+      ? [{ title: "v1", callback: () => router.push("/v1") }]
+      : []),
+    { title: "v2", callback: () => router.push("/") },
+  ];
+  const activeVersionIndex =
+    enableV1FooterButton && pathname.startsWith("/v1")
+      ? 0
+      : versionButtons.length - 1;
+
   return (
     <footer className="hidden flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 p-4 md:mb-0 md:flex md:flex-row md:py-2">
       <div className="flex flex-col items-center gap-2 md:flex-row">
         <GroupButton
-          buttons={[
-            { title: "v1", callback: () => router.push("/v1") },
-            { title: "v2", callback: () => router.push("/") },
-          ]}
-          initialIdx={pathname.startsWith("/v1") ? 0 : 1}
+          buttons={versionButtons}
+          initialIdx={activeVersionIndex}
           variant="small"
         />
         <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
