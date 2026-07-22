@@ -27,10 +27,10 @@ const preconfiguredTokens: Record<number, Token[]> = {
 };
 
 export default function useTokens(fromChain: number) {
-  const disableRelaySupport =
-    useFeatureFlag("disable relay support") ?? true;
+  const disableRelaySupport = useFeatureFlag("disable relay support") ?? true;
 
   return useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["tokens", fromChain, disableRelaySupport],
     queryFn: async () => {
       if (disableRelaySupport) {
