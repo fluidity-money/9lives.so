@@ -2,17 +2,40 @@ import config from "@/config";
 import { Token } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { zeroAddress } from "viem";
+import useFeatureFlag from "./useFeatureFlag";
+
 const allowedSymbols = ["usdc", "usdt", "usdc.e", "usdt0", "arb", "op"];
 const isAllowedSymbol = (t: Token) =>
   allowedSymbols.reduce((acc, v) => {
     if (t.symbol.toLowerCase() === v) return true;
     return acc;
   }, false);
+
+const preconfiguredTokens: Record<number, Token[]> = {
+  [config.chains.superposition.id]: [
+    {
+      chainId: config.chains.superposition.id,
+      address: config.NEXT_PUBLIC_FUSDC_ADDR,
+      symbol: "USDC",
+      name: "USD Coin",
+      decimals: config.contracts.decimals.fusdc,
+      priceUSD: "1",
+      coinKey: "USDC",
+      logoURI: "/images/usdc.svg",
+    },
+  ],
+};
+
 export default function useTokens(fromChain: number) {
+  const disableRelaySupport =
+    useFeatureFlag("disable relay support") ?? true;
+
   return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ["tokens", fromChain],
+    queryKey: ["tokens", fromChain, disableRelaySupport],
     queryFn: async () => {
+      if (disableRelaySupport) {
+        return preconfiguredTokens[fromChain] ?? [];
+      }
       if (fromChain === config.chains.tempo.id) {
         return [
           {

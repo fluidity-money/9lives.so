@@ -9,6 +9,7 @@
 	"enable paymaster buy": true,
 	"ai for asking if a campaign makes sense": false,
 	"enable relay buy": false,
+	"disable relay support": true,
 	"enable paymaster sell": true,
 	"paymaster should check sig": true,
 	"paymaster should check trading addr": true,
