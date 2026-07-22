@@ -10,6 +10,7 @@ import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
 import config from "@/config";
 import { Chain } from "@/types";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 export default function ChainSelectorDropdown({
   selectedChainId,
   handleNetworkChange,
@@ -23,13 +24,17 @@ export default function ChainSelectorDropdown({
   removeSPN?: boolean;
   variant?: "default" | "small";
 }) {
+  const disableRelaySupport = useFeatureFlag("disable relay support") ?? true;
   const chains = isInMiniApp
     ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
   if (removeSPN) {
     delete chains.superposition;
   }
-  const chainList = Object.values(chains);
+  const chainList = Object.values(chains).filter(
+    (chain) =>
+      !disableRelaySupport || chain.id === config.chains.superposition.id,
+  );
   const selectedChain = chainList.find((c) => c.id === selectedChainId);
 
   return (

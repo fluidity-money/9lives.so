@@ -10,6 +10,7 @@ import DownIcon from "#/icons/down-caret.svg";
 import CheckIcon from "#/icons/check.svg";
 import config from "@/config";
 import { Chain } from "@/types";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 interface ChainSelectorProps {
   selectedChainId: number;
@@ -27,6 +28,7 @@ export default function ChainSelectorDropdown({
   exclude,
   variant = "default",
 }: ChainSelectorProps) {
+  const disableRelaySupport = useFeatureFlag("disable relay support") ?? true;
   const chains = JSON.parse(JSON.stringify(config.chains)) as Record<
     string,
     Chain
@@ -36,7 +38,10 @@ export default function ChainSelectorDropdown({
       delete chains[key];
     }
   }
-  const chainList = Object.values(chains);
+  const chainList = Object.values(chains).filter(
+    (chain) =>
+      !disableRelaySupport || chain.id === config.chains.superposition.id,
+  );
   const selectedChain = chainList.find((c) => c.id === selectedChainId);
 
   return (

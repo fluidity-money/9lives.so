@@ -2,6 +2,7 @@ import config from "@/config";
 import { combineClass } from "@/utils/combineClass";
 import Image from "next/image";
 import { Chain } from "@/types";
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 
 interface ChainSelectorProps {
   selectedChainId: number;
@@ -17,6 +18,7 @@ export default function ChainSelector({
   title = "From",
   exclude,
 }: ChainSelectorProps): React.ReactElement {
+  const disableRelaySupport = useFeatureFlag("disable relay support") ?? true;
   const chains = JSON.parse(JSON.stringify(config.chains)) as Record<
     string,
     Chain
@@ -26,7 +28,10 @@ export default function ChainSelector({
       delete chains[key];
     }
   }
-  const chainList = Object.values(chains);
+  const chainList = Object.values(chains).filter(
+    (chain) =>
+      !disableRelaySupport || chain.id === config.chains.superposition.id,
+  );
   return (
     <div className="flex flex-col gap-1.5">
       <span className="font-chicago text-xs font-normal text-9black">
