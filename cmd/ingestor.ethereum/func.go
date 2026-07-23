@@ -246,10 +246,7 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorAr
 	}
 	err = db.Transaction(func(db *gorm.DB) error {
 		biggestBlockNo := from
-		var (
-			anyChanged bool
-			err        error
-		)
+		var anyChanged bool
 		for _, l := range logs {
 			hasChanged, err := handleLog(f, db, ingestorArgs, l)
 			if err != nil {
