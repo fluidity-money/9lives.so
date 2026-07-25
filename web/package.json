@@ -52,7 +52,7 @@
     "react-hook-form": "^7.68.0",
     "react-hot-toast": "^2.6.0",
     "recharts": "^3.5.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.0",
     "tailwind-merge": "^3.4.0",
     "viem": "^2.45.3",
     "wagmi": "^3.4.3",
