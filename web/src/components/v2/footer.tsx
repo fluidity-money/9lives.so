@@ -44,6 +44,10 @@ const menu = [
     title: "Grafana",
     page: "https://grafana.9lives.so",
   },
+  {
+    title: "9lives on Superposition",
+    page: "https://spn.9lives.so",
+  },
 ];
 
 const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
