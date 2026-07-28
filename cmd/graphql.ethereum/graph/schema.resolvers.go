@@ -994,6 +994,9 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			)
 			return nil, fmt.Errorf("error with precommit")
 		}
+		slog.Debug("Insertion was made with the new campaign",
+			"campaign", campaign,
+		)
 	}
 	res := true
 	return &res, nil
