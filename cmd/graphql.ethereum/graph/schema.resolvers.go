@@ -843,7 +843,15 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		hexOutcomeId := "0x" + hex.EncodeToString(outcomeId)
 		var shareAddrStr string
 		if isNotPrecommit {
-			shareAddr, _ := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
+			shareAddr, err := getShareAddr(r.Geth, *tradingAddr, [8]byte(outcomeId))
+			if err != nil {
+				slog.Error("Failed to get share address",
+					"outcome id", outcomeId,
+					"trading addr", tradingAddr,
+					"err", err,
+				)
+				return nil, fmt.Errorf("share address error")
+			}
 			shareAddrStr = strings.ToLower(shareAddr.Hex())
 		}
 		var outcomePicUrl *string
