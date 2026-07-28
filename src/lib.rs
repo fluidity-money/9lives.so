@@ -15,9 +15,6 @@ pub mod immutables;
 
 pub mod outcome;
 
-#[cfg(not(target_arch = "wasm32"))]
-pub mod host_proxy;
-
 pub mod proxy;
 
 pub mod calldata;

@@ -10,13 +10,13 @@ use lib9lives::{
     error::Error,
     host::{clear_storage, register_addr, reset_msg_sender, set_block_timestamp, set_msg_sender},
     host_erc20_call::{self, test_give_tokens},
+    host_vault_call,
     immutables::{DAO_EARN_ADDR, DAO_OP_ADDR},
     interactions_clear_after, maths, proxy, should_spend, should_spend_fusdc_contract,
     should_spend_fusdc_sender,
     testing_addrs::*,
     utils::{block_timestamp, msg_sender, strat_small_u256, strat_uniq_outcomes},
     StorageTrading,
-    host_vault_call,
 };
 
 use proptest::prelude::*;
@@ -39,7 +39,7 @@ macro_rules! setup_contract {
             0,
             0,
             0,
-            startup_liq
+            startup_liq,
         ))
         .unwrap();
         host_vault_call::borrow(VAULT, CONTRACT, startup_liq).unwrap();

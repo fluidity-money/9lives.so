@@ -13,8 +13,7 @@ use crate::{
 };
 
 const SEL_TRANSFER: [u8; 4] = const_keccak_sel(b"transfer(address,uint256)");
-const SEL_TRANSFER_FROM: [u8; 4] =
-    const_keccak_sel(b"transferFrom(address,address,uint256)");
+const SEL_TRANSFER_FROM: [u8; 4] = const_keccak_sel(b"transferFrom(address,address,uint256)");
 const SEL_PERMIT: [u8; 4] =
     const_keccak_sel(b"permit(address,address,uint256,uint256,uint8,bytes32,bytes32)");
 const SEL_BALANCE_OF: [u8; 4] = const_keccak_sel(b"balanceOf(address)");
@@ -75,16 +74,12 @@ pub fn permit(
         s.0
     );
     unpack_bool_safe(
-        &unsafe { RawCall::new().call(addr, &cd) }
-            .map_err(|b| Error::ERC20ErrorPermit(addr, b))?,
+        &unsafe { RawCall::new().call(addr, &cd) }.map_err(|b| Error::ERC20ErrorPermit(addr, b))?,
     )
 }
 
 pub fn balance_of(addr: Address, spender: Address) -> Result<U256, Error> {
-    let cd: [u8; 4 + 32] = concat_arrays!(
-        SEL_BALANCE_OF,
-        spender.into_word().0
-    );
+    let cd: [u8; 4 + 32] = concat_arrays!(SEL_BALANCE_OF, spender.into_word().0);
     unpack_u256(
         &unsafe { RawCall::new().call(addr, &cd) }
             .map_err(|b| Error::ERC20ErrorBalanceOf(addr, b))?,
@@ -98,8 +93,5 @@ pub fn approve(addr: Address, spender: Address, amount: U256) -> Result<(), Erro
         spender.into_word().0,
         amount.to_be_bytes::<32>()
     );
-    unpack_bool_safe(
-        &unsafe { RawCall::new().call(addr, &cd) }
-            .map_err(|_| Error::ERC20Approve)?,
-    )
+    unpack_bool_safe(&unsafe { RawCall::new().call(addr, &cd) }.map_err(|_| Error::ERC20Approve)?)
 }

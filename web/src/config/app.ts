@@ -151,7 +151,7 @@ const simpleMarkets = {
     periods: ["15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
   paxg: {
     slug: "paxg",
@@ -214,7 +214,7 @@ const simpleMarkets = {
     periods: ["15mins"],
     openHours: ["00:00", "23:59"],
     tz: "UTC",
-    listed: true,
+    listed: false,
   },
 } as const;
 const betaTesterWallets = [

@@ -1,4 +1,3 @@
-
 use stylus_sdk::alloy_primitives::{Address, FixedBytes, U256};
 
 use proptest::{prelude::*, prop_oneof};
@@ -216,12 +215,7 @@ macro_rules! implement_action {
             Action::AddLiquidity(a) => {
                 should_spend_fusdc_sender!(
                     a.amount,
-                    $c.add_liquidity_B_9_D_D_A_952(
-                        a.amount,
-                        $sender,
-                        U256::ZERO,
-                        U256::MAX
-                    )
+                    $c.add_liquidity_B_9_D_D_A_952(a.amount, $sender, U256::ZERO, U256::MAX)
                 );
             }
             #[cfg(feature = "trading-backend-amm")]

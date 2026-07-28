@@ -2,7 +2,7 @@
 pub use crate::{
     error::*,
     fusdc_call,
-    immutables::{DAO_OP_ADDR, DAO_EARN_ADDR},
+    immutables::{DAO_EARN_ADDR, DAO_OP_ADDR},
     storage_trading::*,
     trading_call,
     utils::{contract_address, msg_sender},

@@ -75,7 +75,7 @@ pub fn unpack_bool_safe(data: &[u8]) -> Result<(), Error> {
     }
 }
 
-pub fn unpack_bool(data: &[u8]) -> Option<bool,> {
+pub fn unpack_bool(data: &[u8]) -> Option<bool> {
     data.get(31).map(|x| *x == 1)
 }
 

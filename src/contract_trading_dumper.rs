@@ -49,8 +49,12 @@ impl StorageTrading {
         let factory_addr = self.factory_addr.get();
         let mut user_outcome_shares = String::new();
         for (i, outcome_id) in self.outcome_ids_iter().enumerate() {
-            let share_addr =
-                proxy::get_share_addr(factory_addr, contract_address(), SHARE_IMPL_ADDR, outcome_id);
+            let share_addr = proxy::get_share_addr(
+                factory_addr,
+                contract_address(),
+                SHARE_IMPL_ADDR,
+                outcome_id,
+            );
             #[allow(deprecated)]
             let bal = share_call::balance_of(share_addr, sender)?;
             if bal.is_zero() {
