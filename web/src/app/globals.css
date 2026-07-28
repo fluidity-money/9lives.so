@@ -41,12 +41,12 @@ html[data-theme="night"] .night-theme-logo {
 
 @layer utilities {
   .skeleton {
-    @apply relative overflow-hidden rounded-lg bg-gray-200;
+    @apply relative overflow-hidden rounded-lg bg-neutral-200;
   }
 
   .skeleton::after {
     content: "";
-    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent;
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-neutral-100/60 to-transparent;
     animation: shimmer 1.5s infinite;
   }
 
