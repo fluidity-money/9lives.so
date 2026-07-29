@@ -127,6 +127,7 @@ pub fn trading_amm_proxy(addr: Address) -> [u8; 90] {
     bobcat_proxy::make_beacon_sel_proxy_sel([0x6b, 0x8e, 0x8d, 0x96], **addr)
 }
 
+/*
 pub fn trading_shortterm_amm_proxy(
     addr: Address,
     oracle: Address,
@@ -181,6 +182,7 @@ pub fn trading_shortterm_amm_proxy(
         seed_liq.to_be_bytes()
     )
 }
+*/
 
 pub fn boring_proxy_code(
     addr: Address,

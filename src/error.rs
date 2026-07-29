@@ -223,7 +223,7 @@ pub enum Error {
     SqrtOpNone,
 
     /// ERC20 error on transfer from!
-    ERC20ErrorTransferFrom(Address, Address, Address, U256),
+    ERC20ErrorTransferFrom(Address, Address, Address, U256, Vec<u8>),
 
     /// ERC20 error on permit!
     ERC20ErrorPermit(Address, Vec<u8>),
@@ -730,13 +730,14 @@ impl From<Error> for Vec<u8> {
                 &ERR_ERC20_TRANSFER_PREAMBLE,
                 &[&b, &amt.to_be_bytes::<32>(), addr.as_slice()],
             ),
-            Error::ERC20ErrorTransferFrom(addr, from, to, amt) => ext(
+            Error::ERC20ErrorTransferFrom(addr, from, to, amt, reason) => ext(
                 &ERR_ERC20_TRANSFER_FROM_PREAMBLE,
                 &[
                     addr.as_slice(),
                     from.as_slice(),
                     to.as_slice(),
                     &amt.to_be_bytes::<32>(),
+                    &*reason,
                 ],
             ),
             Error::ERC20ErrorPermit(addr, b) => {

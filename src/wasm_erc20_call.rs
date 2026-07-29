@@ -45,7 +45,7 @@ pub fn transfer_from(
     );
     unpack_bool_safe(
         &unsafe { RawCall::new().call(addr, &cd) }
-            .map_err(|_| Error::ERC20ErrorTransferFrom(addr, spender, recipient, amount))?,
+            .map_err(|b| Error::ERC20ErrorTransferFrom(addr, spender, recipient, amount, b))?,
     )
 }
 
