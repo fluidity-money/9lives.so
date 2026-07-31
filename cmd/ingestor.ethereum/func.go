@@ -86,12 +86,15 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 	}
 	// Conditionally include sources that have feature-flag opt-outs.
 	if !f.Is(features.FeatureIngestorDisableLifi) {
+		slog.Debug("Including lifi logs")
 		topics = append(topics, lifi.TopicLifiGenericSwapCompleted)
 	}
 	if !f.Is(features.FeatureIngestorDisableOnchaingm) {
+		slog.Debug("Including onchaingm logs")
 		topics = append(topics, onchaingm.TopicOnchainGm)
 	}
 	if !f.Is(features.FeatureIngestorDisableLayerzero) {
+		slog.Debug("Including onchain Layerzero logs")
 		topics = append(topics,
 			layerzero.TopicPacketBurnt,
 			layerzero.TopicPacketDelivered,
@@ -101,6 +104,7 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 		)
 	}
 	if !f.Is(features.FeatureIngestorDisableVendor) {
+		slog.Debug("Including vendor logs")
 		topics = append(topics,
 			vendor.TopicBorrow,
 			vendor.TopicDeposit,
@@ -110,15 +114,19 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 		)
 	}
 	if !f.Is(features.FeatureIngestorDisableSudoswap) {
+		slog.Debug("Including Sudoswap logs")
 		topics = append(topics, sudoswap.TopicNewERC721Pair)
 	}
 	if !f.Is(features.FeatureIngestorDisablePunkDomains) {
+		slog.Debug("Including Punk Domains logs")
 		topics = append(topics, punk_domains.TopicDefaultDomainChanged)
 	}
 	if !f.Is(features.FeatureIngestorDisableArbsys) {
+		slog.Debug("Including arbSys logs")
 		topics = append(topics, arb_sys.TopicL2ToL1Tx)
 	}
 	if !f.Is(features.FeatureIngestorDisableArbGateway) {
+		slog.Debug("Including ArbGateway logs")
 		topics = append(topics, arb_gateway.TopicWithdrawalInitiated)
 	}
 	return topics
