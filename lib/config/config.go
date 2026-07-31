@@ -109,8 +109,8 @@ func Get() C {
 		DineroAddress:            dineroAddr,
 		PunkDomainsTld:           punkDomainsTldAddr,
 		PriceResolverAddress:     priceResolverAddr,
-		VaultAddress: vaultAddr,
-		ArbSysAddress: ArbSysAddr,
+		VaultAddress:             vaultAddr,
+		ArbSysAddress:            ArbSysAddr,
 		ChainId:                  DefaultChainId,
 	}
 }
