@@ -87,4 +87,11 @@ const (
 
 	// FeatureIngestorDisableLifi skips LiFi swap events.
 	FeatureIngestorDisableLifi = "ingestor disable lifi"
+
+	// FeatureIngestorDisableStargate to prevent Stargate logs from
+	// being included (OFT received and sent).
+	FeatureIngestorDisableStargate = "ingestor disable stargate"
+
+	// FeatureIngestorDisableDinero to prevent Dinero logs from being included.
+	FeatureIngestorDisableDinero = "ingestor disable dinero"
 )

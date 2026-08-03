@@ -78,11 +78,6 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 		// Paymaster
 		paymaster.TopicPaymasterPaidFor,
 		paymaster.TopicStargateBridged,
-		// Stargate
-		stargate.TopicStargateOFTReceived,
-		stargate.TopicStargateOFTSent,
-		// Dinero
-		dinero.TopicOwnershipTransferred,
 	}
 	// Conditionally include sources that have feature-flag opt-outs.
 	if !f.Is(features.FeatureIngestorDisableLifi) {
@@ -128,6 +123,18 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 	if !f.Is(features.FeatureIngestorDisableArbGateway) {
 		slog.Debug("Including ArbGateway logs")
 		topics = append(topics, arb_gateway.TopicWithdrawalInitiated)
+	}
+	if !f.Is(features.FeatureIngestorDisableStargate) {
+		slog.Debug("Including Stargate logs")
+		topics = append(
+			topics,
+			stargate.TopicStargateOFTReceived,
+			stargate.TopicStargateOFTSent,
+		)
+	}
+	if !f.Is(features.FeatureIngestorDisableDinero) {
+		slog.Debug("Including Dinero")
+		topics = append(topics, dinero.TopicOwnershipTransferred)
 	}
 	return topics
 }
