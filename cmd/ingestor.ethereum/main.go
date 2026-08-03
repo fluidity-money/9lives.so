@@ -73,6 +73,7 @@ func main() {
 			Paymaster:       ethCommon.HexToAddress(config.PaymasterAddress),
 			Vault:           ethCommon.HexToAddress(config.VaultAddress),
 			ArbSys:          ethCommon.HexToAddress(config.ArbSysAddress),
+			Rfqhub: ethCommon.HexToAddress(config.RfqhubAddress),
 		},
 	)
 }

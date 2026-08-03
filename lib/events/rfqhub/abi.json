@@ -1,0 +1,21 @@
+[
+	{
+		"type": "event",
+		"name": "BalanceChanged",
+		"inputs": [
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "recipient"
+			},
+			{
+				"name": "recipient",
+				"type": "address",
+				"indexed": true,
+				"internalType": "address"
+			}
+		],
+		"anonymous": false
+	}
+]

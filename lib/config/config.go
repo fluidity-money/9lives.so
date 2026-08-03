@@ -31,7 +31,7 @@ type C struct {
 	LayerzeroEndpointAddress, DineroAddress string
 	SudoswapFactoryAddress, PunkDomainsTld  string
 	PriceResolverAddress, VaultAddress      string
-	ArbSysAddress                           string
+	ArbSysAddress, RfqhubAddress                           string
 	ChainId                                 int
 }
 
@@ -96,6 +96,10 @@ func Get() C {
 	if vaultAddr == "" {
 		setup.Exitf("SPN_VAULT_ADDR not set")
 	}
+	rfqhubAddr := strings.ToLower(os.Getenv("SPN_RFQHUB_ADDR"))
+	if rfqhubAddr == "" {
+		setup.Exitf("SPN_RFQHUB_ADDR not set")
+	}
 	return C{
 		W:                        w,
 		GethUrls:                 gethUrls,
@@ -111,6 +115,7 @@ func Get() C {
 		PriceResolverAddress:     priceResolverAddr,
 		VaultAddress:             vaultAddr,
 		ArbSysAddress:            ArbSysAddr,
+		RfqhubAddress: rfqhubAddr,
 		ChainId:                  DefaultChainId,
 	}
 }

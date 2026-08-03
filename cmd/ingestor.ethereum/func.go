@@ -25,6 +25,7 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 	"github.com/fluidity-money/9lives.so/lib/events/sudoswap"
 	"github.com/fluidity-money/9lives.so/lib/events/vendor"
+	"github.com/fluidity-money/9lives.so/lib/events/rfqhub"
 
 	"gorm.io/gorm"
 
@@ -78,6 +79,8 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 		// Paymaster
 		paymaster.TopicPaymasterPaidFor,
 		paymaster.TopicStargateBridged,
+		// Rfqhub
+		rfqhub.TopicBalanceChanged,
 	}
 	// Conditionally include sources that have feature-flag opt-outs.
 	if !f.Is(features.FeatureIngestorDisableLifi) {
@@ -142,7 +145,7 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 type IngestorArgs struct {
 	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
 	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
-	PunkDomainsTld, Paymaster, Vault, ArbSys        ethCommon.Address
+	PunkDomainsTld, Paymaster, Vault, ArbSys, Rfqhub        ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -664,6 +667,10 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		table = "arb_gateway_events_withdrawal_initiated"
 		logEvent("WithdrawalInitiated")
 		isArbGateway = true
+	case rfqhub.TopicBalanceChanged:
+		a, err = rfqhub.UnpackBalanceChanged(topic1, topic2)
+		table = "rfqhub_events_balance_changed"
+		logEvent("BalanceChanged")
 	default:
 		return false, fmt.Errorf("unexpected topic: %v", topic0)
 	}
@@ -688,13 +695,14 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isPunkDomainsTld = r.PunkDomainsTld == emitterAddr
 		isPaymaster      = r.Paymaster == emitterAddr
 		isVault          = r.Vault == emitterAddr
+		isRfqhub = r.Rfqhub == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
 		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld,
-		isPaymaster, isVault, isArbGateway:
+		isPaymaster, isVault, isArbGateway, isRfqhub:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
