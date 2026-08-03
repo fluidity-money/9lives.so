@@ -1,9 +1,8 @@
 import { renderHook } from "@testing-library/react";
 import { act } from "react";
-import { createPublicClient, http, PublicClient } from "viem";
+import { createPublicClient, http, maxUint256, PublicClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { defineChain } from "viem";
-import { MaxUint256 } from "ethers";
 import useSignForPermit from "@/hooks/useSignForPermit";
 import ERC20Abi from "@/config/abi/erc20";
 describe("Paymaster", () => {
@@ -85,7 +84,7 @@ describe("Paymaster", () => {
 
   test("Generated erc20 permit signature is valid", async () => {
     const { result } = renderHook(() => useSignForPermit(account.address));
-    const amountToSpend = MaxUint256;
+    const amountToSpend = maxUint256;
     const spender = process.env.NEXT_PUBLIC_PAYMASTER_ADDR;
     const deadline = Math.floor(
       new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).getTime() / 1000,
