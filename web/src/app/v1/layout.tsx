@@ -8,7 +8,6 @@ import CustomToaster from "@/components/customToaster";
 import CookieBanner from "@/components/cookieBanner";
 import Providers from "@/providers";
 import { headers } from "next/headers";
-import V2Promotion from "@/components/v2Promotion";
 
 const chicago = localFont({
   src: [
@@ -82,7 +81,6 @@ export default async function RootLayout({
         </Providers>
         <CookieBanner />
         <CustomToaster />
-        <V2Promotion />
       </body>
       <GoogleAnalytics />
     </html>
