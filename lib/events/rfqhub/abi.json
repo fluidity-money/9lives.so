@@ -10,6 +10,12 @@
 				"internalType": "recipient"
 			},
 			{
+				"name": "asset",
+				"type": "address",
+				"indexed": true,
+				"internalType": "asset"
+			},
+			{
 				"name": "recipient",
 				"type": "address",
 				"indexed": true,

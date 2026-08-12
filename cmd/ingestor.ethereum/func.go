@@ -22,10 +22,10 @@ import (
 	"github.com/fluidity-money/9lives.so/lib/events/onchaingm"
 	"github.com/fluidity-money/9lives.so/lib/events/paymaster"
 	"github.com/fluidity-money/9lives.so/lib/events/punk-domains"
+	"github.com/fluidity-money/9lives.so/lib/events/rfqhub"
 	"github.com/fluidity-money/9lives.so/lib/events/stargate"
 	"github.com/fluidity-money/9lives.so/lib/events/sudoswap"
 	"github.com/fluidity-money/9lives.so/lib/events/vendor"
-	"github.com/fluidity-money/9lives.so/lib/events/rfqhub"
 
 	"gorm.io/gorm"
 
@@ -143,9 +143,9 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 }
 
 type IngestorArgs struct {
-	Factory, InfraMarket, Lockup, SarpSignallerAi   ethCommon.Address
-	LifiDiamond, Layerzero, Dinero, SudoswapFactory ethCommon.Address
-	PunkDomainsTld, Paymaster, Vault, ArbSys, Rfqhub        ethCommon.Address
+	Factory, InfraMarket, Lockup, SarpSignallerAi    ethCommon.Address
+	LifiDiamond, Layerzero, Dinero, SudoswapFactory  ethCommon.Address
+	PunkDomainsTld, Paymaster, Vault, ArbSys, Rfqhub ethCommon.Address
 }
 
 // Entry function, using the database to determine if polling should be
@@ -695,7 +695,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isPunkDomainsTld = r.PunkDomainsTld == emitterAddr
 		isPaymaster      = r.Paymaster == emitterAddr
 		isVault          = r.Vault == emitterAddr
-		isRfqhub = r.Rfqhub == emitterAddr
+		isRfqhub         = r.Rfqhub == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:

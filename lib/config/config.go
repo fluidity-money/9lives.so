@@ -31,7 +31,7 @@ type C struct {
 	LayerzeroEndpointAddress, DineroAddress string
 	SudoswapFactoryAddress, PunkDomainsTld  string
 	PriceResolverAddress, VaultAddress      string
-	ArbSysAddress, RfqhubAddress                           string
+	ArbSysAddress, RfqhubAddress            string
 	ChainId                                 int
 }
 
@@ -115,7 +115,7 @@ func Get() C {
 		PriceResolverAddress:     priceResolverAddr,
 		VaultAddress:             vaultAddr,
 		ArbSysAddress:            ArbSysAddr,
-		RfqhubAddress: rfqhubAddr,
+		RfqhubAddress:            rfqhubAddr,
 		ChainId:                  DefaultChainId,
 	}
 }

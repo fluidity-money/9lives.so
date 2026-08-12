@@ -21,15 +21,17 @@ type (
 	EventBalanceChanged struct {
 		events.Event
 
-		Recipient         events.Address `json:"recipient"`
+		Recipient events.Address `json:"recipient"`
+		Asset     events.Address `json:"asset"`
 		Amount    events.Number  `json:"amount"`
 	}
 )
 
-func UnpackBalanceChanged(topic1, topic2 ethCommon.Hash) (*EventBalanceChanged, error) {
+func UnpackBalanceChanged(topic1, topic2, topic3 ethCommon.Hash) (*EventBalanceChanged, error) {
 	return &EventBalanceChanged{
-		Recipient:         hashToAddr(topic1),
-		Amount:    hashToNumber(topic2),
+		Recipient: hashToAddr(topic1),
+		Asset:     hashToAddr(topic2),
+		Amount:    hashToNumber(topic3),
 	}, nil
 }
 
