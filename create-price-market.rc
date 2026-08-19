@@ -16,9 +16,6 @@
 # At each step, environment variables will be printed which can be set
 # to restart from the point after which they were printed.
 
-if(~ $SPN_SUPERPOSITION_9LIVES_GRAPH '') \
-	SPN_SUPERPOSITION_9LIVES_GRAPH=https://graph.9lives.so
-
 if(~ $SPN_FEE_CREATOR '') {
 	fee_creator=3
 }
@@ -49,8 +46,8 @@ if(~ $SPN_IS_DPPM '') {
 
 cur_ts=`{date +%s}
 
-if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=`{echo $cur_ts '- 1' | bc}
-if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=$cur_ts
+if(~ $SPN_OUTCOME_0_SEED '') SPN_OUTCOME_0_SEED=$cur_ts_0
+if(~ $SPN_OUTCOME_1_SEED '') SPN_OUTCOME_1_SEED=$cur_ts_1
 
 fn usage_args {
 	echo `{basename $0} '([0-9]+),?..' >[1=2]
@@ -142,7 +139,7 @@ documentation=''
 
 documentation_h=0x`{echo -n $documentation | shasum -a256 | cut -f1 -d' '}
 
-echo documentation hash $documentation_h outcome 0 $outcome_0_id $SPN_OUTCOME_0_SEED outcome 1 $outcome_1_id outcome 1 seed $SPN_OUTCOME_1_SEED >[1=2]
+count=0
 
 while(~ $SPN_TRADING_ADDR '') {
 	SPN_TRADING_ADDR=`{
@@ -162,6 +159,11 @@ while(~ $SPN_TRADING_ADDR '') {
 			$SPN_IS_DPPM \
 			$SPN_STARTING_LIQ
 	}
+	count=`{echo $count + 1 | bc}
+	if(~ $count 10) {
+		echo deployment failed >[1=2]
+		exit 1
+	}
 	sleep 1
 }
 
@@ -173,7 +175,7 @@ if(! ~ $SPN_DRYRUN '') is_fake=true
 
 if(~ $SPN_CATEGORIES '') SPN_CATEGORIES='[\"Hourly\", \"Price Prediction\"]'
 
-curl $SPN_SUPERPOSITION_9LIVES_GRAPH \
+curl https://graph.9lives.so \
 	-H 'Content-Type: application/json' \
 	-H 'X-Admin-Secret: '$SPN_ADMIN_SECRET \
 	-sd '{"query":"mutation { explainCampaign( type: PUT, name: \"'$"outcome_1_desc'\", description: \"\", seed: 100, outcomes: [ { name: \"'$"outcome_0_desc'\", seed: '$SPN_OUTCOME_0_SEED', picture: \"\" }, { name: \"'$"outcome_1_desc'\", seed: '$SPN_OUTCOME_1_SEED', picture: \"\" } ], ending: '$SPN_DEADLINE', creator: \"'$SPN_SENDER_ADDR'\", isFake: '$is_fake', starting: '$SPN_STARTED_BY', isDppm: '$SPN_IS_DPPM', priceMetadata: { baseAsset: \"'$SPN_BASE_ASSET'\", quoteAsset: \"'$SPN_QUOTE_ASSET'\", priceTargetForUp: \"'$SPN_END_QUOTE_PRICE'\"}, categories: '$"SPN_CATEGORIES')}"}'
