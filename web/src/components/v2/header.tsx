@@ -1,8 +1,8 @@
-import Button from "./button";
 import ConnectButton from "./connectButton";
 import Link from "next/link";
 import HeaderLogo from "../headerLogo";
 import SimpleClaimAllButton from "./claimAllButton";
+import PointsButton from "./pointsButton";
 import ReferralButton from "./referralButton";
 
 function Menu() {
@@ -50,6 +50,7 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-2">
         <SimpleClaimAllButton shouldHideOnMobile />
+        <PointsButton shouldHideOnMobile />
         <ReferralButton shouldHideOnMobile />
         <ConnectButton />
       </div>
