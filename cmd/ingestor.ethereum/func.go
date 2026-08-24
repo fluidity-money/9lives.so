@@ -35,6 +35,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+var AddrArbSys = ethCommon.HexToAddress("0x0000000000000000000000000000000000000064")
+
 // FilterTopics builds the list of topic0 hashes to filter for, excluding
 // any sources disabled by feature flags at runtime.
 func FilterTopics(f features.F) []ethCommon.Hash {
@@ -668,7 +670,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		logEvent("WithdrawalInitiated")
 		isArbGateway = true
 	case rfqhub.TopicBalanceChanged:
-		a, err = rfqhub.UnpackBalanceChanged(topic1, topic2)
+		a, err = rfqhub.UnpackBalanceChanged(topic1, topic2, topic3)
 		table = "rfqhub_events_balance_changed"
 		logEvent("BalanceChanged")
 	default:
@@ -696,13 +698,14 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		isPaymaster      = r.Paymaster == emitterAddr
 		isVault          = r.Vault == emitterAddr
 		isRfqhub         = r.Rfqhub == emitterAddr
+		isArbSys = AddrArbSys == emitterAddr
 	)
 	switch {
 	case fromTrading && isTradingAddr:
 		// We allow any trading contract.
 	case isFactory, isInfraMarket, isLockup, isSarpSignaller, isLifi, isStargateOft,
 		isOnchainGm, isLayerzero, isDinero, isVendor, isSudoswap, isPunkDomainsTld,
-		isPaymaster, isVault, isArbGateway, isRfqhub:
+		isPaymaster, isVault, isArbGateway, isRfqhub, isArbSys:
 		// OK!
 	default:
 		// The submitter was not the factory or the trading contract, we're going to
