@@ -1,14 +1,18 @@
 package main
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"strings"
 	"testing"
 
+	"github.com/fluidity-money/9lives.so/lib/events/arb-wasm"
 	"github.com/fluidity-money/9lives.so/lib/events/layerzero"
+	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
@@ -25,6 +29,51 @@ func testIngestorArgsZero() IngestorArgs {
 func TestTopicsAreOkay(t *testing.T) {
 	var z [32]byte
 	assert.NotContains(t, z[:], FilterTopics)
+}
+
+func TestFilterTopicsIncludesProgramActivatedUnlessDisabled(t *testing.T) {
+	t.Setenv(features.EnvFeatures, "none")
+	assert.Contains(t, FilterTopics(features.Get()), arb_wasm.TopicProgramActivated)
+
+	t.Setenv(features.EnvFeatures, features.FeatureIngestorDisableArbWasm)
+	assert.NotContains(t, FilterTopics(features.Get()), arb_wasm.TopicProgramActivated)
+}
+
+func TestProgramActivated(t *testing.T) {
+	const dataHex = "2222222222222222222222222222222222222222222222222222222222222222" +
+		"0000000000000000000000003333333333333333333333333333333333333333" +
+		"00000000000000000000000000000000000000000000000000000000000004d2" +
+		"0000000000000000000000000000000000000000000000000000000000000002"
+	data, err := hex.DecodeString(dataHex)
+	require.NoError(t, err)
+
+	l := ethTypes.Log{
+		Address:     ethCommon.HexToAddress("0x0000000000000000000000000000000000000071"),
+		Topics:      []ethCommon.Hash{arb_wasm.TopicProgramActivated, ethCommon.HexToHash("0x" + strings.Repeat("11", 32))},
+		Data:        data,
+		BlockNumber: 123,
+		BlockHash:   ethCommon.HexToHash("0x44"),
+		TxHash:      ethCommon.HexToHash("0x55"),
+	}
+	wasRun := false
+	inserted, err := handleLogCallback(
+		testIngestorArgsZero(),
+		l,
+		func(blockHash, txHash, addr string) error { return nil },
+		func(addr string) (bool, error) { return false, nil },
+		func(table string, a any) error {
+			assert.Equal(t, "arb_wasm_events_program_activated", table)
+			event, ok := a.(*arb_wasm.EventProgramActivated)
+			require.True(t, ok)
+			assert.Equal(t, "0x3333333333333333333333333333333333333333", event.Program.String())
+			assert.Equal(t, uint64(123), event.BlockNumber)
+			wasRun = true
+			return nil
+		},
+	)
+	require.NoError(t, err)
+	assert.True(t, inserted)
+	assert.True(t, wasRun)
 }
 
 func TestSharesMinted(t *testing.T) {

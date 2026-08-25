@@ -94,4 +94,7 @@ const (
 
 	// FeatureIngestorDisableDinero to prevent Dinero logs from being included.
 	FeatureIngestorDisableDinero = "ingestor disable dinero"
+
+	// FeatureIngestorDisableArbWasm skips Stylus program activation events.
+	FeatureIngestorDisableArbWasm = "ingestor disable arb wasm"
 )
