@@ -409,7 +409,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 	// There may be more Stargate OFTs in the future, so we insert everything
 	// we see with this topic, and we trust the consumer to validate that
 	// everything is correct themselves by verifying the emitter.
-	var fromTrading, isStargateOft, isOnchainGm, isVendor, isArbGateway, isArbWasm bool
+	var fromTrading, isStargateOft, isOnchainGm, isVendor, isArbGateway bool
 	switch topic0 {
 	case events.TopicNewTrading2:
 		// On top of trading this, we should track a trading contract association!
