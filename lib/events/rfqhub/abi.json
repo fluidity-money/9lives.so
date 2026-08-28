@@ -16,10 +16,16 @@
 				"internalType": "asset"
 			},
 			{
-				"name": "recipient",
-				"type": "address",
+				"name": "userBal",
+				"type": "uint256",
 				"indexed": true,
-				"internalType": "address"
+				"internalType": "uint256"
+			},
+			{
+				"name": "version",
+				"type": "uint256",
+				"indexed": false,
+				"internalType": "version"
 			}
 		],
 		"anonymous": false
