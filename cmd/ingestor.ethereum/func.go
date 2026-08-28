@@ -682,7 +682,7 @@ func handleLogCallback(r IngestorArgs, l ethTypes.Log, cbTrackTradingContract fu
 		logEvent("WithdrawalInitiated")
 		isArbGateway = true
 	case rfqhub.TopicBalanceChanged:
-		a, err = rfqhub.UnpackBalanceChanged(topic1, topic2, topic3)
+		a, err = rfqhub.UnpackBalanceChanged(topic1, topic2, topic3, data)
 		table = "rfqhub_events_balance_changed"
 		logEvent("BalanceChanged")
 	default:

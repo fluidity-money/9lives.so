@@ -1,6 +1,8 @@
 package rfqhub
 
 import (
+	"fmt"
+	"math/big"
 	"bytes"
 	_ "embed"
 
@@ -24,14 +26,21 @@ type (
 		Recipient events.Address `json:"recipient"`
 		Asset     events.Address `json:"asset"`
 		Amount    events.Number  `json:"amount"`
+		Version   events.Number `json:"version"`
 	}
 )
 
-func UnpackBalanceChanged(topic1, topic2, topic3 ethCommon.Hash) (*EventBalanceChanged, error) {
+func UnpackBalanceChanged(topic1, topic2, topic3 ethCommon.Hash, data []byte) (*EventBalanceChanged, error) {
+	if l := len(data); l != 32 {
+		return nil, fmt.Errorf("data size: %v", l)
+	}
+	// The number here is big endian so this is fine:
+	ver := events.NumberFromBig(new(big.Int).SetBytes(data))
 	return &EventBalanceChanged{
 		Recipient: hashToAddr(topic1),
 		Asset:     hashToAddr(topic2),
 		Amount:    hashToNumber(topic3),
+		Version: ver,
 	}, nil
 }
 
