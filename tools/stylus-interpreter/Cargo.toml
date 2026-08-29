@@ -20,7 +20,7 @@ reqwest = { version = "0.12.8", features = ["blocking"] }
 tiny-keccak = { version = "2.0.0", features = ["sha3"] }
 tokio = { version = "1.43.1", features = ["full"] }
 url = "2.5.3"
-wasmtime = { version = "25.0.1", features = ["runtime", "cranelift"] }
+wasmtime = { version = "27.0.0", features = ["runtime", "cranelift"] }
 alloy-rpc-types-eth = "^0.6"
 alloy-json-rpc = "^0.6"
 clap = { version = "4.5.23", features = ["derive"] }
