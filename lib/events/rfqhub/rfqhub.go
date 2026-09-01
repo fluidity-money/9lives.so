@@ -3,6 +3,7 @@ package rfqhub
 import (
 	"fmt"
 	"math/big"
+	"encoding/binary"
 	"bytes"
 	_ "embed"
 
@@ -25,7 +26,7 @@ type (
 
 		Recipient events.Address `json:"recipient"`
 		Asset     events.Address `json:"asset"`
-		Amount    events.Number  `json:"amount"`
+		Amount    uint64  `json:"amount"`
 		Version   events.Number `json:"version"`
 	}
 )
@@ -39,7 +40,7 @@ func UnpackBalanceChanged(topic1, topic2, topic3 ethCommon.Hash, data []byte) (*
 	return &EventBalanceChanged{
 		Recipient: hashToAddr(topic1),
 		Asset:     hashToAddr(topic2),
-		Amount:    hashToNumber(topic3),
+		Amount:    hashToUint64(topic3),
 		Version: ver,
 	}, nil
 }
@@ -49,6 +50,6 @@ func hashToAddr(h ethCommon.Hash) events.Address {
 	return events.AddressFromString(v.String())
 }
 
-func hashToNumber(h ethCommon.Hash) events.Number {
-	return events.NumberFromBig(h.Big())
+func hashToUint64(h ethCommon.Hash) uint64 {
+	return binary.BigEndian.Uint64(h.Bytes()[32-8:])
 }

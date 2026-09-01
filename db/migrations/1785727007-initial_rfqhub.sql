@@ -8,8 +8,8 @@ CREATE TABLE rfqhub_events_balance_changed (
 
 	account_addr ADDRESS NOT NULL,
 	asset ADDRESS NOT NULL,
-	new_balance HUGEINT NOT NULL,
-	version HUGEINT NOT NULL
+	new_balance INTEGER NOT NULL,
+	version INTEGER NOT NULL
 );
 
 CREATE INDEX ON rfqhub_events_balance_changed (account_addr, id DESC)
