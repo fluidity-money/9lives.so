@@ -245,48 +245,6 @@ See [audits/README.md](audits/README.md) for details.
 | Vault                         | `0xE45C182512e18982522B620EDfF0D9C56c294C08` |
 | Authority                     | `0x982158348B3f1Af92DB33671BC7C70c46ee2cbb8` |
 
-### Superposition mainnet
-
-|        Deployment name        |              Deployment address              |
-|-------------------------------|----------------------------------------------|
-| Proxy admin                   | `0x6221A9c005F6e47EB398fD867784CacfDcFFF4E7` |
-| Factory 1 implementation      | `0x47d8ffc6e491b7ef8c126555264cceed0ea6caa6` |
-| Factory 2 implementation      | `0xa7c8c010d32e2316637636265a4d137b9bb1bf03` |
-| Lockup implementation         | `0x99596b476d5e16e4a30bd4858dd289a763671294` |
-| Optimistic infra predict impl | `0xf94aeb587d332d0e7f2f1e2c87ffea1385ff0505` |
-| Trading DPPM mint impl        | `0x17769631bf02c6d1455f2cd46282242decd0cbb0` |
-| Trading DPPM extras impl      | `0x7289a31ca767883d6ad711e634c2591a16e6ef74` |
-| Trading DPPM price impl       | `0xb6c29b66bb663f3cd6a733b77927ba09cefa8d5a` |
-| Trading DPPM quotes impl      | `0xa516f91f100cbd796d2351acbf11f857402d2204` |
-| Trading AMM mint impl         | `0x7596b33a6842585d6a11162b9c54e9ecc7fda0ce` |
-| Trading AMM extras impl       | `0x7d9e78370cc8f8124b0cad7b9fa87b7f424a839c` |
-| Trading AMM price impl        | `0x3be11d59fe73c0b516f821ec4ea6d37499e68a65` |
-| Trading AMM quotes impl       | `0x097e45ee7a05e470ee7c884d558cfb4ad0d3cf87` |
-| Share implementation          | `0x3e27e934344bf490457231Cb8F0c0eda7d60C362` |
-| Lockup token implementation   | `0x70143C674A23a43Ad487D33c4035Ba1D012ac598` |
-| Infrastructure market impl    | `0x863642e21a45e824c4f6347a5757e5dcacae11c1` |
-| Infrastructure market proxy   | `0xc4451d8477cd6b92bfa0d3e2662ce0507a8e10b9` |
-| Lockup proxy                  | `0x20d2360706086ec9814d15a52ad2d2aec2c43caa` |
-| Lockup token proxy            | `0x14c35ba87e8b490761f492382c9249867b82aaf4` |
-| Factory proxy                 | `0x7dfe1fa7760131140cfc48b3ea99719203d8f00b` |
-| Helper factory                | `0x5Da3fC34FFF02faaDDf71eD6C0Bc9928C747f8fE` |
-| LensesV1                      | `0x8036d656D2E0c36d90DF47b7Da625fDC16375f87` |
-| Beauty contest implementation | `0xb7f978f707dc03b392d7215426cf98dc812d9454` |
-| Beauty contest proxy          | `0x15f4A8a0b8cD0343fAe5a7FC736cD9e0D7bE4d5C` |
-| Sarp AI Resolver              | `0x9d73847f1edc930d2a2ee801aeadb4c4567f18e1` |
-| Helper factory                | `0x937AB18278f8a11D1E7129f58A3Cdb026A16aD5a` |
-| BuyHelper2                    | `0x7aD7eDd9A72512335e2A7A980047Ec2eD233D21c` |
-| SARP Signaller                | `0xD608CeF1D7C84feaA0E1520C7a6BC4798cFC1455` |
-| Extras beacon proxy factory   | `0x6c1cf52961C567965AFCf495B7af7eCC81411598` |
-| Claimant helper for claim     | `0xD77ae359A5A12F04c4ABFE7D5B511E0990CE6F6C` |
-| Paymaster implementation      | `0x552BbaEc8D75c010435C810fA890B3E03e9C6445` |
-| Paymaster proxy               | `0xE990f05e2264f56435Fd7589FA2F70A879B0cE9f` |
-| Stargate                      | `0x8EE21165Ecb7562BA716c9549C1dE751282b9B33` |
-| Price resolver oracle         | `0xa2cfa0e8dd8abd255343c9ab6d36f3306ad3a6ab` |
-| Trading beacon                | `0xfA433744C5C496c7caD243c61A17167DD39AE8ee` |
-| Vault implementation          | `0xA1eBA7dD250e587BdA34737aA43b6F1ad3A21Bf8` |
-| Vault proxy                   | `0x0EdAbfd36c57555A85f1db1665BF8beF60F42F14` |
-
 Several "precompiles" are in use, provided by superposition-precompiles.
 
 ## License
