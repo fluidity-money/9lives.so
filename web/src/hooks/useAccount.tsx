@@ -93,26 +93,25 @@ export const checkAndSetSecret = async (
   address: string,
   signMessage: SignMessage,
 ) => {
-  const secretObj = window.localStorage.getItem(
-    `${SECRET_KEY}-${address.toLowerCase()}`,
-  );
+  const isAccountCreated = await isCreated(address);
   let secret: null | string = null;
-  if (!secretObj) {
-    const isAccountCreated = await isCreated(address);
-    if (isAccountCreated) {
-      secret = await getSecret(address, signMessage);
-    } else {
-      secret = await create(address, signMessage);
-    }
+  if (!isAccountCreated) {
+    secret = await create(address, signMessage);
   } else {
-    const secretParsed = JSON.parse(secretObj) as {
-      secret: string;
-      expireAt: string;
-    };
-    if (new Date() > new Date(secretParsed.expireAt)) {
+    const secretObj = window.localStorage.getItem(
+      `${SECRET_KEY}-${address.toLowerCase()}`,
+    );
+    if (secretObj) {
+      const secretParsed = JSON.parse(secretObj) as {
+        secret: string;
+        expireAt: string;
+      };
+      if (new Date() <= new Date(secretParsed.expireAt)) {
+        secret = secretParsed.secret;
+      }
+    }
+    if (!secret) {
       secret = await getSecret(address, signMessage);
-    } else {
-      secret = secretParsed.secret;
     }
   }
   return secret;
