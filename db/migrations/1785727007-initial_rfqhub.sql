@@ -10,7 +10,7 @@ CREATE TABLE rfqhub_events_balance_changed (
 
 	account_addr ADDRESS NOT NULL,
 	asset ADDRESS NOT NULL,
-	new_balance INTEGER NOT NULL,
+	amount BIGINT NOT NULL,
 	version INTEGER NOT NULL
 );
 

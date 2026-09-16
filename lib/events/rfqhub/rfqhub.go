@@ -1,11 +1,11 @@
 package rfqhub
 
 import (
-	"fmt"
-	"math/big"
-	"encoding/binary"
 	"bytes"
 	_ "embed"
+	"encoding/binary"
+	"fmt"
+	"math/big"
 
 	"github.com/fluidity-money/9lives.so/lib/types/events"
 
@@ -24,10 +24,10 @@ type (
 	EventBalanceChanged struct {
 		events.Event
 
-		Recipient events.Address `json:"recipient"`
-		Asset     events.Address `json:"asset"`
-		Amount    uint64  `json:"amount"`
-		Version   events.Number `json:"version"`
+		AccountAddr events.Address `json:"account_addr"`
+		Asset       events.Address `json:"asset"`
+		Amount      uint64         `json:"amount"`
+		Version     events.Number  `json:"version"`
 	}
 )
 
@@ -38,10 +38,10 @@ func UnpackBalanceChanged(topic1, topic2, topic3 ethCommon.Hash, data []byte) (*
 	// The number here is big endian so this is fine:
 	ver := events.NumberFromBig(new(big.Int).SetBytes(data))
 	return &EventBalanceChanged{
-		Recipient: hashToAddr(topic1),
-		Asset:     hashToAddr(topic2),
-		Amount:    hashToUint64(topic3),
-		Version: ver,
+		AccountAddr: hashToAddr(topic1),
+		Asset:       hashToAddr(topic2),
+		Amount:      hashToUint64(topic3),
+		Version:     ver,
 	}, nil
 }
 
