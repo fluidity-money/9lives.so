@@ -7,7 +7,7 @@ BEGIN
 			'ninelives-delete-old-prices',
 			'*/30 * * * *',
 			$job$
-			DELETE FROM oracles_ninelives_prices_3
+			DELETE FROM oracles_ninelives_prices_2
 			WHERE created_by < NOW() - INTERVAL '2 hours'
 			$job$
 		);

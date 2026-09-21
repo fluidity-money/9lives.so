@@ -22,6 +22,10 @@ const clientEnvSchema = z.object({
    */
   NEXT_PUBLIC_ACCOUNTS_URL: z.string().url(),
   /**
+   * Rfqhub (request-for-quote hub) graphql server url
+   */
+  NEXT_PUBLIC_RFQHUB_URL: z.string().url(),
+  /**
    * fUSDC address
    */
   NEXT_PUBLIC_FUSDC_ADDR: z.string().length(42),
@@ -114,6 +118,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_LENS_ADDR: process.env.NEXT_PUBLIC_LENS_ADDR,
   NEXT_PUBLIC_POINTS_URL: process.env.NEXT_PUBLIC_POINTS_URL,
   NEXT_PUBLIC_ACCOUNTS_URL: process.env.NEXT_PUBLIC_ACCOUNTS_URL,
+  NEXT_PUBLIC_RFQHUB_URL: process.env.NEXT_PUBLIC_RFQHUB_URL,
   NEXT_PUBLIC_HELPER_FACTORY_ADDR: process.env.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
   NEXT_PUBLIC_BUY_HELPER_ADDR: process.env.NEXT_PUBLIC_BUY_HELPER_ADDR,
   NEXT_PUBLIC_BUY_HELPER2_ADDR: process.env.NEXT_PUBLIC_BUY_HELPER2_ADDR,

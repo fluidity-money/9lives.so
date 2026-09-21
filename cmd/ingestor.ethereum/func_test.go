@@ -26,6 +26,27 @@ func testIngestorArgsZero() IngestorArgs {
 	return testIngestorArgs(ethCommon.HexToAddress("0x0000000000000000000000000000000000000000"))
 }
 
+func TestBoundedBlockRange(t *testing.T) {
+	t.Run("checkpoint is first block after inclusive range", func(t *testing.T) {
+		to, checkpoint, ok := boundedBlockRange(100, 200, 500)
+		assert.True(t, ok)
+		assert.Equal(t, uint64(200), to)
+		assert.Equal(t, uint64(201), checkpoint)
+	})
+
+	t.Run("current head is still ingested", func(t *testing.T) {
+		to, checkpoint, ok := boundedBlockRange(500, 600, 500)
+		assert.True(t, ok)
+		assert.Equal(t, uint64(500), to)
+		assert.Equal(t, uint64(501), checkpoint)
+	})
+
+	t.Run("waits when checkpoint is ahead of head", func(t *testing.T) {
+		_, _, ok := boundedBlockRange(501, 601, 500)
+		assert.False(t, ok)
+	})
+}
+
 func TestTopicsAreOkay(t *testing.T) {
 	var z [32]byte
 	assert.NotContains(t, z[:], FilterTopics)

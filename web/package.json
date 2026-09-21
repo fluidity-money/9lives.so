@@ -21,7 +21,8 @@
     "gen:9lives": "pnpm graffle --project ./src/graffle/lives9.config.ts",
     "gen:points": "pnpm graffle --project ./src/graffle/points.config.ts",
     "gen:accounts": "pnpm graffle --project ./src/graffle/accounts.config.ts",
-    "codegen": "pnpm gen:9lives && pnpm gen:points && pnpm gen:accounts"
+    "gen:rfqhub": "pnpm graffle --project ./src/graffle/rfqhub.config.ts",
+    "codegen": "pnpm gen:9lives && pnpm gen:points && pnpm gen:accounts && pnpm gen:rfqhub"
   },
   "dependencies": {
     "@farcaster/miniapp-sdk": "^0.2.1",

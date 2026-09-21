@@ -14,7 +14,8 @@ CREATE TABLE rfqhub_events_balance_changed (
 	version HUGEINT NOT NULL
 );
 
-CREATE INDEX ON rfqhub_events_balance_changed (account_addr, id DESC)
-INCLUDE (new_balance);
+CREATE INDEX ON rfqhub_events_balance_changed
+	(emitter_addr, account_addr, asset, id DESC)
+INCLUDE (amount);
 
 -- migrate:down

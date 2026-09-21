@@ -271,18 +271,28 @@ func IngestPolling(f features.F, c *ethclient.Client, db *gorm.DB, ingestorPagin
 	}
 }
 
+// boundedBlockRange caps an inclusive polling range at the chain head and
+// returns the first block that has not been processed as the checkpoint.
+func boundedBlockRange(from, requestedTo, latest uint64) (to, checkpoint uint64, ok bool) {
+	to = min(latest, requestedTo)
+	if from > to {
+		return 0, 0, false
+	}
+	return to, to + 1, true
+}
+
 // IngestBlockRange using the Geth RPC provided, using the handleLog
 // funciton to write records found to the database. Assumes the ethclient
 // provided is a HTTP client. Also updates the underlying last block it
 // saw into the database checkpoints. Fatals if something goes wrong.
-func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs, from, to uint64) {
+func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorArgs IngestorArgs, from, requestedTo uint64) {
 	latestBlockNo, err := c.BlockNumber(context.Background())
 	if err != nil {
 		setup.Exitf("failed to get latest block number: %v", err)
 	}
-	to = min(latestBlockNo, to)
-	if from == to {
-		slog.Debug("skipping since the to and from are the same", "from", from, "to", to)
+	to, checkpoint, ok := boundedBlockRange(from, requestedTo, latestBlockNo)
+	if !ok {
+		slog.Debug("skipping since the checkpoint is ahead of the chain head", "from", from, "latest", latestBlockNo)
 		return
 	}
 	logs, err := c.FilterLogs(context.Background(), ethereum.FilterQuery{
@@ -294,28 +304,15 @@ func IngestBlockRange(f features.F, c *ethclient.Client, db *gorm.DB, ingestorAr
 		setup.Exitf("failed to filter logs: %v", err)
 	}
 	err = db.Transaction(func(db *gorm.DB) error {
-		biggestBlockNo := from
-		var (
-			hasChanged bool
-			err        error
-		)
 		for _, l := range logs {
-			hasChanged, err = handleLog(f, db, ingestorArgs, l)
-			if err != nil {
+			if _, err := handleLog(f, db, ingestorArgs, l); err != nil {
 				return fmt.Errorf("failed to unpack log: %v", err)
 			}
-			biggestBlockNo = max(l.BlockNumber, biggestBlockNo)
 		}
-		// Update the checkpoint to use the latest block, if that's more than our
-		// request.
-		if hasChanged {
-			biggestBlockNo++
-		}
-		if to < latestBlockNo {
-			biggestBlockNo = to
-		}
-		// Update checkpoint here with the latest that we saw.
-		if err := updateCheckpoint(db, biggestBlockNo); err != nil {
+		// FilterLogs includes both ends of the range, so persist the first block
+		// that has not been processed. This prevents the boundary block from
+		// being queried and inserted again on the next poll.
+		if err := updateCheckpoint(db, checkpoint); err != nil {
 			return fmt.Errorf("failed to update a checkpoint: %v", err)
 		}
 		return nil
