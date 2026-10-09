@@ -15,26 +15,20 @@ export default function ChainSelectorDropdown({
   selectedChainId,
   handleNetworkChange,
   isInMiniApp,
-  removeSPN,
+  removeDestination,
   variant = "default",
 }: {
   selectedChainId: number;
   isInMiniApp: boolean;
   handleNetworkChange: (chain: Chain) => void;
-  removeSPN?: boolean;
+  removeDestination?: boolean;
   variant?: "default" | "small";
 }) {
   const disableRelaySupport = useFeatureFlag("disable relay support") ?? true;
   const chains = isInMiniApp
     ? (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>)
     : (JSON.parse(JSON.stringify(config.chains)) as Record<string, Chain>);
-  if (removeSPN) {
-    delete chains.superposition;
-  }
-  const chainList = Object.values(chains).filter(
-    (chain) =>
-      !disableRelaySupport || chain.id === config.chains.superposition.id,
-  );
+  const chainList = Object.values(chains);
   const selectedChain = chainList.find((c) => c.id === selectedChainId);
 
   return (
@@ -62,7 +56,7 @@ export default function ChainSelectorDropdown({
         >
           <path
             d="M15.7692 7.94594L10.5535 13.1616C10.4808 13.2345 10.3945 13.2924 10.2994 13.3319C10.2043 13.3714 10.1023 13.3917 9.99935 13.3917C9.89638 13.3917 9.79442 13.3714 9.69933 13.3319C9.60423 13.2924 9.51787 13.2345 9.44519 13.1616L4.22954 7.94594C4.08257 7.79897 4 7.59963 4 7.39178C4 7.18393 4.08257 6.98459 4.22954 6.83762C4.37651 6.69064 4.57585 6.60807 4.7837 6.60807C4.99155 6.60807 5.19089 6.69064 5.33787 6.83762L10 11.4997L14.6621 6.83696C14.8091 6.68999 15.0084 6.60742 15.2163 6.60742C15.4241 6.60742 15.6235 6.68999 15.7705 6.83696C15.9174 6.98394 16 7.18327 16 7.39113C16 7.59898 15.9174 7.79832 15.7705 7.94529L15.7692 7.94594Z"
-            fill="#181818"
+            fill="currentColor"
           />
         </svg>
       </ListboxButton>

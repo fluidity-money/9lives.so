@@ -25,12 +25,11 @@ enum InfraMarketState {
 const metadata = {
   title: "9lives.so",
   description: "The most advanced prediction market",
-  metadataBase: new URL("https://9lives.so"),
+  metadataBase: new URL("https://arb.9lives.so"),
   keywords: [
     "prediction market",
     "predict",
     "onchain",
-    "superposition",
     "blockchain",
     "arbitrum",
     "web3",

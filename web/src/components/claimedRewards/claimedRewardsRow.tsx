@@ -35,7 +35,7 @@ export default function ClaimedCampaignRow({
             </Link>
             <Link
               target="_blank"
-              href={`https://explorer.superposition.so/tx/${data.txHash}`}
+              href={`https://arbiscan.io/tx/${data.txHash}`}
             >
               <span className="font-geneva text-xs uppercase text-[#808080]">
                 Tx Hash:

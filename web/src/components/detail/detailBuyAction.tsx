@@ -128,12 +128,10 @@ export default function DetailBuyAction({
     resolver: zodResolver(formSchema),
     defaultValues: {
       supply: 0,
-      toChain: config.chains.superposition.id,
+      toChain: config.chains.arbitrum.id,
       toToken: zeroAddress,
       usdValue: 0,
-      fromChain: isInMiniApp
-        ? config.chains.base.id
-        : config.chains.superposition.id,
+      fromChain: config.chains.base.id,
       fromToken: isInMiniApp
         ? "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // Base USDC
         : zeroAddress,
@@ -260,7 +258,7 @@ export default function DetailBuyAction({
   }: FormData) {
     try {
       setIsMinting(true);
-      if (enabledRelay && fromChain !== config.chains.superposition.id) {
+      if (enabledRelay && fromChain !== config.chains.arbitrum.id) {
         await buyWithRelay(
           account.address!,
           supply,

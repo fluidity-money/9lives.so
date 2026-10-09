@@ -87,6 +87,11 @@ func FilterTopics(f features.F) []ethCommon.Hash {
 		paymaster.TopicStargateBridged,
 		// Rfqhub
 		rfqhub.TopicBalanceChanged,
+		// Stargate
+		stargate.TopicStargateOFTReceived,
+		stargate.TopicStargateOFTSent,
+		// Dinero
+		dinero.TopicOwnershipTransferred,
 	}
 	// Conditionally include sources that have feature-flag opt-outs.
 	if !f.Is(features.FeatureIngestorDisableLifi) {

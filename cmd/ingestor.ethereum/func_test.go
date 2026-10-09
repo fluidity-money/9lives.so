@@ -49,7 +49,7 @@ func TestBoundedBlockRange(t *testing.T) {
 
 func TestTopicsAreOkay(t *testing.T) {
 	var z [32]byte
-	assert.NotContains(t, z[:], FilterTopics)
+	assert.NotContains(t, z[:], FilterTopics(features.F{}))
 }
 
 func TestFilterTopicsIncludesProgramActivatedUnlessDisabled(t *testing.T) {

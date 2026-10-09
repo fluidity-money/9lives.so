@@ -195,11 +195,9 @@ export default function CreateCampaignForm() {
         seed: randomValue4Uint8(),
       },
     ],
-    toChain: config.chains.superposition.id,
+    toChain: config.chains.arbitrum.id,
     toToken: config.NEXT_PUBLIC_FUSDC_ADDR,
-    fromChain: isInMiniApp
-      ? config.chains.arbitrum.id
-      : config.chains.superposition.id,
+    fromChain: config.chains.base.id,
     fromToken: config.NEXT_PUBLIC_FUSDC_ADDR,
     seedLiquidity: defaultSeedLiquidity,
   };
@@ -258,7 +256,7 @@ export default function CreateCampaignForm() {
     if (!Boolean(preparedInput.oracleUrls?.length)) {
       delete preparedInput.oracleUrls;
     }
-    if (enabledRelay && fields.fromChain !== config.chains.superposition.id) {
+    if (enabledRelay && fields.fromChain !== config.chains.arbitrum.id) {
       createWithRelay({ ...preparedInput, fromDecimals });
     } else {
       create(preparedInput);
