@@ -2,6 +2,7 @@ import CampaignTabScene from "@/components/campaign/campaignTabScene";
 import { requestCampaignList } from "@/providers/graphqlClient";
 import { formatCampaign } from "@/utils/format/formatCampaign";
 import config from "@/config";
+import { redirect } from "next/navigation";
 
 export const revalidate = 3600;
 

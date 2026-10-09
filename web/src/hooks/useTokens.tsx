@@ -12,9 +12,9 @@ const isAllowedSymbol = (t: Token) =>
   }, false);
 
 const preconfiguredTokens: Record<number, Token[]> = {
-  [config.chains.superposition.id]: [
+  [config.destinationChain.id]: [
     {
-      chainId: config.chains.superposition.id,
+      chainId: config.destinationChain.id,
       address: config.NEXT_PUBLIC_FUSDC_ADDR,
       symbol: "USDC",
       name: "USD Coin",
