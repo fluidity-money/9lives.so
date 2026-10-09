@@ -156,26 +156,25 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
   /**
    * Create an BundleTaker auction, and starting to receive BundleMaker combinations. Use the
    * server provided signature for an account that's managed by the server instead of
-   * validating a signature and an amount.
+   * validating a signature and an amount. Optimistically uses the amount that's available from
+   * the onramped amount, and any amount that it must needs to access to get funds.
    */
-  createAuctionFromOnrampedAmountServerSig: $$Utilities.ClientTransports.PreflightCheck<
+  createAuctionServerSig: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
         $SelectionSet,
-        $$SelectionSets.Mutation.createAuctionFromOnrampedAmountServerSig<
-          $Context["scalars"]
-        >
+        $$SelectionSets.Mutation.createAuctionServerSig<$Context["scalars"]>
       >,
     ) => Promise<
       (null | {}) &
         $$Utilities.HandleOutputGraffleRootField<
           $Context,
           InferResult.OperationMutation<
-            { createAuctionFromOnrampedAmountServerSig: $SelectionSet },
+            { createAuctionServerSig: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
-          "createAuctionFromOnrampedAmountServerSig"
+          "createAuctionServerSig"
         >
     >
   >;
@@ -204,26 +203,50 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Permanently mark one side of the Aggregate bundle as consumed, and receive a server
-   * signature for the Aggregate. Automatically decides if you're the taker or the maker,
-   * and gives you results relevant to that.
+   * Conclude a bundle that's been outstanding to be resolved (the expiry date has passed).
+   * Anyone can call this. `produceOfframpCdTaker` needs to be called by the taker and
+   * `produceOfframpCdMaker` needs to be called by the maker to get calldata to offramp,
+   * and also to offramp.
    */
-  concludeAndAggregate: $$Utilities.ClientTransports.PreflightCheck<
+  conclude: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
         $SelectionSet,
-        $$SelectionSets.Mutation.concludeAndAggregate<$Context["scalars"]>
+        $$SelectionSets.Mutation.conclude<$Context["scalars"]>
       >,
     ) => Promise<
       (null | {}) &
         $$Utilities.HandleOutputGraffleRootField<
           $Context,
           InferResult.OperationMutation<
-            { concludeAndAggregate: $SelectionSet },
+            { conclude: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
-          "concludeAndAggregate"
+          "conclude"
+        >
+    >
+  >;
+  /**
+   * Get the calldata to perform an offramping from the Rfqhub engine. Marks the aggregate
+   * bundle as being unable to be consumed.
+   */
+  concludedCalldata: $$Utilities.ClientTransports.PreflightCheck<
+    $Context,
+    <$SelectionSet>(
+      selectionSet: $$Utilities.Exact<
+        $SelectionSet,
+        $$SelectionSets.Mutation.concludedCalldata<$Context["scalars"]>
+      >,
+    ) => Promise<
+      (null | {}) &
+        $$Utilities.HandleOutputGraffleRootField<
+          $Context,
+          InferResult.OperationMutation<
+            { concludedCalldata: $SelectionSet },
+            $$Schema.Schema<$Context["scalars"]>
+          >,
+          "concludedCalldata"
         >
     >
   >;

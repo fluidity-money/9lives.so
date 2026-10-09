@@ -82,9 +82,10 @@ export namespace Schema {
       __typename: Mutation.__typename;
       createAccountExec: Mutation.createAccountExec;
       onrampAmount: Mutation.onrampAmount;
-      createAuctionFromOnrampedAmountServerSig: Mutation.createAuctionFromOnrampedAmountServerSig;
+      createAuctionServerSig: Mutation.createAuctionServerSig;
       inspectBundleTakerId: Mutation.inspectBundleTakerId;
-      concludeAndAggregate: Mutation.concludeAndAggregate;
+      conclude: Mutation.conclude;
+      concludedCalldata: Mutation.concludedCalldata;
       cancelAuction: Mutation.cancelAuction;
       submitBundleMakerFromOnrampedAmountServerSig: Mutation.submitBundleMakerFromOnrampedAmountServerSig;
     };
@@ -168,11 +169,11 @@ export namespace Schema {
     /**
      * Create an BundleTaker auction, and starting to receive BundleMaker combinations. Use the
      * server provided signature for an account that's managed by the server instead of
-     * validating a signature and an amount.
+     * validating a signature and an amount. Optimistically uses the amount that's available from
+     * the onramped amount, and any amount that it must needs to access to get funds.
      */
-    export interface createAuctionFromOnrampedAmountServerSig
-      extends $.OutputField {
-      name: "createAuctionFromOnrampedAmountServerSig";
+    export interface createAuctionServerSig extends $.OutputField {
+      name: "createAuctionServerSig";
       arguments: {
         /**
          * The minimum amount of the outstanding balance we can spend here.
@@ -263,12 +264,13 @@ export namespace Schema {
     }
 
     /**
-     * Permanently mark one side of the Aggregate bundle as consumed, and receive a server
-     * signature for the Aggregate. Automatically decides if you're the taker or the maker,
-     * and gives you results relevant to that.
+     * Conclude a bundle that's been outstanding to be resolved (the expiry date has passed).
+     * Anyone can call this. `produceOfframpCdTaker` needs to be called by the taker and
+     * `produceOfframpCdMaker` needs to be called by the maker to get calldata to offramp,
+     * and also to offramp.
      */
-    export interface concludeAndAggregate extends $.OutputField {
-      name: "concludeAndAggregate";
+    export interface conclude extends $.OutputField {
+      name: "conclude";
       arguments: {
         bundleTakerId: {
           kind: "InputField";
@@ -279,6 +281,30 @@ export namespace Schema {
       };
       inlineType: [1];
       namedType: $$NamedTypes.$$Aggregate;
+    }
+
+    /**
+     * Get the calldata to perform an offramping from the Rfqhub engine. Marks the aggregate
+     * bundle as being unable to be consumed.
+     */
+    export interface concludedCalldata extends $.OutputField {
+      name: "concludedCalldata";
+      arguments: {
+        bundleTakerId: {
+          kind: "InputField";
+          name: "bundleTakerId";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Int;
+        };
+        isTaker: {
+          kind: "InputField";
+          name: "isTaker";
+          inlineType: [1];
+          namedType: $$NamedTypes.$$Boolean;
+        };
+      };
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
     }
 
     /**
@@ -682,68 +708,6 @@ export namespace Schema {
     }
   }
 
-  //                                        AggregateBundleTaker
-  // --------------------------------------------------------------------------------------------------
-  //
-
-  export interface AggregateBundleTaker extends $.OutputObject {
-    name: "AggregateBundleTaker";
-    fields: {
-      __typename: AggregateBundleTaker.__typename;
-      id: AggregateBundleTaker.id;
-    };
-  }
-
-  export namespace AggregateBundleTaker {
-    export interface __typename extends $.OutputField {
-      name: "__typename";
-      arguments: {};
-      inlineType: [1];
-      namedType: {
-        kind: "__typename";
-        value: "AggregateBundleTaker";
-      };
-    }
-
-    export interface id extends $.OutputField {
-      name: "id";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$ID;
-    }
-  }
-
-  //                                        AggregateBundleMaker
-  // --------------------------------------------------------------------------------------------------
-  //
-
-  export interface AggregateBundleMaker extends $.OutputObject {
-    name: "AggregateBundleMaker";
-    fields: {
-      __typename: AggregateBundleMaker.__typename;
-      id: AggregateBundleMaker.id;
-    };
-  }
-
-  export namespace AggregateBundleMaker {
-    export interface __typename extends $.OutputField {
-      name: "__typename";
-      arguments: {};
-      inlineType: [1];
-      namedType: {
-        kind: "__typename";
-        value: "AggregateBundleMaker";
-      };
-    }
-
-    export interface id extends $.OutputField {
-      name: "id";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$ID;
-    }
-  }
-
   //                                             Aggregate
   // --------------------------------------------------------------------------------------------------
   //
@@ -754,8 +718,7 @@ export namespace Schema {
       __typename: Aggregate.__typename;
       id: Aggregate.id;
       takerWon: Aggregate.takerWon;
-      bundleTaker: Aggregate.bundleTaker;
-      bundleMaker: Aggregate.bundleMaker;
+      winningAmount: Aggregate.winningAmount;
     };
   }
 
@@ -784,18 +747,14 @@ export namespace Schema {
       namedType: $$NamedTypes.$$Boolean;
     }
 
-    export interface bundleTaker extends $.OutputField {
-      name: "bundleTaker";
+    /**
+     * Amount that the winner won.
+     */
+    export interface winningAmount extends $.OutputField {
+      name: "winningAmount";
       arguments: {};
       inlineType: [1];
-      namedType: $$NamedTypes.$$AggregateBundleTaker;
-    }
-
-    export interface bundleMaker extends $.OutputField {
-      name: "bundleMaker";
-      arguments: {};
-      inlineType: [1];
-      namedType: $$NamedTypes.$$AggregateBundleMaker;
+      namedType: $$NamedTypes.$$String;
     }
   }
 
@@ -1050,8 +1009,6 @@ export namespace Schema {
     export type $$AuctionCreatedResult = AuctionCreatedResult;
     export type $$BundleMakerInfo = BundleMakerInfo;
     export type $$BundleTakerOwnerStatus = BundleTakerOwnerStatus;
-    export type $$AggregateBundleTaker = AggregateBundleTaker;
-    export type $$AggregateBundleMaker = AggregateBundleMaker;
     export type $$Aggregate = Aggregate;
     export type $$CreateAccount = CreateAccount;
     export type $$Permit = Permit;
@@ -1099,8 +1056,6 @@ export interface Schema<
     AuctionCreatedResult: Schema.AuctionCreatedResult;
     BundleMakerInfo: Schema.BundleMakerInfo;
     BundleTakerOwnerStatus: Schema.BundleTakerOwnerStatus;
-    AggregateBundleTaker: Schema.AggregateBundleTaker;
-    AggregateBundleMaker: Schema.AggregateBundleMaker;
     Aggregate: Schema.Aggregate;
   };
   objects: {
@@ -1109,8 +1064,6 @@ export interface Schema<
     AuctionCreatedResult: Schema.AuctionCreatedResult;
     BundleMakerInfo: Schema.BundleMakerInfo;
     BundleTakerOwnerStatus: Schema.BundleTakerOwnerStatus;
-    AggregateBundleTaker: Schema.AggregateBundleTaker;
-    AggregateBundleMaker: Schema.AggregateBundleMaker;
     Aggregate: Schema.Aggregate;
   };
   unions: {};

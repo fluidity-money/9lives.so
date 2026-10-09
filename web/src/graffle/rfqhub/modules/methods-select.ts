@@ -25,8 +25,6 @@ export interface $MethodsSelect {
   AuctionCreatedResult: AuctionCreatedResult;
   BundleMakerInfo: BundleMakerInfo;
   BundleTakerOwnerStatus: BundleTakerOwnerStatus;
-  AggregateBundleTaker: AggregateBundleTaker;
-  AggregateBundleMaker: AggregateBundleMaker;
   Aggregate: Aggregate;
 }
 
@@ -112,24 +110,6 @@ export interface BundleTakerOwnerStatus {
     selectionSet: $$Utilities.Exact<
       $SelectionSet,
       $$SelectionSets.BundleTakerOwnerStatus
-    >,
-  ): $SelectionSet;
-}
-
-export interface AggregateBundleTaker {
-  <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.AggregateBundleTaker
-    >,
-  ): $SelectionSet;
-}
-
-export interface AggregateBundleMaker {
-  <$SelectionSet>(
-    selectionSet: $$Utilities.Exact<
-      $SelectionSet,
-      $$SelectionSets.AggregateBundleMaker
     >,
   ): $SelectionSet;
 }

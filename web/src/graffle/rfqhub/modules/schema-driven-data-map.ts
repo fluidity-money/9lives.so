@@ -163,28 +163,11 @@ const BundleTakerOwnerStatus: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   },
 };
 
-const AggregateBundleTaker: $$Utilities.SchemaDrivenDataMap.OutputObject = {
-  f: {
-    id: {},
-  },
-};
-
-const AggregateBundleMaker: $$Utilities.SchemaDrivenDataMap.OutputObject = {
-  f: {
-    id: {},
-  },
-};
-
 const Aggregate: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     id: {},
     takerWon: {},
-    bundleTaker: {
-      // nt: AggregateBundleTaker, <-- Assigned later to avoid potential circular dependency.
-    },
-    bundleMaker: {
-      // nt: AggregateBundleMaker, <-- Assigned later to avoid potential circular dependency.
-    },
+    winningAmount: {},
   },
 };
 
@@ -294,7 +277,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
-    createAuctionFromOnrampedAmountServerSig: {
+    createAuctionServerSig: {
       a: {
         minAmount: {
           nt: String,
@@ -340,7 +323,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: BundleTakerOwnerStatus, <-- Assigned later to avoid potential circular dependency.
     },
-    concludeAndAggregate: {
+    conclude: {
       a: {
         bundleTakerId: {
           nt: Int,
@@ -348,6 +331,18 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
       // nt: Aggregate, <-- Assigned later to avoid potential circular dependency.
+    },
+    concludedCalldata: {
+      a: {
+        bundleTakerId: {
+          nt: Int,
+          it: [1],
+        },
+        isTaker: {
+          nt: Boolean,
+          it: [1],
+        },
+      },
     },
     cancelAuction: {
       a: {
@@ -395,13 +390,10 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
 //
 
 OpenAuctions.f[`openAuctions`]!.nt = OpenAuction;
-Aggregate.f[`bundleTaker`]!.nt = AggregateBundleTaker;
-Aggregate.f[`bundleMaker`]!.nt = AggregateBundleMaker;
 Query.f[`openAuctions`]!.nt = OpenAuctions;
-Mutation.f[`createAuctionFromOnrampedAmountServerSig`]!.nt =
-  AuctionCreatedResult;
+Mutation.f[`createAuctionServerSig`]!.nt = AuctionCreatedResult;
 Mutation.f[`inspectBundleTakerId`]!.nt = BundleTakerOwnerStatus;
-Mutation.f[`concludeAndAggregate`]!.nt = Aggregate;
+Mutation.f[`conclude`]!.nt = Aggregate;
 Mutation.f[`submitBundleMakerFromOnrampedAmountServerSig`]!.nt =
   BundleMakerInfo;
 
@@ -440,8 +432,6 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     AuctionCreatedResult,
     BundleMakerInfo,
     BundleTakerOwnerStatus,
-    AggregateBundleTaker,
-    AggregateBundleMaker,
     Aggregate,
     Query,
     Mutation,

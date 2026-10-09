@@ -3,18 +3,12 @@ import { useSignMessage } from "wagmi";
 import { parseSignature } from "viem";
 import config from "@/config";
 import { requestPublicKey } from "@/providers/graphqlClient";
+import { checkAndSetSecret, create, getSecret, isCreated } from "./useAccount";
 import {
-  checkAndSetSecret,
-  create,
-  getSecret,
-  isCreated,
-} from "./useAccount";
-import {
-  rfqhubCancelAuction,
-  rfqhubConcludeAndAggregate,
+  rfqhubConclude,
+  rfqhubConcludedCalldata,
   rfqhubCreateAccountExec,
-  rfqhubCreateAuctionFromOnrampedAmountServerSig,
-  rfqhubInspectBundleTaker,
+  rfqhubCreateAuctionServerSig,
   rfqhubOnramp,
   rfqhubRequestBalance,
   rfqhubRequestOpenAuctions,
@@ -22,6 +16,10 @@ import {
   RfqhubOutcome,
   RfqhubPermit,
 } from "@/providers/rfqhubGraphqlClient";
+import {
+  executeRfqhubAuthenticated,
+  rfqhubSuggestionTimestamps,
+} from "@/lib/rfqhub";
 
 /**
  * `useRfqhub` — interaction with the Rfqhub (request-for-quote hub) graph.
@@ -49,6 +47,21 @@ export default function useRfqhub() {
     return { eoaAddress: account.address, secret };
   };
 
+  const authenticated = async <T,>(
+    request: (credentials: {
+      eoaAddress: string;
+      secret: string;
+    }) => Promise<T>,
+  ) => {
+    const { eoaAddress, secret } = await requireAccount();
+    return executeRfqhubAuthenticated({
+      eoaAddress,
+      secret,
+      refreshSecret: () => getSecret(eoaAddress, signMessage),
+      request,
+    });
+  };
+
   // ---- Account lifecycle (shared secret system, mirrors `useAccount`) ----
   const ensureSecret = async (): Promise<string> => {
     if (!account.address) throw new Error("No wallet is connected");
@@ -69,9 +82,7 @@ export default function useRfqhub() {
     isDryrun?: boolean;
   }) => {
     if (!account.address) throw new Error("No wallet is connected");
-    const authAddr = (
-      authority ?? config.NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR
-    )
+    const authAddr = (authority ?? config.NEXT_PUBLIC_ACCOUNT_AUTHORITY_ADDR)
       .slice(2)
       .toLowerCase();
     const publicKey = await requestPublicKey();
@@ -99,10 +110,10 @@ export default function useRfqhub() {
     amt: string;
     permit?: RfqhubPermit;
     isDryrun?: boolean;
-  }) => {
-    const { eoaAddress, secret } = await requireAccount();
-    return rfqhubOnramp({ eoaAddress, secret, amt, permit, isDryrun });
-  };
+  }) =>
+    authenticated(({ eoaAddress, secret }) =>
+      rfqhubOnramp({ eoaAddress, secret, amt, permit, isDryrun }),
+    );
 
   const createAuction = async ({
     minAmount,
@@ -122,16 +133,49 @@ export default function useRfqhub() {
     expiry: number;
     deadline: number;
     minOffer: string;
+  }) =>
+    authenticated(({ eoaAddress, secret }) =>
+      rfqhubCreateAuctionServerSig({
+        eoaAddress,
+        secret,
+        minAmount,
+        maxAmount,
+        isUp,
+        priceTarget,
+        outcome,
+        expiry,
+        deadline,
+        minOffer,
+      }),
+    );
+
+  const createSuggestion = async ({
+    minAmount,
+    maxAmount,
+    isUp,
+    priceTarget,
+    durationSeconds,
+    biddingWindowSeconds,
+    minOffer,
+  }: {
+    minAmount: string;
+    maxAmount: string;
+    isUp: boolean;
+    priceTarget: string;
+    durationSeconds: number;
+    biddingWindowSeconds: number;
+    minOffer: string;
   }) => {
-    const { eoaAddress, secret } = await requireAccount();
-    return rfqhubCreateAuctionFromOnrampedAmountServerSig({
-      eoaAddress,
-      secret,
+    const { expiry, deadline } = rfqhubSuggestionTimestamps({
+      durationSeconds,
+      biddingWindowSeconds,
+    });
+    return createAuction({
       minAmount,
       maxAmount,
       isUp,
       priceTarget,
-      outcome,
+      outcome: "BitcoinPrice",
       expiry,
       deadline,
       minOffer,
@@ -146,31 +190,28 @@ export default function useRfqhub() {
     bundleTakerId: number;
     minAmount: string;
     maxAmount: string;
-  }) => {
-    const { eoaAddress, secret } = await requireAccount();
-    return rfqhubSubmitBundleMakerFromOnrampedAmountServerSig({
-      eoaAddress,
-      secret,
-      bundleTakerId,
-      minAmount,
-      maxAmount,
-    });
-  };
+  }) =>
+    authenticated(({ eoaAddress, secret }) =>
+      rfqhubSubmitBundleMakerFromOnrampedAmountServerSig({
+        eoaAddress,
+        secret,
+        bundleTakerId,
+        minAmount,
+        maxAmount,
+      }),
+    );
 
-  const inspectBundleTaker = async (bundleTakerId: number) => {
-    const { eoaAddress, secret } = await requireAccount();
-    return rfqhubInspectBundleTaker({ eoaAddress, secret, bundleTakerId });
-  };
+  const conclude = (bundleTakerId: number) => rfqhubConclude(bundleTakerId);
 
-  const concludeAndAggregate = async (bundleTakerId: number) => {
-    const { eoaAddress, secret } = await requireAccount();
-    return rfqhubConcludeAndAggregate({ eoaAddress, secret, bundleTakerId });
-  };
-
-  const cancelAuction = async (bundleTakerId: number) => {
-    const { eoaAddress, secret } = await requireAccount();
-    return rfqhubCancelAuction({ eoaAddress, secret, bundleTakerId });
-  };
+  const concludedCalldata = async (bundleTakerId: number, isTaker: boolean) =>
+    authenticated(({ eoaAddress, secret }) =>
+      rfqhubConcludedCalldata({
+        eoaAddress,
+        secret,
+        bundleTakerId,
+        isTaker,
+      }),
+    );
 
   const requestBalance = async (addr?: string) => {
     const address = addr ?? account.address;
@@ -189,10 +230,10 @@ export default function useRfqhub() {
     // graph operations
     onramp,
     createAuction,
+    createSuggestion,
     submitBundleMaker,
-    inspectBundleTaker,
-    concludeAndAggregate,
-    cancelAuction,
+    conclude,
+    concludedCalldata,
     requestBalance,
     requestOpenAuctions: rfqhubRequestOpenAuctions,
   };

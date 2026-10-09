@@ -194,13 +194,13 @@ export interface Mutation<
     | $Select.SelectAlias.SelectAlias<Mutation.onrampAmount<_$Scalars>>;
   /**
    *
-   * Select the `createAuctionFromOnrampedAmountServerSig` field on the `Mutation` object. Its type is `AuctionCreatedResult` (a `OutputObject` kind of type).
+   * Select the `createAuctionServerSig` field on the `Mutation` object. Its type is `AuctionCreatedResult` (a `OutputObject` kind of type).
    *
    */
-  createAuctionFromOnrampedAmountServerSig?:
-    | Mutation.createAuctionFromOnrampedAmountServerSig<_$Scalars>
+  createAuctionServerSig?:
+    | Mutation.createAuctionServerSig<_$Scalars>
     | $Select.SelectAlias.SelectAlias<
-        Mutation.createAuctionFromOnrampedAmountServerSig<_$Scalars>
+        Mutation.createAuctionServerSig<_$Scalars>
       >;
   /**
    *
@@ -212,12 +212,20 @@ export interface Mutation<
     | $Select.SelectAlias.SelectAlias<Mutation.inspectBundleTakerId<_$Scalars>>;
   /**
    *
-   * Select the `concludeAndAggregate` field on the `Mutation` object. Its type is `Aggregate` (a `OutputObject` kind of type).
+   * Select the `conclude` field on the `Mutation` object. Its type is `Aggregate` (a `OutputObject` kind of type).
    *
    */
-  concludeAndAggregate?:
-    | Mutation.concludeAndAggregate<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.concludeAndAggregate<_$Scalars>>;
+  conclude?:
+    | Mutation.conclude<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.conclude<_$Scalars>>;
+  /**
+   *
+   * Select the `concludedCalldata` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  concludedCalldata?:
+    | Mutation.concludedCalldata<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.concludedCalldata<_$Scalars>>;
   /**
    *
    * Select the `cancelAuction` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -357,23 +365,23 @@ export namespace Mutation {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type createAuctionFromOnrampedAmountServerSig<
+  export type createAuctionServerSig<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = createAuctionFromOnrampedAmountServerSig$SelectionSet<_$Scalars>;
+  > = createAuctionServerSig$SelectionSet<_$Scalars>;
 
-  export interface createAuctionFromOnrampedAmountServerSig$SelectionSet<
+  export interface createAuctionServerSig$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   >
     extends $Select.Bases.Base, $NamedTypes.$AuctionCreatedResult<_$Scalars> {
     /**
-     * Arguments for `createAuctionFromOnrampedAmountServerSig` field. All arguments are required so you must include this.
+     * Arguments for `createAuctionServerSig` field. All arguments are required so you must include this.
      */
-    $: createAuctionFromOnrampedAmountServerSig$Arguments<_$Scalars>;
+    $: createAuctionServerSig$Arguments<_$Scalars>;
   }
 
-  export interface createAuctionFromOnrampedAmountServerSig$Arguments<
+  export interface createAuctionServerSig$Arguments<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > {
@@ -407,17 +415,15 @@ export namespace Mutation {
 
   /**
    *
-   * This is the "expanded" version of the `createAuctionFromOnrampedAmountServerSig` type. It is identical except for the fact
+   * This is the "expanded" version of the `createAuctionServerSig` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type createAuctionFromOnrampedAmountServerSig$Expanded<
+  export type createAuctionServerSig$Expanded<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    createAuctionFromOnrampedAmountServerSig$SelectionSet<_$Scalars>
-  >;
+  > = $$Utilities.Simplify<createAuctionServerSig$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -460,23 +466,23 @@ export namespace Mutation {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type concludeAndAggregate<
+  export type conclude<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = concludeAndAggregate$SelectionSet<_$Scalars>;
+  > = conclude$SelectionSet<_$Scalars>;
 
-  export interface concludeAndAggregate$SelectionSet<
+  export interface conclude$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   >
     extends $Select.Bases.Base, $NamedTypes.$Aggregate<_$Scalars> {
     /**
-     * Arguments for `concludeAndAggregate` field. All arguments are required so you must include this.
+     * Arguments for `conclude` field. All arguments are required so you must include this.
      */
-    $: concludeAndAggregate$Arguments<_$Scalars>;
+    $: conclude$Arguments<_$Scalars>;
   }
 
-  export interface concludeAndAggregate$Arguments<
+  export interface conclude$Arguments<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > {
@@ -487,15 +493,55 @@ export namespace Mutation {
 
   /**
    *
-   * This is the "expanded" version of the `concludeAndAggregate` type. It is identical except for the fact
+   * This is the "expanded" version of the `conclude` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type concludeAndAggregate$Expanded<
+  export type conclude$Expanded<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<concludeAndAggregate$SelectionSet<_$Scalars>>;
+  > = $$Utilities.Simplify<conclude$SelectionSet<_$Scalars>>;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type concludedCalldata<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = concludedCalldata$SelectionSet<_$Scalars>;
+
+  export interface concludedCalldata$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {
+    /**
+     * Arguments for `concludedCalldata` field. All arguments are required so you must include this.
+     */
+    $: concludedCalldata$Arguments<_$Scalars>;
+  }
+
+  export interface concludedCalldata$Arguments<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > {
+    bundleTakerId: number;
+    isTaker: boolean;
+  }
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `concludedCalldata` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type concludedCalldata$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<concludedCalldata$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -1647,176 +1693,6 @@ export namespace BundleTakerOwnerStatus {
   >;
 }
 
-//                                        AggregateBundleTaker
-// --------------------------------------------------------------------------------------------------
-//
-
-// ----------------------------------------| Entrypoint Interface |
-
-export interface AggregateBundleTaker<
-  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-    $$Utilities.Schema.Scalar.Registry.Empty,
->
-  extends $Select.Bases.ObjectLike {
-  /**
-   *
-   * Select the `id` field on the `AggregateBundleTaker` object. Its type is `ID` (a `ScalarStandard` kind of type).
-   *
-   */
-  id?:
-    | AggregateBundleTaker.id$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<AggregateBundleTaker.id<_$Scalars>>;
-
-  /**
-   *
-   * Inline fragments for field groups.
-   *
-   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
-   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
-   *
-   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
-   *
-   */
-  ___?:
-    | AggregateBundleTaker$FragmentInline<_$Scalars>
-    | AggregateBundleTaker$FragmentInline<_$Scalars>[];
-
-  /**
-   *
-   * A meta field. Is the name of the type being selected.
-   *
-   * @see https://graphql.org/learn/queries/#meta-fields
-   *
-   */
-  __typename?:
-    | $Select.Indicator.NoArgsIndicator$Expanded
-    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
-}
-
-export interface AggregateBundleTaker$FragmentInline<
-  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-    $$Utilities.Schema.Scalar.Registry.Empty,
->
-  extends
-    AggregateBundleTaker<_$Scalars>,
-    $Select.Directive.$Groups.InlineFragment.Fields {}
-
-// ----------------------------------------| Fields |
-
-export namespace AggregateBundleTaker {
-  export type id<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
-
-  export interface id$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `id` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type id$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
-  >;
-}
-
-//                                        AggregateBundleMaker
-// --------------------------------------------------------------------------------------------------
-//
-
-// ----------------------------------------| Entrypoint Interface |
-
-export interface AggregateBundleMaker<
-  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-    $$Utilities.Schema.Scalar.Registry.Empty,
->
-  extends $Select.Bases.ObjectLike {
-  /**
-   *
-   * Select the `id` field on the `AggregateBundleMaker` object. Its type is `ID` (a `ScalarStandard` kind of type).
-   *
-   */
-  id?:
-    | AggregateBundleMaker.id$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<AggregateBundleMaker.id<_$Scalars>>;
-
-  /**
-   *
-   * Inline fragments for field groups.
-   *
-   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
-   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
-   *
-   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
-   *
-   */
-  ___?:
-    | AggregateBundleMaker$FragmentInline<_$Scalars>
-    | AggregateBundleMaker$FragmentInline<_$Scalars>[];
-
-  /**
-   *
-   * A meta field. Is the name of the type being selected.
-   *
-   * @see https://graphql.org/learn/queries/#meta-fields
-   *
-   */
-  __typename?:
-    | $Select.Indicator.NoArgsIndicator$Expanded
-    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
-}
-
-export interface AggregateBundleMaker$FragmentInline<
-  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-    $$Utilities.Schema.Scalar.Registry.Empty,
->
-  extends
-    AggregateBundleMaker<_$Scalars>,
-    $Select.Directive.$Groups.InlineFragment.Fields {}
-
-// ----------------------------------------| Fields |
-
-export namespace AggregateBundleMaker {
-  export type id<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>;
-
-  export interface id$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `id` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type id$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    $Select.Indicator.NoArgsIndicator | id$SelectionSet<_$Scalars>
-  >;
-}
-
 //                                             Aggregate
 // --------------------------------------------------------------------------------------------------
 //
@@ -1846,20 +1722,12 @@ export interface Aggregate<
     | $Select.SelectAlias.SelectAlias<Aggregate.takerWon<_$Scalars>>;
   /**
    *
-   * Select the `bundleTaker` field on the `Aggregate` object. Its type is `AggregateBundleTaker` (a `OutputObject` kind of type).
+   * Select the `winningAmount` field on the `Aggregate` object. Its type is `String` (a `ScalarStandard` kind of type).
    *
    */
-  bundleTaker?:
-    | Aggregate.bundleTaker$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Aggregate.bundleTaker<_$Scalars>>;
-  /**
-   *
-   * Select the `bundleMaker` field on the `Aggregate` object. Its type is `AggregateBundleMaker` (a `OutputObject` kind of type).
-   *
-   */
-  bundleMaker?:
-    | Aggregate.bundleMaker$Expanded<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Aggregate.bundleMaker<_$Scalars>>;
+  winningAmount?:
+    | Aggregate.winningAmount$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Aggregate.winningAmount<_$Scalars>>;
 
   /**
    *
@@ -1956,57 +1824,32 @@ export namespace Aggregate {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type bundleTaker<
+  export type winningAmount<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = bundleTaker$SelectionSet<_$Scalars>;
+  > = $Select.Indicator.NoArgsIndicator | winningAmount$SelectionSet<_$Scalars>;
 
-  export interface bundleTaker$SelectionSet<
+  export interface winningAmount$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   >
-    extends $Select.Bases.Base, $NamedTypes.$AggregateBundleTaker<_$Scalars> {}
+    extends $Select.Bases.Base {}
 
   // --- expanded ---
 
   /**
    *
-   * This is the "expanded" version of the `bundleTaker` type. It is identical except for the fact
+   * This is the "expanded" version of the `winningAmount` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type bundleTaker$Expanded<
+  export type winningAmount$Expanded<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<bundleTaker$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type bundleMaker<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = bundleMaker$SelectionSet<_$Scalars>;
-
-  export interface bundleMaker$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base, $NamedTypes.$AggregateBundleMaker<_$Scalars> {}
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `bundleMaker` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type bundleMaker$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<bundleMaker$SelectionSet<_$Scalars>>;
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | winningAmount$SelectionSet<_$Scalars>
+  >;
 }
 
 /**
@@ -2054,14 +1897,6 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = BundleTakerOwnerStatus<_$Scalars>;
-  export type $AggregateBundleTaker<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = AggregateBundleTaker<_$Scalars>;
-  export type $AggregateBundleMaker<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = AggregateBundleMaker<_$Scalars>;
   export type $Aggregate<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

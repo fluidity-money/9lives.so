@@ -1,16 +1,16 @@
 import config from "@/config";
 import { Rfqhub } from "@/graffle/rfqhub/__";
+import { rfqhubRootData } from "@/lib/rfqhub";
 
 /**
  * Rfqhub graph client.
  *
  * The Rfqhub (request-for-quote) hub re-uses the Superposition account secret
  * system: the same `accounts_secrets_2` table that backs `accounts.superposition.so`
- * authorises these graph calls. Any operation that spends onramped liquidity
- * (onramp, auction creation, bundle maker submission, conclude, cancel, inspect)
- * requires the `Authorization: <eoa>:<secret>` header to be present.
+ * authorises these graph calls. Operations that spend onramped liquidity use
+ * the `Authorization: <eoa>:<secret>` header; public reads and `conclude` do not.
  */
-const graphRfqhub = Rfqhub.create().transport({
+const graphRfqhub = Rfqhub.create({ output: { envelope: true } }).transport({
   url: config.NEXT_PUBLIC_RFQHUB_URL,
 });
 
@@ -18,6 +18,15 @@ const withAuth = (eoaAddress: string, secret: string) =>
   graphRfqhub.transport({
     headers: { Authorization: `${eoaAddress}:${secret}` },
   });
+
+const data = <TData extends object, TKey extends keyof TData>(
+  request: Promise<{
+    response?: { status: number };
+    data?: TData | null;
+    errors?: readonly unknown[] | null;
+  }>,
+  rootField: TKey,
+) => request.then((envelope) => rfqhubRootData(envelope, rootField));
 
 export type RfqhubOutcome = Rfqhub.SelectionSets.Outcome;
 
@@ -30,15 +39,6 @@ export type RfqhubPermit = {
   permitV: number;
   permitR: string;
   permitS: string;
-};
-
-/**
- * Signature components for wallet-signed account creation.
- */
-type AccountSig = {
-  r: string;
-  s: string;
-  v: number;
 };
 
 /**
@@ -67,20 +67,23 @@ export const rfqhubCreateAccountExec = ({
   permit?: RfqhubPermit;
   isDryrun?: boolean;
 }) =>
-  graphRfqhub.mutation.createAccountExec({
-    $: {
-      createAccount: {
-        eoa_addr: eoaAddr,
-        sigR: r,
-        sigS: s,
-        sigV: v,
-        authority,
+  data(
+    graphRfqhub.mutation.createAccountExec({
+      $: {
+        createAccount: {
+          eoa_addr: eoaAddr,
+          sigR: r,
+          sigS: s,
+          sigV: v,
+          authority,
+        },
+        permit,
+        amt,
+        isDryrun,
       },
-      permit,
-      amt,
-      isDryrun,
-    },
-  });
+    }),
+    "createAccountExec",
+  );
 
 /**
  * Onramp an amount (from the user's `bal`) into spendable Rfqhub liquidity
@@ -99,16 +102,19 @@ export const rfqhubOnramp = ({
   permit?: RfqhubPermit;
   isDryrun?: boolean;
 }) =>
-  withAuth(eoaAddress, secret).mutation.onrampAmount({
-    $: { amt, permit, isDryrun },
-  });
+  data(
+    withAuth(eoaAddress, secret).mutation.onrampAmount({
+      $: { amt, permit, isDryrun },
+    }),
+    "onrampAmount",
+  );
 
 /**
  * Create a BundleTaker auction backed by the caller's onramped liquidity. The
  * server signs the BundleTaker arguments on the user's behalf (server-signed),
  * so no client-side signature is needed.
  */
-export const rfqhubCreateAuctionFromOnrampedAmountServerSig = ({
+export const rfqhubCreateAuctionServerSig = ({
   eoaAddress,
   secret,
   minAmount,
@@ -131,8 +137,8 @@ export const rfqhubCreateAuctionFromOnrampedAmountServerSig = ({
   deadline: number;
   minOffer: string;
 }) =>
-  withAuth(eoaAddress, secret).mutation.createAuctionFromOnrampedAmountServerSig(
-    {
+  data(
+    withAuth(eoaAddress, secret).mutation.createAuctionServerSig({
       $: {
         minAmount,
         maxAmount,
@@ -146,7 +152,8 @@ export const rfqhubCreateAuctionFromOnrampedAmountServerSig = ({
       leftoverBal: true,
       amountSpent: true,
       bundleId: true,
-    },
+    }),
+    "createAuctionServerSig",
   );
 
 /**
@@ -166,97 +173,80 @@ export const rfqhubSubmitBundleMakerFromOnrampedAmountServerSig = ({
   minAmount: string;
   maxAmount: string;
 }) =>
-  withAuth(eoaAddress, secret).mutation.submitBundleMakerFromOnrampedAmountServerSig(
-    {
+  data(
+    withAuth(
+      eoaAddress,
+      secret,
+    ).mutation.submitBundleMakerFromOnrampedAmountServerSig({
       $: { bundleTakerId, minAmount, maxAmount },
       id: true,
       bundleMakerId: true,
-    },
+    }),
+    "submitBundleMakerFromOnrampedAmountServerSig",
   );
 
 /**
- * Query the status of an auction the caller created. Owner-only.
+ * Resolve an expired auction and return its winning side and amount. This is
+ * intentionally public in the RFQ Hub API so a keeper can call it.
  */
-export const rfqhubInspectBundleTaker = ({
-  eoaAddress,
-  secret,
-  bundleTakerId,
-}: {
-  eoaAddress: string;
-  secret: string;
-  bundleTakerId: number;
-}) =>
-  withAuth(eoaAddress, secret).mutation.inspectBundleTakerId({
-    $: { bundleTakerId },
-    id: true,
-    concluded: true,
-    cancelled: true,
-    earned: true,
-  });
+export const rfqhubConclude = (bundleTakerId: number) =>
+  data(
+    graphRfqhub.mutation.conclude({
+      $: { bundleTakerId },
+      id: true,
+      takerWon: true,
+      winningAmount: true,
+    }),
+    "conclude",
+  );
 
 /**
- * Permanently mark one side of an aggregate bundle as consumed and receive a
- * server signature for the aggregate. Server-signed.
+ * Get calldata for consuming the concluded bundle on-chain. The server marks
+ * the selected side as consumed while producing this calldata.
  */
-export const rfqhubConcludeAndAggregate = ({
+export const rfqhubConcludedCalldata = ({
   eoaAddress,
   secret,
   bundleTakerId,
+  isTaker,
 }: {
   eoaAddress: string;
   secret: string;
   bundleTakerId: number;
+  isTaker: boolean;
 }) =>
-  withAuth(eoaAddress, secret).mutation.concludeAndAggregate({
-    $: { bundleTakerId },
-    id: true,
-    takerWon: true,
-    bundleTaker: {
-      id: true,
-    },
-    bundleMaker: {
-      id: true,
-    },
-  });
-
-/**
- * Cancel an auction the caller created (within the one-minute window).
- */
-export const rfqhubCancelAuction = ({
-  eoaAddress,
-  secret,
-  bundleTakerId,
-}: {
-  eoaAddress: string;
-  secret: string;
-  bundleTakerId: number;
-}) =>
-  withAuth(eoaAddress, secret).mutation.cancelAuction({
-    $: { bundleTakerId },
-  });
+  data(
+    withAuth(eoaAddress, secret).mutation.concludedCalldata({
+      $: { bundleTakerId, isTaker },
+    }),
+    "concludedCalldata",
+  );
 
 /**
  * Get the spendable onramped balance for an account address. Public.
  */
 export const rfqhubRequestBalance = (addr: string) =>
-  graphRfqhub.query.balance({ $: { addr } });
+  data(graphRfqhub.query.balance({ $: { addr } }), "balance");
 
 /**
  * Get the currently outstanding auctions needing BundleMaker submissions.
  * Public.
  */
 export const rfqhubRequestOpenAuctions = () =>
-  graphRfqhub.query.openAuctions({
-    id: true,
-    openAuctions: {
+  data(
+    graphRfqhub.query.openAuctions({
       id: true,
-      openToBeWon: true,
-      accAddr: true,
-      deadlineTs: true,
-      outcome: true,
-      expiryTs: true,
-      priceTarget: true,
-      isUp: true,
-      bundleTakerId: true,
-    },
-  });
+      openAuctions: {
+        id: true,
+        openToBeWon: true,
+        accAddr: true,
+        deadlineTs: true,
+        outcome: true,
+        expiryTs: true,
+        priceTarget: true,
+        isUp: true,
+        bundleTakerId: true,
+      },
+    }),
+    "openAuctions",
+  );

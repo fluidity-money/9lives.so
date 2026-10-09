@@ -90,20 +90,6 @@ export namespace Select {
     $$Schema.Schema,
     $$Schema.Schema["allTypes"]["BundleTakerOwnerStatus"]
   >;
-  export type AggregateBundleTaker<
-    $SelectionSet extends $$SelectionSets.AggregateBundleTaker,
-  > = InferResult.OutputObjectLike<
-    $SelectionSet,
-    $$Schema.Schema,
-    $$Schema.Schema["allTypes"]["AggregateBundleTaker"]
-  >;
-  export type AggregateBundleMaker<
-    $SelectionSet extends $$SelectionSets.AggregateBundleMaker,
-  > = InferResult.OutputObjectLike<
-    $SelectionSet,
-    $$Schema.Schema,
-    $$Schema.Schema["allTypes"]["AggregateBundleMaker"]
-  >;
   export type Aggregate<$SelectionSet extends $$SelectionSets.Aggregate> =
     InferResult.OutputObjectLike<
       $SelectionSet,
