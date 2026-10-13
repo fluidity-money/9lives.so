@@ -14,11 +14,13 @@ export default function PositionsGroup({
   detailPage,
   colSpan,
   hideSmallBalances,
+  modern = false,
 }: ParticipatedCampaign & {
   content: NonNullable<ParticipatedCampaign["content"]>;
   detailPage?: boolean;
   colSpan: number;
   hideSmallBalances: boolean;
+  modern?: boolean;
 }) {
   const account = useAppKitAccount();
   const {
@@ -77,6 +79,7 @@ export default function PositionsGroup({
         price={sharePrices?.find((o) => o.id === item.id)?.price}
         history={positionsHistory?.filter((p) => p.outcomeId === item.id)}
         detailPage={detailPage}
+        modern={modern}
       />
     ));
 }

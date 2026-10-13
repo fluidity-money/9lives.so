@@ -51,6 +51,7 @@ export default function PositionTable({
           </tr>
         </thead>
         <PositionsBody
+          modern={modern}
           hideSmallBalances={hideSmallBalances}
           colSpan={tableHeaders.length}
           campaignDetail={campaignDetail}

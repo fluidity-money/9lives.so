@@ -25,6 +25,7 @@ export default function PositionRow({
   history,
   detailPage,
   campaignContent,
+  modern = false,
 }: {
   data: {
     id: `0x${string}`;
@@ -38,6 +39,7 @@ export default function PositionRow({
   price?: string;
   history?: PositionHistory[];
   campaignContent: ParticipatedCampaign["content"];
+  modern?: boolean;
 }) {
   const account = useAppKitAccount();
   const { claim } = useClaim({
@@ -167,10 +169,19 @@ export default function PositionRow({
 
   return (
     <>
-      <tr>
+      <tr
+        className={
+          modern
+            ? "text-2black [&>td:first-child]:rounded-l-xl [&>td:last-child]:rounded-r-xl [&>td]:border-y [&>td]:border-neutral-200 [&>td]:bg-neutral-100 [&>td]:px-3 [&>td]:py-2 [&_p]:font-sans [&_span]:font-sans"
+            : undefined
+        }
+      >
         <td
           onClick={() => setShowHistory(!showHistory)}
-          className="cursor-pointer bg-[#DDDDDD] align-baseline"
+          className={combineClass(
+            "cursor-pointer align-baseline",
+            modern ? "bg-neutral-100" : "bg-[#DDDDDD]",
+          )}
         >
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center gap-2">
@@ -189,7 +200,12 @@ export default function PositionRow({
                   alt={data.name + "_" + campaignContent.name}
                   width={40}
                   height={40}
-                  className="size-10 self-start border border-9black bg-9layer"
+                  className={combineClass(
+                    "size-10 self-start border",
+                    modern
+                      ? "rounded-lg border-neutral-200 bg-neutral-50"
+                      : "border-9black bg-9layer",
+                  )}
                 />
               ) : null}
               <div className="flex flex-col gap-1">
@@ -259,7 +275,11 @@ export default function PositionRow({
             <Image
               src={DownCaret}
               alt=""
-              className={combineClass("size-4", showHistory && "rotate-180")}
+              className={combineClass(
+                "size-4",
+                modern && "night-theme-logo opacity-60",
+                showHistory && "rotate-180",
+              )}
             />
           </div>
         </td>
@@ -441,7 +461,11 @@ export default function PositionRow({
             <tr
               key={h.txHash}
               className={combineClass(
-                h.type === "buy" ? "bg-9green/20" : "bg-9red/20",
+                modern
+                  ? "text-2black [&>td]:border-y [&>td]:border-neutral-200 [&>td]:bg-neutral-50 [&>td]:px-3 [&_span]:font-sans"
+                  : h.type === "buy"
+                    ? "bg-9green/20"
+                    : "bg-9red/20",
               )}
             >
               <td>

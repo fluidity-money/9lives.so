@@ -107,7 +107,7 @@ export default function AssetNav({
               })
               .map((m) => {
                 const asset = data?.find(
-                  (i) => i.name.toLowerCase() === symbol,
+                  (i) => i.name.toLowerCase() === m.slug.toLowerCase(),
                 );
                 const isPriceUp =
                   asset && Number(asset.price) >= Number(asset.hourAgoPrice);

@@ -2,17 +2,19 @@ import { CampaignDetail, ParticipatedCampaign } from "@/types";
 import PositionsGroup from "./positionGroup";
 import Placeholder from "../tablePlaceholder";
 import Button from "../themed/button";
+import ModernButton from "../v2/button";
 import useParticipatedCampaigns from "@/hooks/useParticipatedCampaigns";
-const bodyStyles = "min-h-24 bg-9gray";
 
 export default function PositionBody({
   colSpan,
   hideSmallBalances,
   campaignDetail,
+  modern = false,
 }: {
   colSpan: number;
   hideSmallBalances: boolean;
   campaignDetail?: CampaignDetail;
+  modern?: boolean;
 }) {
   const {
     data,
@@ -27,7 +29,7 @@ export default function PositionBody({
   });
   const positionGroups = data?.pages.flatMap((i) => i);
   return (
-    <tbody className={bodyStyles}>
+    <tbody className={modern ? "min-h-24" : "min-h-24 bg-9gray"}>
       {isError ? (
         <Placeholder
           title="Error"
@@ -51,6 +53,7 @@ export default function PositionBody({
             detailPage={!!campaignDetail}
             key={group.content.poolAddress}
             campaignId={group.campaignId}
+            modern={modern}
           />
         ))
       ) : null}
@@ -59,14 +62,28 @@ export default function PositionBody({
           <td colSpan={6}>
             <div className="flex items-center justify-center">
               {hasNextPage ? (
-                <Button
-                  intent={"cta"}
-                  disabled={isFetchingNextPage}
-                  title={isFetchingNextPage ? "Loading" : "Show More"}
-                  onClick={() => fetchNextPage()}
-                />
+                modern ? (
+                  <ModernButton
+                    disabled={isFetchingNextPage}
+                    title={isFetchingNextPage ? "Loading" : "Show more"}
+                    onClick={() => fetchNextPage()}
+                  />
+                ) : (
+                  <Button
+                    intent={"cta"}
+                    disabled={isFetchingNextPage}
+                    title={isFetchingNextPage ? "Loading" : "Show More"}
+                    onClick={() => fetchNextPage()}
+                  />
+                )
               ) : (
-                <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+                <span
+                  className={
+                    modern
+                      ? "text-xs text-neutral-400"
+                      : "font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]"
+                  }
+                >
                   End of results
                 </span>
               )}
