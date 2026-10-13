@@ -9,7 +9,6 @@ import CustomToaster from "@/components/v2/customToaster";
 import CookieBanner from "@/components/v2/cookie";
 import Header from "@/components/v2/header";
 import Footer from "@/components/v2/footer";
-import BetaTesterInvitation from "@/components/v2/betatester";
 import TickerBar from "@/components/tickerBar";
 import NightModeProvider from "@/providers/nightMode";
 
@@ -48,7 +47,6 @@ export default async function RootLayout({
               <div className="flex-1 p-2 md:p-0 md:pb-4">{children}</div>
             </main>
             <Footer />
-            <BetaTesterInvitation />
           </NightModeProvider>
         </Providers>
         <CookieBanner />

@@ -1,4 +1,3 @@
-import BetaTesterInvitation from "@/components/betaTesterInvitation";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 
@@ -14,7 +13,6 @@ export default function SimpleLayout({
         <div className="flex-1 p-4">{children}</div>
       </main>
       <Footer simple />
-      <BetaTesterInvitation />
     </>
   );
 }
