@@ -34,6 +34,6 @@
 	"should send the snapshot on connection": false,
 	"should only send the snapshot on request": true,
 	"should stream using websocket instead of polling": false,
-	"feature enable rfqhub in navbar": true,
+	"feature enable rfqhub in navbar": false,
 	"disable relay support": false
 }
