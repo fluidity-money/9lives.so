@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Quick BTC prediction | 9lives",
-  description: "Build a short-duration BTC price prediction with RFQHub.",
+  description: "Build a short-duration BTC price prediction with Rfqhub.",
 };
 
 export default async function RfqhubPage() {

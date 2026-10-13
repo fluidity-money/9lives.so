@@ -89,8 +89,8 @@ describe("RfqhubPrototype", () => {
   });
 });
 
-describe("RFQHub navigation feature flag", () => {
-  it("hides the RFQHub link when the flag is disabled", () => {
+describe("Rfqhub navigation feature flag", () => {
+  it("hides the Rfqhub link when the flag is disabled", () => {
     mockedUseFeatureFlag.mockReturnValue(false);
     render(<NavigationMenu />);
 
