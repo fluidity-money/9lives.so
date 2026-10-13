@@ -21,7 +21,7 @@ export default function NavigationMenu({
     },
     {
       title: "Portfolio",
-      page: "/v1/portfolio",
+      page: "/portfolio",
     },
     ...(enableRfqhub
       ? [

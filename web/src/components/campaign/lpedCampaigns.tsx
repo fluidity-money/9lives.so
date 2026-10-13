@@ -3,7 +3,11 @@ import useUserLPs from "@/hooks/useUserLPs";
 import UserLpedCampaignsListItem from "./lpedCampaignsItem";
 import { useAppKitAccount } from "@reown/appkit/react";
 
-export default function UserLpedCampaignsList() {
+export default function UserLpedCampaignsList({
+  modern = false,
+}: {
+  modern?: boolean;
+}) {
   const headerItems = [
     "Campaign",
     "End Date",
@@ -11,9 +15,10 @@ export default function UserLpedCampaignsList() {
     "Unclaimed Rewards",
     "Actions",
   ];
-  const tableHeaderClasses =
-    "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
-  const bodyStyles = "min-h-24 bg-9gray";
+  const tableHeaderClasses = modern
+    ? "px-3 py-2 text-left text-xs font-medium text-neutral-400"
+    : "shadow-9tableHeader px-2 py-1 border border-black bg-[#DDD] text-left text-xs";
+  const bodyStyles = modern ? "min-h-24" : "min-h-24 bg-9gray";
   const account = useAppKitAccount();
   const {
     data: campaigns,
@@ -24,7 +29,7 @@ export default function UserLpedCampaignsList() {
   return (
     <table className="w-full table-auto border-separate border-spacing-y-1">
       <thead>
-        <tr className="font-geneva">
+        <tr className={modern ? "font-sans" : "font-geneva"}>
           {headerItems.map((key) => (
             <th className={tableHeaderClasses} key={key}>
               {key}

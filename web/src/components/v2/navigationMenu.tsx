@@ -12,7 +12,7 @@ export default function NavigationMenu() {
     },
     {
       name: "Portfolio",
-      path: "/v1/portfolio",
+      path: "/portfolio",
     },
     {
       name: "Leaderboard",
