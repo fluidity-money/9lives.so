@@ -220,6 +220,7 @@ export default function useRfqhub() {
   };
 
   return {
+    accountAddress: account.address,
     // account lifecycle (shared with useAccount)
     create,
     getSecret,
