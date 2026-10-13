@@ -35,5 +35,6 @@
 	"websocket should filter tables": true,
 	"should send the snapshot on connection": false,
 	"should only send the snapshot on request": true,
-	"should stream using websocket instead of polling": false
+	"should stream using websocket instead of polling": false,
+	"feature enable rfqhub in navbar": true
 }
