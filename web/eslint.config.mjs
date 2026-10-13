@@ -51,7 +51,8 @@ const eslintConfig = defineConfig([
     "src/gql",
     "src/graffle/accounts/*/**",
     "src/graffle/lives9/*/**",
-    "src/graffle/points/*/**"
+    "src/graffle/points/*/**",
+    "src/graffle/rfqhub/*/**"
   ]),
 ])
 

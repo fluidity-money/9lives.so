@@ -21,12 +21,9 @@ jobs:
           cmd: 'jq . features/features.json >/dev/null'
 
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ secrets.CLOUDFLARE_FEATURES_PROJECT_NAME }}
-          directory: .
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          command: pages deploy . --project-name=${{ secrets.CLOUDFLARE_FEATURES_PROJECT_NAME }} --branch=main
           workingDirectory: features

@@ -26,6 +26,7 @@ type (
 
 		AccountAddr events.Address `json:"account_addr"`
 		Asset       events.Address `json:"asset"`
+		// Amount that the user just onramped via the system.
 		Amount      uint64         `json:"amount"`
 		Version     events.Number  `json:"version"`
 	}

@@ -39,8 +39,7 @@ export default function ChainSelectorDropdown({
     }
   }
   const chainList = Object.values(chains).filter(
-    (chain) =>
-      !disableRelaySupport || chain.id === config.destinationChain.id,
+    (chain) => !disableRelaySupport || chain.id === config.destinationChain.id,
   );
   const selectedChain = chainList.find((c) => c.id === selectedChainId);
 

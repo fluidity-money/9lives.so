@@ -29,8 +29,7 @@ export default function ChainSelector({
     }
   }
   const chainList = Object.values(chains).filter(
-    (chain) =>
-      !disableRelaySupport || chain.id === config.destinationChain.id,
+    (chain) => !disableRelaySupport || chain.id === config.destinationChain.id,
   );
   return (
     <div className="flex flex-col gap-1.5">

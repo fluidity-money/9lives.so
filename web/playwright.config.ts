@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
 const baseURL = `http://localhost:${PORT}`;
+const readinessURL = `${baseURL}/images/logo-dot.svg`;
 
 // Reference: https://playwright.dev/docs/test-configuration
 export default defineConfig({
@@ -25,7 +26,9 @@ export default defineConfig({
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
     command: "pnpm test:command",
-    url: baseURL,
+    // Probe a static asset so readiness is independent of application routing
+    // and remote feature flags.
+    url: readinessURL,
     timeout: 300 * 1000,
     stdout: "pipe",
     stderr: "pipe",

@@ -31,7 +31,7 @@ jobs:
       - name: Run Playwright tests
         env:
           NEXT_PUBLIC_WC_ID: ${{ vars.NEXT_PUBLIC_WC_ID }}
-          NEXT_PUBLIC_GRAPHQL_URL: "https://graph.9lives.so"
+          NEXT_PUBLIC_GRAPHQL_URL: "https://9lives-arb.stellate.sh"
           NEXT_PUBLIC_FEATURES_URL: "https://features.9lives.so/features.json"
           NEXT_PUBLIC_POINTS_URL: "https://points-graph.superposition.so"
           NEXT_PUBLIC_ACCOUNTS_URL: "https://ibbkvq4cr2ctxse5wck3gtvf6m0jrqzh.lambda-url.ap-southeast-2.on.aws"
