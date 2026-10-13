@@ -1,8 +1,13 @@
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useSignMessage } from "wagmi";
-import { parseSignature } from "viem";
+import { usePublicClient, useSignMessage } from "wagmi";
+import { maxUint256, parseSignature } from "viem";
 import config from "@/config";
-import { requestPublicKey } from "@/providers/graphqlClient";
+import {
+  requestEoaForAddress,
+  requestPublicKey,
+} from "@/providers/graphqlClient";
+import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
+import useSignForPermit from "./useSignForPermit";
 import { checkAndSetSecret, create, getSecret, isCreated } from "./useAccount";
 import {
   rfqhubConclude,
@@ -36,6 +41,9 @@ import {
 export default function useRfqhub() {
   const account = useAppKitAccount();
   const { mutateAsync: signMessage } = useSignMessage();
+  const publicClient = usePublicClient();
+  const { checkAndSwitchChain } = useCheckAndSwitchChain();
+  const { signForPermit } = useSignForPermit(account.address);
 
   const requireAccount = async (): Promise<{
     eoaAddress: string;
@@ -114,6 +122,47 @@ export default function useRfqhub() {
     authenticated(({ eoaAddress, secret }) =>
       rfqhubOnramp({ eoaAddress, secret, amt, permit, isDryrun }),
     );
+
+  const addFunds = async (amt: string) => {
+    if (!account.address) throw new Error("No wallet is connected");
+    if (!publicClient) throw new Error("No public client is set");
+    const amount = BigInt(amt);
+    if (amount <= BigInt(0))
+      throw new Error("Amount must be greater than zero");
+
+    await checkAndSwitchChain();
+    const userBalance = await publicClient.readContract({
+      ...config.contracts.fusdc,
+      functionName: "balanceOf",
+      args: [account.address as `0x${string}`],
+    });
+    if (amount > userBalance) throw new Error("You don't have enough USDC");
+
+    const spender = await requestEoaForAddress(account.address);
+    const allowance = await publicClient.readContract({
+      ...config.contracts.fusdc,
+      functionName: "allowance",
+      args: [account.address as `0x${string}`, spender as `0x${string}`],
+    });
+
+    let permit: RfqhubPermit | undefined;
+    if (amount > allowance) {
+      const deadline = Math.floor(Date.now() / 1_000) + 3_600;
+      const { r, s, v } = await signForPermit({
+        spender,
+        amountToSpend: maxUint256,
+        deadline,
+      });
+      permit = {
+        permitR: r,
+        permitS: s,
+        permitV: Number(v),
+        deadline,
+      };
+    }
+
+    return onramp({ amt, permit });
+  };
 
   const createAuction = async ({
     minAmount,
@@ -230,6 +279,7 @@ export default function useRfqhub() {
     createRfqhubAccount,
     // graph operations
     onramp,
+    addFunds,
     createAuction,
     createSuggestion,
     submitBundleMaker,

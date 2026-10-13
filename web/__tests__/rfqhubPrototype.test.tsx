@@ -3,6 +3,7 @@ import RfqhubPrototype from "@/components/rfqhub/rfqhubPrototype";
 import NavigationMenu from "@/components/v2/navigationMenu";
 import useFeatureFlag from "../src/hooks/useFeatureFlag";
 import useRfqhub from "../src/hooks/useRfqhub";
+import useRfqhubRequests from "../src/hooks/useRfqhubRequests";
 import type { SimpleCampaignDetail } from "@/types";
 
 jest.mock("../src/hooks/useFeatureFlag", () => ({
@@ -13,6 +14,11 @@ jest.mock("../src/hooks/useFeatureFlag", () => ({
 jest.mock("../src/hooks/useRfqhub", () => ({
   __esModule: true,
   default: jest.fn(() => ({})),
+}));
+
+jest.mock("../src/hooks/useRfqhubRequests", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({ requests: [], connectionStatus: "connecting" })),
 }));
 
 jest.mock("../src/components/v2/chartWrapper", () => ({
@@ -31,9 +37,11 @@ const campaignData = {
 
 const mockedUseFeatureFlag = jest.mocked(useFeatureFlag);
 const mockedUseRfqhub = jest.mocked(useRfqhub);
+const mockedUseRfqhubRequests = jest.mocked(useRfqhubRequests);
 const requestBalance = jest.fn();
 const createSuggestion = jest.fn();
 const concludedCalldata = jest.fn();
+const addFunds = jest.fn();
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -44,12 +52,18 @@ beforeEach(() => {
     leftoverBal: "0",
   });
   concludedCalldata.mockReset().mockResolvedValue("0x1234");
+  addFunds.mockReset().mockResolvedValue("0xfunding");
   mockedUseRfqhub.mockReturnValue({
     accountAddress: "0x1234",
     requestBalance,
     createSuggestion,
     concludedCalldata,
+    addFunds,
   } as unknown as ReturnType<typeof useRfqhub>);
+  mockedUseRfqhubRequests.mockReturnValue({
+    requests: [],
+    connectionStatus: "connected",
+  });
 });
 
 describe("RfqhubPrototype", () => {
@@ -128,6 +142,49 @@ describe("RfqhubPrototype", () => {
       "No RFQHub balance is available",
     );
     expect(createSuggestion).not.toHaveBeenCalled();
+  });
+
+  it("shows incoming websocket requests newest first", () => {
+    mockedUseRfqhubRequests.mockReturnValue({
+      connectionStatus: "connected",
+      requests: [
+        {
+          id: "12",
+          bundleTakerId: 8,
+          amount: "25000000",
+          createdAt: "2026-10-13T12:01:00Z",
+        },
+        {
+          id: "11",
+          bundleTakerId: 7,
+          amount: "10000000",
+          createdAt: "2026-10-13T12:00:00Z",
+        },
+      ],
+    });
+
+    render(<RfqhubPrototype campaignData={campaignData} />);
+
+    const requests = screen.getAllByTestId("rfqhub-request");
+    expect(requests).toHaveLength(2);
+    expect(requests[0]?.textContent).toContain("$25");
+    expect(requests[0]?.textContent).toContain("#8");
+    expect(requests[1]?.textContent).toContain("$10");
+  });
+
+  it("opens Add funds and onramps the entered amount", async () => {
+    render(<RfqhubPrototype campaignData={campaignData} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Add funds" }));
+    expect(screen.getByRole("dialog", { name: "Add funds" })).not.toBeNull();
+
+    fireEvent.change(screen.getByLabelText("Amount to add"), {
+      target: { value: "25" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm add funds" }));
+
+    await waitFor(() => expect(addFunds).toHaveBeenCalledWith("25000000"));
+    expect(screen.getByText("$25 added to RFQHub")).not.toBeNull();
   });
 
   it("lets the sentence controls update the proposed prediction", () => {

@@ -3,6 +3,7 @@
 import Button from "@/components/v2/button";
 import PriceChartWrapper from "@/components/v2/chartWrapper";
 import useRfqhub from "@/hooks/useRfqhub";
+import useRfqhubRequests from "@/hooks/useRfqhubRequests";
 import type { SimpleCampaignDetail } from "@/types";
 import { formatUnits, parseUnits } from "viem";
 import { useEffect, useMemo, useState } from "react";
@@ -50,6 +51,14 @@ const loadOrders = (address?: string): RfqhubOrder[] => {
 const errorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "RFQHub request failed";
 
+const displayUsdc = (amount: string) => {
+  try {
+    return formatUnits(BigInt(amount), USDC_DECIMALS);
+  } catch {
+    return amount;
+  }
+};
+
 export default function RfqhubPrototype({
   campaignData,
 }: {
@@ -60,7 +69,9 @@ export default function RfqhubPrototype({
     requestBalance,
     createSuggestion,
     concludedCalldata,
+    addFunds,
   } = useRfqhub();
+  const { requests, connectionStatus } = useRfqhubRequests();
 
   const [asset, setAsset] = useState("BTC");
   const [direction, setDirection] = useState<"up" | "down">("up");
@@ -71,6 +82,10 @@ export default function RfqhubPrototype({
   const [isExecuting, setIsExecuting] = useState(false);
   const [isRequestingCalldata, setIsRequestingCalldata] = useState(false);
   const [isClaimOpen, setIsClaimOpen] = useState(false);
+  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
+  const [fundsAmount, setFundsAmount] = useState("25");
+  const [isAddingFunds, setIsAddingFunds] = useState(false);
+  const [fundingStatus, setFundingStatus] = useState<string>();
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
   const [calldata, setCalldata] = useState<string>();
@@ -169,123 +184,293 @@ export default function RfqhubPrototype({
     }
   };
 
+  const submitAddFunds = async () => {
+    setError(undefined);
+    setFundingStatus(undefined);
+    setIsAddingFunds(true);
+    try {
+      const amount = parseUnits(fundsAmount, USDC_DECIMALS);
+      if (amount <= BigInt(0))
+        throw new Error("Enter an amount greater than zero");
+      await addFunds(amount.toString());
+      setFundingStatus(`$${fundsAmount} added to RFQHub`);
+    } catch (cause) {
+      setError(errorMessage(cause));
+    } finally {
+      setIsAddingFunds(false);
+    }
+  };
+
   return (
     <section className="flex w-full flex-col gap-4 py-4">
-      <div className="rounded-xl border border-neutral-400 bg-2white p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-              Live oracle price
-            </p>
-            <h2 className="text-xl font-semibold text-2black">BTC / USD</h2>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="flex min-w-0 flex-col gap-4">
+          <div className="rounded-xl border border-neutral-400 bg-2white p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
+                  Live oracle price
+                </p>
+                <h2 className="text-xl font-semibold text-2black">BTC / USD</h2>
+              </div>
+              <span className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+                <span className="size-2 animate-pulse rounded-full bg-green-500" />
+                Live
+              </span>
+            </div>
+            <div className="min-h-[320px] rounded-xl bg-neutral-100 px-2 pt-2">
+              <PriceChartWrapper simple campaignData={campaignData} />
+            </div>
           </div>
-          <span className="flex items-center gap-2 text-xs font-medium text-neutral-500">
-            <span className="size-2 animate-pulse rounded-full bg-green-500" />
-            Live
-          </span>
+
+          <div className="rounded-xl border border-neutral-400 bg-2white p-4 md:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-400">
+                  Rfqhub
+                </p>
+                <h1 className="mb-6 text-2xl font-semibold leading-tight text-2black md:text-3xl">
+                  Make a prediction
+                </h1>
+              </div>
+              <div className="flex flex-wrap justify-end gap-2">
+                <Button
+                  title="Add funds"
+                  intent="inverted"
+                  size="small"
+                  onClick={() => {
+                    setError(undefined);
+                    setFundingStatus(undefined);
+                    setIsAddFundsOpen(true);
+                  }}
+                />
+                <Button
+                  title="Claim rewards"
+                  intent="reward"
+                  size="small"
+                  onClick={() => {
+                    setError(undefined);
+                    setIsClaimOpen(true);
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="text-xl font-medium leading-[2.3] text-2black md:text-2xl">
+              <span>I predict that</span>
+              <label className="sr-only" htmlFor="rfqhub-asset">
+                Asset
+              </label>
+              <select
+                id="rfqhub-asset"
+                className={inlineControl}
+                value={asset}
+                onChange={(event) => setAsset(event.target.value)}
+              >
+                <option value="BTC">BTC</option>
+              </select>
+              <span>will be</span>
+              <label className="sr-only" htmlFor="rfqhub-direction">
+                Direction
+              </label>
+              <select
+                id="rfqhub-direction"
+                className={inlineControl}
+                value={direction}
+                onChange={(event) =>
+                  setDirection(event.target.value as "up" | "down")
+                }
+              >
+                <option value="up">up</option>
+                <option value="down">down</option>
+              </select>
+              <span>by</span>
+              <label className="sr-only" htmlFor="rfqhub-duration">
+                Duration
+              </label>
+              <select
+                id="rfqhub-duration"
+                className={inlineControl}
+                value={duration}
+                onChange={(event) => setDuration(event.target.value)}
+              >
+                <option value="5">5 mins</option>
+                <option value="15">15 mins</option>
+              </select>
+              <span>, and I want $</span>
+              <label className="sr-only" htmlFor="rfqhub-amount">
+                Winnings amount
+              </label>
+              <input
+                id="rfqhub-amount"
+                className={`${inlineControl} w-24`}
+                type="number"
+                min="1"
+                step="1"
+                inputMode="decimal"
+                value={amount}
+                onChange={(event) => setAmount(event.target.valueAsNumber || 0)}
+              />
+              <span>if I win.</span>
+            </div>
+
+            <Button
+              title={isExecuting ? "Executing…" : "Execute"}
+              intent="cta"
+              size="large"
+              aria-label="Execute prediction"
+              disabled={isExecuting || !Number.isFinite(amount) || amount <= 0}
+              onClick={execute}
+              className="mt-8 w-full"
+            />
+            {status ? (
+              <p className="mt-3 text-sm font-medium text-green-700">
+                {status}
+              </p>
+            ) : null}
+            {error && !isClaimOpen && !isAddFundsOpen ? (
+              <p className="mt-3 text-sm font-medium text-red-700" role="alert">
+                {error}
+              </p>
+            ) : null}
+          </div>
         </div>
-        <div className="min-h-[320px] rounded-xl bg-neutral-100 px-2 pt-2">
-          <PriceChartWrapper simple campaignData={campaignData} />
-        </div>
+
+        <aside className="h-fit rounded-xl border border-neutral-400 bg-2white p-4 lg:sticky lg:top-4">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
+                Live RFQHub
+              </p>
+              <h2 className="text-xl font-semibold text-2black">Requests</h2>
+            </div>
+            <span className="flex items-center gap-2 text-xs capitalize text-neutral-500">
+              <span
+                className={`size-2 rounded-full ${
+                  connectionStatus === "connected"
+                    ? "bg-green-500"
+                    : connectionStatus === "connecting"
+                      ? "animate-pulse bg-yellow-500"
+                      : "bg-neutral-400"
+                }`}
+              />
+              {connectionStatus}
+            </span>
+          </div>
+
+          <div
+            className="flex max-h-[38rem] flex-col gap-2 overflow-y-auto"
+            aria-live="polite"
+          >
+            {requests.length ? (
+              requests.map((request) => (
+                <article
+                  key={request.id}
+                  data-testid="rfqhub-request"
+                  className="rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-sm text-2black"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <strong>Request #{request.id}</strong>
+                    {request.createdAt ? (
+                      <time className="text-xs text-neutral-500">
+                        {new Date(request.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    ) : null}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
+                    <span>Amount</span>
+                    <span className="font-medium text-2black">
+                      ${displayUsdc(request.amount)}
+                    </span>
+                  </div>
+                  {request.bundleTakerId ? (
+                    <p className="mt-2 truncate text-xs text-neutral-500">
+                      Bundle #{request.bundleTakerId}
+                    </p>
+                  ) : null}
+                </article>
+              ))
+            ) : (
+              <p className="rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-500">
+                Waiting for incoming requests…
+              </p>
+            )}
+          </div>
+        </aside>
       </div>
 
-      <div className="rounded-xl border border-neutral-400 bg-2white p-4 md:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-400">
-              Rfqhub
-            </p>
-            <h1 className="mb-6 text-2xl font-semibold leading-tight text-2black md:text-3xl">
-              Make a prediction
-            </h1>
+      {isAddFundsOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-2black/20 p-4"
+          role="dialog"
+          aria-label="Add funds"
+          aria-modal="true"
+        >
+          <button
+            className="absolute inset-0 cursor-default"
+            aria-label="Close add funds"
+            onClick={() => setIsAddFundsOpen(false)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-neutral-300 bg-2white p-6 shadow-xl">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
+                  RFQHub
+                </p>
+                <h2 className="text-2xl font-semibold text-2black">
+                  Add funds
+                </h2>
+              </div>
+              <button
+                className="rounded-full px-3 py-1 text-xl text-neutral-500"
+                aria-label="Close add funds"
+                onClick={() => setIsAddFundsOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <label
+              className="mb-2 block text-sm font-medium text-2black"
+              htmlFor="rfqhub-funds-amount"
+            >
+              Amount to add
+            </label>
+            <input
+              id="rfqhub-funds-amount"
+              aria-label="Amount to add"
+              type="number"
+              min="0.000001"
+              step="0.01"
+              inputMode="decimal"
+              value={fundsAmount}
+              onChange={(event) => setFundsAmount(event.target.value)}
+              className="w-full rounded-xl border border-neutral-300 bg-neutral-100 px-4 py-3 text-lg text-2black outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+            />
+            <Button
+              title={isAddingFunds ? "Adding funds…" : "Add funds"}
+              aria-label="Confirm add funds"
+              intent="cta"
+              size="large"
+              disabled={isAddingFunds || !fundsAmount}
+              onClick={submitAddFunds}
+              className="mt-4 w-full"
+            />
+            {fundingStatus ? (
+              <p className="mt-3 text-sm font-medium text-green-700">
+                {fundingStatus}
+              </p>
+            ) : null}
+            {error ? (
+              <p className="mt-3 text-sm font-medium text-red-700" role="alert">
+                {error}
+              </p>
+            ) : null}
           </div>
-          <Button
-            title="Claim rewards"
-            intent="reward"
-            size="small"
-            onClick={() => {
-              setError(undefined);
-              setIsClaimOpen(true);
-            }}
-          />
         </div>
-
-        <div className="text-xl font-medium leading-[2.3] text-2black md:text-2xl">
-          <span>I predict that</span>
-          <label className="sr-only" htmlFor="rfqhub-asset">
-            Asset
-          </label>
-          <select
-            id="rfqhub-asset"
-            className={inlineControl}
-            value={asset}
-            onChange={(event) => setAsset(event.target.value)}
-          >
-            <option value="BTC">BTC</option>
-          </select>
-          <span>will be</span>
-          <label className="sr-only" htmlFor="rfqhub-direction">
-            Direction
-          </label>
-          <select
-            id="rfqhub-direction"
-            className={inlineControl}
-            value={direction}
-            onChange={(event) =>
-              setDirection(event.target.value as "up" | "down")
-            }
-          >
-            <option value="up">up</option>
-            <option value="down">down</option>
-          </select>
-          <span>by</span>
-          <label className="sr-only" htmlFor="rfqhub-duration">
-            Duration
-          </label>
-          <select
-            id="rfqhub-duration"
-            className={inlineControl}
-            value={duration}
-            onChange={(event) => setDuration(event.target.value)}
-          >
-            <option value="5">5 mins</option>
-            <option value="15">15 mins</option>
-          </select>
-          <span>, and I want $</span>
-          <label className="sr-only" htmlFor="rfqhub-amount">
-            Winnings amount
-          </label>
-          <input
-            id="rfqhub-amount"
-            className={`${inlineControl} w-24`}
-            type="number"
-            min="1"
-            step="1"
-            inputMode="decimal"
-            value={amount}
-            onChange={(event) => setAmount(event.target.valueAsNumber || 0)}
-          />
-          <span>if I win.</span>
-        </div>
-
-        <Button
-          title={isExecuting ? "Executing…" : "Execute"}
-          intent="cta"
-          size="large"
-          aria-label="Execute prediction"
-          disabled={isExecuting || !Number.isFinite(amount) || amount <= 0}
-          onClick={execute}
-          className="mt-8 w-full"
-        />
-        {status ? (
-          <p className="mt-3 text-sm font-medium text-green-700">{status}</p>
-        ) : null}
-        {error && !isClaimOpen ? (
-          <p className="mt-3 text-sm font-medium text-red-700" role="alert">
-            {error}
-          </p>
-        ) : null}
-      </div>
+      ) : null}
 
       {isClaimOpen ? (
         <div
