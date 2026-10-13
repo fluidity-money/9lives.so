@@ -94,7 +94,7 @@ describe("Rfqhub navigation feature flag", () => {
     mockedUseFeatureFlag.mockReturnValue(false);
     render(<NavigationMenu />);
 
-    expect(screen.queryByRole("link", { name: "RFQ" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Options" })).toBeNull();
     expect(
       screen.getByRole("link", { name: "Leaderboard" }).getAttribute("href"),
     ).toBe("/leaderboard");
@@ -107,7 +107,7 @@ describe("Rfqhub navigation feature flag", () => {
     mockedUseFeatureFlag.mockReturnValue(true);
     render(<NavigationMenu />);
 
-    const link = screen.getByRole("link", { name: "RFQ" });
+    const link = screen.getByRole("link", { name: "Options" });
     expect(link.getAttribute("href")).toBe("/rfqhub");
   });
 });
