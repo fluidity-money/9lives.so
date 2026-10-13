@@ -1,3 +1,6 @@
+"use client";
+
+import useFeatureFlag from "@/hooks/useFeatureFlag";
 import { combineClass } from "@/utils/combineClass";
 import Link from "next/link";
 import PointMenuButton from "./pointsMenuButton";
@@ -6,6 +9,7 @@ export default function NavigationMenu({
 }: {
   simple?: boolean;
 }) {
+  const enableRfqhub = useFeatureFlag("feature enable rfqhub in navbar");
   const menu = [
     {
       title: "Markets",
@@ -19,6 +23,14 @@ export default function NavigationMenu({
       title: "Portfolio",
       page: "/v1/portfolio",
     },
+    ...(enableRfqhub
+      ? [
+          {
+            title: "Quick predict",
+            page: "/v1/rfqhub",
+          },
+        ]
+      : []),
   ] as { disabled?: boolean; title: string; page: string }[];
 
   return (
