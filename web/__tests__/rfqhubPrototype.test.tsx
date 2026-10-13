@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import RfqhubPrototype from "@/components/rfqhub/rfqhubPrototype";
-import NavigationMenu from "@/components/navMenu";
+import NavigationMenu from "@/components/v2/navigationMenu";
 import useFeatureFlag from "../src/hooks/useFeatureFlag";
 import useRfqhub from "../src/hooks/useRfqhub";
 import type { SimpleCampaignDetail } from "@/types";
@@ -94,14 +94,14 @@ describe("RFQHub navigation feature flag", () => {
     mockedUseFeatureFlag.mockReturnValue(false);
     render(<NavigationMenu />);
 
-    expect(screen.queryByRole("link", { name: "Quick predict" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "RFQ" })).toBeNull();
   });
 
   it("shows the RFQHub link when the flag is enabled", () => {
     mockedUseFeatureFlag.mockReturnValue(true);
     render(<NavigationMenu />);
 
-    const link = screen.getByRole("link", { name: "Quick predict" });
-    expect(link.getAttribute("href")).toBe("/v1/rfqhub");
+    const link = screen.getByRole("link", { name: "RFQ" });
+    expect(link.getAttribute("href")).toBe("/rfqhub");
   });
 });

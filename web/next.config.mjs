@@ -35,6 +35,11 @@ const nextConfig = {
         destination: '/campaign/btc/15mins',
         permanent: false,
       },
+      {
+        source: '/v1/rfqhub',
+        destination: '/rfqhub',
+        permanent: false,
+      },
     ]
   },
   images: {

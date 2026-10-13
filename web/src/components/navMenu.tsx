@@ -26,7 +26,7 @@ export default function NavigationMenu({
     ...(enableRfqhub
       ? [
           {
-            title: "Quick predict",
+            title: "RFQ",
             page: "/v1/rfqhub",
           },
         ]
