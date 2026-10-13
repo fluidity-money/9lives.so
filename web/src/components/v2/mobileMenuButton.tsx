@@ -142,7 +142,7 @@ export default function MobileMenuButton() {
             <Button title="Portfolio" icon={<PortfolioIcon />} />
           </Link>
           <Link href={"/"}>
-            <Button title="Marketplace" icon={<MarketplaceIcon />} />
+            <Button title="Trade" icon={<MarketplaceIcon />} />
           </Link>
         </div>
       )}

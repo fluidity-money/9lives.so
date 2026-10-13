@@ -7,7 +7,7 @@ export default function NavigationMenu() {
   const enableRfqhub = useFeatureFlag("feature enable rfqhub in navbar");
   const routes = [
     {
-      name: "Marketplace",
+      name: "Trade",
       path: "/",
     },
     {
