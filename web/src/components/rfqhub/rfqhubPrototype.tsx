@@ -43,7 +43,7 @@ export default function RfqhubPrototype({
 
       <div className="rounded-xl border border-neutral-400 bg-2white p-4 md:p-6">
         <p className="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-400">
-          RFQHub prototype
+          Rfqhub
         </p>
         <h1 className="mb-6 text-2xl font-semibold leading-tight text-2black md:text-3xl">
           Make a prediction
@@ -113,9 +113,6 @@ export default function RfqhubPrototype({
           disabled
           className="mt-8 w-full"
         />
-        <p className="mt-3 text-center text-xs text-neutral-400">
-          Execution is coming next
-        </p>
       </div>
     </section>
   );
