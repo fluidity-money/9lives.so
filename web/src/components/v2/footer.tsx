@@ -1,9 +1,6 @@
 "use client";
 import { useModalStore } from "@/stores/modalStore";
 import Link from "next/link";
-import GroupButton from "./groupButton";
-import { usePathname, useRouter } from "next/navigation";
-import useFeatureFlag from "@/hooks/useFeatureFlag";
 const gitHash = process.env.NEXT_PUBLIC_GIT_HASH;
 const socials = [
   {
@@ -61,28 +58,9 @@ const MenuItem = ({ item }: { item: { page: string; title: string } }) => (
   </Link>
 );
 export default function Footer() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const disableV1Markets = useFeatureFlag("disable v1 markets") ?? true;
-  const versionButtons = [
-    ...(!disableV1Markets
-      ? [{ title: "v1", callback: () => router.push("/v1") }]
-      : []),
-    { title: "v2", callback: () => router.push("/") },
-  ];
-  const activeVersionIndex =
-    !disableV1Markets && pathname.startsWith("/v1")
-      ? 0
-      : versionButtons.length - 1;
-
   return (
     <footer className="hidden flex-col items-center justify-between gap-4 self-stretch border-t border-t-neutral-300 p-4 md:mb-0 md:flex md:flex-row md:py-2">
       <div className="flex flex-col items-center gap-2 md:flex-row">
-        <GroupButton
-          buttons={versionButtons}
-          initialIdx={activeVersionIndex}
-          variant="small"
-        />
         <nav className="flex flex-col items-center justify-start gap-4 text-xs md:flex-row">
           {menu.map((item) => (
             <MenuItem item={item} key={item.title} />
