@@ -95,34 +95,7 @@ export type Detail = {
     isWinner: boolean;
   }[];
 };
-export type OutcomeType = "custom" | "default";
 export type SettlementType = "ORACLE" | "POLL" | "AI" | "CONTRACT";
-export type CampaignInput = {
-  name: string;
-  desc: string | "";
-  picture?: string;
-  starting: string;
-  ending: string;
-  outcomes: OutcomeInput[];
-  seed: number;
-  x?: string;
-  telegram?: string;
-  web?: string;
-  outcomeType?: OutcomeType;
-  settlementType: SettlementType;
-  oracleDescription?: string;
-  seedLiquidity: number;
-  fromChain: number;
-  fromToken: string;
-  fromDecimals?: number;
-  toChain: number;
-  toToken: string;
-};
-export type OutcomeInput = {
-  picture?: string;
-  name: string;
-  seed: number;
-};
 export type Action = {
   id: string;
   campaignName: string;

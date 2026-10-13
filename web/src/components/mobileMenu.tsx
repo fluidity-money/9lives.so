@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import NavigationMenu from "./navMenu";
 import DisclaimerButton from "./disclaimerButton";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
+
 import ReferralButton from "./referral/referralButton";
 
 export default function MobileMenu({ simple = false }: { simple?: boolean }) {
@@ -31,12 +31,6 @@ export default function MobileMenu({ simple = false }: { simple?: boolean }) {
         <div className="flex flex-col items-center justify-center gap-4">
           <NavigationMenu simple={simple} />
           <div className="flex flex-col items-center">
-            <Link
-              href={"/create-campaign"}
-              className="flex h-10 items-center font-chicago text-xs underline"
-            >
-              Create Campaign
-            </Link>
             <ReferralButton hideOnMobile={false} />
             {/* {simple ? (
               <Link

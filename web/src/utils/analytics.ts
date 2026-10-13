@@ -5,7 +5,7 @@ export const EVENTS = {
   BURN: "burn",
   CLAIM_REWARD: "claim_reward",
   CAMPAIGN_CLICK: "campaign_click",
-  CAMPAIGN_CREATE: "campaign_create",
+
   WALLET_CONNECT: "wallet_connect",
   OUTCOME_SELECT: "outcome_select",
   FUNDING_CLICKED: "funding_clicked",

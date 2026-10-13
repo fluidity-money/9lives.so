@@ -11,25 +11,20 @@ export default function Funding({
   fundToBuy,
   closeModal,
   campaignId,
-  type,
 }: {
   title: string;
   fundToBuy: number;
   closeModal: () => void;
   campaignId?: string;
-  type: "buy" | "create";
 }) {
-  const isForBuying = type === "buy";
   return (
     <div className="flex flex-col gap-4">
       <p className="text-center font-chicago text-base">
-        Supply Liquidity to Your {isForBuying ? "Prediction" : "Campaign"}
+        Supply Liquidity to Your Prediction
       </p>
       <p className="text-center font-chicago text-xl">{title}</p>
       <p className="text-center text-xs">
-        {isForBuying
-          ? `You need to have at least $0.1 in order to mint a position. You don't have $${fundToBuy}, do you want to supply?`
-          : `You have to supply total $${fundToBuy}, including $1 to each outcome in your campaign in order to kickstart the liquidity of the campaign.`}
+        {`You need to have at least $0.1 in order to mint a position. You don't have $${fundToBuy}, do you want to supply?`}
       </p>
       <div className="flex gap-4">
         <div
@@ -49,7 +44,7 @@ export default function Funding({
           <Button
             onClick={() => {
               track(EVENTS.FUNDING_CLICKED, {
-                type,
+                type: "buy",
                 campaignTitle: title,
                 campaignId,
               });

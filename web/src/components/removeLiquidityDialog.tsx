@@ -6,7 +6,7 @@ import { FormEvent, useRef, useState } from "react";
 import useConnectWallet from "@/hooks/useConnectWallet";
 import useLiquidity from "@/hooks/useLiquidity";
 import { Field } from "@headlessui/react";
-import { fieldClass } from "./createCampaign/createCampaignForm";
+
 import Input from "./themed/input";
 import { combineClass } from "@/utils/combineClass";
 import ErrorInfo from "./themed/errorInfo";
@@ -15,6 +15,8 @@ import useLiquidityWithPaymaster from "@/hooks/useLiquidityWithPaymaster";
 import { CampaignDetail } from "@/types";
 import useFeatureFlag from "@/hooks/useFeatureFlag";
 import { useAppKitAccount } from "@reown/appkit/react";
+
+const fieldClass = "flex flex-col gap-2.5";
 
 export default function RemoveLiquidityDialog({
   close,

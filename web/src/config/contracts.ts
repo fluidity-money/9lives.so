@@ -1,7 +1,7 @@
 import z from "zod";
 import ERC20Abi from "./abi/erc20";
 import ammAbi from "./abi/amm";
-import helperFactoryAbi from "./abi/helperFactory";
+
 import buyHelperAbi from "./abi/buyHelper";
 import clientEnv from "./clientEnv";
 import lensAbi from "./abi/lens";
@@ -24,7 +24,7 @@ const allContractSchema = z.object({
   fusdc: contractSchema,
   amm: contractSchema,
   lens: contractSchema,
-  helperFactory: contractSchema,
+
   infra: contractSchema,
   buyHelper: contractSchema,
   meowDomains: contractSchema,
@@ -46,10 +46,7 @@ const lens = {
   abi: lensAbi,
   address: clientEnv.NEXT_PUBLIC_LENS_ADDR as `0x${string}`,
 };
-const helperFactory = {
-  abi: helperFactoryAbi,
-  address: clientEnv.NEXT_PUBLIC_HELPER_FACTORY_ADDR as `0x${string}`,
-};
+
 const infra = {
   abi: infraAbi,
   address: clientEnv.NEXT_PUBLIC_INFRA_ADDR as `0x${string}`,
@@ -86,7 +83,7 @@ const contractsData = {
   fusdc,
   amm,
   lens,
-  helperFactory,
+
   infra,
   buyHelper,
   meowDomains,

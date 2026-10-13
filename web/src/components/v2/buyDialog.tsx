@@ -529,7 +529,6 @@ export default function SimpleBuyDialog({
         boxContainerClass="max-w-[600]"
       >
         <Funding
-          type="buy"
           closeModal={() => setFundModalOpen(false)}
           campaignId={data.identifier}
           title={data.name}

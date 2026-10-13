@@ -59,10 +59,10 @@ function Achievments() {
   return (
     <Section>
       <Title text="What Are Achievements?" />
-      <Parag text="9Lives features an  achievement system designed to reward users who engage deeply with the platform. Whether you’re creating new prediction markets, participating in active ones, sharing your insights, or consistently making predictions (right or wrong), every action you take can earn you recognition and rewards." />
+      <Parag text="9Lives features an achievement system designed to reward users who engage deeply with the platform. Whether you’re participating in active markets, sharing your insights, or consistently making predictions (right or wrong), every action you take can earn you recognition and rewards." />
       <List
         items={[
-          "Points & Badges: Earn points and collectible badges for activities like making your first prediction, creating a new market, or consistently participating in weekly events. Points help you climb the leaderboard and showcase your involvement.",
+          "Points & Badges: Earn points and collectible badges for activities like making your first prediction or consistently participating in weekly events. Points help you climb the leaderboard and showcase your involvement.",
           'Titles: Gain unique titles as you hit major milestones—become a "Prediction Master," an "Oracle Challenger," or even a "Lucky Cat" as you gain more experience and success on the platform.',
           "Onchain Rewards: Get rewarded beyond recognition! Achievements can also unlock onchain rewards, including exclusive NFTs, platform tokens, and even boosted participation opportunities. 9Lives aims to make your journey engaging and rewarding, regardless of your prediction accuracy.",
         ]}

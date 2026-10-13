@@ -2,7 +2,7 @@ import appConfig from "@/config";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Points } from "@/graffle/points/__";
 import { Accounts } from "@/graffle/accounts/__";
-import { CampaignFilters, OutcomeInput, SimpleMarketKey } from "@/types";
+import { CampaignFilters, SimpleMarketKey } from "@/types";
 import { maxUint256 } from "viem";
 
 const graph9Lives = Lives9.create()
@@ -99,43 +99,6 @@ export const requestLeaderboard = (season?: number) =>
 export const requestTotalUserCount = graphPoints.query.productUserCount({
   $: { product: "9lives" },
 });
-export const requestCreateCampaign = (params: {
-  name: string;
-  desc: string;
-  picture?: string;
-  outcomes: OutcomeInput[];
-  oracleDescription?: string;
-  oracleUrls?: string[];
-  seed: number;
-  creator: string;
-  ending: number;
-  starting: number;
-  x?: string;
-  telegram?: string;
-  web?: string;
-  isFake: boolean;
-}) =>
-  graph9Lives.mutation.explainCampaign({
-    $: {
-      $type: "PUT",
-      name: params.name,
-      description: params.desc,
-      picture: params.picture,
-      outcomes: params.outcomes,
-      seed: params.seed,
-      creator: params.creator,
-      oracleUrls: params.oracleUrls,
-      ending: params.ending,
-      starting: params.starting,
-      oracleDescription: params.oracleDescription,
-      x: params.x,
-      telegram: params.telegram,
-      web: params.web,
-      isFake: params.isFake,
-      isDppm: false,
-    },
-  });
-export const requestGetAITitles = graph9Lives.query.suggestedHeadlines();
 
 export const requestCampaignById = (id: string) =>
   graph9Lives.query.campaignById({

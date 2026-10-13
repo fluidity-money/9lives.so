@@ -37,10 +37,7 @@ const clientEnvSchema = z.object({
    * Lens address
    */
   NEXT_PUBLIC_LENS_ADDR: z.string().length(42),
-  /**
-   * Helper contract address for create campaigns with various settlements
-   */
-  NEXT_PUBLIC_HELPER_FACTORY_ADDR: z.string().length(42),
+
   /**
    * Router contract address for buying the related tokens
    */
@@ -119,7 +116,7 @@ const clientEnv = clientEnvSchema.safeParse({
   NEXT_PUBLIC_POINTS_URL: process.env.NEXT_PUBLIC_POINTS_URL,
   NEXT_PUBLIC_ACCOUNTS_URL: process.env.NEXT_PUBLIC_ACCOUNTS_URL,
   NEXT_PUBLIC_RFQHUB_URL: process.env.NEXT_PUBLIC_RFQHUB_URL,
-  NEXT_PUBLIC_HELPER_FACTORY_ADDR: process.env.NEXT_PUBLIC_HELPER_FACTORY_ADDR,
+
   NEXT_PUBLIC_BUY_HELPER_ADDR: process.env.NEXT_PUBLIC_BUY_HELPER_ADDR,
   NEXT_PUBLIC_BUY_HELPER2_ADDR: process.env.NEXT_PUBLIC_BUY_HELPER2_ADDR,
   NEXT_PUBLIC_INFRA_ADDR: process.env.NEXT_PUBLIC_INFRA_ADDR,

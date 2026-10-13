@@ -27,7 +27,7 @@ export default function SimpleModeAlert() {
         Simple Mode: Get started predicting the future with 15 min markets
       </h4>
       <h5>
-        Once you&apos;re ready, create your own markets and trade using{" "}
+        Once you&apos;re ready, explore more markets and trading tools in{" "}
         <span className="cursor-pointer underline" onClick={switchToAdvanced}>
           advanced mode
         </span>

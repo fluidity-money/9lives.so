@@ -473,7 +473,6 @@ export default function SimpleBuyDialog({
         title="MINT FUNDING"
       >
         <Funding
-          type="buy"
           closeModal={() => setFundModalOpen(false)}
           campaignId={data.identifier}
           title={data.name}
