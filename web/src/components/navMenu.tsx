@@ -17,7 +17,7 @@ export default function NavigationMenu({
     },
     {
       title: "Leaderboard",
-      page: "/v1/leaderboard",
+      page: "/leaderboard",
     },
     {
       title: "Portfolio",

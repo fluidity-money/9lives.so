@@ -16,7 +16,7 @@ export default function NavigationMenu() {
     },
     {
       name: "Leaderboard",
-      path: "/v1/leaderboard",
+      path: "/leaderboard",
     },
     ...(enableRfqhub
       ? [

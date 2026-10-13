@@ -95,6 +95,9 @@ describe("Rfqhub navigation feature flag", () => {
     render(<NavigationMenu />);
 
     expect(screen.queryByRole("link", { name: "RFQ" })).toBeNull();
+    expect(
+      screen.getByRole("link", { name: "Leaderboard" }).getAttribute("href"),
+    ).toBe("/leaderboard");
   });
 
   it("shows the RFQHub link when the flag is enabled", () => {

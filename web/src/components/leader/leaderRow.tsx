@@ -1,9 +1,19 @@
 import useConnectWallet from "@/hooks/useConnectWallet";
+import useTotalPnL from "@/hooks/useTotalPnL";
 import { Leader } from "@/types";
 import { combineClass } from "@/utils/combineClass";
-import Button from "../themed/button";
-import useTotalPnL from "@/hooks/useTotalPnL";
 import formatFusdc from "@/utils/format/formatUsdc";
+import Button from "../v2/button";
+
+const rankStyle: Record<number, string> = {
+  1: "bg-yellow-200 text-yellow-800",
+  2: "bg-neutral-200 text-neutral-700",
+  3: "bg-orange-200 text-orange-800",
+};
+
+function compactAddress(address: string) {
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
 
 export default function LeaderRow({
   data,
@@ -12,55 +22,94 @@ export default function LeaderRow({
   data?: Leader;
   highlightUser?: boolean;
 }) {
-  const cellStyle =
-    "border-b border-b-gray-200 font-chicago text-xs text-9black h-16";
   const { connect } = useConnectWallet();
   const { data: history } = useTotalPnL(data?.wallet);
-  if (!data)
+  const pnl = Number(history?.totalPnl ?? 0);
+  const cellStyle = "border-b border-neutral-200 px-4 py-3.5 text-sm";
+
+  if (!data) {
     return (
-      <tr className="cursor-pointer bg-9blueLight/50" onClick={() => connect()}>
-        <td className={combineClass(cellStyle)}>???</td>
-        <td className={combineClass(cellStyle)}>
+      <tr className="bg-neutral-100">
+        <td
+          className={combineClass(cellStyle, "font-semibold text-neutral-400")}
+        >
+          —
+        </td>
+        <td className={cellStyle}>
           <Button
-            intent={"default"}
-            title="Connect your wallet to see your rank"
+            intent="inverted"
+            size="small"
+            title="Connect to see your rank"
+            onClick={() => connect()}
           />
         </td>
-        <td className={combineClass(cellStyle)}>???</td>
-        <td className={combineClass(cellStyle)}></td>
+        <td className={combineClass(cellStyle, "text-right text-neutral-400")}>
+          —
+        </td>
+        <td className={combineClass(cellStyle, "text-right text-neutral-400")}>
+          —
+        </td>
+        <td className={combineClass(cellStyle, "text-right text-neutral-400")}>
+          —
+        </td>
       </tr>
     );
+  }
 
   return (
     <tr
       className={combineClass(
-        highlightUser && "bg-9blueLight/50",
-        "hover:bg-9blueLight/50",
+        "transition-colors hover:bg-neutral-100",
+        highlightUser && "bg-neutral-100",
       )}
     >
-      <td className={combineClass(cellStyle)}>{data.rank}</td>
-      <td className={combineClass(cellStyle)}>
-        <span className="block w-[100px] truncate sm:w-[160px] lg:w-full">
-          {data.wallet}
+      <td className={cellStyle}>
+        <span
+          className={combineClass(
+            "inline-flex size-7 items-center justify-center rounded-full text-xs font-bold",
+            rankStyle[data.rank] ?? "bg-neutral-100 text-neutral-600",
+          )}
+        >
+          {data.rank}
         </span>
-        {highlightUser && (
-          <span className="font-arial text-[#808080]">
-            🎉 You placed #{data.rank} 🎉
-          </span>
-        )}
       </td>
-      <td className={combineClass(cellStyle)}>{data.amount}</td>
+      <td className={cellStyle}>
+        <div className="flex flex-col gap-0.5">
+          <span className="font-medium text-2black" title={data.wallet}>
+            {compactAddress(data.wallet)}
+          </span>
+          {highlightUser ? (
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+              Your position
+            </span>
+          ) : null}
+        </div>
+      </td>
       <td
         className={combineClass(
           cellStyle,
-          history?.totalPnl && Number(history?.totalPnl) >= 0
-            ? "text-green-700"
-            : "text-red-700",
+          "text-right font-semibold text-2black",
         )}
-      >{`$${formatFusdc(history?.totalPnl ?? "0", 2)}`}</td>
+      >
+        {data.amount.toLocaleString()}
+      </td>
       <td
-        className={combineClass(cellStyle)}
-      >{`$${formatFusdc(history?.volume ?? "0", 2)}`}</td>
+        className={combineClass(
+          cellStyle,
+          "text-right font-medium",
+          pnl >= 0 ? "text-green-600" : "text-red-600",
+        )}
+      >
+        {pnl >= 0 ? "+" : "−"}${formatFusdc(Math.abs(pnl), 2)}
+      </td>
+      <td
+        className={combineClass(
+          cellStyle,
+          "text-right font-medium text-2black",
+        )}
+      >
+        ${formatFusdc(history?.volume ?? "0", 2)}
+      </td>
     </tr>
   );
 }
