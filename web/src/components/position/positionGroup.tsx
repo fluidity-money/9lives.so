@@ -50,6 +50,7 @@ export default function PositionsGroup({
         colSpan={colSpan}
         title="Loading..."
         height={!detailPage ? "min-h-20" : undefined}
+        modern={modern}
       />
     );
   if (isError)
@@ -59,6 +60,7 @@ export default function PositionsGroup({
         title="Whoops, error!"
         subtitle={error.message}
         height={!detailPage ? "min-h-20" : undefined}
+        modern={modern}
       />
     );
   if (detailPage && positions?.length === 0)
@@ -67,6 +69,7 @@ export default function PositionsGroup({
         colSpan={colSpan}
         title="Nothing yet."
         subtitle="Start Growing Your Portfolio."
+        modern={modern}
       />
     );
   return positions

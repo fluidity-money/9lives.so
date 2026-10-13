@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { usePortfolioStore } from "@/stores/portfolioStore";
 import formatFusdc from "@/utils/format/formatUsdc";
 import Button from "../themed/button";
+import ModernButton from "../v2/button";
 import DownCaret from "#/icons/down-caret.svg";
 import useClaim from "@/hooks/useClaim";
 import { Outcome, ParticipatedCampaign, PositionHistory } from "@/types";
@@ -364,7 +365,15 @@ export default function PositionRow({
                   </div>
                 </>
               )}
-              {detailPage ? null : (
+              {detailPage ? null : modern ? (
+                <ModernButton
+                  title={isClaiming ? "Claiming..." : "Claim reward"}
+                  intent="yes"
+                  size="small"
+                  onClick={handleClaim}
+                  disabled={isClaiming}
+                />
+              ) : (
                 <Button
                   title={isClaiming ? "Claiming..." : "Claim Reward"}
                   intent={"yes"}

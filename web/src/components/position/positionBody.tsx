@@ -35,14 +35,16 @@ export default function PositionBody({
           title="Error"
           subtitle={error?.message ?? "Unknown Error"}
           colSpan={colSpan}
+          modern={modern}
         />
       ) : isLoading ? (
-        <Placeholder title="Loading.." colSpan={colSpan} />
+        <Placeholder title="Loading.." colSpan={colSpan} modern={modern} />
       ) : positionGroups?.length === 0 ? (
         <Placeholder
           title="Nothing yet."
           subtitle="Start Growing Your Portfolio."
           colSpan={colSpan}
+          modern={modern}
         />
       ) : positionGroups ? (
         positionGroups.map((group) => (
