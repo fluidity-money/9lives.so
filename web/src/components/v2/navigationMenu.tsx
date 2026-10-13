@@ -21,7 +21,7 @@ export default function NavigationMenu() {
     ...(enableRfqhub
       ? [
           {
-            name: "Options",
+            name: "Options (BETA!)",
             path: "/rfqhub",
           },
         ]
