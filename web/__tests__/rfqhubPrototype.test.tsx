@@ -67,7 +67,7 @@ beforeEach(() => {
 });
 
 describe("RfqhubPrototype", () => {
-  it("renders the live BTC graph and editable prediction sentence", () => {
+  it("renders the live BTC graph and prefills the prediction amount from the graph balance", async () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
 
     expect(mockedUseRfqhub.mock.calls.length).toBeGreaterThan(0);
@@ -75,6 +75,12 @@ describe("RfqhubPrototype", () => {
     expect(
       screen.getByRole("heading", { name: "Make a prediction" }),
     ).not.toBeNull();
+    expect(screen.getByText("With")).not.toBeNull();
+    expect(screen.getByText(", I predict that")).not.toBeNull();
+    expect(
+      ((await screen.findByLabelText("Prediction amount")) as HTMLInputElement)
+        .value,
+    ).toBe("50");
     expect((screen.getByLabelText("Asset") as HTMLSelectElement).value).toBe(
       "BTC",
     );
@@ -100,6 +106,11 @@ describe("RfqhubPrototype", () => {
   it("executes a suggestion with the rolled-up balance and exposes claim calldata", async () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
 
+    await waitFor(() =>
+      expect(
+        (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
+      ).toBe("50"),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
 
     await waitFor(() => {
@@ -113,6 +124,7 @@ describe("RfqhubPrototype", () => {
         priceTarget: "65000000000",
       });
     });
+    expect(addFunds).not.toHaveBeenCalled();
 
     expect(screen.getByText("Prediction #7 is open")).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Claim rewards" }));
@@ -132,19 +144,45 @@ describe("RfqhubPrototype", () => {
     ).toBe("0x1234");
   });
 
-  it("shows an actionable error when no rolled-up balance is available", async () => {
+  it("onramps only a prediction amount shortfall before sending the request", async () => {
+    render(<RfqhubPrototype campaignData={campaignData} />);
+
+    const predictionAmount = await screen.findByLabelText("Prediction amount");
+    fireEvent.change(predictionAmount, { target: { value: "75" } });
+    fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
+
+    await waitFor(() => expect(createSuggestion).toHaveBeenCalled());
+    expect(addFunds).toHaveBeenCalledWith("25000000");
+    expect(addFunds.mock.invocationCallOrder[0]).toBeLessThan(
+      createSuggestion.mock.invocationCallOrder[0]!,
+    );
+    expect(createSuggestion).toHaveBeenCalledWith(
+      expect.objectContaining({
+        minAmount: "75000000",
+        maxAmount: "75000000",
+      }),
+    );
+  });
+
+  it("onramps the full prediction amount when the graph balance is zero", async () => {
     requestBalance.mockResolvedValue("0");
     render(<RfqhubPrototype campaignData={campaignData} />);
 
+    const predictionAmount = await screen.findByLabelText("Prediction amount");
+    fireEvent.change(predictionAmount, { target: { value: "10" } });
     fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
 
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "No RFQHub balance is available",
+    await waitFor(() => expect(createSuggestion).toHaveBeenCalled());
+    expect(addFunds).toHaveBeenCalledWith("10000000");
+    expect(createSuggestion).toHaveBeenCalledWith(
+      expect.objectContaining({
+        minAmount: "10000000",
+        maxAmount: "10000000",
+      }),
     );
-    expect(createSuggestion).not.toHaveBeenCalled();
   });
 
-  it("shows incoming websocket requests newest first", () => {
+  it("shows incoming websocket requests newest first", async () => {
     mockedUseRfqhubRequests.mockReturnValue({
       connectionStatus: "connected",
       requests: [
@@ -164,6 +202,11 @@ describe("RfqhubPrototype", () => {
     });
 
     render(<RfqhubPrototype campaignData={campaignData} />);
+    await waitFor(() =>
+      expect(
+        (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
+      ).toBe("50"),
+    );
 
     const requests = screen.getAllByTestId("rfqhub-request");
     expect(requests).toHaveLength(2);
@@ -187,8 +230,13 @@ describe("RfqhubPrototype", () => {
     expect(screen.getByText("$25 added to RFQHub")).not.toBeNull();
   });
 
-  it("lets the sentence controls update the proposed prediction", () => {
+  it("lets the sentence controls update the proposed prediction", async () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
+    await waitFor(() =>
+      expect(
+        (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
+      ).toBe("50"),
+    );
 
     fireEvent.change(screen.getByLabelText("Direction"), {
       target: { value: "down" },

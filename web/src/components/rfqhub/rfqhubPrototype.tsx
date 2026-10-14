@@ -6,7 +6,7 @@ import useRfqhub from "@/hooks/useRfqhub";
 import useRfqhubRequests from "@/hooks/useRfqhubRequests";
 import type { SimpleCampaignDetail } from "@/types";
 import { formatUnits, parseUnits } from "viem";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const inlineControl =
   "mx-1 inline-flex rounded-xl border border-neutral-300 bg-neutral-100 px-2 py-1 text-[0.8em] leading-none text-2black outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300";
@@ -71,12 +71,15 @@ export default function RfqhubPrototype({
     concludedCalldata,
     addFunds,
   } = useRfqhub();
+  const requestBalanceRef = useRef(requestBalance);
+  requestBalanceRef.current = requestBalance;
   const { requests, connectionStatus } = useRfqhubRequests();
 
   const [asset, setAsset] = useState("BTC");
   const [direction, setDirection] = useState<"up" | "down">("up");
   const [duration, setDuration] = useState("5");
-  const [amount, setAmount] = useState(100);
+  const [predictionAmount, setPredictionAmount] = useState("");
+  const [rewardAmount, setRewardAmount] = useState(100);
   const [orders, setOrders] = useState<RfqhubOrder[]>([]);
   const [selectedOrderIndex, setSelectedOrderIndex] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -93,6 +96,26 @@ export default function RfqhubPrototype({
   useEffect(() => {
     setOrders(loadOrders(accountAddress));
     setSelectedOrderIndex(0);
+  }, [accountAddress]);
+
+  useEffect(() => {
+    let active = true;
+    setPredictionAmount("");
+    if (!accountAddress) return () => undefined;
+
+    requestBalanceRef
+      .current()
+      .then((balance) => {
+        if (active)
+          setPredictionAmount(formatUnits(BigInt(balance), USDC_DECIMALS));
+      })
+      .catch((cause) => {
+        if (active) setError(errorMessage(cause));
+      });
+
+    return () => {
+      active = false;
+    };
   }, [accountAddress]);
 
   const selectedOrder = orders[selectedOrderIndex];
@@ -120,21 +143,24 @@ export default function RfqhubPrototype({
     setCalldata(undefined);
     setIsExecuting(true);
     try {
-      const rolledUpBalance = BigInt(await requestBalance());
-      if (rolledUpBalance <= BigInt(0)) {
-        throw new Error(
-          "No RFQHub balance is available. Fund your account before executing.",
-        );
+      const requestedAmount = parseUnits(predictionAmount, USDC_DECIMALS);
+      if (requestedAmount <= BigInt(0)) {
+        throw new Error("Enter a prediction amount greater than zero");
+      }
+
+      const availableBalance = BigInt(await requestBalance());
+      if (requestedAmount > availableBalance) {
+        await addFunds((requestedAmount - availableBalance).toString());
       }
 
       const durationSeconds = Number(duration) * 60;
       const requestedReward = parseUnits(
-        amount.toString(),
+        rewardAmount.toString(),
         USDC_DECIMALS,
       ).toString();
       const result = await createSuggestion({
-        minAmount: rolledUpBalance.toString(),
-        maxAmount: rolledUpBalance.toString(),
+        minAmount: requestedAmount.toString(),
+        maxAmount: requestedAmount.toString(),
         isUp: direction === "up",
         priceTarget,
         durationSeconds,
@@ -257,7 +283,21 @@ export default function RfqhubPrototype({
             </div>
 
             <div className="text-xl font-medium leading-[2.3] text-2black md:text-2xl">
-              <span>I predict that</span>
+              <span>With</span>
+              <label className="sr-only" htmlFor="rfqhub-prediction-amount">
+                Prediction amount
+              </label>
+              <input
+                id="rfqhub-prediction-amount"
+                className={`${inlineControl} w-28`}
+                type="number"
+                min="0.01"
+                step="0.01"
+                inputMode="decimal"
+                value={predictionAmount}
+                onChange={(event) => setPredictionAmount(event.target.value)}
+              />
+              <span>, I predict that</span>
               <label className="sr-only" htmlFor="rfqhub-asset">
                 Asset
               </label>
@@ -308,8 +348,10 @@ export default function RfqhubPrototype({
                 min="1"
                 step="1"
                 inputMode="decimal"
-                value={amount}
-                onChange={(event) => setAmount(event.target.valueAsNumber || 0)}
+                value={rewardAmount}
+                onChange={(event) =>
+                  setRewardAmount(event.target.valueAsNumber || 0)
+                }
               />
               <span>if I win.</span>
             </div>
@@ -319,7 +361,14 @@ export default function RfqhubPrototype({
               intent="cta"
               size="large"
               aria-label="Execute prediction"
-              disabled={isExecuting || !Number.isFinite(amount) || amount <= 0}
+              disabled={
+                isExecuting ||
+                !predictionAmount ||
+                !Number.isFinite(Number(predictionAmount)) ||
+                Number(predictionAmount) <= 0 ||
+                !Number.isFinite(rewardAmount) ||
+                rewardAmount <= 0
+              }
               onClick={execute}
               className="mt-8 w-full"
             />
