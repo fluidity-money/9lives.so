@@ -2,6 +2,7 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { usePublicClient, useSignMessage } from "wagmi";
 import { maxUint256, parseSignature } from "viem";
 import config from "@/config";
+import { destinationChain } from "@/config/chains";
 import {
   requestEoaForAddress,
   requestPublicKey,
@@ -41,7 +42,7 @@ import {
 export default function useRfqhub() {
   const account = useAppKitAccount();
   const { mutateAsync: signMessage } = useSignMessage();
-  const publicClient = usePublicClient();
+  const publicClient = usePublicClient({ chainId: destinationChain.id });
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
   const { signForPermit } = useSignForPermit(account.address);
 
@@ -123,6 +124,17 @@ export default function useRfqhub() {
       rfqhubOnramp({ eoaAddress, secret, amt, permit, isDryrun }),
     );
 
+  const requestOnchainBalance = async () => {
+    if (!account.address) throw new Error("No wallet is connected");
+    if (!publicClient) throw new Error("No public client is set");
+    const balance = await publicClient.readContract({
+      ...config.contracts.fusdc,
+      functionName: "balanceOf",
+      args: [account.address as `0x${string}`],
+    });
+    return balance.toString();
+  };
+
   const addFunds = async (amt: string) => {
     if (!account.address) throw new Error("No wallet is connected");
     if (!publicClient) throw new Error("No public client is set");
@@ -131,11 +143,7 @@ export default function useRfqhub() {
       throw new Error("Amount must be greater than zero");
 
     await checkAndSwitchChain();
-    const userBalance = await publicClient.readContract({
-      ...config.contracts.fusdc,
-      functionName: "balanceOf",
-      args: [account.address as `0x${string}`],
-    });
+    const userBalance = BigInt(await requestOnchainBalance());
     if (amount > userBalance) throw new Error("You don't have enough USDC");
 
     const spender = await requestEoaForAddress(account.address);
@@ -286,6 +294,7 @@ export default function useRfqhub() {
     conclude,
     concludedCalldata,
     requestBalance,
+    requestOnchainBalance,
     requestOpenAuctions: rfqhubRequestOpenAuctions,
   };
 }

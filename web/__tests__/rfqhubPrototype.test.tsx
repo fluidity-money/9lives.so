@@ -39,6 +39,7 @@ const mockedUseFeatureFlag = jest.mocked(useFeatureFlag);
 const mockedUseRfqhub = jest.mocked(useRfqhub);
 const mockedUseRfqhubRequests = jest.mocked(useRfqhubRequests);
 const requestBalance = jest.fn();
+const requestOnchainBalance = jest.fn();
 const createSuggestion = jest.fn();
 const concludedCalldata = jest.fn();
 const addFunds = jest.fn();
@@ -47,6 +48,7 @@ const submitBundleMaker = jest.fn();
 beforeEach(() => {
   window.localStorage.clear();
   requestBalance.mockReset().mockResolvedValue("50000000");
+  requestOnchainBalance.mockReset().mockResolvedValue("50000000");
   createSuggestion.mockReset().mockResolvedValue({
     amountSpent: "50000000",
     bundleId: 7,
@@ -58,6 +60,7 @@ beforeEach(() => {
   mockedUseRfqhub.mockReturnValue({
     accountAddress: "0x1234",
     requestBalance,
+    requestOnchainBalance,
     createSuggestion,
     concludedCalldata,
     addFunds,
@@ -70,7 +73,8 @@ beforeEach(() => {
 });
 
 describe("RfqhubPrototype", () => {
-  it("renders the live BTC graph and prefills the prediction amount from the graph balance", async () => {
+  it("prefills the stake and matching minimum offer from the onchain USDC balance", async () => {
+    requestBalance.mockResolvedValue("10000000");
     render(<RfqhubPrototype campaignData={campaignData} />);
 
     expect(mockedUseRfqhub.mock.calls.length).toBeGreaterThan(0);
@@ -78,7 +82,7 @@ describe("RfqhubPrototype", () => {
     expect(
       screen.getByRole("heading", { name: "Make a prediction" }),
     ).not.toBeNull();
-    expect(screen.getByText("With")).not.toBeNull();
+    expect(screen.getByText("With $")).not.toBeNull();
     expect(screen.getByText(", I predict that")).not.toBeNull();
     expect(
       ((await screen.findByLabelText("Prediction amount")) as HTMLInputElement)
@@ -96,7 +100,11 @@ describe("RfqhubPrototype", () => {
     expect(
       (screen.getByLabelText("Winnings amount") as HTMLInputElement)
         .valueAsNumber,
-    ).toBe(100);
+    ).toBe(50);
+    expect(screen.getByTestId("prediction-sentence").textContent).toContain(
+      ", and I want $50 + $",
+    );
+    expect(screen.queryByRole("button", { name: "Add funds" })).toBeNull();
     expect(
       (
         screen.getByRole("button", {
@@ -123,7 +131,7 @@ describe("RfqhubPrototype", () => {
         isUp: true,
         maxAmount: "50000000",
         minAmount: "50000000",
-        minOffer: "100000000",
+        minOffer: "50000000",
         priceTarget: "65000000000",
       });
     });
@@ -289,19 +297,25 @@ describe("RfqhubPrototype", () => {
     expect(screen.getByText("Offer submitted for Taker #12")).not.toBeNull();
   });
 
-  it("opens Add funds and onramps the entered amount", async () => {
+  it("keeps the minimum offer matched to the stake until it is edited", async () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Add funds" }));
-    expect(screen.getByRole("dialog", { name: "Add funds" })).not.toBeNull();
+    const stake = await screen.findByLabelText("Prediction amount");
+    const minimumOffer = screen.getByLabelText("Winnings amount");
+    fireEvent.change(stake, { target: { value: "75" } });
+    expect((minimumOffer as HTMLInputElement).value).toBe("75");
+    expect(screen.getByTestId("prediction-sentence").textContent).toContain(
+      ", and I want $75 + $",
+    );
 
-    fireEvent.change(screen.getByLabelText("Amount to add"), {
+    fireEvent.change(minimumOffer, {
       target: { value: "25" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Confirm add funds" }));
-
-    await waitFor(() => expect(addFunds).toHaveBeenCalledWith("25000000"));
-    expect(screen.getByText("$25 added to RFQHub")).not.toBeNull();
+    fireEvent.change(stake, { target: { value: "80" } });
+    expect((minimumOffer as HTMLInputElement).value).toBe("25");
+    expect(screen.getByTestId("prediction-sentence").textContent).toContain(
+      ", and I want $80 + $",
+    );
   });
 
   it("lets the sentence controls update the proposed prediction", async () => {
