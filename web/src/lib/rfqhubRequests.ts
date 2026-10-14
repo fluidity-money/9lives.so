@@ -17,6 +17,12 @@ export type RfqhubIncomingRequest = {
   };
 };
 
+export const filterActiveRfqhubRequests = (
+  requests: RfqhubIncomingRequest[],
+  nowMs = Date.now(),
+): RfqhubIncomingRequest[] =>
+  requests.filter((request) => Date.parse(request.deadline) > nowMs);
+
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
   typeof value === "object" && value !== null && !Array.isArray(value)
     ? (value as Record<string, unknown>)

@@ -1,4 +1,5 @@
 import {
+  filterActiveRfqhubRequests,
   parseRfqhubRequestMessage,
   resolveRfqhubWebsocketUrl,
 } from "@/lib/rfqhubRequests";
@@ -75,5 +76,32 @@ describe("RFQHub websocket taker advertisements", () => {
     expect(resolveRfqhubWebsocketUrl("https://example.com/feed")).toBe(
       "wss://example.com/feed",
     );
+  });
+
+  it("removes takers as soon as their bidding deadline passes", () => {
+    const parsed = parseRfqhubRequestMessage(
+      JSON.stringify({
+        BundleTaker: {
+          id: 7,
+          acc_addr: "0x1234",
+          asset: "0xabcd",
+          amt: 1_000_000,
+          min_offer: 100_000,
+          is_up: true,
+          price_target: 9_999_999,
+          outcome: "BitcoinPrice",
+          deadline: "2026-10-14T12:00:00Z",
+          expiry: "2026-10-14T13:00:00Z",
+          structure: { args: {}, sig: [] },
+        },
+      }),
+    );
+
+    expect(
+      filterActiveRfqhubRequests(parsed, Date.parse("2026-10-14T11:59:59Z")),
+    ).toHaveLength(1);
+    expect(
+      filterActiveRfqhubRequests(parsed, Date.parse("2026-10-14T12:00:00Z")),
+    ).toEqual([]);
   });
 });

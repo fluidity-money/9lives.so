@@ -42,6 +42,7 @@ const requestBalance = jest.fn();
 const createSuggestion = jest.fn();
 const concludedCalldata = jest.fn();
 const addFunds = jest.fn();
+const submitBundleMaker = jest.fn();
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -53,12 +54,14 @@ beforeEach(() => {
   });
   concludedCalldata.mockReset().mockResolvedValue("0x1234");
   addFunds.mockReset().mockResolvedValue("0xfunding");
+  submitBundleMaker.mockReset().mockResolvedValue({ id: 9, bundleMakerId: 3 });
   mockedUseRfqhub.mockReturnValue({
     accountAddress: "0x1234",
     requestBalance,
     createSuggestion,
     concludedCalldata,
     addFunds,
+    submitBundleMaker,
   } as unknown as ReturnType<typeof useRfqhub>);
   mockedUseRfqhubRequests.mockReturnValue({
     requests: [],
@@ -183,6 +186,8 @@ describe("RfqhubPrototype", () => {
   });
 
   it("shows advertised websocket takers newest first", async () => {
+    const deadline = new Date(Date.now() + 60_000).toISOString();
+    const expiry = new Date(Date.now() + 120_000).toISOString();
     mockedUseRfqhubRequests.mockReturnValue({
       connectionStatus: "connected",
       requests: [
@@ -193,8 +198,8 @@ describe("RfqhubPrototype", () => {
           isUp: true,
           priceTarget: "65000000000",
           outcome: "BitcoinPrice",
-          deadline: "2026-10-14T12:00:00Z",
-          expiry: "2026-10-14T13:00:00Z",
+          deadline,
+          expiry,
           accountAddress: "0x1234",
           asset: "0xabcd",
           structure: { args: {}, sig: [] },
@@ -206,8 +211,8 @@ describe("RfqhubPrototype", () => {
           isUp: false,
           priceTarget: "64000000000",
           outcome: "BitcoinPrice",
-          deadline: "2026-10-14T11:00:00Z",
-          expiry: "2026-10-14T12:00:00Z",
+          deadline,
+          expiry,
           accountAddress: "0x5678",
           asset: "0xef01",
           structure: { args: {}, sig: [] },
@@ -233,6 +238,55 @@ describe("RfqhubPrototype", () => {
     expect(requests[0]?.textContent).toContain("BitcoinPrice");
     expect(requests[1]?.textContent).toContain("$10");
     expect(requests[1]?.textContent).toContain("Down");
+  });
+
+  it("opens a taker and submits a funded maker offer", async () => {
+    mockedUseRfqhubRequests.mockReturnValue({
+      connectionStatus: "connected",
+      requests: [
+        {
+          id: "12",
+          amount: "25000000",
+          minOffer: "5000000",
+          isUp: true,
+          priceTarget: "65000000000",
+          outcome: "BitcoinPrice",
+          deadline: new Date(Date.now() + 60_000).toISOString(),
+          expiry: new Date(Date.now() + 120_000).toISOString(),
+          accountAddress: "0x1234",
+          asset: "0xabcd",
+          structure: { args: {}, sig: [] },
+        },
+      ],
+    });
+    render(<RfqhubPrototype campaignData={campaignData} />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Make an offer for Taker #12" }),
+    );
+    expect(
+      screen.getByRole("dialog", { name: "Make an offer for Taker #12" }),
+    ).not.toBeNull();
+    expect(
+      (screen.getByLabelText("Offer amount") as HTMLInputElement).value,
+    ).toBe("5");
+
+    fireEvent.change(screen.getByLabelText("Offer amount"), {
+      target: { value: "60" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit offer" }));
+
+    await waitFor(() => expect(submitBundleMaker).toHaveBeenCalled());
+    expect(addFunds).toHaveBeenCalledWith("10000000");
+    expect(addFunds.mock.invocationCallOrder[0]).toBeLessThan(
+      submitBundleMaker.mock.invocationCallOrder[0]!,
+    );
+    expect(submitBundleMaker).toHaveBeenCalledWith({
+      bundleTakerId: 12,
+      minAmount: "60000000",
+      maxAmount: "60000000",
+    });
+    expect(screen.getByText("Offer submitted for Taker #12")).not.toBeNull();
   });
 
   it("opens Add funds and onramps the entered amount", async () => {

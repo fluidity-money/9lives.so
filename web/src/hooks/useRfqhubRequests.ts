@@ -2,6 +2,7 @@
 
 import config from "@/config";
 import {
+  filterActiveRfqhubRequests,
   parseRfqhubRequestMessage,
   resolveRfqhubWebsocketUrl,
   type RfqhubIncomingRequest,
@@ -9,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 
 const MAX_REQUESTS = 50;
+const MAX_TIMEOUT_MS = 2_147_000_000;
 
 export type RfqhubConnectionStatus =
   | "connecting"
@@ -19,8 +21,12 @@ const mergeRequests = (
   current: RfqhubIncomingRequest[],
   incoming: RfqhubIncomingRequest[],
 ) => {
-  const byId = new Map(current.map((request) => [request.id, request]));
-  for (const request of incoming) byId.set(request.id, request);
+  const byId = new Map(
+    filterActiveRfqhubRequests(current).map((request) => [request.id, request]),
+  );
+  for (const request of filterActiveRfqhubRequests(incoming)) {
+    byId.set(request.id, request);
+  }
   return [...byId.values()]
     .sort((left, right) => {
       const leftId = BigInt(left.id);
@@ -74,6 +80,23 @@ export default function useRfqhubRequests() {
       socket?.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (!requests.length) return;
+
+    const nowMs = Date.now();
+    const nextDeadlineMs = Math.min(
+      ...requests.map((request) => Date.parse(request.deadline)),
+    );
+    const timer = setTimeout(
+      () => {
+        setRequests((current) => filterActiveRfqhubRequests(current));
+      },
+      Math.min(MAX_TIMEOUT_MS, Math.max(0, nextDeadlineMs - nowMs) + 1),
+    );
+
+    return () => clearTimeout(timer);
+  }, [requests]);
 
   return { requests, connectionStatus };
 }
