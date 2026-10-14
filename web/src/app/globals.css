@@ -251,3 +251,12 @@ ol {
   animation-iteration-count: infinite;
   will-change: transform;
 }
+
+@keyframes rfqhubDeadlineCountdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

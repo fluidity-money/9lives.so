@@ -60,6 +60,32 @@ const displayUsdc = (amount: string) => {
   }
 };
 
+function RequestDeadlineProgress({ deadline }: { deadline: string }) {
+  const [mountedAtMs] = useState(() => Date.now());
+  const deadlineMs = Date.parse(deadline);
+  const remainingMs = deadlineMs - mountedAtMs;
+
+  if (!Number.isFinite(deadlineMs) || remainingMs <= 0) return null;
+
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute inset-x-0 bottom-0 h-1 overflow-hidden rounded-b-xl bg-red-100"
+    >
+      <span
+        data-testid="rfqhub-deadline-progress"
+        className="block h-full origin-left bg-red-500 motion-reduce:animate-none"
+        style={{
+          animationName: "rfqhubDeadlineCountdown",
+          animationDuration: `${remainingMs}ms`,
+          animationTimingFunction: "linear",
+          animationFillMode: "forwards",
+        }}
+      />
+    </span>
+  );
+}
+
 export default function RfqhubPrototype({
   campaignData,
 }: {
@@ -466,7 +492,7 @@ export default function RfqhubPrototype({
                   data-testid="rfqhub-request"
                   aria-label={`Make an offer for Taker #${request.id}`}
                   disabled={isSubmittingOffer}
-                  className="w-full rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-left text-sm text-2black transition hover:border-neutral-500 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-left text-sm text-2black transition hover:border-neutral-500 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={() => openOffer(request)}
                 >
                   <div className="flex items-center justify-between gap-3">
@@ -508,6 +534,10 @@ export default function RfqhubPrototype({
                   <p className="mt-3 text-xs font-semibold text-2black">
                     Make an offer →
                   </p>
+                  <RequestDeadlineProgress
+                    key={request.deadline}
+                    deadline={request.deadline}
+                  />
                 </button>
               ))
             ) : (

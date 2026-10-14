@@ -248,6 +248,36 @@ describe("RfqhubPrototype", () => {
     expect(requests[1]?.textContent).toContain("Down");
   });
 
+  it("renders a red countdown line that drains until the taker deadline", async () => {
+    const now = Date.now();
+    mockedUseRfqhubRequests.mockReturnValue({
+      requests: [
+        {
+          id: "12",
+          accountAddress: "0x1234",
+          asset: "BTC",
+          isUp: true,
+          priceTarget: "65000000000",
+          amount: "25000000",
+          minOffer: "5000000",
+          outcome: "BTC settles above $65,000",
+          deadline: new Date(now + 30_000).toISOString(),
+          expiry: new Date(now + 60_000).toISOString(),
+          structure: { args: {}, sig: [] },
+        },
+      ],
+      connectionStatus: "connected",
+    });
+
+    render(<RfqhubPrototype campaignData={campaignData} />);
+    await screen.findAllByDisplayValue("50");
+
+    const line = screen.getByTestId("rfqhub-deadline-progress");
+    expect(line.className).toContain("bg-red");
+    expect(line.style.animationName).toBe("rfqhubDeadlineCountdown");
+    expect(line.style.animationDuration).toMatch(/^(29|30)\d{3}ms$/);
+  });
+
   it("opens a taker and submits a funded maker offer", async () => {
     mockedUseRfqhubRequests.mockReturnValue({
       connectionStatus: "connected",
