@@ -111,6 +111,8 @@ export default function RfqhubPrototype({
     concludedCalldata,
     addFunds,
   } = useRfqhub();
+  const requestBalanceRef = useRef(requestBalance);
+  requestBalanceRef.current = requestBalance;
   const requestOnchainBalanceRef = useRef(requestOnchainBalance);
   requestOnchainBalanceRef.current = requestOnchainBalance;
   const { requests, connectionStatus } = useRfqhubRequests();
@@ -139,12 +141,14 @@ export default function RfqhubPrototype({
     setPredictionAmount("");
     if (!accountAddress) return () => undefined;
 
-    requestOnchainBalanceRef
-      .current()
-      .then((balance) => {
+    Promise.all([
+      requestBalanceRef.current(),
+      requestOnchainBalanceRef.current(),
+    ])
+      .then(([rfqhubBalance, onchainBalance]) => {
         if (active) {
-          const amount = formatUnits(BigInt(balance), USDC_DECIMALS);
-          setPredictionAmount(amount);
+          const totalBalance = BigInt(rfqhubBalance) + BigInt(onchainBalance);
+          setPredictionAmount(formatUnits(totalBalance, USDC_DECIMALS));
         }
       })
       .catch((cause) => {
