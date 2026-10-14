@@ -60,6 +60,17 @@ const displayUsdc = (amount: string) => {
   }
 };
 
+const doubleUsdcInput = (amount: string) => {
+  try {
+    return formatUnits(
+      parseUnits(amount || "0", USDC_DECIMALS) * BigInt(2),
+      USDC_DECIMALS,
+    );
+  } catch {
+    return "0";
+  }
+};
+
 function RequestDeadlineProgress({ deadline }: { deadline: string }) {
   const [mountedAtMs] = useState(() => Date.now());
   const deadlineMs = Date.parse(deadline);
@@ -108,8 +119,6 @@ export default function RfqhubPrototype({
   const [direction, setDirection] = useState<"up" | "down">("up");
   const [duration, setDuration] = useState("5");
   const [predictionAmount, setPredictionAmount] = useState("");
-  const [rewardAmount, setRewardAmount] = useState("");
-  const rewardAmountEditedRef = useRef(false);
   const [orders, setOrders] = useState<RfqhubOrder[]>([]);
   const [selectedOrderIndex, setSelectedOrderIndex] = useState(0);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -128,8 +137,6 @@ export default function RfqhubPrototype({
   useEffect(() => {
     let active = true;
     setPredictionAmount("");
-    setRewardAmount("");
-    rewardAmountEditedRef.current = false;
     if (!accountAddress) return () => undefined;
 
     requestOnchainBalanceRef
@@ -138,7 +145,6 @@ export default function RfqhubPrototype({
         if (active) {
           const amount = formatUnits(BigInt(balance), USDC_DECIMALS);
           setPredictionAmount(amount);
-          setRewardAmount(amount);
         }
       })
       .catch((cause) => {
@@ -186,10 +192,7 @@ export default function RfqhubPrototype({
       }
 
       const durationSeconds = Number(duration) * 60;
-      const requestedReward = parseUnits(
-        rewardAmount,
-        USDC_DECIMALS,
-      ).toString();
+      const requestedReward = requestedAmount.toString();
       const result = await createSuggestion({
         minAmount: requestedAmount.toString(),
         maxAmount: requestedAmount.toString(),
@@ -341,11 +344,7 @@ export default function RfqhubPrototype({
                 step="0.01"
                 inputMode="decimal"
                 value={predictionAmount}
-                onChange={(event) => {
-                  const amount = event.target.value;
-                  setPredictionAmount(amount);
-                  if (!rewardAmountEditedRef.current) setRewardAmount(amount);
-                }}
+                onChange={(event) => setPredictionAmount(event.target.value)}
               />
               <span>, I predict that</span>
               <label className="sr-only" htmlFor="rfqhub-asset">
@@ -387,24 +386,9 @@ export default function RfqhubPrototype({
                 <option value="5">5 mins</option>
                 <option value="15">15 mins</option>
               </select>
-              <span>, and I want ${predictionAmount || "0"} + $</span>
-              <label className="sr-only" htmlFor="rfqhub-amount">
-                Winnings amount
-              </label>
-              <input
-                id="rfqhub-amount"
-                className={`${inlineControl} w-24`}
-                type="number"
-                min="0.01"
-                step="0.01"
-                inputMode="decimal"
-                value={rewardAmount}
-                onChange={(event) => {
-                  rewardAmountEditedRef.current = true;
-                  setRewardAmount(event.target.value);
-                }}
-              />
-              <span>if I win.</span>
+              <span>
+                , and I want ${doubleUsdcInput(predictionAmount)} if I win.
+              </span>
             </div>
 
             <Button
@@ -416,10 +400,7 @@ export default function RfqhubPrototype({
                 isExecuting ||
                 !predictionAmount ||
                 !Number.isFinite(Number(predictionAmount)) ||
-                Number(predictionAmount) <= 0 ||
-                !rewardAmount ||
-                !Number.isFinite(Number(rewardAmount)) ||
-                Number(rewardAmount) <= 0
+                Number(predictionAmount) <= 0
               }
               onClick={execute}
               className="mt-8 w-full"

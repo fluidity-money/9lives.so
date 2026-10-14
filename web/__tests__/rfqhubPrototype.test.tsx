@@ -73,7 +73,7 @@ beforeEach(() => {
 });
 
 describe("RfqhubPrototype", () => {
-  it("prefills the stake and matching minimum offer from the onchain USDC balance", async () => {
+  it("prefills the stake and displays double the stake as the total winnings", async () => {
     requestBalance.mockResolvedValue("10000000");
     render(<RfqhubPrototype campaignData={campaignData} />);
 
@@ -97,12 +97,9 @@ describe("RfqhubPrototype", () => {
     expect((screen.getByLabelText("Duration") as HTMLSelectElement).value).toBe(
       "5",
     );
-    expect(
-      (screen.getByLabelText("Winnings amount") as HTMLInputElement)
-        .valueAsNumber,
-    ).toBe(50);
+    expect(screen.queryByLabelText("Winnings amount")).toBeNull();
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      ", and I want $50 + $",
+      ", and I want $100 if I win.",
     );
     expect(screen.queryByRole("button", { name: "Add funds" })).toBeNull();
     expect(
@@ -160,6 +157,9 @@ describe("RfqhubPrototype", () => {
 
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     fireEvent.change(predictionAmount, { target: { value: "75" } });
+    expect(screen.getByTestId("prediction-sentence").textContent).toContain(
+      ", and I want $150 if I win.",
+    );
     fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
 
     await waitFor(() => expect(createSuggestion).toHaveBeenCalled());
@@ -171,6 +171,7 @@ describe("RfqhubPrototype", () => {
       expect.objectContaining({
         minAmount: "75000000",
         maxAmount: "75000000",
+        minOffer: "75000000",
       }),
     );
   });
@@ -346,28 +347,18 @@ describe("RfqhubPrototype", () => {
     expect(screen.getByText("Offer submitted for Taker #12")).not.toBeNull();
   });
 
-  it("keeps the minimum offer matched to the stake until it is edited", async () => {
+  it("displays an exact doubled total for fractional stakes", async () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
 
     const stake = await screen.findByLabelText("Prediction amount");
-    const minimumOffer = screen.getByLabelText("Winnings amount");
-    fireEvent.change(stake, { target: { value: "75" } });
-    expect((minimumOffer as HTMLInputElement).value).toBe("75");
-    expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      ", and I want $75 + $",
-    );
+    fireEvent.change(stake, { target: { value: "10.01" } });
 
-    fireEvent.change(minimumOffer, {
-      target: { value: "25" },
-    });
-    fireEvent.change(stake, { target: { value: "80" } });
-    expect((minimumOffer as HTMLInputElement).value).toBe("25");
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      ", and I want $80 + $",
+      ", and I want $20.02 if I win.",
     );
   });
 
-  it("lets the sentence controls update the proposed prediction", async () => {
+  it("lets the direction and duration controls update the proposed prediction", async () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
     await waitFor(() =>
       expect(
@@ -381,9 +372,6 @@ describe("RfqhubPrototype", () => {
     fireEvent.change(screen.getByLabelText("Duration"), {
       target: { value: "15" },
     });
-    fireEvent.change(screen.getByLabelText("Winnings amount"), {
-      target: { value: "250" },
-    });
 
     expect(
       (screen.getByLabelText("Direction") as HTMLSelectElement).value,
@@ -391,10 +379,6 @@ describe("RfqhubPrototype", () => {
     expect((screen.getByLabelText("Duration") as HTMLSelectElement).value).toBe(
       "15",
     );
-    expect(
-      (screen.getByLabelText("Winnings amount") as HTMLInputElement)
-        .valueAsNumber,
-    ).toBe(250);
   });
 });
 
