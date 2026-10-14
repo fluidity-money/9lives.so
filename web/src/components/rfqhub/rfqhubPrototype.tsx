@@ -115,8 +115,6 @@ export default function RfqhubPrototype({
   const [isExecuting, setIsExecuting] = useState(false);
   const [isRequestingCalldata, setIsRequestingCalldata] = useState(false);
   const [isClaimOpen, setIsClaimOpen] = useState(false);
-  const [selectedRequestId, setSelectedRequestId] = useState<string>();
-  const [offerAmount, setOfferAmount] = useState("");
   const [isSubmittingOffer, setIsSubmittingOffer] = useState(false);
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
@@ -153,9 +151,6 @@ export default function RfqhubPrototype({
   }, [accountAddress]);
 
   const selectedOrder = orders[selectedOrderIndex];
-  const selectedRequest = requests.find(
-    (request) => request.id === selectedRequestId,
-  );
   const displayedCalldata = calldata ?? selectedOrder?.calldata;
   const priceTarget = useMemo(
     () =>
@@ -247,16 +242,8 @@ export default function RfqhubPrototype({
     }
   };
 
-  const openOffer = (request: RfqhubIncomingRequest) => {
+  const submitOffer = async (request: RfqhubIncomingRequest) => {
     if (isSubmittingOffer) return;
-    setError(undefined);
-    setOfferAmount(displayUsdc(request.minOffer));
-    setSelectedRequestId(request.id);
-  };
-
-  const submitOffer = async () => {
-    if (!selectedRequest) return;
-    const request = selectedRequest;
     const assertBiddingOpen = () => {
       if (Date.parse(request.deadline) <= Date.now()) {
         throw new Error("Bidding has closed for this taker");
@@ -267,12 +254,7 @@ export default function RfqhubPrototype({
     setIsSubmittingOffer(true);
     try {
       assertBiddingOpen();
-      const amount = parseUnits(offerAmount, USDC_DECIMALS);
-      if (amount < BigInt(request.minOffer)) {
-        throw new Error(
-          `Offer must be at least $${displayUsdc(request.minOffer)}`,
-        );
-      }
+      const amount = BigInt(request.minOffer);
 
       const availableBalance = BigInt(await requestBalance());
       assertBiddingOpen();
@@ -291,9 +273,6 @@ export default function RfqhubPrototype({
         maxAmount: amount.toString(),
       });
       setStatus(`Offer submitted for Taker #${request.id}`);
-      setSelectedRequestId((current) =>
-        current === request.id ? undefined : current,
-      );
     } catch (cause) {
       setError(errorMessage(cause));
     } finally {
@@ -450,7 +429,7 @@ export default function RfqhubPrototype({
                 {status}
               </p>
             ) : null}
-            {error && !isClaimOpen && !selectedRequest ? (
+            {error && !isClaimOpen ? (
               <p className="mt-3 text-sm font-medium text-red-700" role="alert">
                 {error}
               </p>
@@ -490,10 +469,10 @@ export default function RfqhubPrototype({
                   type="button"
                   key={request.id}
                   data-testid="rfqhub-request"
-                  aria-label={`Make an offer for Taker #${request.id}`}
+                  aria-label={`Offer minimum for Taker #${request.id}`}
                   disabled={isSubmittingOffer}
                   className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-left text-sm text-2black transition hover:border-neutral-500 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
-                  onClick={() => openOffer(request)}
+                  onClick={() => void submitOffer(request)}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <strong>Taker #{request.id}</strong>
@@ -532,7 +511,7 @@ export default function RfqhubPrototype({
                     </time>
                   </p>
                   <p className="mt-3 text-xs font-semibold text-2black">
-                    Make an offer →
+                    Offer minimum →
                   </p>
                   <RequestDeadlineProgress
                     key={request.deadline}
@@ -548,84 +527,6 @@ export default function RfqhubPrototype({
           </div>
         </aside>
       </div>
-
-      {selectedRequest ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-2black/20 p-4"
-          role="dialog"
-          aria-label={`Make an offer for Taker #${selectedRequest.id}`}
-          aria-modal="true"
-        >
-          <button
-            className="absolute inset-0 cursor-default"
-            aria-label="Close offer"
-            disabled={isSubmittingOffer}
-            onClick={() => setSelectedRequestId(undefined)}
-          />
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-neutral-300 bg-2white p-6 shadow-xl">
-            <div className="mb-6 flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
-                  Taker #{selectedRequest.id}
-                </p>
-                <h2 className="text-2xl font-semibold text-2black">
-                  Make an offer
-                </h2>
-              </div>
-              <button
-                type="button"
-                className="text-sm text-neutral-500"
-                disabled={isSubmittingOffer}
-                onClick={() => setSelectedRequestId(undefined)}
-              >
-                Close
-              </button>
-            </div>
-            <p className="mb-4 text-sm text-neutral-600">
-              Take the {selectedRequest.isUp ? "down" : "up"} side. Minimum
-              offer: ${displayUsdc(selectedRequest.minOffer)}.
-            </p>
-            <label
-              className="mb-2 block text-sm font-medium text-2black"
-              htmlFor="rfqhub-offer-amount"
-            >
-              Offer amount
-            </label>
-            <div className="mb-4 flex items-center rounded-xl border border-neutral-300 bg-neutral-100 px-3">
-              <span className="text-neutral-500">$</span>
-              <input
-                id="rfqhub-offer-amount"
-                className="w-full bg-transparent px-2 py-3 text-2black outline-none"
-                type="number"
-                min={displayUsdc(selectedRequest.minOffer)}
-                step="0.01"
-                inputMode="decimal"
-                value={offerAmount}
-                onChange={(event) => setOfferAmount(event.target.value)}
-              />
-            </div>
-            {error ? (
-              <p className="mb-4 text-sm font-medium text-red-700" role="alert">
-                {error}
-              </p>
-            ) : null}
-            <Button
-              title={isSubmittingOffer ? "Submitting…" : "Submit offer"}
-              intent="cta"
-              size="large"
-              aria-label="Submit offer"
-              className="w-full"
-              disabled={
-                isSubmittingOffer ||
-                !offerAmount ||
-                !Number.isFinite(Number(offerAmount)) ||
-                Number(offerAmount) <= 0
-              }
-              onClick={submitOffer}
-            />
-          </div>
-        </div>
-      ) : null}
 
       {isClaimOpen ? (
         <div

@@ -278,14 +278,14 @@ describe("RfqhubPrototype", () => {
     expect(line.style.animationDuration).toMatch(/^(29|30)\d{3}ms$/);
   });
 
-  it("opens a taker and submits a funded maker offer", async () => {
+  it("immediately submits the minimum funded maker offer when clicked", async () => {
     mockedUseRfqhubRequests.mockReturnValue({
       connectionStatus: "connected",
       requests: [
         {
           id: "12",
-          amount: "25000000",
-          minOffer: "5000000",
+          amount: "250000000",
+          minOffer: "60000000",
           isUp: true,
           priceTarget: "65000000000",
           outcome: "BitcoinPrice",
@@ -300,20 +300,10 @@ describe("RfqhubPrototype", () => {
     render(<RfqhubPrototype campaignData={campaignData} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Make an offer for Taker #12" }),
+      screen.getByRole("button", { name: "Offer minimum for Taker #12" }),
     );
-    expect(
-      screen.getByRole("dialog", { name: "Make an offer for Taker #12" }),
-    ).not.toBeNull();
-    expect(
-      (screen.getByLabelText("Offer amount") as HTMLInputElement).value,
-    ).toBe("5");
 
-    fireEvent.change(screen.getByLabelText("Offer amount"), {
-      target: { value: "60" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Submit offer" }));
-
+    expect(screen.queryByRole("dialog")).toBeNull();
     await waitFor(() => expect(submitBundleMaker).toHaveBeenCalled());
     expect(addFunds).toHaveBeenCalledWith("10000000");
     expect(addFunds.mock.invocationCallOrder[0]).toBeLessThan(
