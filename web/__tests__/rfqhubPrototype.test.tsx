@@ -278,6 +278,35 @@ describe("RfqhubPrototype", () => {
     expect(line.style.animationDuration).toMatch(/^(29|30)\d{3}ms$/);
   });
 
+  it("flashes a taker card after its minimum offer is matched", async () => {
+    const now = Date.now();
+    mockedUseRfqhubRequests.mockReturnValue({
+      connectionStatus: "connected",
+      requests: [
+        {
+          id: "12",
+          accountAddress: "0x1234",
+          asset: "BTC",
+          isUp: true,
+          priceTarget: "65000000000",
+          amount: "25000000",
+          minOffer: "6000000",
+          matchVersion: 1,
+          outcome: "BTC settles above $65,000",
+          deadline: new Date(now + 30_000).toISOString(),
+          expiry: new Date(now + 60_000).toISOString(),
+          structure: { args: {}, sig: [] },
+        },
+      ],
+    });
+
+    render(<RfqhubPrototype campaignData={campaignData} />);
+
+    const card = await screen.findByTestId("rfqhub-request");
+    expect(card.textContent).toContain("$6");
+    expect(card.style.animationName).toBe("rfqhubMakerMatchFlash");
+  });
+
   it("immediately submits the minimum funded maker offer when clicked", async () => {
     mockedUseRfqhubRequests.mockReturnValue({
       connectionStatus: "connected",

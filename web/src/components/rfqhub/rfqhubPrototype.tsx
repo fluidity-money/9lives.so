@@ -467,11 +467,20 @@ export default function RfqhubPrototype({
               requests.map((request) => (
                 <button
                   type="button"
-                  key={request.id}
+                  key={`${request.id}:${request.matchVersion ?? 0}`}
                   data-testid="rfqhub-request"
                   aria-label={`Offer minimum for Taker #${request.id}`}
                   disabled={isSubmittingOffer}
                   className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-left text-sm text-2black transition hover:border-neutral-500 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  style={
+                    request.matchVersion
+                      ? {
+                          animationName: "rfqhubMakerMatchFlash",
+                          animationDuration: "900ms",
+                          animationTimingFunction: "ease-out",
+                        }
+                      : undefined
+                  }
                   onClick={() => void submitOffer(request)}
                 >
                   <div className="flex items-center justify-between gap-3">

@@ -2,8 +2,9 @@
 
 import config from "@/config";
 import {
+  applyRfqhubMakerMatch,
   filterActiveRfqhubRequests,
-  parseRfqhubRequestMessage,
+  parseRfqhubMessage,
   resolveRfqhubWebsocketUrl,
   type RfqhubIncomingRequest,
 } from "@/lib/rfqhubRequests";
@@ -58,9 +59,16 @@ export default function useRfqhubRequests() {
         setConnectionStatus("connected");
       };
       socket.onmessage = (event: MessageEvent<string>) => {
-        const incoming = parseRfqhubRequestMessage(event.data);
-        if (incoming.length) {
-          setRequests((current) => mergeRequests(current, incoming));
+        const message = parseRfqhubMessage(event.data);
+        if (message?.type === "taker") {
+          setRequests((current) => mergeRequests(current, [message.request]));
+        } else if (message?.type === "maker") {
+          setRequests((current) =>
+            applyRfqhubMakerMatch(
+              filterActiveRfqhubRequests(current),
+              message.match,
+            ),
+          );
         }
       };
       socket.onerror = () => socket?.close();

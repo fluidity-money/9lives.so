@@ -260,3 +260,18 @@ ol {
     transform: scaleX(0);
   }
 }
+
+@keyframes rfqhubMakerMatchFlash {
+  0%,
+  40% {
+    background-color: rgb(254 240 138);
+    border-color: rgb(239 68 68);
+    box-shadow: 0 0 0 4px rgb(239 68 68 / 30%);
+  }
+
+  100% {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

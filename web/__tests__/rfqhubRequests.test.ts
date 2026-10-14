@@ -1,5 +1,7 @@
 import {
+  applyRfqhubMakerMatch,
   filterActiveRfqhubRequests,
+  parseRfqhubMessage,
   parseRfqhubRequestMessage,
   resolveRfqhubWebsocketUrl,
 } from "@/lib/rfqhubRequests";
@@ -69,6 +71,59 @@ describe("RFQHub websocket taker advertisements", () => {
       ),
     ).toEqual([]);
     expect(parseRfqhubRequestMessage("not json")).toEqual([]);
+  });
+
+  it("parses BundleMaker matches and raises the matching taker's minimum by $1", () => {
+    const makerMessage = parseRfqhubMessage(
+      JSON.stringify({
+        BundleMaker: {
+          acc_addr: "0x5678",
+          amt: 5_000_000,
+          bundle_taker_id: 7,
+        },
+      }),
+    );
+    expect(makerMessage).toEqual({
+      type: "maker",
+      match: {
+        accountAddress: "0x5678",
+        amount: "5000000",
+        bundleTakerId: "7",
+      },
+    });
+
+    const requests = parseRfqhubRequestMessage(
+      JSON.stringify({
+        BundleTaker: {
+          id: 7,
+          acc_addr: "0x1234",
+          asset: "0xabcd",
+          amt: 10_000_000,
+          min_offer: 100_000,
+          is_up: true,
+          price_target: 9_999_999,
+          outcome: "BitcoinPrice",
+          deadline: "2026-10-14T12:00:00Z",
+          expiry: "2026-10-14T13:00:00Z",
+          structure: { args: {}, sig: [] },
+        },
+      }),
+    );
+
+    if (makerMessage?.type !== "maker") throw new Error("Expected maker match");
+    const updated = applyRfqhubMakerMatch(requests, makerMessage.match);
+    expect(updated[0]).toMatchObject({
+      id: "7",
+      minOffer: "6000000",
+      matchVersion: 1,
+    });
+
+    expect(
+      applyRfqhubMakerMatch(updated, {
+        ...makerMessage.match,
+        amount: "7000000",
+      })[0],
+    ).toMatchObject({ minOffer: "8000000", matchVersion: 2 });
   });
 
   it("uses the dedicated RFQHub websocket endpoint", () => {

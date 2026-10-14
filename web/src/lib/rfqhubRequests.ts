@@ -15,7 +15,20 @@ export type RfqhubIncomingRequest = {
     args: Record<string, unknown>;
     sig: unknown[];
   };
+  matchVersion?: number;
 };
+
+export type RfqhubMakerMatch = {
+  accountAddress: string;
+  amount: string;
+  bundleTakerId: string;
+};
+
+export type RfqhubMessage =
+  | { type: "taker"; request: RfqhubIncomingRequest }
+  | { type: "maker"; match: RfqhubMakerMatch };
+
+const ONE_USDC = BigInt(1_000_000);
 
 export const filterActiveRfqhubRequests = (
   requests: RfqhubIncomingRequest[],
@@ -98,17 +111,47 @@ export const parseRfqhubRequest = (
 export const parseRfqhubRequestMessage = (
   raw: string,
 ): RfqhubIncomingRequest[] => {
+  const message = parseRfqhubMessage(raw);
+  return message?.type === "taker" ? [message.request] : [];
+};
+
+export const parseRfqhubMessage = (raw: string): RfqhubMessage | undefined => {
   let decoded: unknown;
   try {
     decoded = JSON.parse(raw);
   } catch {
-    return [];
+    return undefined;
   }
 
   const root = asRecord(decoded);
   const request = parseRfqhubRequest(root?.BundleTaker);
-  return request ? [request] : [];
+  if (request) return { type: "taker", request };
+
+  const maker = asRecord(root?.BundleMaker);
+  const accountAddress = nonEmptyString(maker?.acc_addr);
+  const amount = integerString(maker?.amt);
+  const bundleTakerId = integerString(maker?.bundle_taker_id);
+  return accountAddress && amount && bundleTakerId
+    ? {
+        type: "maker",
+        match: { accountAddress, amount, bundleTakerId },
+      }
+    : undefined;
 };
+
+export const applyRfqhubMakerMatch = (
+  requests: RfqhubIncomingRequest[],
+  match: RfqhubMakerMatch,
+): RfqhubIncomingRequest[] =>
+  requests.map((request) =>
+    request.id === match.bundleTakerId
+      ? {
+          ...request,
+          minOffer: (BigInt(match.amount) + ONE_USDC).toString(),
+          matchVersion: (request.matchVersion ?? 0) + 1,
+        }
+      : request,
+  );
 
 export const resolveRfqhubWebsocketUrl = (configuredUrl?: string): string => {
   const url = new URL(configuredUrl ?? DEFAULT_RFQHUB_WEBSOCKET_URL);
