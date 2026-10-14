@@ -391,7 +391,7 @@ export default function RfqhubPrototype({
               <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
                 Live RFQHub
               </p>
-              <h2 className="text-xl font-semibold text-2black">Requests</h2>
+              <h2 className="text-xl font-semibold text-2black">Takers</h2>
             </div>
             <span className="flex items-center gap-2 text-xs capitalize text-neutral-500">
               <span
@@ -419,15 +419,10 @@ export default function RfqhubPrototype({
                   className="rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-sm text-2black"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <strong>Request #{request.id}</strong>
-                    {request.createdAt ? (
-                      <time className="text-xs text-neutral-500">
-                        {new Date(request.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </time>
-                    ) : null}
+                    <strong>Taker #{request.id}</strong>
+                    <span className="rounded-full bg-2black px-2 py-0.5 text-xs font-medium text-2white">
+                      {request.isUp ? "Up" : "Down"}
+                    </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
                     <span>Amount</span>
@@ -435,16 +430,35 @@ export default function RfqhubPrototype({
                       ${displayUsdc(request.amount)}
                     </span>
                   </div>
-                  {request.bundleTakerId ? (
-                    <p className="mt-2 truncate text-xs text-neutral-500">
-                      Bundle #{request.bundleTakerId}
-                    </p>
-                  ) : null}
+                  <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
+                    <span>Minimum offer</span>
+                    <span className="font-medium text-2black">
+                      ${displayUsdc(request.minOffer)}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
+                    <span>Target</span>
+                    <span className="font-medium text-2black">
+                      ${displayUsdc(request.priceTarget)}
+                    </span>
+                  </div>
+                  <p className="mt-2 truncate text-xs text-neutral-500">
+                    {request.outcome}
+                  </p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Bidding closes{" "}
+                    <time dateTime={request.deadline}>
+                      {new Date(request.deadline).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </time>
+                  </p>
                 </article>
               ))
             ) : (
               <p className="rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-500">
-                Waiting for incoming requests…
+                Waiting for taker advertisements…
               </p>
             )}
           </div>

@@ -3,7 +3,7 @@
 import config from "@/config";
 import {
   parseRfqhubRequestMessage,
-  RFQHUB_REQUESTS_TABLE,
+  resolveRfqhubWebsocketUrl,
   type RfqhubIncomingRequest,
 } from "@/lib/rfqhubRequests";
 import { useEffect, useState } from "react";
@@ -15,18 +15,6 @@ export type RfqhubConnectionStatus =
   | "connected"
   | "disconnected";
 
-const websocketUrl = () => {
-  if (config.NEXT_PUBLIC_RFQHUB_WS_URL) {
-    return config.NEXT_PUBLIC_RFQHUB_WS_URL;
-  }
-  const url = new URL(config.NEXT_PUBLIC_RFQHUB_URL);
-  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-  url.pathname = "/";
-  url.search = "";
-  url.hash = "";
-  return url.toString();
-};
-
 const mergeRequests = (
   current: RfqhubIncomingRequest[],
   incoming: RfqhubIncomingRequest[],
@@ -35,12 +23,9 @@ const mergeRequests = (
   for (const request of incoming) byId.set(request.id, request);
   return [...byId.values()]
     .sort((left, right) => {
-      const timeDifference =
-        Date.parse(right.createdAt ?? "") - Date.parse(left.createdAt ?? "");
-      if (Number.isFinite(timeDifference) && timeDifference !== 0) {
-        return timeDifference;
-      }
-      return Number(right.id) - Number(left.id);
+      const leftId = BigInt(left.id);
+      const rightId = BigInt(right.id);
+      return rightId > leftId ? 1 : rightId < leftId ? -1 : 0;
     })
     .slice(0, MAX_REQUESTS);
 };
@@ -59,16 +44,12 @@ export default function useRfqhubRequests() {
     const connect = () => {
       if (destroyed) return;
       setConnectionStatus("connecting");
-      socket = new WebSocket(websocketUrl());
+      socket = new WebSocket(
+        resolveRfqhubWebsocketUrl(config.NEXT_PUBLIC_RFQHUB_WS_URL),
+      );
       socket.onopen = () => {
         reconnectAttempts = 0;
         setConnectionStatus("connected");
-        socket?.send(
-          JSON.stringify({
-            add: [{ table: RFQHUB_REQUESTS_TABLE, fields: [] }],
-            ask_for_snapshot: [{ table: RFQHUB_REQUESTS_TABLE, fields: [] }],
-          }),
-        );
       };
       socket.onmessage = (event: MessageEvent<string>) => {
         const incoming = parseRfqhubRequestMessage(event.data);

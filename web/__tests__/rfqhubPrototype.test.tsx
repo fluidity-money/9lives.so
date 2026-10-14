@@ -182,21 +182,35 @@ describe("RfqhubPrototype", () => {
     );
   });
 
-  it("shows incoming websocket requests newest first", async () => {
+  it("shows advertised websocket takers newest first", async () => {
     mockedUseRfqhubRequests.mockReturnValue({
       connectionStatus: "connected",
       requests: [
         {
           id: "12",
-          bundleTakerId: 8,
           amount: "25000000",
-          createdAt: "2026-10-13T12:01:00Z",
+          minOffer: "5000000",
+          isUp: true,
+          priceTarget: "65000000000",
+          outcome: "BitcoinPrice",
+          deadline: "2026-10-14T12:00:00Z",
+          expiry: "2026-10-14T13:00:00Z",
+          accountAddress: "0x1234",
+          asset: "0xabcd",
+          structure: { args: {}, sig: [] },
         },
         {
           id: "11",
-          bundleTakerId: 7,
           amount: "10000000",
-          createdAt: "2026-10-13T12:00:00Z",
+          minOffer: "2000000",
+          isUp: false,
+          priceTarget: "64000000000",
+          outcome: "BitcoinPrice",
+          deadline: "2026-10-14T11:00:00Z",
+          expiry: "2026-10-14T12:00:00Z",
+          accountAddress: "0x5678",
+          asset: "0xef01",
+          structure: { args: {}, sig: [] },
         },
       ],
     });
@@ -208,11 +222,17 @@ describe("RfqhubPrototype", () => {
       ).toBe("50"),
     );
 
+    expect(screen.getByRole("heading", { name: "Takers" })).not.toBeNull();
     const requests = screen.getAllByTestId("rfqhub-request");
     expect(requests).toHaveLength(2);
+    expect(requests[0]?.textContent).toContain("Taker #12");
     expect(requests[0]?.textContent).toContain("$25");
-    expect(requests[0]?.textContent).toContain("#8");
+    expect(requests[0]?.textContent).toContain("Up");
+    expect(requests[0]?.textContent).toContain("Minimum offer");
+    expect(requests[0]?.textContent).toContain("$5");
+    expect(requests[0]?.textContent).toContain("BitcoinPrice");
     expect(requests[1]?.textContent).toContain("$10");
+    expect(requests[1]?.textContent).toContain("Down");
   });
 
   it("opens Add funds and onramps the entered amount", async () => {

@@ -1,18 +1,20 @@
-const RFQHUB_REQUESTS_TABLE = "rfqhub_bundles_maker_1";
+export const DEFAULT_RFQHUB_WEBSOCKET_URL = "wss://rfqhub-ws.9lives.so/";
 
 export type RfqhubIncomingRequest = {
   id: string;
-  bundleTakerId: number;
+  accountAddress: string;
+  asset: string;
   amount: string;
-  createdAt?: string;
-  accountAddress?: string;
-};
-
-type TableMessage = {
-  table?: unknown;
-  content?: unknown;
-  snapshot?: unknown;
-  snapshot_toplevel?: unknown;
+  minOffer: string;
+  isUp: boolean;
+  priceTarget: string;
+  outcome: string;
+  deadline: string;
+  expiry: string;
+  structure: {
+    args: Record<string, unknown>;
+    sig: unknown[];
+  };
 };
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
@@ -20,33 +22,70 @@ const asRecord = (value: unknown): Record<string, unknown> | undefined =>
     ? (value as Record<string, unknown>)
     : undefined;
 
-const stringValue = (value: unknown): string | undefined => {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" && Number.isFinite(value)) return String(value);
-  return undefined;
+const nonEmptyString = (value: unknown): string | undefined =>
+  typeof value === "string" && value.length > 0 ? value : undefined;
+
+const integerString = (value: unknown): string | undefined => {
+  if (typeof value === "number") {
+    return Number.isSafeInteger(value) && value >= 0
+      ? String(value)
+      : undefined;
+  }
+  if (typeof value !== "string" || !/^\d+$/.test(value)) return undefined;
+  return BigInt(value).toString();
+};
+
+const timestamp = (value: unknown): string | undefined => {
+  const result = nonEmptyString(value);
+  return result && Number.isFinite(Date.parse(result)) ? result : undefined;
 };
 
 export const parseRfqhubRequest = (
   value: unknown,
 ): RfqhubIncomingRequest | undefined => {
   const content = asRecord(value);
-  if (!content) return undefined;
+  const structure = asRecord(content?.structure);
+  const args = asRecord(structure?.args);
+  const sig = structure?.sig;
+  if (!content || !structure || !args || !Array.isArray(sig)) return undefined;
 
-  const id = stringValue(content.id);
-  const bundleTakerId = Number(
-    content.bundle_taker_id ?? content.bundleTakerId,
-  );
-  const amount = stringValue(content.amt ?? content.amount);
-  if (!id || !Number.isInteger(bundleTakerId) || bundleTakerId < 0 || !amount) {
+  const id = integerString(content.id);
+  const accountAddress = nonEmptyString(content.acc_addr);
+  const asset = nonEmptyString(content.asset);
+  const amount = integerString(content.amt);
+  const minOffer = integerString(content.min_offer);
+  const priceTarget = integerString(content.price_target);
+  const outcome = nonEmptyString(content.outcome);
+  const deadline = timestamp(content.deadline);
+  const expiry = timestamp(content.expiry);
+
+  if (
+    !id ||
+    !accountAddress ||
+    !asset ||
+    !amount ||
+    !minOffer ||
+    typeof content.is_up !== "boolean" ||
+    !priceTarget ||
+    !outcome ||
+    !deadline ||
+    !expiry
+  ) {
     return undefined;
   }
 
   return {
     id,
-    bundleTakerId,
+    accountAddress,
+    asset,
     amount,
-    createdAt: stringValue(content.created_by ?? content.createdAt),
-    accountAddress: stringValue(content.acc_addr ?? content.accountAddress),
+    minOffer,
+    isUp: content.is_up,
+    priceTarget,
+    outcome,
+    deadline,
+    expiry,
+    structure: { args, sig },
   };
 };
 
@@ -60,26 +99,14 @@ export const parseRfqhubRequestMessage = (
     return [];
   }
 
-  const root = asRecord(decoded) as TableMessage | undefined;
-  if (!root) return [];
-
-  const messages: TableMessage[] = [];
-  if (Array.isArray(root.snapshot_toplevel)) {
-    messages.push(...(root.snapshot_toplevel as TableMessage[]));
-  } else {
-    messages.push(root);
-  }
-
-  return messages.flatMap((message) => {
-    if (message.table !== RFQHUB_REQUESTS_TABLE) return [];
-    const values = Array.isArray(message.snapshot)
-      ? message.snapshot
-      : [message.content];
-    return values.flatMap((value) => {
-      const request = parseRfqhubRequest(value);
-      return request ? [request] : [];
-    });
-  });
+  const root = asRecord(decoded);
+  const request = parseRfqhubRequest(root?.BundleTaker);
+  return request ? [request] : [];
 };
 
-export { RFQHUB_REQUESTS_TABLE };
+export const resolveRfqhubWebsocketUrl = (configuredUrl?: string): string => {
+  const url = new URL(configuredUrl ?? DEFAULT_RFQHUB_WEBSOCKET_URL);
+  if (url.protocol === "https:") url.protocol = "wss:";
+  if (url.protocol === "http:") url.protocol = "ws:";
+  return url.toString();
+};

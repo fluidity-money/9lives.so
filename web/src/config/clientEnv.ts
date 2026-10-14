@@ -26,7 +26,7 @@ const clientEnvSchema = z.object({
    */
   NEXT_PUBLIC_RFQHUB_URL: z.string().url(),
   /**
-   * Optional Rfqhub websocket URL. Falls back to the Rfqhub GraphQL host.
+   * Optional override for the dedicated Rfqhub websocket URL.
    */
   NEXT_PUBLIC_RFQHUB_WS_URL: z.string().url().optional(),
   /**

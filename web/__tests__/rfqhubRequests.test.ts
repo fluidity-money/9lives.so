@@ -1,65 +1,79 @@
 import {
-  parseRfqhubRequest,
   parseRfqhubRequestMessage,
+  resolveRfqhubWebsocketUrl,
 } from "@/lib/rfqhubRequests";
 
-describe("RFQHub websocket request parsing", () => {
-  it("parses maker inserts from the RFQHub websocket table", () => {
+describe("RFQHub websocket taker advertisements", () => {
+  it("parses the BundleTaker envelope advertised by RFQHub", () => {
     expect(
       parseRfqhubRequestMessage(
         JSON.stringify({
-          table: "rfqhub_bundles_maker_1",
-          content: {
-            id: 12,
-            created_by: "2026-10-13T12:01:00Z",
+          BundleTaker: {
+            id: 7,
             acc_addr: "0x1234",
-            bundle_taker_id: 8,
-            amt: 25_000_000,
+            asset: "0xabcd",
+            amt: 1_000_000,
+            min_offer: 100_000,
+            is_up: true,
+            price_target: 9_999_999,
+            outcome: "BitcoinPrice",
+            deadline: "2026-10-14T12:00:00Z",
+            expiry: "2026-10-14T13:00:00Z",
+            structure: {
+              args: {},
+              sig: [],
+            },
           },
         }),
       ),
     ).toEqual([
       {
-        id: "12",
-        bundleTakerId: 8,
-        amount: "25000000",
-        createdAt: "2026-10-13T12:01:00Z",
+        id: "7",
         accountAddress: "0x1234",
+        asset: "0xabcd",
+        amount: "1000000",
+        minOffer: "100000",
+        isUp: true,
+        priceTarget: "9999999",
+        outcome: "BitcoinPrice",
+        deadline: "2026-10-14T12:00:00Z",
+        expiry: "2026-10-14T13:00:00Z",
+        structure: {
+          args: {},
+          sig: [],
+        },
       },
     ]);
   });
 
-  it("parses snapshots and ignores other tables or malformed rows", () => {
+  it("rejects unrelated envelopes and malformed takers", () => {
+    expect(parseRfqhubRequestMessage(JSON.stringify({ Ping: {} }))).toEqual([]);
     expect(
       parseRfqhubRequestMessage(
         JSON.stringify({
-          snapshot_toplevel: [
-            {
-              table: "rfqhub_bundles_maker_1",
-              snapshot: [
-                { id: "2", bundle_taker_id: 9, amt: "1000000" },
-                { id: "missing-amount", bundle_taker_id: 9 },
-              ],
-            },
-            {
-              table: "rfqhub_bundles_taker_1",
-              content: { id: 1, bundle_taker_id: 9, amt: 1 },
-            },
-          ],
+          BundleTaker: {
+            id: 7,
+            acc_addr: "0x1234",
+            asset: "0xabcd",
+            amt: 1_000_000,
+            min_offer: 100_000,
+            is_up: "true",
+            price_target: 9_999_999,
+            outcome: "BitcoinPrice",
+            deadline: "not-a-date",
+            expiry: "2026-10-14T13:00:00Z",
+            structure: { args: {}, sig: [] },
+          },
         }),
       ),
-    ).toEqual([
-      {
-        id: "2",
-        bundleTakerId: 9,
-        amount: "1000000",
-        createdAt: undefined,
-        accountAddress: undefined,
-      },
-    ]);
-    expect(parseRfqhubRequest({ id: 1, bundle_taker_id: -1, amt: 1 })).toBe(
-      undefined,
-    );
+    ).toEqual([]);
     expect(parseRfqhubRequestMessage("not json")).toEqual([]);
+  });
+
+  it("uses the dedicated RFQHub websocket endpoint", () => {
+    expect(resolveRfqhubWebsocketUrl()).toBe("wss://rfqhub-ws.9lives.so/");
+    expect(resolveRfqhubWebsocketUrl("https://example.com/feed")).toBe(
+      "wss://example.com/feed",
+    );
   });
 });
