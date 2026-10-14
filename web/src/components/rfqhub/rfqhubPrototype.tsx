@@ -204,7 +204,6 @@ export default function RfqhubPrototype({
         priceTarget,
         durationSeconds,
         biddingWindowSeconds: Math.min(60, durationSeconds - 1),
-        minOffer: requestedReward,
       });
       const order: RfqhubOrder = {
         bundleId: result.bundleId,

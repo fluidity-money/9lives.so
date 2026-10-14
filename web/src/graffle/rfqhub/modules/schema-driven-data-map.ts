@@ -309,7 +309,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
         minOffer: {
           nt: String,
-          it: [1],
+          it: [0],
         },
       },
       // nt: AuctionCreatedResult, <-- Assigned later to avoid potential circular dependency.

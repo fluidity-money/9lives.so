@@ -407,8 +407,9 @@ export namespace Mutation {
     deadline: number;
     /**
      * Minimum offer of amount to take from the Maker in exchange for this liquidity.
+     * Null if we're preferring a decay strategy ran by the system.
      */
-    minOffer: string;
+    minOffer?: string | undefined | null;
   }
 
   // --- expanded ---

@@ -128,7 +128,6 @@ describe("RfqhubPrototype", () => {
         isUp: true,
         maxAmount: "100000000",
         minAmount: "100000000",
-        minOffer: "100000000",
         priceTarget: "65000000000",
       });
     });
@@ -171,7 +170,6 @@ describe("RfqhubPrototype", () => {
       expect.objectContaining({
         minAmount: "75000000",
         maxAmount: "75000000",
-        minOffer: "75000000",
       }),
     );
   });
@@ -189,7 +187,6 @@ describe("RfqhubPrototype", () => {
       expect.objectContaining({
         minAmount: "25000000",
         maxAmount: "25000000",
-        minOffer: "25000000",
       }),
     );
   });

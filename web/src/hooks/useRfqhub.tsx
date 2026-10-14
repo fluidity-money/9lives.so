@@ -180,7 +180,6 @@ export default function useRfqhub() {
     outcome,
     expiry,
     deadline,
-    minOffer,
   }: {
     minAmount: string;
     maxAmount: string;
@@ -189,7 +188,6 @@ export default function useRfqhub() {
     outcome: RfqhubOutcome;
     expiry: number;
     deadline: number;
-    minOffer: string;
   }) =>
     authenticated(({ eoaAddress, secret }) =>
       rfqhubCreateAuctionServerSig({
@@ -202,7 +200,6 @@ export default function useRfqhub() {
         outcome,
         expiry,
         deadline,
-        minOffer,
       }),
     );
 
@@ -213,7 +210,6 @@ export default function useRfqhub() {
     priceTarget,
     durationSeconds,
     biddingWindowSeconds,
-    minOffer,
   }: {
     minAmount: string;
     maxAmount: string;
@@ -221,7 +217,6 @@ export default function useRfqhub() {
     priceTarget: string;
     durationSeconds: number;
     biddingWindowSeconds: number;
-    minOffer: string;
   }) => {
     const { expiry, deadline } = rfqhubSuggestionTimestamps({
       durationSeconds,
@@ -235,7 +230,6 @@ export default function useRfqhub() {
       outcome: "BitcoinPrice",
       expiry,
       deadline,
-      minOffer,
     });
   };
 

@@ -124,7 +124,6 @@ export const rfqhubCreateAuctionServerSig = ({
   outcome,
   expiry,
   deadline,
-  minOffer,
 }: {
   eoaAddress: string;
   secret: string;
@@ -135,7 +134,6 @@ export const rfqhubCreateAuctionServerSig = ({
   outcome: RfqhubOutcome;
   expiry: number;
   deadline: number;
-  minOffer: string;
 }) =>
   data(
     withAuth(eoaAddress, secret).mutation.createAuctionServerSig({
@@ -147,7 +145,6 @@ export const rfqhubCreateAuctionServerSig = ({
         $outcome: outcome,
         expiry,
         deadline,
-        minOffer,
       },
       leftoverBal: true,
       amountSpent: true,

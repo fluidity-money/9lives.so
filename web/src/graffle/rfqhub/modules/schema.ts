@@ -232,11 +232,12 @@ export namespace Schema {
         };
         /**
          * Minimum offer of amount to take from the Maker in exchange for this liquidity.
+         * Null if we're preferring a decay strategy ran by the system.
          */
         minOffer: {
           kind: "InputField";
           name: "minOffer";
-          inlineType: [1];
+          inlineType: [0];
           namedType: $$NamedTypes.$$String;
         };
       };
