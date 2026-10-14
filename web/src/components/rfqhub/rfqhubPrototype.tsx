@@ -228,7 +228,7 @@ export default function RfqhubPrototype({
   };
 
   return (
-    <section className="flex w-full flex-col gap-4 py-4">
+    <section className="relative left-1/2 flex w-[calc(100vw-1rem)] max-w-5xl -translate-x-1/2 flex-col gap-4 py-4 md:w-[calc(100vw-2rem)]">
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-4">
           <div className="rounded-xl border border-neutral-400 bg-2white p-4">
