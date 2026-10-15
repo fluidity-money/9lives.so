@@ -12,6 +12,12 @@ import useRfqhub from "../src/hooks/useRfqhub";
 import useRfqhubRequests from "../src/hooks/useRfqhubRequests";
 import useAssetPrices from "../src/hooks/useAssetPrices";
 
+import { requestEoaForAddress } from "../src/providers/graphqlClient";
+
+jest.mock("../src/providers/graphqlClient", () => ({
+  requestEoaForAddress: jest.fn(),
+}));
+
 jest.mock("../src/hooks/useAssetPrices", () => ({
   __esModule: true,
   default: jest.fn(),
@@ -54,6 +60,10 @@ const submitBundleMaker = jest.fn();
 
 beforeEach(() => {
   window.localStorage.clear();
+  jest
+    .mocked(requestEoaForAddress)
+    .mockReset()
+    .mockResolvedValue(`0x${"ab".repeat(20)}`);
   jest.mocked(useAssetPrices).mockReturnValue({
     prices: [{ id: 1, timestamp: Date.now(), price: 65000 }],
     connected: true,
@@ -85,6 +95,129 @@ beforeEach(() => {
 });
 
 describe("RfqhubPrototype", () => {
+  const showRequest = (
+    overrides: Partial<
+      ReturnType<typeof useRfqhubRequests>["requests"][number]
+    > = {},
+  ) => {
+    mockedUseRfqhubRequests.mockReturnValue({
+      chartRequests: [],
+      connectionStatus: "connected",
+      requests: [
+        {
+          id: "7",
+          accountAddress: "ab".repeat(20),
+          asset: "BTC",
+          amount: "10000000",
+          minOffer: "8000000",
+          decayRate: 0,
+          createdBy: new Date(Date.now() - 1000).toISOString(),
+          deadline: new Date(Date.now() + 60000).toISOString(),
+          expiry: new Date(Date.now() + 60000).toISOString(),
+          isUp: true,
+          priceTarget: "65000000001",
+          outcome: "BitcoinPrice",
+          structure: { args: {}, sig: [] },
+          matchVersion: 1,
+          ...overrides,
+        },
+      ],
+    });
+  };
+
+  it.each([
+    [true, 65000.000002, "Winning", "green"],
+    [true, 65000, "Losing", "red"],
+    [false, 65000, "Winning", "green"],
+    [false, 65000.000002, "Losing", "red"],
+    [true, 65000.000001, "At target", "neutral"],
+    [false, 65000.000001, "At target", "neutral"],
+  ])(
+    "colors isUp=%s at %s as %s without display rounding",
+    async (isUp, price, status, color) => {
+      showRequest({ isUp });
+      jest.mocked(useAssetPrices).mockReturnValue({
+        prices: [{ id: 1, timestamp: Date.now(), price }],
+        connected: true,
+      });
+      render(<RfqhubPrototype />);
+      await screen.findByText("Yours");
+      const card = screen.getByTestId("rfqhub-request");
+      expect(card.textContent).toContain(`${status} · live price`);
+      expect(card.className).toContain(
+        color === "neutral" ? "bg-neutral-100" : `bg-${color}-50`,
+      );
+      expect(card.className).toContain("border-yellow-400");
+      expect(card.className).toContain("hover:border-yellow-400");
+      expect(card.className).not.toContain("hover:border-neutral-500");
+      expect(card.style.animationName).toBe("rfqhubMakerMatchFlash");
+    },
+  );
+
+  it.each(["disconnected", "missing", "unsupported", "expired"])(
+    "keeps %s quotes neutral",
+    async (reason) => {
+      showRequest({
+        ...(reason === "unsupported" ? { outcome: "Other" } : {}),
+        ...(reason === "expired"
+          ? { expiry: new Date(Date.now() - 1000).toISOString() }
+          : {}),
+      });
+      jest.mocked(useAssetPrices).mockReturnValue({
+        prices:
+          reason === "missing"
+            ? []
+            : [{ id: 1, timestamp: Date.now(), price: 70000 }],
+        connected: reason !== "disconnected",
+      });
+      render(<RfqhubPrototype />);
+      await screen.findByText("Yours");
+      expect(screen.getByTestId("rfqhub-request").className).toContain(
+        "bg-neutral-100",
+      );
+      expect(screen.queryByText(/Winning|Losing|At target/)).toBeNull();
+    },
+  );
+
+  it.each(["ab".repeat(20), `0x${"AB".repeat(20)}`, `0X${"Ab".repeat(20)}`])(
+    "normalizes derived account ownership %s",
+    async (accountAddress) => {
+      showRequest({ accountAddress });
+      render(<RfqhubPrototype />);
+      await screen.findByText("Yours");
+      expect(requestEoaForAddress).toHaveBeenCalledWith("0x1234");
+    },
+  );
+
+  it("updates price colors without remounting or losing ownership and clears ownership on wallet change", async () => {
+    showRequest();
+    const { rerender } = render(<RfqhubPrototype />);
+    await screen.findByText("Yours");
+    const card = screen.getByTestId("rfqhub-request");
+    expect(card.textContent).toContain("Losing");
+    jest.mocked(useAssetPrices).mockReturnValue({
+      prices: [{ id: 2, timestamp: Date.now(), price: 70000 }],
+      connected: true,
+    });
+    rerender(<RfqhubPrototype />);
+    expect(screen.getByTestId("rfqhub-request")).toBe(card);
+    expect(card.textContent).toContain("Winning");
+    expect(card.textContent).toContain("Yours");
+    mockedUseRfqhub.mockReturnValue({
+      ...mockedUseRfqhub(),
+      accountAddress: undefined,
+    });
+    rerender(<RfqhubPrototype />);
+    expect(screen.queryByText("Yours")).toBeNull();
+    expect(card.className).toContain("border-neutral-300");
+  });
+
+  it("does not mark the wallet EOA or malformed address as the derived account owner", async () => {
+    showRequest({ accountAddress: "0x1234" });
+    render(<RfqhubPrototype />);
+    await waitFor(() => expect(requestBalance).toHaveBeenCalled());
+    expect(screen.queryByText("Yours")).toBeNull();
+  });
   it("waits for an oracle quote and disables predictions while disconnected", async () => {
     jest
       .mocked(useAssetPrices)

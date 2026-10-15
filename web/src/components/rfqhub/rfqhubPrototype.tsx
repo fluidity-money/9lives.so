@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/v2/button";
+import { requestEoaForAddress } from "@/providers/graphqlClient";
 import RfqhubPriceChart from "./rfqhubPriceChart";
 import useAssetPrices from "@/hooks/useAssetPrices";
 import useRfqhub from "@/hooks/useRfqhub";
@@ -63,6 +64,28 @@ const displayUsdc = (amount: string) => {
   }
 };
 
+const normalizeAddress = (address?: string) => {
+  const hex = address?.replace(/^0x/i, "").toLowerCase();
+  return hex && /^[0-9a-f]{40}$/.test(hex) ? hex : undefined;
+};
+
+const requestPriceStatus = (
+  request: RfqhubIncomingRequest,
+  quote: bigint | undefined,
+  nowMs: number,
+) => {
+  // A live quote is indicative, never a settlement price after expiry.
+  if (
+    quote === undefined ||
+    request.outcome !== "BitcoinPrice" ||
+    !(Date.parse(request.expiry) > nowMs)
+  )
+    return undefined;
+  const target = BigInt(request.priceTarget);
+  if (quote === target) return "At target";
+  return quote > target === request.isUp ? "Winning" : "Losing";
+};
+
 function RequestDeadlineProgress({ deadline }: { deadline: string }) {
   const [mountedAtMs] = useState(() => Date.now());
   const deadlineMs = Date.parse(deadline);
@@ -103,6 +126,36 @@ export default function RfqhubPrototype() {
     concludedCalldata,
     addFunds,
   } = useRfqhub();
+  const [ownerAccount, setOwnerAccount] = useState<{
+    wallet: string;
+    address: string;
+  }>();
+  useEffect(() => {
+    let active = true;
+    if (!accountAddress) return;
+    // The feed stores GetClientAddr(factory, EOA), not the wallet EOA.
+    void requestEoaForAddress(accountAddress)
+      .then((address) => {
+        if (active) setOwnerAccount({ wallet: accountAddress, address });
+      })
+      .catch(() => {
+        if (active) setOwnerAccount(undefined);
+      });
+    return () => {
+      active = false;
+    };
+  }, [accountAddress]);
+  const ownerAddress =
+    ownerAccount?.wallet === accountAddress
+      ? normalizeAddress(ownerAccount?.address)
+      : undefined;
+  const liveQuote =
+    priceConnected &&
+    latestPrice !== undefined &&
+    Number.isFinite(latestPrice) &&
+    latestPrice > 0
+      ? parseUnits(latestPrice.toFixed(USDC_DECIMALS), USDC_DECIMALS)
+      : undefined;
   const requestBalanceRef = useRef(requestBalance);
   requestBalanceRef.current = requestBalance;
   const requestOnchainBalanceRef = useRef(requestOnchainBalance);
@@ -459,73 +512,99 @@ export default function RfqhubPrototype() {
             aria-live="polite"
           >
             {requests.length ? (
-              requests.map((request) => (
-                <button
-                  type="button"
-                  key={`${request.id}:${request.matchVersion ?? 0}`}
-                  data-testid="rfqhub-request"
-                  aria-label={`Offer minimum for Taker #${request.id}`}
-                  disabled={isSubmittingOffer}
-                  className="relative w-full overflow-hidden rounded-xl border border-neutral-300 bg-neutral-100 p-3 text-left text-sm text-2black transition hover:border-neutral-500 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60"
-                  style={
-                    request.matchVersion
-                      ? {
-                          animationName: "rfqhubMakerMatchFlash",
-                          animationDuration: "900ms",
-                          animationTimingFunction: "ease-out",
-                        }
-                      : undefined
-                  }
-                  onClick={() => void submitOffer(request)}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <strong>Taker #{request.id}</strong>
-                    <span className="rounded-full bg-2black px-2 py-0.5 text-xs font-medium text-2white">
-                      {request.isUp ? "Up" : "Down"}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
-                    <span>Amount</span>
-                    <span className="font-medium text-2black">
-                      ${displayUsdc(request.amount)}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
-                    <span>Minimum offer (estimated)</span>
-                    <span className="font-medium text-2black">
-                      $
-                      {displayUsdc(
-                        minimumRfqhubOffer(request, nowMs).toString(),
+              requests.map((request) => {
+                const priceStatus = requestPriceStatus(
+                  request,
+                  liveQuote,
+                  nowMs,
+                );
+                const isOwner =
+                  !!ownerAddress &&
+                  normalizeAddress(request.accountAddress) === ownerAddress;
+                const background =
+                  priceStatus === "Winning"
+                    ? "bg-green-50 bg-[radial-gradient(ellipse_at_top,rgba(34,197,94,0.16),transparent)] hover:bg-green-50"
+                    : priceStatus === "Losing"
+                      ? "bg-red-50 bg-[radial-gradient(ellipse_at_top,rgba(239,68,68,0.14),transparent)] hover:bg-red-50"
+                      : "bg-neutral-100 hover:bg-neutral-200";
+                return (
+                  <button
+                    type="button"
+                    key={`${request.id}:${request.matchVersion ?? 0}`}
+                    data-testid="rfqhub-request"
+                    aria-label={`Offer minimum for Taker #${request.id}`}
+                    disabled={isSubmittingOffer}
+                    aria-describedby={`rfqhub-request-status-${request.id}`}
+                    className={`relative w-full overflow-hidden rounded-xl border p-3 text-left text-sm text-2black transition focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60 ${background} ${isOwner ? "border-yellow-400 shadow-[inset_0_0_10px_rgba(234,179,8,0.25)] hover:border-yellow-400" : "border-neutral-300 hover:border-neutral-500"}`}
+                    style={
+                      request.matchVersion
+                        ? {
+                            animationName: "rfqhubMakerMatchFlash",
+                            animationDuration: "900ms",
+                            animationTimingFunction: "ease-out",
+                          }
+                        : undefined
+                    }
+                    onClick={() => void submitOffer(request)}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <strong>Taker #{request.id}</strong>
+                      <span className="rounded-full bg-2black px-2 py-0.5 text-xs font-medium text-2white">
+                        {request.isUp ? "Up" : "Down"}
+                      </span>
+                    </div>
+                    <span
+                      id={`rfqhub-request-status-${request.id}`}
+                      className="mt-2 flex gap-2 text-xs font-medium"
+                    >
+                      {priceStatus && <span>{priceStatus} · live price</span>}
+                      {isOwner && (
+                        <span className="text-yellow-800">Yours</span>
                       )}
                     </span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
-                    <span>Target</span>
-                    <span className="font-medium text-2black">
-                      ${displayUsdc(request.priceTarget)}
-                    </span>
-                  </div>
-                  <p className="mt-2 truncate text-xs text-neutral-500">
-                    {request.outcome}
-                  </p>
-                  <p className="mt-1 text-xs text-neutral-500">
-                    Bidding closes{" "}
-                    <time dateTime={request.deadline}>
-                      {new Date(request.deadline).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </time>
-                  </p>
-                  <p className="mt-3 text-xs font-semibold text-2black">
-                    Offer minimum →
-                  </p>
-                  <RequestDeadlineProgress
-                    key={request.deadline}
-                    deadline={request.deadline}
-                  />
-                </button>
-              ))
+                    <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
+                      <span>Amount</span>
+                      <span className="font-medium text-2black">
+                        ${displayUsdc(request.amount)}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
+                      <span>Minimum offer (estimated)</span>
+                      <span className="font-medium text-2black">
+                        $
+                        {displayUsdc(
+                          minimumRfqhubOffer(request, nowMs).toString(),
+                        )}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
+                      <span>Target</span>
+                      <span className="font-medium text-2black">
+                        ${displayUsdc(request.priceTarget)}
+                      </span>
+                    </div>
+                    <p className="mt-2 truncate text-xs text-neutral-500">
+                      {request.outcome}
+                    </p>
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Bidding closes{" "}
+                      <time dateTime={request.deadline}>
+                        {new Date(request.deadline).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </p>
+                    <p className="mt-3 text-xs font-semibold text-2black">
+                      Offer minimum →
+                    </p>
+                    <RequestDeadlineProgress
+                      key={request.deadline}
+                      deadline={request.deadline}
+                    />
+                  </button>
+                );
+              })
             ) : (
               <p className="rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-500">
                 Waiting for taker advertisements…
