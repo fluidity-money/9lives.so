@@ -70,8 +70,9 @@ it("draws multiple true horizontal segments and expiry markers on shared price/t
     Number(screen.getByTestId("oracle-end").getAttribute("cx")),
   ).toBeLessThan(Number(ends[0].getAttribute("cx")));
   expect(
-    screen.getByRole("list", { name: "Chart request details" }).textContent,
-  ).toMatch(/Request #7 · Above.*Request #8 · Below/);
+    screen.queryByRole("list", { name: "Chart request details" }),
+  ).toBeNull();
+  expect(screen.queryByText(/Observed requests, not confirmed fills/)).toBeNull();
 });
 
 it("keeps the same SVG and live oracle updates past request expiry without extending the target", () => {

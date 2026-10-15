@@ -167,18 +167,6 @@ function RfqhubPriceChart({
             Waiting for live BTC prices
           </p>
         )}
-        <p className="text-xs text-neutral-600">
-          Observed requests, not confirmed fills. Dots mark expiry; dashed lines
-          mark targets.
-        </p>
-        <ul
-          className="max-h-28 overflow-y-auto text-xs text-neutral-600"
-          aria-label="Chart request details"
-        >
-          {positions.map((position) => (
-            <li key={position.id}>{label(position)}</li>
-          ))}
-        </ul>
       </div>
     );
   }
