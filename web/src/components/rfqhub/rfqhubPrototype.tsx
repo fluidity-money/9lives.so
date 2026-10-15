@@ -1,16 +1,16 @@
 "use client";
 
 import Button from "@/components/v2/button";
-import PriceChartWrapper from "@/components/v2/chartWrapper";
+import RfqhubPriceChart from "./rfqhubPriceChart";
+import useAssetPrices from "@/hooks/useAssetPrices";
 import useRfqhub from "@/hooks/useRfqhub";
 import useRfqhubRequests from "@/hooks/useRfqhubRequests";
 import {
   minimumRfqhubOffer,
   type RfqhubIncomingRequest,
 } from "@/lib/rfqhubRequests";
-import type { SimpleCampaignDetail } from "@/types";
 import { formatUnits, parseUnits } from "viem";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const inlineControl =
   "mx-1 inline-flex rounded-xl border border-neutral-300 bg-neutral-100 px-2 py-1 text-[0.8em] leading-none text-2black outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300";
@@ -100,11 +100,11 @@ function RequestDeadlineProgress({ deadline }: { deadline: string }) {
   );
 }
 
-export default function RfqhubPrototype({
-  campaignData,
-}: {
-  campaignData: SimpleCampaignDetail;
-}) {
+export default function RfqhubPrototype() {
+  const { prices, connected: priceConnected } = useAssetPrices("btc");
+  const latestPrice = prices[prices.length - 1]?.price;
+  const livePriceRef = useRef<number | undefined>(undefined);
+  livePriceRef.current = priceConnected ? latestPrice : undefined;
   const {
     accountAddress,
     requestBalance,
@@ -170,14 +170,6 @@ export default function RfqhubPrototype({
 
   const selectedOrder = orders[selectedOrderIndex];
   const displayedCalldata = calldata ?? selectedOrder?.calldata;
-  const priceTarget = useMemo(
-    () =>
-      parseUnits(
-        campaignData.priceMetadata.priceTargetForUp,
-        USDC_DECIMALS,
-      ).toString(),
-    [campaignData.priceMetadata.priceTargetForUp],
-  );
 
   const saveOrders = (nextOrders: RfqhubOrder[]) => {
     setOrders(nextOrders);
@@ -194,6 +186,8 @@ export default function RfqhubPrototype({
     setIsExecuting(true);
     try {
       const requestedAmount = parseUnits(predictionAmount, USDC_DECIMALS);
+      if (livePriceRef.current === undefined)
+        throw new Error("Waiting for a live BTC price");
       if (requestedAmount <= BigInt(0)) {
         throw new Error("Enter a prediction amount greater than zero");
       }
@@ -205,6 +199,12 @@ export default function RfqhubPrototype({
 
       const durationSeconds = Number(duration) * 60;
       const requestedReward = requestedAmount.toString();
+      // Funding may take time: take the latest oracle quote at submission,
+      // not the price captured when Execute was clicked. RFQ uses 6 decimals.
+      const currentPrice = livePriceRef.current;
+      if (currentPrice === undefined)
+        throw new Error("Waiting for a live BTC price");
+      const priceTarget = parseUnits(currentPrice.toFixed(6), 6).toString();
       const result = await createSuggestion({
         minAmount: requestedAmount.toString(),
         maxAmount: requestedAmount.toString(),
@@ -308,11 +308,13 @@ export default function RfqhubPrototype({
               </div>
               <span className="flex items-center gap-2 text-xs font-medium text-neutral-500">
                 <span className="size-2 animate-pulse rounded-full bg-green-500" />
-                Live
+                {priceConnected && latestPrice !== undefined
+                  ? "Live"
+                  : "Waiting for price"}
               </span>
             </div>
             <div className="min-h-[320px] rounded-xl bg-neutral-100 px-2 pt-2">
-              <PriceChartWrapper simple campaignData={campaignData} />
+              <RfqhubPriceChart prices={prices} />
             </div>
           </div>
 
@@ -409,6 +411,8 @@ export default function RfqhubPrototype({
               aria-label="Execute prediction"
               disabled={
                 isExecuting ||
+                !priceConnected ||
+                latestPrice === undefined ||
                 !predictionAmount ||
                 !Number.isFinite(Number(predictionAmount)) ||
                 Number(predictionAmount) <= 0

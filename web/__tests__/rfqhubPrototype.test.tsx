@@ -10,7 +10,12 @@ import NavigationMenu from "@/components/v2/navigationMenu";
 import useFeatureFlag from "../src/hooks/useFeatureFlag";
 import useRfqhub from "../src/hooks/useRfqhub";
 import useRfqhubRequests from "../src/hooks/useRfqhubRequests";
-import type { SimpleCampaignDetail } from "@/types";
+import useAssetPrices from "../src/hooks/useAssetPrices";
+
+jest.mock("../src/hooks/useAssetPrices", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
 jest.mock("../src/hooks/useFeatureFlag", () => ({
   __esModule: true,
@@ -27,7 +32,7 @@ jest.mock("../src/hooks/useRfqhubRequests", () => ({
   default: jest.fn(() => ({ requests: [], connectionStatus: "connecting" })),
 }));
 
-jest.mock("../src/components/v2/chartWrapper", () => ({
+jest.mock("../src/components/rfqhub/rfqhubPriceChart", () => ({
   __esModule: true,
   default: () => <div data-testid="live-btc-chart" />,
 }));
@@ -36,10 +41,6 @@ jest.mock("../src/components/pointsMenuButton", () => ({
   __esModule: true,
   default: () => null,
 }));
-
-const campaignData = {
-  priceMetadata: { baseAsset: "btc", priceTargetForUp: "65000" },
-} as unknown as SimpleCampaignDetail;
 
 const mockedUseFeatureFlag = jest.mocked(useFeatureFlag);
 const mockedUseRfqhub = jest.mocked(useRfqhub);
@@ -53,6 +54,10 @@ const submitBundleMaker = jest.fn();
 
 beforeEach(() => {
   window.localStorage.clear();
+  jest.mocked(useAssetPrices).mockReturnValue({
+    prices: [{ id: 1, timestamp: Date.now(), price: 65000 }],
+    connected: true,
+  });
   requestBalance.mockReset().mockResolvedValue("50000000");
   requestOnchainBalance.mockReset().mockResolvedValue("50000000");
   createSuggestion.mockReset().mockResolvedValue({
@@ -79,6 +84,85 @@ beforeEach(() => {
 });
 
 describe("RfqhubPrototype", () => {
+  it("waits for an oracle quote and disables predictions while disconnected", async () => {
+    jest
+      .mocked(useAssetPrices)
+      .mockReturnValue({ prices: [], connected: true });
+    const { rerender } = render(<RfqhubPrototype />);
+    await waitFor(() =>
+      expect(
+        (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
+      ).toBe("100"),
+    );
+    const execute = () =>
+      screen.getByRole("button", {
+        name: "Execute prediction",
+      }) as HTMLButtonElement;
+    expect(execute().disabled).toBe(true);
+    jest.mocked(useAssetPrices).mockReturnValue({
+      prices: [{ id: 1, timestamp: Date.now(), price: 65123.123456 }],
+      connected: false,
+    });
+    rerender(<RfqhubPrototype />);
+    expect(execute().disabled).toBe(true);
+    fireEvent.click(execute());
+    expect(createSuggestion).not.toHaveBeenCalled();
+  });
+
+  it("submits the latest full-precision oracle price after funding, in six-decimal backend units", async () => {
+    let finishFunding!: () => void;
+    addFunds.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finishFunding = resolve;
+        }),
+    );
+    const { rerender } = render(<RfqhubPrototype />);
+    await waitFor(() =>
+      expect(
+        (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
+      ).toBe("100"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
+    await waitFor(() => expect(addFunds).toHaveBeenCalled());
+    jest.mocked(useAssetPrices).mockReturnValue({
+      prices: [{ id: 2, timestamp: Date.now(), price: 65123.123456 }],
+      connected: true,
+    });
+    rerender(<RfqhubPrototype />);
+    await act(async () => finishFunding());
+    expect(createSuggestion).toHaveBeenCalledWith(
+      expect.objectContaining({ priceTarget: "65123123456" }),
+    );
+  });
+
+  it("does not submit if the price feed disconnects during funding", async () => {
+    let finishFunding!: () => void;
+    addFunds.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finishFunding = resolve;
+        }),
+    );
+    const { rerender } = render(<RfqhubPrototype />);
+    await waitFor(() =>
+      expect(
+        (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
+      ).toBe("100"),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
+    await waitFor(() => expect(addFunds).toHaveBeenCalled());
+    jest
+      .mocked(useAssetPrices)
+      .mockReturnValue({ prices: [], connected: false });
+    rerender(<RfqhubPrototype />);
+    await act(async () => finishFunding());
+    expect(createSuggestion).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert").textContent).toBe(
+      "Waiting for a live BTC price",
+    );
+  });
+
   it("refreshes the estimated offer every second and submits the current floor plus one unit", async () => {
     jest.useFakeTimers().setSystemTime(new Date("2026-10-14T12:00:00Z"));
     try {
@@ -102,9 +186,7 @@ describe("RfqhubPrototype", () => {
           },
         ],
       });
-      const { unmount } = render(
-        <RfqhubPrototype campaignData={campaignData} />,
-      );
+      const { unmount } = render(<RfqhubPrototype />);
       await act(async () => {});
       expect(screen.getByTestId("rfqhub-request").textContent).toContain(
         "$8.000001",
@@ -130,7 +212,7 @@ describe("RfqhubPrototype", () => {
   });
   it("prefills the stake from the combined RFQHub and wallet balances", async () => {
     requestBalance.mockResolvedValue("10000000");
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     expect(mockedUseRfqhub.mock.calls.length).toBeGreaterThan(0);
     expect(screen.getByTestId("live-btc-chart")).not.toBeNull();
@@ -167,7 +249,7 @@ describe("RfqhubPrototype", () => {
   });
 
   it("executes a suggestion with the combined balance and exposes claim calldata", async () => {
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     await waitFor(() =>
       expect(
@@ -207,7 +289,7 @@ describe("RfqhubPrototype", () => {
   });
 
   it("onramps only a prediction amount shortfall before sending the request", async () => {
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     fireEvent.change(predictionAmount, { target: { value: "75" } });
@@ -230,7 +312,7 @@ describe("RfqhubPrototype", () => {
   });
 
   it("uses an entered amount below the RFQHub balance without onramping", async () => {
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     fireEvent.change(predictionAmount, { target: { value: "25" } });
@@ -248,7 +330,7 @@ describe("RfqhubPrototype", () => {
 
   it("onramps the full prediction amount when the graph balance is zero", async () => {
     requestBalance.mockResolvedValue("0");
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     fireEvent.change(predictionAmount, { target: { value: "10" } });
@@ -303,7 +385,7 @@ describe("RfqhubPrototype", () => {
       ],
     });
 
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
     await waitFor(() =>
       expect(
         (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
@@ -346,7 +428,7 @@ describe("RfqhubPrototype", () => {
       connectionStatus: "connected",
     });
 
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
     await screen.findAllByDisplayValue("100");
 
     const line = screen.getByTestId("rfqhub-deadline-progress");
@@ -379,7 +461,7 @@ describe("RfqhubPrototype", () => {
       ],
     });
 
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     const card = await screen.findByTestId("rfqhub-request");
     expect(card.textContent).toContain("$6");
@@ -407,7 +489,7 @@ describe("RfqhubPrototype", () => {
         },
       ],
     });
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     fireEvent.click(
       screen.getByRole("button", { name: "Offer minimum for Taker #12" }),
@@ -428,7 +510,7 @@ describe("RfqhubPrototype", () => {
   });
 
   it("displays an exact doubled total for fractional stakes", async () => {
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
 
     const stake = await screen.findByLabelText("Prediction amount");
     fireEvent.change(stake, { target: { value: "10.01" } });
@@ -439,7 +521,7 @@ describe("RfqhubPrototype", () => {
   });
 
   it("lets the direction and duration controls update the proposed prediction", async () => {
-    render(<RfqhubPrototype campaignData={campaignData} />);
+    render(<RfqhubPrototype />);
     await waitFor(() =>
       expect(
         (screen.getByLabelText("Prediction amount") as HTMLInputElement).value,
