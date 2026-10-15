@@ -55,6 +55,7 @@ const requestBalance = jest.fn();
 const requestOnchainBalance = jest.fn();
 const createSuggestion = jest.fn();
 const concludedCalldata = jest.fn();
+const conclude = jest.fn();
 const addFunds = jest.fn();
 const submitBundleMaker = jest.fn();
 
@@ -76,6 +77,7 @@ beforeEach(() => {
     leftoverBal: "0",
   });
   concludedCalldata.mockReset().mockResolvedValue("0x1234");
+  conclude.mockReset();
   addFunds.mockReset().mockResolvedValue("0xfunding");
   submitBundleMaker.mockReset().mockResolvedValue({ id: 9, bundleMakerId: 3 });
   mockedUseRfqhub.mockReturnValue({
@@ -84,6 +86,7 @@ beforeEach(() => {
     requestOnchainBalance,
     createSuggestion,
     concludedCalldata,
+    conclude,
     addFunds,
     submitBundleMaker,
   } as unknown as ReturnType<typeof useRfqhub>);
@@ -385,7 +388,194 @@ describe("RfqhubPrototype", () => {
     ).toBe(false);
   });
 
-  it("executes a suggestion with the combined balance and exposes claim calldata", async () => {
+  it("loads a fresh RFQHub-only balance and selects exact micro-USDC without mutations", async () => {
+    render(<RfqhubPrototype />);
+    await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+    requestBalance.mockResolvedValue("1234567");
+    fireEvent.click(screen.getByRole("button", { name: "Withdraw earnings" }));
+    const dialog = await screen.findByRole("dialog", {
+      name: "Withdraw earnings",
+    });
+    await screen.findByText("Available RFQHub balance: 1.234567 USDC");
+    expect(requestBalance).toHaveBeenCalledTimes(2);
+    expect(requestOnchainBalance).toHaveBeenCalledTimes(1);
+    const slider = screen.getByRole("slider", {
+      name: "Withdrawal amount",
+    }) as HTMLInputElement;
+    expect(slider.min).toBe("0");
+    expect(slider.max).toBe("1234567");
+    expect(slider.step).toBe("1");
+    fireEvent.change(slider, { target: { value: "1" } });
+    expect(screen.getByText("Selected: 0.000001 USDC")).not.toBeNull();
+    fireEvent.change(slider, { target: { value: slider.max } });
+    expect(screen.getByText("Selected: 1.234567 USDC")).not.toBeNull();
+    fireEvent.change(slider, { target: { value: "0" } });
+    expect(screen.getByText("Selected: 0 USDC")).not.toBeNull();
+    const submit = Array.from(dialog.querySelectorAll("button")).find(
+      (button) => button.textContent === "Withdraw earnings",
+    )!;
+    expect(submit.disabled).toBe(true);
+    fireEvent.click(submit);
+    expect(screen.getByText(/Withdrawals are coming soon/)).not.toBeNull();
+    expect(screen.queryByText("Claim rewards")).toBeNull();
+    expect(screen.queryByText("Request calldata")).toBeNull();
+    expect(concludedCalldata).not.toHaveBeenCalled();
+    expect(addFunds).not.toHaveBeenCalled();
+    expect(conclude).not.toHaveBeenCalled();
+    expect(createSuggestion).not.toHaveBeenCalled();
+    expect(submitBundleMaker).not.toHaveBeenCalled();
+  });
+
+  it("handles loading, errors, retry and zero balance", async () => {
+    render(<RfqhubPrototype />);
+    await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+    let reject!: (cause: Error) => void;
+    requestBalance.mockImplementationOnce(
+      () =>
+        new Promise((_, fail) => {
+          reject = fail;
+        }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Withdraw earnings" }));
+    expect(screen.getByText("Loading RFQHub balance…")).not.toBeNull();
+    expect(screen.queryByRole("slider")).toBeNull();
+    await act(async () => reject(new Error("Offline")));
+    expect(screen.getByRole("alert").textContent).toContain("Offline");
+    requestBalance.mockResolvedValue("0");
+    fireEvent.click(screen.getByRole("button", { name: "Retry balance" }));
+    await screen.findByText("No RFQHub balance is available to withdraw.");
+    expect((screen.getByRole("slider") as HTMLInputElement).disabled).toBe(
+      true,
+    );
+    expect(screen.getByText("Selected: 0 USDC")).not.toBeNull();
+  });
+
+  it("preserves bigint precision including the full maximum above safe integer range", async () => {
+    render(<RfqhubPrototype />);
+    await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+    requestBalance.mockResolvedValue("10000000000000001");
+    fireEvent.click(screen.getByRole("button", { name: "Withdraw earnings" }));
+    const slider = (await screen.findByRole("slider")) as HTMLInputElement;
+    expect(slider.max).toBe("10000");
+    fireEvent.change(slider, { target: { value: "5000" } });
+    expect(screen.getByText("Selected: 5000000000 USDC")).not.toBeNull();
+    fireEvent.change(slider, { target: { value: "10000" } });
+    expect(
+      screen.getByText("Selected: 10000000000.000001 USDC"),
+    ).not.toBeNull();
+  });
+
+  it.each([undefined, "0x5678"])(
+    "clears the modal on wallet change to %s and ignores stale results",
+    async (accountAddress) => {
+      const { rerender } = render(<RfqhubPrototype />);
+      await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+      let resolve!: (value: string) => void;
+      requestBalance.mockImplementationOnce(
+        () =>
+          new Promise((done) => {
+            resolve = done;
+          }),
+      );
+      fireEvent.click(
+        screen.getByRole("button", { name: "Withdraw earnings" }),
+      );
+      expect(screen.getByText("Loading RFQHub balance…")).not.toBeNull();
+      mockedUseRfqhub.mockReturnValue({ ...mockedUseRfqhub(), accountAddress });
+      rerender(<RfqhubPrototype />);
+      await act(async () => resolve("999000000"));
+      expect(screen.queryByRole("dialog")).toBeNull();
+      requestBalance.mockResolvedValue("1000000");
+      fireEvent.click(
+        screen.getByRole("button", { name: "Withdraw earnings" }),
+      );
+      if (accountAddress) {
+        await screen.findByText("Available RFQHub balance: 1 USDC");
+        expect(screen.getByText("Selected: 0 USDC")).not.toBeNull();
+      } else {
+        expect(
+          screen.getByText("Connect your wallet to view your RFQHub balance."),
+        ).not.toBeNull();
+        expect(screen.queryByRole("slider")).toBeNull();
+      }
+      expect(screen.queryByText(/999 USDC/)).toBeNull();
+    },
+  );
+
+  it("closes with Escape or the close button, restores focus and refreshes on reopen", async () => {
+    render(<RfqhubPrototype />);
+    await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+    const trigger = screen.getByRole("button", { name: "Withdraw earnings" });
+    act(() => trigger.focus());
+    fireEvent.click(trigger);
+    await screen.findByRole("slider");
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByRole("button", { name: "Close withdraw earnings" }),
+      ),
+    );
+    fireEvent.keyDown(document.activeElement!, {
+      key: "Escape",
+      code: "Escape",
+    });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+    requestBalance.mockResolvedValue("2000000");
+    fireEvent.click(trigger);
+    await screen.findByText("Available RFQHub balance: 2 USDC");
+    expect(requestBalance).toHaveBeenCalledTimes(3);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Close withdraw earnings" }),
+    );
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("closes on backdrop interaction and ignores a closed session's pending balance", async () => {
+    render(<RfqhubPrototype />);
+    await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+    let resolve!: (value: string) => void;
+    requestBalance.mockImplementationOnce(
+      () =>
+        new Promise((done) => {
+          resolve = done;
+        }),
+    );
+    const trigger = screen.getByRole("button", { name: "Withdraw earnings" });
+    fireEvent.click(trigger);
+    const dialog = await screen.findByRole("dialog");
+    // Existing Modal's full-screen backdrop surrounds (not inside) its panel.
+    const backdrop = dialog.querySelector(".fixed")!;
+    await act(async () => {
+      await new Promise((done) => requestAnimationFrame(done));
+    });
+    fireEvent.pointerDown(backdrop);
+    fireEvent.pointerUp(backdrop);
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    requestBalance.mockResolvedValue("3000000");
+    fireEvent.click(trigger);
+    await screen.findByText("Available RFQHub balance: 3 USDC");
+    await act(async () => resolve("999000000"));
+    expect(screen.getByText("Available RFQHub balance: 3 USDC")).not.toBeNull();
+    expect(screen.queryByText(/999 USDC/)).toBeNull();
+  });
+
+  it.each(["-1", "not-a-balance", "1.5"])(
+    "rejects invalid balance %s",
+    async (balance) => {
+      render(<RfqhubPrototype />);
+      await waitFor(() => expect(requestBalance).toHaveBeenCalledTimes(1));
+      requestBalance.mockResolvedValue(balance);
+      fireEvent.click(
+        screen.getByRole("button", { name: "Withdraw earnings" }),
+      );
+      expect((await screen.findByRole("alert")).textContent).toContain(
+        "Invalid RFQHub balance",
+      );
+      expect(screen.queryByRole("slider")).toBeNull();
+    },
+  );
+
+  it("executes a suggestion with the combined balance and persists the order", async () => {
     render(<RfqhubPrototype />);
 
     await waitFor(() =>
@@ -408,21 +598,11 @@ describe("RfqhubPrototype", () => {
     expect(addFunds).toHaveBeenCalledWith("50000000");
 
     expect(screen.getByText("Prediction #7 is open")).not.toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Claim rewards" }));
-
     expect(
-      screen.getByRole("dialog", { name: "Claim rewards" }),
-    ).not.toBeNull();
-    expect(screen.getByLabelText("Reward to collect")).not.toBeNull();
-
-    fireEvent.click(screen.getByRole("button", { name: "Request calldata" }));
-
-    await waitFor(() => {
-      expect(concludedCalldata).toHaveBeenCalledWith(7, true);
-    });
-    expect(
-      (screen.getByLabelText("Claim calldata") as HTMLTextAreaElement).value,
-    ).toBe("0x1234");
+      JSON.parse(window.localStorage.getItem("rfqhub-taker-orders:0x1234")!)[0]
+        .bundleId,
+    ).toBe(7);
+    expect(concludedCalldata).not.toHaveBeenCalled();
   });
 
   it("onramps only a prediction amount shortfall before sending the request", async () => {
