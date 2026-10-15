@@ -43,10 +43,9 @@ export type RfqhubPermit = {
 
 /**
  * Create an account (fresh on the accounts factory) and seed a spendable
- * balance object by onramping `amt` from `bal`. Returns nothing on success;
- * throws on failure. NOTE: this returns a `Boolean` (not the secret) — the
- * secret for the Rfqhub graph is the shared Superposition account secret, so
- * prefer `checkAndSetSecret` (in `useAccount`) for obtaining it.
+ * balance object by onramping `amt` from `bal`. Returns a Boolean, not a
+ * secret or transaction hash. After success, recover/cache the shared secret
+ * with `getSecret` (in `useAccount`), without triggering generic creation.
  */
 export const rfqhubCreateAccountExec = ({
   eoaAddr,

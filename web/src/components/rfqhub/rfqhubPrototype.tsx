@@ -376,9 +376,9 @@ export default function RfqhubPrototype() {
                 <option value="down">below</option>
               </select>
               <span>
-                the{" "}
+                {" "}
                 {latestPrice === undefined
-                  ? "current price (waiting for price)"
+                  ? "the current price (waiting for price)"
                   : `$${latestPrice.toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

@@ -34,8 +34,8 @@ import {
  * `useAccount`: the secret stored under the shared account key authorises
  * rfqhub graph calls via the `Authorization: <eoa>:<secret>` header.
  *
- * Every authenticated operation first ensures the account exists and the
- * secret is retrievable (via `checkAndSetSecret`), then hands that secret to
+ * Every authenticated operation requires an existing account and retrieves
+ * its secret without generic creation, then hands that secret to
  * the graph call. The underlying request functions live in
  * `providers/rfqhubGraphqlClient`.
  */
@@ -51,7 +51,13 @@ export default function useRfqhub() {
     secret: string;
   }> => {
     if (!account.address) throw new Error("No wallet is connected");
-    const secret = await checkAndSetSecret(account.address, signMessage);
+    // Never let RFQ authentication implicitly create a generic account.
+    if (!(await isCreated(account.address))) {
+      throw new Error(
+        "Create your Superposition account by adding RFQ Hub funds before opening a prediction",
+      );
+    }
+    const secret = await checkAndSetSecret(account.address, signMessage, false);
     if (!secret) throw new Error("No secret is set");
     return { eoaAddress: account.address, secret };
   };
@@ -73,10 +79,7 @@ export default function useRfqhub() {
 
   // ---- Account lifecycle (shared secret system, mirrors `useAccount`) ----
   const ensureSecret = async (): Promise<string> => {
-    if (!account.address) throw new Error("No wallet is connected");
-    const secret = await checkAndSetSecret(account.address, signMessage);
-    if (!secret) throw new Error("No secret is set");
-    return secret;
+    return (await requireAccount()).secret;
   };
 
   const createRfqhubAccount = async ({
@@ -98,7 +101,7 @@ export default function useRfqhub() {
     const message = `New Superposition account: ${publicKey}, authority contract: ${authAddr}`;
     const signature = await signMessage({ message });
     const { r, s, v } = parseSignature(signature);
-    return rfqhubCreateAccountExec({
+    const created = await rfqhubCreateAccountExec({
       eoaAddr: account.address.slice(2),
       r: r.slice(2),
       s: s.slice(2),
@@ -108,6 +111,11 @@ export default function useRfqhub() {
       permit,
       isDryrun,
     });
+    if (!created) throw new Error("RFQ Hub account creation failed");
+    // The API returns only a Boolean, with no secret or receipt hash. Recover
+    // the shared secret explicitly (and cache it), never via generic creation.
+    if (!isDryrun) await getSecret(account.address, signMessage);
+    return created;
   };
 
   // ---- Rfqhub graph operations (current schema functions) ----
@@ -169,7 +177,10 @@ export default function useRfqhub() {
       };
     }
 
-    return onramp({ amt, permit });
+    const accountExists = await isCreated(account.address);
+    return accountExists
+      ? onramp({ amt, permit })
+      : createRfqhubAccount({ amt, permit });
   };
 
   const createAuction = async ({

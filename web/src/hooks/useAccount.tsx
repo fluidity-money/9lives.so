@@ -92,6 +92,7 @@ export const getSecret = async (address: string, signMessage: SignMessage) => {
 export const checkAndSetSecret = async (
   address: string,
   signMessage: SignMessage,
+  allowCreate = true,
 ) => {
   const secretObj = window.localStorage.getItem(
     `${SECRET_KEY}-${address.toLowerCase()}`,
@@ -102,6 +103,7 @@ export const checkAndSetSecret = async (
     if (isAccountCreated) {
       secret = await getSecret(address, signMessage);
     } else {
+      if (!allowCreate) throw new Error("Superposition account does not exist");
       secret = await create(address, signMessage);
     }
   } else {
