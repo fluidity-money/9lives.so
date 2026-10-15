@@ -1,11 +1,28 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import RfqhubPriceChart from "@/components/rfqhub/rfqhubPriceChart";
-import { rfqhubChartGeometry } from "@/lib/rfqhubChart";
-import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
+import {
+  rfqhubClampWindow,
+  rfqhubHistorySecs,
+  rfqhubSortedPrices,
+} from "@/lib/rfqhubChart";
 
 jest.mock("../src/config", () => ({
   __esModule: true,
   default: { simpleMarkets: { btc: { decimals: 2 } } },
+}));
+jest.mock("liveline", () => ({
+  Liveline: (props: {
+    data: unknown[];
+    window: number;
+    referenceLine?: { value: number; label: string };
+  }) => (
+    <output
+      data-testid="liveline"
+      data-count={props.data.length}
+      data-window={props.window}
+      data-reference={JSON.stringify(props.referenceLine ?? null)}
+    />
+  ),
 }));
 const now = Date.parse("2026-10-15T12:15:00Z");
 const prices = [
@@ -15,116 +32,75 @@ const prices = [
   { id: 4, timestamp: now - 30_000, price: 65000 },
   { id: 5, timestamp: now, price: 65001 },
 ];
-const request: RfqhubIncomingRequest = {
-  id: "7",
-  accountAddress: "0x123",
-  asset: "0xabcd",
-  amount: "1000000",
-  minOffer: null,
-  createdBy: new Date(now - 120_000).toISOString(),
-  decayRate: 0,
-  isUp: true,
-  priceTarget: "65000500000",
-  outcome: "BitcoinPrice",
-  deadline: new Date(now - 60_000).toISOString(),
-  expiry: new Date(now + 300_000).toISOString(),
-  structure: { args: {}, sig: [] },
-};
-const path = () => screen.getByTestId("oracle-path").getAttribute("d");
-const count = () => path()?.match(/[ML]/g)?.length;
+const chart = () => screen.getByTestId("liveline");
+const windowSecs = () => Number(chart().getAttribute("data-window"));
+const pressed = () =>
+  screen
+    .getAllByRole("button")
+    .filter((b) => b.getAttribute("aria-pressed") === "true")
+    .map((b) => b.textContent);
 const select = (name: string) =>
   fireEvent.click(screen.getByRole("button", { name }));
+const wheel = (deltaY: number) =>
+  fireEvent.wheel(screen.getByRole("img", { name: /Live BTC price/ }), {
+    deltaY,
+  });
 
-it("defaults to a trailing minute with small padding and visible-only price scaling", () => {
-  const position = {
-    id: "1",
-    start: now - 9_000_000,
-    end: now + 9_000_000,
-    target: 1000000,
-    isUp: true,
-  };
-  const g = rfqhubChartGeometry(prices, [position]);
-  expect(g.start).toBe(now - 60_000);
-  expect(g.end).toBe(now + 2400);
-  expect(g.min).toBeGreaterThan(64999);
-  expect(g.max).toBeLessThan(65002);
-  expect(g.data).toEqual(prices.slice(-2));
-  expect(g.latest).toEqual(prices.at(-1));
-  const plain = rfqhubChartGeometry(prices, []);
-  expect([g.start, g.end, g.min, g.max]).toEqual([
-    plain.start,
-    plain.end,
-    plain.min,
-    plain.max,
+it("sorts and drops bad samples, and sizes All to the history held", () => {
+  const sorted = rfqhubSortedPrices([
+    prices[1],
+    { id: 9, timestamp: now, price: NaN },
+    { id: 10, timestamp: NaN, price: 1 },
+    { id: 11, timestamp: now, price: 0 },
+    prices[0],
   ]);
-  expect(rfqhubChartGeometry(prices, [], "5m").data).toHaveLength(3);
-  expect(rfqhubChartGeometry(prices, [], "15m").data).toHaveLength(4);
-  expect(rfqhubChartGeometry(prices, [position], "All").data).toHaveLength(5);
-  expect(rfqhubChartGeometry(prices, [position], "All").max).toBeLessThan(
-    66000,
-  );
+  expect(sorted).toEqual([prices[0], prices[1]]);
+  expect(rfqhubHistorySecs(prices)).toBe(1200);
+  expect(rfqhubHistorySecs(prices.slice(-2))).toBe(900);
+  expect(rfqhubHistorySecs([])).toBe(900);
+  expect(rfqhubClampWindow(1, prices)).toBe(10);
+  expect(rfqhubClampWindow(99_999, prices)).toBe(1200);
+  expect(rfqhubClampWindow(120, prices)).toBe(120);
 });
 
-it("clips both segment boundaries without inventing an expiry dot or future oracle point", () => {
-  const { rerender } = render(
-    <RfqhubPriceChart prices={prices} requests={[request]} />,
-  );
-  const line = screen.getByTestId("position-segment");
-  expect(line.getAttribute("x1")).toBe("90");
-  expect(line.getAttribute("x2")).toBe("750");
-  expect(screen.queryByTestId("position-end")).toBeNull();
-  expect(count()).toBe(2);
-  expect(
-    Number(screen.getByTestId("oracle-end").getAttribute("cx")),
-  ).toBeLessThan(750);
-  rerender(
-    <RfqhubPriceChart
-      prices={prices}
-      requests={[{ ...request, expiry: new Date(now - 10_000).toISOString() }]}
-    />,
-  );
-  expect(screen.getByTestId("position-end").getAttribute("cx")).toBe(
-    screen.getByTestId("position-segment").getAttribute("x2"),
-  );
-  rerender(
-    <RfqhubPriceChart
-      prices={prices}
-      requests={[{ ...request, priceTarget: "99000000000" }]}
-    />,
-  );
-  expect(screen.queryByTestId("position-segment")).toBeNull();
-});
-
-it("zooms out/rezooms and preserves selection and live following through ticks and request changes", () => {
+it("switches presets and keeps the selection and chart through new ticks", () => {
   const { rerender } = render(<RfqhubPriceChart prices={prices} />);
-  const svg = screen.getByRole("img", { name: /Live BTC price/ });
-  const initial = path();
-  expect(count()).toBe(2);
+  const element = chart();
+  expect(windowSecs()).toBe(60);
+  expect(pressed()).toEqual(["1m"]);
   select("5m");
-  expect(count()).toBe(3);
+  expect(windowSecs()).toBe(300);
   select("15m");
-  expect(count()).toBe(4);
+  expect(windowSecs()).toBe(900);
   select("All");
-  expect(count()).toBe(5);
-  select("1m");
-  expect(path()).toBe(initial);
+  expect(windowSecs()).toBe(1200);
   select("5m");
   const next = [...prices, { id: 6, timestamp: now + 10_000, price: 65002 }];
-  rerender(<RfqhubPriceChart prices={next} requests={[request]} />);
-  expect(
-    screen.getByRole("button", { name: "5m" }).getAttribute("aria-pressed"),
-  ).toBe("true");
-  expect(screen.getByRole("img", { name: /Live BTC price/ })).toBe(svg);
-  const geometry = rfqhubChartGeometry(next, [], "5m");
-  expect(Number(screen.getByTestId("oracle-end").getAttribute("cx"))).toBe(
-    geometry.x(now + 10_000),
-  );
-  const annotatedPath = path();
-  rerender(<RfqhubPriceChart prices={next} requests={[]} />);
-  expect(path()).toBe(annotatedPath);
-  expect(
-    screen.getByRole("button", { name: "5m" }).getAttribute("aria-pressed"),
-  ).toBe("true");
-  select("1m");
-  expect(count()).toBe(3);
+  rerender(<RfqhubPriceChart prices={next} />);
+  expect(pressed()).toEqual(["5m"]);
+  expect(chart()).toBe(element);
+  expect(chart().getAttribute("data-count")).toBe("6");
+});
+
+it("zooms with the wheel, clamps both ends, and resets on double click", () => {
+  render(<RfqhubPriceChart prices={prices} />);
+  wheel(100);
+  expect(windowSecs()).toBeCloseTo(60 * Math.exp(0.2));
+  expect(pressed()).toEqual([]);
+  wheel(-200);
+  expect(windowSecs()).toBeCloseTo(60 * Math.exp(-0.2));
+  for (let i = 0; i < 20; i++) wheel(-500);
+  expect(windowSecs()).toBe(10);
+  for (let i = 0; i < 20; i++) wheel(500);
+  expect(windowSecs()).toBe(1200);
+  fireEvent.doubleClick(screen.getByRole("img", { name: /Live BTC price/ }));
+  expect(windowSecs()).toBe(60);
+  expect(pressed()).toEqual(["1m"]);
+});
+
+it("stops the page scrolling while zooming over the chart", () => {
+  render(<RfqhubPriceChart prices={prices} />);
+  const event = new WheelEvent("wheel", { deltaY: 100, cancelable: true });
+  screen.getByRole("img", { name: /Live BTC price/ }).dispatchEvent(event);
+  expect(event.defaultPrevented).toBe(true);
 });

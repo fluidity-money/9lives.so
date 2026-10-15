@@ -21,6 +21,21 @@ jest.mock("../src/providers/graphqlClient", () => ({
   },
 }));
 
+jest.mock("liveline", () => ({
+  Liveline: (props: {
+    data: unknown[];
+    window: number;
+    referenceLine?: { value: number; label: string };
+  }) => (
+    <output
+      data-testid="liveline"
+      data-count={props.data.length}
+      data-window={props.window}
+      data-reference={JSON.stringify(props.referenceLine ?? null)}
+    />
+  ),
+}));
+
 class Socket {
   static instances: Socket[] = [];
   onopen?: () => void;
@@ -117,7 +132,7 @@ it("renders the route without fetching an available DPPM market", async () => {
 
 it("keeps the same chart and socket across DPPM expiry and rollover", () => {
   const { socket, flush, chart } = setup();
-  const svg = screen.getByRole("img", { name: /Live BTC price/ });
+  const element = screen.getByTestId("liveline");
   const subscription = {
     table,
     fields: [{ name: "base", filter_constraints: { et: "BTC" } }],
@@ -149,13 +164,15 @@ it("keeps the same chart and socket across DPPM expiry and rollover", () => {
   flush();
   expect(chart().data).toHaveLength(2);
   expect(chart().value).toBe(65001.123456);
+  expect(screen.getByTestId("liveline").getAttribute("data-count")).toBe("2");
   expect(
-    screen.getByTestId("oracle-path").getAttribute("d")?.match(/[ML]/g),
-  ).toHaveLength(2);
-  expect(screen.getByTestId("oracle-end").textContent).toContain("$65001.12");
+    screen
+      .getByRole("img", { name: /Live BTC price/ })
+      .getAttribute("aria-label"),
+  ).toContain("$65,001.12");
   expect(Socket.instances).toHaveLength(1);
   expect(socket.close).not.toHaveBeenCalled();
-  expect(screen.getByRole("img", { name: /Live BTC price/ })).toBe(svg);
+  expect(screen.getByTestId("liveline")).toBe(element);
 });
 
 it("merges reconnect snapshots without losing newer ticks; ignores malformed and other-asset data", () => {

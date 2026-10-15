@@ -1,11 +1,25 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import RfqhubPriceChart from "@/components/rfqhub/rfqhubPriceChart";
-import { rfqhubChartGeometry, rfqhubChartPositions } from "@/lib/rfqhubChart";
+import { rfqhubChartPositions, rfqhubFocusPosition } from "@/lib/rfqhubChart";
 import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
 
 jest.mock("../src/config", () => ({
   __esModule: true,
   default: { simpleMarkets: { btc: { decimals: 2 } } },
+}));
+jest.mock("liveline", () => ({
+  Liveline: (props: {
+    data: unknown[];
+    window: number;
+    referenceLine?: { value: number; label: string };
+  }) => (
+    <output
+      data-testid="liveline"
+      data-count={props.data.length}
+      data-window={props.window}
+      data-reference={JSON.stringify(props.referenceLine ?? null)}
+    />
+  ),
 }));
 const request: RfqhubIncomingRequest = {
   id: "7",
@@ -39,7 +53,10 @@ it("converts six-decimal targets and uses expiry, never the bidding deadline", (
   ]);
 });
 
-it("draws multiple true horizontal segments and expiry markers on shared price/time scales", () => {
+const reference = () =>
+  JSON.parse(screen.getByTestId("liveline").getAttribute("data-reference")!);
+
+it("marks the open request that expires soonest as the target line", () => {
   const requests = [
     request,
     {
@@ -47,51 +64,35 @@ it("draws multiple true horizontal segments and expiry markers on shared price/t
       id: "8",
       isUp: false,
       priceTarget: "65000800000",
-      expiry: "2026-10-15T12:10:00Z",
+      expiry: "2026-10-15T12:03:00Z",
     },
+    { ...request, id: "9", createdBy: "2026-10-15T12:02:00Z" },
   ];
   const positions = rfqhubChartPositions(requests);
-  const geometry = rfqhubChartGeometry(prices, positions, "All");
+  const at = Date.parse(request.deadline);
+  expect(rfqhubFocusPosition(positions, at)?.id).toBe("8");
+  expect(
+    rfqhubFocusPosition(positions, Date.parse("2026-10-15T12:04:00Z"))?.id,
+  ).toBe("7");
+  expect(
+    rfqhubFocusPosition(positions, Date.parse(request.expiry)),
+  ).toBeUndefined();
   render(<RfqhubPriceChart prices={prices} requests={requests} />);
-  fireEvent.click(screen.getByRole("button", { name: "All" }));
-  const lines = screen.getAllByTestId("position-segment");
-  const ends = screen.getAllByTestId("position-end");
-  expect(lines).toHaveLength(2);
-  positions.forEach((p, i) => {
-    expect(Number(lines[i].getAttribute("x1"))).toBe(geometry.x(p.start));
-    expect(Number(lines[i].getAttribute("x2"))).toBe(geometry.x(p.end));
-    expect(lines[i].getAttribute("y1")).toBe(lines[i].getAttribute("y2"));
-    expect(Number(lines[i].getAttribute("y1"))).toBe(geometry.y(p.target));
-    expect(ends[i].getAttribute("cx")).toBe(lines[i].getAttribute("x2"));
-  });
-  expect(
-    Number(screen.getByTestId("oracle-end").getAttribute("cx")),
-  ).toBeLessThan(Number(ends[0].getAttribute("cx")));
-  expect(
-    screen.queryByRole("list", { name: "Chart request details" }),
-  ).toBeNull();
-  expect(
-    screen.queryByText(/Observed requests, not confirmed fills/),
-  ).toBeNull();
+  expect(reference().value).toBe(65000.8);
+  expect(reference().label).toMatch(/^#8 ↓ \$65,000\.80 until /);
 });
 
-it("keeps the same SVG and live oracle updates past request expiry without extending the target", () => {
+it("drops the target line once the live price passes the request expiry", () => {
   const { rerender } = render(
     <RfqhubPriceChart prices={prices} requests={[request]} />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "All" }));
-  const svg = screen.getByRole("img", { name: /Live BTC price/ });
-  const path = screen.getByTestId("oracle-path").getAttribute("d");
+  expect(reference().value).toBe(65000.123456);
   const next = [
     ...prices,
     { id: 3, timestamp: Date.parse("2026-10-15T12:06:00Z"), price: 65002 },
   ];
   rerender(<RfqhubPriceChart prices={next} requests={[request]} />);
-  expect(screen.getByRole("img", { name: /Live BTC price/ })).toBe(svg);
-  expect(screen.getByTestId("oracle-path").getAttribute("d")).not.toBe(path);
-  expect(
-    Number(screen.getByTestId("position-end").getAttribute("cx")),
-  ).toBeLessThan(Number(screen.getByTestId("oracle-end").getAttribute("cx")));
+  expect(reference()).toBeNull();
 });
 
 it("rejects malformed targets/times and other outcomes, deduplicates updates, and handles empty/flat data", () => {
@@ -111,14 +112,7 @@ it("rejects malformed targets/times and other outcomes, deduplicates updates, an
   expect(
     rfqhubChartPositions([request, { ...request, priceTarget: "66000000000" }]),
   ).toHaveLength(1);
-  const positions = rfqhubChartPositions([request]);
-  const geometry = rfqhubChartGeometry(
-    [{ ...prices[0], price: NaN }],
-    positions,
-  );
-  expect(geometry.data).toEqual([]);
-  expect(Number.isFinite(geometry.y(positions[0].target))).toBe(true);
   render(<RfqhubPriceChart prices={[]} requests={[request]} />);
   expect(screen.getByText("Waiting for live BTC prices")).not.toBeNull();
-  expect(screen.queryByTestId("position-segment")).toBeNull();
+  expect(reference()).toBeNull();
 });
