@@ -236,7 +236,7 @@ describe("RfqhubPrototype", () => {
     );
     expect(screen.queryByLabelText("Winnings amount")).toBeNull();
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      "the $65,000.00 in",
+      "$65,000.00 in",
     );
     expect(screen.queryByRole("button", { name: "Add funds" })).toBeNull();
     expect(
@@ -294,7 +294,7 @@ describe("RfqhubPrototype", () => {
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     fireEvent.change(predictionAmount, { target: { value: "75" } });
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      "the $65,000.00 in",
+      "$65,000.00 in",
     );
     fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
 

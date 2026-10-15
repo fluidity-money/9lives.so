@@ -34,8 +34,8 @@ import {
  * `useAccount`: the secret stored under the shared account key authorises
  * rfqhub graph calls via the `Authorization: <eoa>:<secret>` header.
  *
- * Every authenticated operation requires an existing account and retrieves
- * its secret without generic creation, then hands that secret to
+ * Every authenticated operation ensures an account exists through RFQ and
+ * retrieves its secret without generic creation, then hands that secret to
  * the graph call. The underlying request functions live in
  * `providers/rfqhubGraphqlClient`.
  */
@@ -51,11 +51,11 @@ export default function useRfqhub() {
     secret: string;
   }> => {
     if (!account.address) throw new Error("No wallet is connected");
-    // Never let RFQ authentication implicitly create a generic account.
+    // A wallet may already have enough hub balance and skip addFunds.
+    // Create through RFQ with no extra deposit in that case, never generically.
     if (!(await isCreated(account.address))) {
-      throw new Error(
-        "Create your Superposition account by adding RFQ Hub funds before opening a prediction",
-      );
+      await checkAndSwitchChain();
+      await createRfqhubAccount({ amt: "0" });
     }
     const secret = await checkAndSetSecret(account.address, signMessage, false);
     if (!secret) throw new Error("No secret is set");
