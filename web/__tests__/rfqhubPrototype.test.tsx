@@ -147,8 +147,10 @@ describe("RfqhubPrototype", () => {
       expect(card.className).toContain(
         color === "neutral" ? "bg-neutral-100" : `bg-${color}-50`,
       );
-      expect(card.className).toContain("border-yellow-400");
-      expect(card.className).toContain("hover:border-yellow-400");
+      expect(card.className).toContain("border-[#b5a36a]");
+      expect(card.className).toContain("hover:border-[#a39159]");
+      expect(card.className).not.toContain("shadow-");
+      expect(card.className).not.toContain("radial-gradient");
       expect(card.className).not.toContain("hover:border-neutral-500");
       expect(card.style.animationName).toBe("rfqhubMakerMatchFlash");
     },

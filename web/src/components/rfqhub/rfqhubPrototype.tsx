@@ -526,9 +526,9 @@ export default function RfqhubPrototype() {
                   normalizeAddress(request.accountAddress) === ownerAddress;
                 const background =
                   priceStatus === "Winning"
-                    ? "bg-green-50 bg-[radial-gradient(ellipse_at_top,rgba(34,197,94,0.16),transparent)] hover:bg-green-50"
+                    ? "bg-green-50/40 hover:bg-green-50/60"
                     : priceStatus === "Losing"
-                      ? "bg-red-50 bg-[radial-gradient(ellipse_at_top,rgba(239,68,68,0.14),transparent)] hover:bg-red-50"
+                      ? "bg-red-50/40 hover:bg-red-50/60"
                       : "bg-neutral-100 hover:bg-neutral-200";
                 return (
                   <button
@@ -538,7 +538,7 @@ export default function RfqhubPrototype() {
                     aria-label={`Offer minimum for Taker #${request.id}`}
                     disabled={isSubmittingOffer}
                     aria-describedby={`rfqhub-request-status-${request.id}`}
-                    className={`relative w-full overflow-hidden rounded-xl border p-3 text-left text-sm text-2black transition focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60 ${background} ${isOwner ? "border-yellow-400 shadow-[inset_0_0_10px_rgba(234,179,8,0.25)] hover:border-yellow-400" : "border-neutral-300 hover:border-neutral-500"}`}
+                    className={`relative w-full overflow-hidden rounded-xl border p-3 text-left text-sm text-2black transition focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60 ${background} ${isOwner ? "border-[#b5a36a] hover:border-[#a39159]" : "border-neutral-300 hover:border-neutral-500"}`}
                     style={
                       request.matchVersion
                         ? {
@@ -562,7 +562,9 @@ export default function RfqhubPrototype() {
                     >
                       {priceStatus && <span>{priceStatus} · live price</span>}
                       {isOwner && (
-                        <span className="text-yellow-800">Yours</span>
+                        <span className="rounded bg-amber-50/50 px-1.5 py-0.5 text-[#807044]">
+                          Yours
+                        </span>
                       )}
                     </span>
                     <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
