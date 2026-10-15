@@ -79,6 +79,7 @@ beforeEach(() => {
   } as unknown as ReturnType<typeof useRfqhub>);
   mockedUseRfqhubRequests.mockReturnValue({
     requests: [],
+    chartRequests: [],
     connectionStatus: "connected",
   });
 });
@@ -167,6 +168,7 @@ describe("RfqhubPrototype", () => {
     jest.useFakeTimers().setSystemTime(new Date("2026-10-14T12:00:00Z"));
     try {
       mockedUseRfqhubRequests.mockReturnValue({
+        chartRequests: [],
         connectionStatus: "connected",
         requests: [
           {
@@ -350,6 +352,7 @@ describe("RfqhubPrototype", () => {
     const deadline = new Date(Date.now() + 60_000).toISOString();
     const expiry = new Date(Date.now() + 120_000).toISOString();
     mockedUseRfqhubRequests.mockReturnValue({
+      chartRequests: [],
       connectionStatus: "connected",
       requests: [
         {
@@ -425,6 +428,7 @@ describe("RfqhubPrototype", () => {
           decayRate: 0,
         },
       ],
+      chartRequests: [],
       connectionStatus: "connected",
     });
 
@@ -440,6 +444,7 @@ describe("RfqhubPrototype", () => {
   it("flashes a taker card after its minimum offer is matched", async () => {
     const now = Date.now();
     mockedUseRfqhubRequests.mockReturnValue({
+      chartRequests: [],
       connectionStatus: "connected",
       requests: [
         {
@@ -470,6 +475,7 @@ describe("RfqhubPrototype", () => {
 
   it("immediately submits the minimum funded maker offer when clicked", async () => {
     mockedUseRfqhubRequests.mockReturnValue({
+      chartRequests: [],
       connectionStatus: "connected",
       requests: [
         {

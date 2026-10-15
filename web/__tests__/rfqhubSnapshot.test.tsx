@@ -99,6 +99,25 @@ describe("RFQHub combined snapshots", () => {
     unmount();
   });
 
+  it("retains observed target geometry after bidding closes and reconnect omits it", () => {
+    const { result } = renderHook(() => useRfqhubRequests());
+    const socket = MockWebSocket.instances[0]!;
+    act(() => socket.receive(snapshot));
+    act(() => jest.advanceTimersByTime(3_600_001));
+    expect(result.current.requests).toEqual([]);
+    expect(result.current.chartRequests).toHaveLength(1);
+    expect(result.current.chartRequests[0].expiry).toBe(taker.expiry);
+    act(() => socket.receive({ BundleTakers: [], BundleMakers: [] }));
+    expect(result.current.chartRequests).toHaveLength(1);
+    act(() =>
+      socket.receive({
+        BundleTaker: { ...taker, price_target: 65_000_000_000 },
+      }),
+    );
+    expect(result.current.chartRequests).toHaveLength(1);
+    expect(result.current.chartRequests[0].priceTarget).toBe("65000000000");
+  });
+
   it("clears stale state when reconnect receives an empty snapshot", () => {
     const { result, unmount } = renderHook(() => useRfqhubRequests());
     const socket = MockWebSocket.instances[0]!;

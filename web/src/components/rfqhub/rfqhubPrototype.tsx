@@ -107,7 +107,7 @@ export default function RfqhubPrototype() {
   requestBalanceRef.current = requestBalance;
   const requestOnchainBalanceRef = useRef(requestOnchainBalance);
   requestOnchainBalanceRef.current = requestOnchainBalance;
-  const { requests, connectionStatus } = useRfqhubRequests();
+  const { requests, chartRequests, connectionStatus } = useRfqhubRequests();
   const [nowMs, setNowMs] = useState(() => Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNowMs(Date.now()), 1000);
@@ -303,7 +303,10 @@ export default function RfqhubPrototype() {
               </span>
             </div>
             <div className="min-h-[320px] rounded-xl bg-neutral-100 px-2 pt-2">
-              <RfqhubPriceChart prices={prices} />
+              <RfqhubPriceChart
+                prices={prices}
+                requests={chartRequests ?? requests}
+              />
             </div>
           </div>
 

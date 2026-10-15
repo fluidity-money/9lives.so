@@ -42,7 +42,9 @@ export default function useRfqhubRequests() {
   // Keep observed geometry after bidding closes. This is not a filled-position
   // ledger: reconnect snapshots may omit closed requests, and old local orders
   // do not contain authoritative targets or creation times.
-  const [chartRequests, setChartRequests] = useState<RfqhubIncomingRequest[]>([]);
+  const [chartRequests, setChartRequests] = useState<RfqhubIncomingRequest[]>(
+    [],
+  );
   const [connectionStatus, setConnectionStatus] =
     useState<RfqhubConnectionStatus>("connecting");
 
@@ -64,10 +66,17 @@ export default function useRfqhubRequests() {
       };
       socket.onmessage = (event: MessageEvent<string>) => {
         const message = parseRfqhubMessage(event.data);
-        if (message?.type === "snapshot" || message?.type === "takers" || message?.type === "taker") {
-          const incoming = message.type === "taker" ? [message.request] : message.requests;
-          setChartRequests(current => {
-            const byId = new Map(current.map(request => [request.id, request]));
+        if (
+          message?.type === "snapshot" ||
+          message?.type === "takers" ||
+          message?.type === "taker"
+        ) {
+          const incoming =
+            message.type === "taker" ? [message.request] : message.requests;
+          setChartRequests((current) => {
+            const byId = new Map(
+              current.map((request) => [request.id, request]),
+            );
             for (const request of incoming) byId.set(request.id, request);
             return [...byId.values()]
               .sort((a, b) => Date.parse(b.createdBy) - Date.parse(a.createdBy))
@@ -132,5 +141,5 @@ export default function useRfqhubRequests() {
     return () => clearTimeout(timer);
   }, [requests]);
 
-  return { requests, connectionStatus };
+  return { requests, chartRequests, connectionStatus };
 }
