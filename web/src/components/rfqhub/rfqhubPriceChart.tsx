@@ -2,11 +2,14 @@
 
 import config from "@/config";
 import type { PricePoint } from "@/types";
-import { Liveline } from "liveline";
-import { memo, useMemo } from "react";
-
+import { memo, useId, useMemo, useState } from "react";
 import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
-import { rfqhubChartGeometry, rfqhubChartPositions } from "@/lib/rfqhubChart";
+import {
+  RFQHUB_CHART_RANGES,
+  type RfqhubChartRange,
+  rfqhubChartGeometry,
+  rfqhubChartPositions,
+} from "@/lib/rfqhubChart";
 
 function RfqhubPriceChart({
   prices,
@@ -15,181 +18,167 @@ function RfqhubPriceChart({
   prices: PricePoint[];
   requests?: RfqhubIncomingRequest[];
 }) {
+  const [range, setRange] = useState<RfqhubChartRange>("1m");
+  const clipId = useId();
   const positions = useMemo(() => rfqhubChartPositions(requests), [requests]);
-  const data = useMemo(
-    () =>
-      prices.map((point) => ({
-        time: point.timestamp / 1000,
-        value: point.price,
-      })),
-    [prices],
+  const { data, latest, start, end, min, max, x, y } = useMemo(
+    () => rfqhubChartGeometry(prices, positions, range),
+    [prices, positions, range],
   );
-  const latest = data[data.length - 1];
-  const windowSecs =
-    data.length < 2
-      ? 30
-      : Math.min(900, Math.max(30, Math.ceil(latest.time - data[0].time)));
-  // Liveline 0.0.7 exposes only one unbounded reference line and no shared
-  // overlay scales. Use SVG for annotated data rather than guessing pixels.
-  if (positions.length) {
-    const {
-      data: points,
-      latest: last,
-      start,
-      end,
-      min,
-      max,
-      x,
-      y,
-    } = rfqhubChartGeometry(prices, positions);
-    const money = (price: number) =>
-      `$${price.toFixed(config.simpleMarkets.btc.decimals)}`;
-    const time = (value: number) =>
-      new Date(value).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-    const label = (position: (typeof positions)[number]) =>
-      `Request #${position.id} · ${position.isUp ? "Above" : "Below"} ${money(position.target)} · Ends ${new Date(position.end).toLocaleString()}`;
-    return (
-      <div>
-        <div className="overflow-x-auto">
-          <svg
-            viewBox="0 0 800 290"
-            role="img"
-            aria-label="Live BTC price with RFQ request targets and expiry endpoints"
-            className="w-full min-w-[480px]"
-            style={{ minHeight: 260 }}
+  const money = (price: number) =>
+    `$${price.toFixed(config.simpleMarkets.btc.decimals)}`;
+  const time = (value: number) =>
+    new Date(value).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  const visiblePositions = positions.filter(
+    (p) =>
+      latest &&
+      p.start <= end &&
+      p.end >= start &&
+      p.target >= min &&
+      p.target <= max,
+  );
+  return (
+    <div className="min-w-0">
+      <div
+        role="group"
+        aria-label="Chart time range"
+        className="flex justify-end gap-1"
+      >
+        {RFQHUB_CHART_RANGES.map((value) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={range === value}
+            onClick={() => setRange(value)}
+            className={`rounded px-3 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${range === value ? "bg-neutral-200 text-neutral-900" : "text-neutral-600 hover:bg-neutral-100"}`}
           >
-            <title>
-              BTC oracle prices and observed RFQ requests (not confirmed fills)
-            </title>
-            {[min, (min + max) / 2, max].map((value) => (
-              <g key={value}>
-                <line
-                  x1={90}
-                  x2={750}
-                  y1={y(value)}
-                  y2={y(value)}
-                  stroke="#d4d4d4"
-                  strokeDasharray="2 4"
-                />
-                <text
-                  x={82}
-                  y={y(value) + 4}
-                  textAnchor="end"
-                  fontSize={12}
-                  fill="#525252"
-                >
-                  {money(value)}
-                </text>
-              </g>
-            ))}
-            {[start, (start + end) / 2, end].map((value) => (
-              <text
-                key={value}
-                x={x(value)}
-                y={275}
-                textAnchor="middle"
-                fontSize={12}
-                fill="#525252"
-              >
-                {time(value)}
-              </text>
-            ))}
-            <path
-              data-testid="oracle-path"
-              d={points
-                .map(
-                  (p, i) => `${i ? "L" : "M"}${x(p.timestamp)},${y(p.price)}`,
-                )
-                .join(" ")}
-              fill="none"
-              stroke="#16a34a"
-              strokeWidth={2}
+            {value}
+          </button>
+        ))}
+      </div>
+      <svg
+        viewBox="0 0 800 290"
+        role="img"
+        aria-label="Live BTC price with RFQ request targets and expiry endpoints"
+        className="block w-full"
+        data-range={range}
+      >
+        <title>
+          BTC oracle prices and observed RFQ requests (not confirmed fills)
+        </title>
+        <defs>
+          <clipPath id={clipId}>
+            <rect x={90} y={30} width={660} height={215} />
+          </clipPath>
+        </defs>
+        {[min, (min + max) / 2, max].map((value) => (
+          <g key={value}>
+            <line
+              x1={90}
+              x2={750}
+              y1={y(value)}
+              y2={y(value)}
+              stroke="#d4d4d4"
+              strokeDasharray="2 4"
             />
-            {last && (
-              <circle
-                data-testid="oracle-end"
-                cx={x(last.timestamp)}
-                cy={y(last.price)}
-                r={4}
-                fill="#16a34a"
-              >
-                <title>
-                  Latest BTC: {money(last.price)} at {time(last.timestamp)}
-                </title>
-              </circle>
-            )}
-            {positions.map((position) => (
-              <g
-                key={position.id}
-                role="img"
-                aria-label={label(position)}
-                tabIndex={0}
-              >
-                <title>{label(position)}</title>
+            <text
+              x={82}
+              y={y(value) + 4}
+              textAnchor="end"
+              fontSize={12}
+              fill="#525252"
+            >
+              {money(value)}
+            </text>
+          </g>
+        ))}
+        {latest &&
+          [start, (start + end) / 2, end].map((value) => (
+            <text
+              key={value}
+              x={x(value)}
+              y={275}
+              textAnchor="middle"
+              fontSize={12}
+              fill="#525252"
+            >
+              {time(value)}
+            </text>
+          ))}
+        <g clipPath={`url(#${clipId})`}>
+          {visiblePositions.map((position) => {
+            const label = `Request #${position.id} · ${position.isUp ? "Above" : "Below"} ${money(position.target)} · Ends ${new Date(position.end).toLocaleString()}`;
+            const color = position.isUp ? "#2563eb" : "#9333ea";
+            const showEnd = position.end >= start && position.end <= end;
+            return (
+              <g key={position.id} role="img" aria-label={label} tabIndex={0}>
+                <title>{label}</title>
                 <line
                   data-testid="position-segment"
-                  x1={x(position.start)}
-                  x2={x(position.end)}
+                  x1={x(Math.max(start, position.start))}
+                  x2={x(Math.min(end, position.end))}
                   y1={y(position.target)}
                   y2={y(position.target)}
-                  stroke={position.isUp ? "#2563eb" : "#9333ea"}
+                  stroke={color}
                   strokeWidth={2}
                   strokeDasharray="6 4"
                 />
-                <circle
-                  data-testid="position-end"
-                  cx={x(position.end)}
-                  cy={y(position.target)}
-                  r={5}
-                  fill={position.isUp ? "#2563eb" : "#9333ea"}
-                  stroke="white"
-                  strokeWidth={2}
-                />
-                <text
-                  x={x(position.end) - 8}
-                  y={y(position.target) - 8}
-                  textAnchor="end"
-                  fontSize={12}
-                  fill={position.isUp ? "#2563eb" : "#9333ea"}
-                >
-                  #{position.id} {position.isUp ? "↑" : "↓"}
-                </text>
+                {showEnd && (
+                  <>
+                    <circle
+                      data-testid="position-end"
+                      cx={x(position.end)}
+                      cy={y(position.target)}
+                      r={5}
+                      fill={color}
+                      stroke="white"
+                      strokeWidth={2}
+                    />
+                    <text
+                      x={x(position.end) - 8}
+                      y={y(position.target) - 8}
+                      textAnchor="end"
+                      fontSize={12}
+                      fill={color}
+                    >
+                      #{position.id} {position.isUp ? "↑" : "↓"}
+                    </text>
+                  </>
+                )}
               </g>
-            ))}
-          </svg>
-        </div>
-        {!last && (
-          <p className="text-xs text-neutral-600">
-            Waiting for live BTC prices
-          </p>
-        )}
-      </div>
-    );
-  }
-  return (
-    <div style={{ height: 300 }}>
-      <Liveline
-        data={data}
-        value={latest?.value ?? 0}
-        loading={!latest}
-        theme="light"
-        color="#16A34A"
-        window={windowSecs}
-        grid={false}
-        formatValue={(value) =>
-          `$${value.toFixed(config.simpleMarkets.btc.decimals)}`
-        }
-        formatTime={(time) =>
-          new Date(time * 1000).toLocaleString("default", {
-            hour: "numeric",
-            minute: "2-digit",
-          })
-        }
-      />
+            );
+          })}
+          <path
+            data-testid="oracle-path"
+            d={data
+              .map((p, i) => `${i ? "L" : "M"}${x(p.timestamp)},${y(p.price)}`)
+              .join(" ")}
+            fill="none"
+            stroke="#16a34a"
+            strokeWidth={2}
+          />
+          {latest && (
+            <circle
+              data-testid="oracle-end"
+              cx={x(latest.timestamp)}
+              cy={y(latest.price)}
+              r={3}
+              fill="#16a34a"
+            >
+              <title>
+                Latest BTC: {money(latest.price)} at {time(latest.timestamp)}
+              </title>
+            </circle>
+          )}
+        </g>
+      </svg>
+      {!latest && (
+        <p className="text-xs text-neutral-600">Waiting for live BTC prices</p>
+      )}
     </div>
   );
 }

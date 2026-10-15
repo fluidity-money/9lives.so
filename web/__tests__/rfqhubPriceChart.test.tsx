@@ -1,5 +1,4 @@
 import { act, render, screen } from "@testing-library/react";
-import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useAssetPrices from "@/hooks/useAssetPrices";
 import RfqhubPriceChart from "@/components/rfqhub/rfqhubPriceChart";
@@ -10,15 +9,6 @@ jest.mock("../src/config", () => ({
   default: {
     NEXT_PUBLIC_WS_URL: "wss://prices.test",
     simpleMarkets: { btc: { decimals: 2 } },
-  },
-}));
-const mounted = jest.fn();
-jest.mock("liveline", () => ({
-  Liveline: (props: { data: unknown[]; value: number }) => {
-    useEffect(() => {
-      mounted();
-    }, []);
-    return <output data-testid="chart">{JSON.stringify(props)}</output>;
   },
 }));
 jest.mock("../src/components/rfqhub/rfqhubPrototype", () => ({
@@ -58,6 +48,7 @@ function Feed() {
   return (
     <>
       <output data-testid="price-ready">{String(connected)}</output>
+      <output data-testid="feed-prices">{JSON.stringify(prices)}</output>
       <RfqhubPriceChart prices={prices} />
     </>
   );
@@ -87,7 +78,13 @@ function setup() {
     act(() => {
       jest.advanceTimersByTime(1);
     });
-  const chart = () => JSON.parse(screen.getByTestId("chart").textContent!);
+  const chart = () => {
+    const prices = JSON.parse(screen.getByTestId("feed-prices").textContent!);
+    return {
+      data: prices.map((p: { price: number }) => ({ value: p.price })),
+      value: prices.at(-1)?.price,
+    };
+  };
   return { ...view, socket, flush, chart };
 }
 
@@ -120,6 +117,7 @@ it("renders the route without fetching an available DPPM market", async () => {
 
 it("keeps the same chart and socket across DPPM expiry and rollover", () => {
   const { socket, flush, chart } = setup();
+  const svg = screen.getByRole("img", { name: /Live BTC price/ });
   const subscription = {
     table,
     fields: [{ name: "base", filter_constraints: { et: "BTC" } }],
@@ -151,11 +149,13 @@ it("keeps the same chart and socket across DPPM expiry and rollover", () => {
   flush();
   expect(chart().data).toHaveLength(2);
   expect(chart().value).toBe(65001.123456);
-  expect(chart().referenceLine).toBeUndefined();
-  expect(chart().paused).toBeUndefined();
+  expect(
+    screen.getByTestId("oracle-path").getAttribute("d")?.match(/[ML]/g),
+  ).toHaveLength(2);
+  expect(screen.getByTestId("oracle-end").textContent).toContain("$65001.12");
   expect(Socket.instances).toHaveLength(1);
   expect(socket.close).not.toHaveBeenCalled();
-  expect(mounted).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("img", { name: /Live BTC price/ })).toBe(svg);
 });
 
 it("merges reconnect snapshots without losing newer ticks; ignores malformed and other-asset data", () => {

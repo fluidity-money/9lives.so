@@ -36,11 +36,16 @@ export function rfqhubChartPositions(requests: RfqhubIncomingRequest[]) {
   return [...positions.values()];
 }
 
-// One coordinate system for both the oracle path and request decorations.
-// Future expiry enlarges the domain, never the actual oracle series.
+export const RFQHUB_CHART_RANGES = ["1m", "5m", "15m", "All"] as const;
+export type RfqhubChartRange = (typeof RFQHUB_CHART_RANGES)[number];
+const RANGE_MS = { "1m": 60_000, "5m": 300_000, "15m": 900_000 };
+
+// One shared coordinate system. Only All includes request times; targets never
+// influence the price scale and no future oracle samples are manufactured.
 export function rfqhubChartGeometry(
   prices: PricePoint[],
   positions: RfqhubChartPosition[],
+  range: RfqhubChartRange = "1m",
 ) {
   const data = prices
     .filter(
@@ -50,19 +55,22 @@ export function rfqhubChartGeometry(
     .slice()
     .sort((a, b) => a.timestamp - b.timestamp);
   const latest = data.at(-1);
-  const recent = latest
-    ? data.filter((p) => p.timestamp >= latest.timestamp - 900_000)
-    : [];
+  const anchor = latest?.timestamp ?? 0;
   const times = [
-    ...recent.map((p) => p.timestamp),
+    anchor,
+    ...data.map((p) => p.timestamp),
     ...positions.flatMap((p) => [p.start, p.end]),
   ];
-  const values = [
-    ...recent.map((p) => p.price),
-    ...positions.map((p) => p.target),
-  ];
-  const start = times.length ? Math.min(...times) : 0;
-  const end = Math.max(start + 30_000, ...times);
+  const duration =
+    range === "All"
+      ? Math.max(60_000, Math.max(...times) - Math.min(...times))
+      : RANGE_MS[range];
+  const start = range === "All" ? Math.min(...times) : anchor - duration;
+  const end =
+    (range === "All" ? Math.max(start + duration, ...times) : anchor) +
+    duration * 0.04;
+  const recent = data.filter((p) => p.timestamp >= start && p.timestamp <= end);
+  const values = recent.map((p) => p.price);
   const low = values.length ? Math.min(...values) : 0;
   const high = values.length ? Math.max(...values) : 1;
   const padding = Math.max((high - low) * 0.12, high * 0.00001, 0.01);

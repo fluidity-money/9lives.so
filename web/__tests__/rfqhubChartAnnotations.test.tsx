@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import RfqhubPriceChart from "@/components/rfqhub/rfqhubPriceChart";
 import { rfqhubChartGeometry, rfqhubChartPositions } from "@/lib/rfqhubChart";
 import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
@@ -6,9 +6,6 @@ import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
 jest.mock("../src/config", () => ({
   __esModule: true,
   default: { simpleMarkets: { btc: { decimals: 2 } } },
-}));
-jest.mock("liveline", () => ({
-  Liveline: () => <div>Unannotated live chart</div>,
 }));
 const request: RfqhubIncomingRequest = {
   id: "7",
@@ -49,13 +46,14 @@ it("draws multiple true horizontal segments and expiry markers on shared price/t
       ...request,
       id: "8",
       isUp: false,
-      priceTarget: "64000000000",
+      priceTarget: "65000800000",
       expiry: "2026-10-15T12:10:00Z",
     },
   ];
   const positions = rfqhubChartPositions(requests);
-  const geometry = rfqhubChartGeometry(prices, positions);
+  const geometry = rfqhubChartGeometry(prices, positions, "All");
   render(<RfqhubPriceChart prices={prices} requests={requests} />);
+  fireEvent.click(screen.getByRole("button", { name: "All" }));
   const lines = screen.getAllByTestId("position-segment");
   const ends = screen.getAllByTestId("position-end");
   expect(lines).toHaveLength(2);
@@ -72,13 +70,16 @@ it("draws multiple true horizontal segments and expiry markers on shared price/t
   expect(
     screen.queryByRole("list", { name: "Chart request details" }),
   ).toBeNull();
-  expect(screen.queryByText(/Observed requests, not confirmed fills/)).toBeNull();
+  expect(
+    screen.queryByText(/Observed requests, not confirmed fills/),
+  ).toBeNull();
 });
 
 it("keeps the same SVG and live oracle updates past request expiry without extending the target", () => {
   const { rerender } = render(
     <RfqhubPriceChart prices={prices} requests={[request]} />,
   );
+  fireEvent.click(screen.getByRole("button", { name: "All" }));
   const svg = screen.getByRole("img", { name: /Live BTC price/ });
   const path = screen.getByTestId("oracle-path").getAttribute("d");
   const next = [
@@ -119,5 +120,5 @@ it("rejects malformed targets/times and other outcomes, deduplicates updates, an
   expect(Number.isFinite(geometry.y(positions[0].target))).toBe(true);
   render(<RfqhubPriceChart prices={[]} requests={[request]} />);
   expect(screen.getByText("Waiting for live BTC prices")).not.toBeNull();
-  expect(screen.getAllByTestId("position-segment")).toHaveLength(1);
+  expect(screen.queryByTestId("position-segment")).toBeNull();
 });
