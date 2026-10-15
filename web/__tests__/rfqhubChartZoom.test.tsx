@@ -14,13 +14,13 @@ jest.mock("liveline", () => ({
   Liveline: (props: {
     data: unknown[];
     window: number;
-    referenceLine?: { value: number; label: string };
+    referenceLines?: { value: number; label: string; color: string }[];
   }) => (
     <output
       data-testid="liveline"
       data-count={props.data.length}
       data-window={props.window}
-      data-reference={JSON.stringify(props.referenceLine ?? null)}
+      data-reference={JSON.stringify(props.referenceLines ?? [])}
     />
   ),
 }));

@@ -1,0 +1,2 @@
+patchedDependencies:
+  liveline@0.0.7: patches/liveline@0.0.7.patch

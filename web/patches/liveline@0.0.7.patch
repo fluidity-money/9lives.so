@@ -1,0 +1,310 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 4709730f1d6608dee4ffb3a386d1732f776c5f5c..343c1a52c025989482702ac637160e582fea8fcd 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -786,6 +786,71 @@ function drawReferenceLine(ctx, layout, palette, ref) {
+   }
+ }
+ 
++
++// Several labelled lines. Unlike referenceLine these never widen the price
++// range; a value outside it is pinned to the nearest edge with an arrow.
++function drawReferenceLines(ctx, layout, palette, refs) {
++  const { w, h, pad, toY } = layout;
++  const top = pad.top;
++  const bottom = h - pad.bottom;
++  const right = w - pad.right;
++  const lineH = 16;
++  ctx.font = "500 11px system-ui, sans-serif";
++  ctx.textAlign = "left";
++  ctx.textBaseline = "middle";
++  const items = refs
++    .map((ref) => {
++      const y = toY(ref.value);
++      const edge = y < top ? -1 : y > bottom ? 1 : 0;
++      const text = (edge < 0 ? "\u25B2 " : edge > 0 ? "\u25BC " : "") + (ref.label ?? "");
++      return { ref, y, edge, text, ly: edge < 0 ? top + lineH / 2 : edge > 0 ? bottom - lineH / 2 : y };
++    })
++    .sort((a, b) => a.ly - b.ly);
++  // Every line first, so no line is drawn across another's label.
++  for (const item of items) {
++    const color = item.ref.color ?? palette.refLabel;
++    if (!item.edge) {
++      ctx.save();
++      ctx.globalAlpha *= 0.7;
++      ctx.strokeStyle = color;
++      ctx.lineWidth = 1;
++      ctx.setLineDash([4, 4]);
++      ctx.beginPath();
++      ctx.moveTo(pad.left, item.y);
++      ctx.lineTo(right, item.y);
++      ctx.stroke();
++      ctx.restore();
++    }
++  }
++  const placed = [];
++  for (const item of items) {
++    const color = item.ref.color ?? palette.refLabel;
++    if (!item.text) continue;
++    const tw = ctx.measureText(item.text).width + 10;
++    // Labels start at the left, away from the live dot and badge on the
++    // right, and step right (then to the next row) to avoid each other.
++    let x = pad.left + 6;
++    let ly = item.ly;
++    for (let tries = 0; tries < 50; tries++) {
++      const hit = placed.find((r) => Math.abs(r.y - ly) < lineH && x < r.x + r.w + 6 && x + tw > r.x - 6);
++      if (!hit) break;
++      x = hit.x + hit.w + 6;
++      if (x + tw > right - 6) {
++        x = pad.left + 6;
++        ly += item.edge > 0 ? -lineH : lineH;
++      }
++    }
++    placed.push({ x, y: ly, w: tw });
++    ctx.fillStyle = palette.tooltipBg;
++    ctx.beginPath();
++    ctx.roundRect(x, ly - lineH / 2 + 1, tw, lineH - 2, 4);
++    ctx.fill();
++    ctx.fillStyle = color;
++    ctx.fillText(item.text, x + 5, ly + 0.5);
++  }
++  ctx.textBaseline = "alphabetic";
++}
++
+ // src/math/intervals.ts
+ function niceTimeInterval(windowSecs) {
+   if (windowSecs <= 15) return 2;
+@@ -1481,6 +1546,12 @@ function drawFrame(ctx, layout, palette, opts) {
+     drawReferenceLine(ctx, layout, palette, opts.referenceLine);
+     ctx.restore();
+   }
++  if (opts.referenceLines?.length && reveal > 0.01) {
++    ctx.save();
++    if (reveal < 1) ctx.globalAlpha = reveal;
++    drawReferenceLines(ctx, layout, palette, opts.referenceLines);
++    ctx.restore();
++  }
+   if (opts.showGrid) {
+     const gridAlpha = reveal < 1 ? revealRamp(0.15, 0.7) : 1;
+     if (gridAlpha > 0.01) {
+@@ -1608,6 +1679,12 @@ function drawMultiFrame(ctx, layout, opts) {
+     drawReferenceLine(ctx, layout, palette, opts.referenceLine);
+     ctx.restore();
+   }
++  if (opts.referenceLines?.length && reveal > 0.01) {
++    ctx.save();
++    if (reveal < 1) ctx.globalAlpha = reveal;
++    drawReferenceLines(ctx, layout, palette, opts.referenceLines);
++    ctx.restore();
++  }
+   if (opts.showGrid) {
+     const gridAlpha = reveal < 1 ? revealRamp(0.15, 0.7) : 1;
+     if (gridAlpha > 0.01) {
+@@ -3281,6 +3358,7 @@ function useLivelineEngine(canvasRef, containerRef, config) {
+         showGrid: cfg.showGrid,
+         showPulse: cfg.showPulse,
+         referenceLine: cfg.referenceLine,
++        referenceLines: cfg.referenceLines,
+         hoverX: drawHoverX,
+         hoverTime: drawHoverTime,
+         hoverEntries,
+@@ -3434,6 +3512,7 @@ function useLivelineEngine(canvasRef, containerRef, config) {
+         showPulse: cfg.showPulse,
+         showFill: cfg.showFill,
+         referenceLine: cfg.referenceLine,
++        referenceLines: cfg.referenceLines,
+         hoverX: drawHoverX,
+         hoverValue: drawHoverValue,
+         hoverTime: drawHoverTime,
+@@ -3542,6 +3621,7 @@ function Liveline({
+   tooltipOutline = true,
+   orderbook,
+   referenceLine,
++  referenceLines,
+   formatValue = defaultFormatValue,
+   formatTime = defaultFormatTime,
+   lerpSpeed = 0.08,
+@@ -3668,6 +3748,7 @@ function Liveline({
+     momentumOverride,
+     showFill: isMultiSeries ? false : fill,
+     referenceLine,
++    referenceLines,
+     formatValue,
+     formatTime,
+     padding: pad,
+diff --git a/dist/index.d.cts b/dist/index.d.cts
+index 414c4e61bac1017c49bbaedbd1691bcd9cdd667c..c1d220f7efbdd88ad956cb5f7dda94d26025ef16 100644
+--- a/dist/index.d.cts
++++ b/dist/index.d.cts
+@@ -12,6 +12,7 @@ type BadgeVariant = 'default' | 'minimal';
+ interface ReferenceLine {
+     value: number;
+     label?: string;
++    color?: string;
+ }
+ interface HoverPoint {
+     time: number;
+@@ -74,6 +75,8 @@ interface LivelineProps {
+     tooltipOutline?: boolean;
+     orderbook?: OrderbookData;
+     referenceLine?: ReferenceLine;
++    /** Extra lines that never widen the price range. */
++    referenceLines?: ReferenceLine[];
+     formatValue?: (v: number) => string;
+     formatTime?: (t: number) => string;
+     lerpSpeed?: number;
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index 414c4e61bac1017c49bbaedbd1691bcd9cdd667c..c1d220f7efbdd88ad956cb5f7dda94d26025ef16 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -12,6 +12,7 @@ type BadgeVariant = 'default' | 'minimal';
+ interface ReferenceLine {
+     value: number;
+     label?: string;
++    color?: string;
+ }
+ interface HoverPoint {
+     time: number;
+@@ -74,6 +75,8 @@ interface LivelineProps {
+     tooltipOutline?: boolean;
+     orderbook?: OrderbookData;
+     referenceLine?: ReferenceLine;
++    /** Extra lines that never widen the price range. */
++    referenceLines?: ReferenceLine[];
+     formatValue?: (v: number) => string;
+     formatTime?: (t: number) => string;
+     lerpSpeed?: number;
+diff --git a/dist/index.js b/dist/index.js
+index fd0506272e9a54432a0882c3a389ee74302e4718..495cdc4ba91915c17e6258ac67edb043a1042282 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -759,6 +759,71 @@ function drawReferenceLine(ctx, layout, palette, ref) {
+   }
+ }
+ 
++
++// Several labelled lines. Unlike referenceLine these never widen the price
++// range; a value outside it is pinned to the nearest edge with an arrow.
++function drawReferenceLines(ctx, layout, palette, refs) {
++  const { w, h, pad, toY } = layout;
++  const top = pad.top;
++  const bottom = h - pad.bottom;
++  const right = w - pad.right;
++  const lineH = 16;
++  ctx.font = "500 11px system-ui, sans-serif";
++  ctx.textAlign = "left";
++  ctx.textBaseline = "middle";
++  const items = refs
++    .map((ref) => {
++      const y = toY(ref.value);
++      const edge = y < top ? -1 : y > bottom ? 1 : 0;
++      const text = (edge < 0 ? "\u25B2 " : edge > 0 ? "\u25BC " : "") + (ref.label ?? "");
++      return { ref, y, edge, text, ly: edge < 0 ? top + lineH / 2 : edge > 0 ? bottom - lineH / 2 : y };
++    })
++    .sort((a, b) => a.ly - b.ly);
++  // Every line first, so no line is drawn across another's label.
++  for (const item of items) {
++    const color = item.ref.color ?? palette.refLabel;
++    if (!item.edge) {
++      ctx.save();
++      ctx.globalAlpha *= 0.7;
++      ctx.strokeStyle = color;
++      ctx.lineWidth = 1;
++      ctx.setLineDash([4, 4]);
++      ctx.beginPath();
++      ctx.moveTo(pad.left, item.y);
++      ctx.lineTo(right, item.y);
++      ctx.stroke();
++      ctx.restore();
++    }
++  }
++  const placed = [];
++  for (const item of items) {
++    const color = item.ref.color ?? palette.refLabel;
++    if (!item.text) continue;
++    const tw = ctx.measureText(item.text).width + 10;
++    // Labels start at the left, away from the live dot and badge on the
++    // right, and step right (then to the next row) to avoid each other.
++    let x = pad.left + 6;
++    let ly = item.ly;
++    for (let tries = 0; tries < 50; tries++) {
++      const hit = placed.find((r) => Math.abs(r.y - ly) < lineH && x < r.x + r.w + 6 && x + tw > r.x - 6);
++      if (!hit) break;
++      x = hit.x + hit.w + 6;
++      if (x + tw > right - 6) {
++        x = pad.left + 6;
++        ly += item.edge > 0 ? -lineH : lineH;
++      }
++    }
++    placed.push({ x, y: ly, w: tw });
++    ctx.fillStyle = palette.tooltipBg;
++    ctx.beginPath();
++    ctx.roundRect(x, ly - lineH / 2 + 1, tw, lineH - 2, 4);
++    ctx.fill();
++    ctx.fillStyle = color;
++    ctx.fillText(item.text, x + 5, ly + 0.5);
++  }
++  ctx.textBaseline = "alphabetic";
++}
++
+ // src/math/intervals.ts
+ function niceTimeInterval(windowSecs) {
+   if (windowSecs <= 15) return 2;
+@@ -1454,6 +1519,12 @@ function drawFrame(ctx, layout, palette, opts) {
+     drawReferenceLine(ctx, layout, palette, opts.referenceLine);
+     ctx.restore();
+   }
++  if (opts.referenceLines?.length && reveal > 0.01) {
++    ctx.save();
++    if (reveal < 1) ctx.globalAlpha = reveal;
++    drawReferenceLines(ctx, layout, palette, opts.referenceLines);
++    ctx.restore();
++  }
+   if (opts.showGrid) {
+     const gridAlpha = reveal < 1 ? revealRamp(0.15, 0.7) : 1;
+     if (gridAlpha > 0.01) {
+@@ -1581,6 +1652,12 @@ function drawMultiFrame(ctx, layout, opts) {
+     drawReferenceLine(ctx, layout, palette, opts.referenceLine);
+     ctx.restore();
+   }
++  if (opts.referenceLines?.length && reveal > 0.01) {
++    ctx.save();
++    if (reveal < 1) ctx.globalAlpha = reveal;
++    drawReferenceLines(ctx, layout, palette, opts.referenceLines);
++    ctx.restore();
++  }
+   if (opts.showGrid) {
+     const gridAlpha = reveal < 1 ? revealRamp(0.15, 0.7) : 1;
+     if (gridAlpha > 0.01) {
+@@ -3254,6 +3331,7 @@ function useLivelineEngine(canvasRef, containerRef, config) {
+         showGrid: cfg.showGrid,
+         showPulse: cfg.showPulse,
+         referenceLine: cfg.referenceLine,
++        referenceLines: cfg.referenceLines,
+         hoverX: drawHoverX,
+         hoverTime: drawHoverTime,
+         hoverEntries,
+@@ -3407,6 +3485,7 @@ function useLivelineEngine(canvasRef, containerRef, config) {
+         showPulse: cfg.showPulse,
+         showFill: cfg.showFill,
+         referenceLine: cfg.referenceLine,
++        referenceLines: cfg.referenceLines,
+         hoverX: drawHoverX,
+         hoverValue: drawHoverValue,
+         hoverTime: drawHoverTime,
+@@ -3515,6 +3594,7 @@ function Liveline({
+   tooltipOutline = true,
+   orderbook,
+   referenceLine,
++  referenceLines,
+   formatValue = defaultFormatValue,
+   formatTime = defaultFormatTime,
+   lerpSpeed = 0.08,
+@@ -3641,6 +3721,7 @@ function Liveline({
+     momentumOverride,
+     showFill: isMultiSeries ? false : fill,
+     referenceLine,
++    referenceLines,
+     formatValue,
+     formatTime,
+     padding: pad,

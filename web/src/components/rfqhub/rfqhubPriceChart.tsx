@@ -10,8 +10,8 @@ import {
   RFQHUB_RANGE_SECS,
   type RfqhubChartRange,
   rfqhubClampWindow,
-  rfqhubFocusPosition,
   rfqhubHistorySecs,
+  rfqhubOpenPositions,
   rfqhubChartPositions,
   rfqhubSortedPrices,
 } from "@/lib/rfqhubChart";
@@ -52,7 +52,17 @@ function RfqhubPriceChart({
         ? RFQHUB_RANGE_SECS[range]
         : customSecs;
   const positions = useMemo(() => rfqhubChartPositions(requests), [requests]);
-  const focus = rfqhubFocusPosition(positions, latest?.timestamp ?? 0);
+  const targets = useMemo(
+    () =>
+      rfqhubOpenPositions(positions, sorted.at(-1)?.timestamp ?? 0).map(
+        (p) => ({
+          value: p.target,
+          color: p.isUp ? "#3b82f6" : "#a855f7",
+          label: `#${p.id} ${p.isUp ? "↑" : "↓"} ${money(p.target)} until ${clock(p.end / 1000)}`,
+        }),
+      ),
+    [positions, sorted],
+  );
 
   // Wheel and pinch zoom. Kept in refs so the listeners attach once.
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -143,12 +153,7 @@ function RfqhubPriceChart({
           fill
           grid
           scrub
-          referenceLine={
-            focus && {
-              value: focus.target,
-              label: `#${focus.id} ${focus.isUp ? "↑" : "↓"} ${money(focus.target)} until ${clock(focus.end / 1000)}`,
-            }
-          }
+          referenceLines={targets}
           formatValue={money}
           formatTime={clock}
         />

@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  liveline@0.0.7:
+    hash: cf1f6f600ccf86cc6af69064d6f473ab83d8450b6ed52fd7f3265954082a4669
+    path: patches/liveline@0.0.7.patch
+
 importers:
 
   .:
@@ -70,7 +75,7 @@ importers:
         version: 3.0.4
       liveline:
         specifier: 0.0.7
-        version: 0.0.7(react@19.2.3)
+        version: 0.0.7(patch_hash=cf1f6f600ccf86cc6af69064d6f473ab83d8450b6ed52fd7f3265954082a4669)(react@19.2.3)
       next:
         specifier: 16.2.11
         version: 16.2.11(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -11564,7 +11569,7 @@ snapshots:
       lit-element: 4.2.2
       lit-html: 3.3.2
 
-  liveline@0.0.7(react@19.2.3):
+  liveline@0.0.7(patch_hash=cf1f6f600ccf86cc6af69064d6f473ab83d8450b6ed52fd7f3265954082a4669)(react@19.2.3):
     dependencies:
       react: 19.2.3
 

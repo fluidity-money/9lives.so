@@ -65,13 +65,12 @@ export function rfqhubClampWindow(secs: number, data: PricePoint[]) {
   );
 }
 
-// The chart has room for one target line: the open request expiring
-// soonest, since that is the one about to settle.
-export function rfqhubFocusPosition(
+// Requests still running at now, soonest expiry first.
+export function rfqhubOpenPositions(
   positions: RfqhubChartPosition[],
   now: number,
 ) {
   return positions
     .filter((p) => p.start <= now && p.end > now)
-    .sort((a, b) => a.end - b.end)[0];
+    .sort((a, b) => a.end - b.end);
 }

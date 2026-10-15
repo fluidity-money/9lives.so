@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import RfqhubPriceChart from "@/components/rfqhub/rfqhubPriceChart";
-import { rfqhubChartPositions, rfqhubFocusPosition } from "@/lib/rfqhubChart";
+import { rfqhubChartPositions, rfqhubOpenPositions } from "@/lib/rfqhubChart";
 import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
 
 jest.mock("../src/config", () => ({
@@ -11,13 +11,13 @@ jest.mock("liveline", () => ({
   Liveline: (props: {
     data: unknown[];
     window: number;
-    referenceLine?: { value: number; label: string };
+    referenceLines?: { value: number; label: string; color: string }[];
   }) => (
     <output
       data-testid="liveline"
       data-count={props.data.length}
       data-window={props.window}
-      data-reference={JSON.stringify(props.referenceLine ?? null)}
+      data-reference={JSON.stringify(props.referenceLines ?? [])}
     />
   ),
 }));
@@ -53,10 +53,10 @@ it("converts six-decimal targets and uses expiry, never the bidding deadline", (
   ]);
 });
 
-const reference = () =>
+const lines = () =>
   JSON.parse(screen.getByTestId("liveline").getAttribute("data-reference")!);
 
-it("marks the open request that expires soonest as the target line", () => {
+it("draws every open request as its own colored line, soonest expiry first", () => {
   const requests = [
     request,
     {
@@ -69,30 +69,31 @@ it("marks the open request that expires soonest as the target line", () => {
     { ...request, id: "9", createdBy: "2026-10-15T12:02:00Z" },
   ];
   const positions = rfqhubChartPositions(requests);
-  const at = Date.parse(request.deadline);
-  expect(rfqhubFocusPosition(positions, at)?.id).toBe("8");
-  expect(
-    rfqhubFocusPosition(positions, Date.parse("2026-10-15T12:04:00Z"))?.id,
-  ).toBe("7");
-  expect(
-    rfqhubFocusPosition(positions, Date.parse(request.expiry)),
-  ).toBeUndefined();
+  const ids = (now: string) =>
+    rfqhubOpenPositions(positions, Date.parse(now)).map((p) => p.id);
+  expect(ids(request.deadline)).toEqual(["8", "7"]);
+  expect(ids("2026-10-15T12:02:30Z")).toEqual(["8", "7", "9"]);
+  expect(ids("2026-10-15T12:04:00Z")).toEqual(["7", "9"]);
+  expect(ids(request.expiry)).toEqual([]);
   render(<RfqhubPriceChart prices={prices} requests={requests} />);
-  expect(reference().value).toBe(65000.8);
-  expect(reference().label).toMatch(/^#8 ↓ \$65,000\.80 until /);
+  expect(lines()).toHaveLength(2);
+  expect(lines()[0]).toMatchObject({ value: 65000.8, color: "#a855f7" });
+  expect(lines()[0].label).toMatch(/^#8 ↓ \$65,000\.80 until /);
+  expect(lines()[1]).toMatchObject({ value: 65000.123456, color: "#3b82f6" });
+  expect(lines()[1].label).toMatch(/^#7 ↑ \$65,000\.12 until /);
 });
 
-it("drops the target line once the live price passes the request expiry", () => {
+it("drops a request's line once the live price passes its expiry", () => {
   const { rerender } = render(
     <RfqhubPriceChart prices={prices} requests={[request]} />,
   );
-  expect(reference().value).toBe(65000.123456);
+  expect(lines()).toHaveLength(1);
   const next = [
     ...prices,
     { id: 3, timestamp: Date.parse("2026-10-15T12:06:00Z"), price: 65002 },
   ];
   rerender(<RfqhubPriceChart prices={next} requests={[request]} />);
-  expect(reference()).toBeNull();
+  expect(lines()).toEqual([]);
 });
 
 it("rejects malformed targets/times and other outcomes, deduplicates updates, and handles empty/flat data", () => {
@@ -114,5 +115,5 @@ it("rejects malformed targets/times and other outcomes, deduplicates updates, an
   ).toHaveLength(1);
   render(<RfqhubPriceChart prices={[]} requests={[request]} />);
   expect(screen.getByText("Waiting for live BTC prices")).not.toBeNull();
-  expect(reference()).toBeNull();
+  expect(lines()).toEqual([]);
 });
