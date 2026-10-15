@@ -63,17 +63,6 @@ const displayUsdc = (amount: string) => {
   }
 };
 
-const doubleUsdcInput = (amount: string) => {
-  try {
-    return formatUnits(
-      parseUnits(amount || "0", USDC_DECIMALS) * BigInt(2),
-      USDC_DECIMALS,
-    );
-  } catch {
-    return "0";
-  }
-};
-
 function RequestDeadlineProgress({ deadline }: { deadline: string }) {
   const [mountedAtMs] = useState(() => Date.now());
   const deadlineMs = Date.parse(deadline);
@@ -345,7 +334,7 @@ export default function RfqhubPrototype() {
               className="text-xl font-medium leading-[2.3] text-2black md:text-2xl"
               data-testid="prediction-sentence"
             >
-              <span>With $</span>
+              <span>I predict with $</span>
               <label className="sr-only" htmlFor="rfqhub-prediction-amount">
                 Prediction amount
               </label>
@@ -353,13 +342,13 @@ export default function RfqhubPrototype() {
                 id="rfqhub-prediction-amount"
                 className={`${inlineControl} w-28`}
                 type="number"
-                min="0.01"
-                step="0.01"
+                min="0"
+                step="0.10"
                 inputMode="decimal"
                 value={predictionAmount}
                 onChange={(event) => setPredictionAmount(event.target.value)}
               />
-              <span>, I predict that</span>
+              <span>that</span>
               <label className="sr-only" htmlFor="rfqhub-asset">
                 Asset
               </label>
@@ -383,10 +372,19 @@ export default function RfqhubPrototype() {
                   setDirection(event.target.value as "up" | "down")
                 }
               >
-                <option value="up">up</option>
-                <option value="down">down</option>
+                <option value="up">above</option>
+                <option value="down">below</option>
               </select>
-              <span>by</span>
+              <span>
+                the{" "}
+                {latestPrice === undefined
+                  ? "current price (waiting for price)"
+                  : `$${latestPrice.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`}{" "}
+                in
+              </span>
               <label className="sr-only" htmlFor="rfqhub-duration">
                 Duration
               </label>
@@ -399,9 +397,7 @@ export default function RfqhubPrototype() {
                 <option value="5">5 mins</option>
                 <option value="15">15 mins</option>
               </select>
-              <span>
-                , and I want ${doubleUsdcInput(predictionAmount)} if I win.
-              </span>
+              <span>.</span>
             </div>
 
             <Button

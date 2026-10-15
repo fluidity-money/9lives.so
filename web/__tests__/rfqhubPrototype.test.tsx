@@ -219,8 +219,8 @@ describe("RfqhubPrototype", () => {
     expect(
       screen.getByRole("heading", { name: "Make a prediction" }),
     ).not.toBeNull();
-    expect(screen.getByText("With $")).not.toBeNull();
-    expect(screen.getByText(", I predict that")).not.toBeNull();
+    expect(screen.getByText("I predict with $")).not.toBeNull();
+    expect(screen.getByText("that")).not.toBeNull();
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     await waitFor(() =>
       expect((predictionAmount as HTMLInputElement).value).toBe("60"),
@@ -236,7 +236,7 @@ describe("RfqhubPrototype", () => {
     );
     expect(screen.queryByLabelText("Winnings amount")).toBeNull();
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      ", and I want $120 if I win.",
+      "the $65,000.00 in",
     );
     expect(screen.queryByRole("button", { name: "Add funds" })).toBeNull();
     expect(
@@ -294,7 +294,7 @@ describe("RfqhubPrototype", () => {
     const predictionAmount = await screen.findByLabelText("Prediction amount");
     fireEvent.change(predictionAmount, { target: { value: "75" } });
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      ", and I want $150 if I win.",
+      "the $65,000.00 in",
     );
     fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
 
@@ -509,15 +509,22 @@ describe("RfqhubPrototype", () => {
     expect(screen.getByText("Offer submitted for Taker #12")).not.toBeNull();
   });
 
-  it("displays an exact doubled total for fractional stakes", async () => {
+  it("keeps fractional stakes editable with ten-cent increments", async () => {
     render(<RfqhubPrototype />);
 
     const stake = await screen.findByLabelText("Prediction amount");
     fireEvent.change(stake, { target: { value: "10.01" } });
 
-    expect(screen.getByTestId("prediction-sentence").textContent).toContain(
-      ", and I want $20.02 if I win.",
-    );
+    const amount = screen.getByLabelText(
+      "Prediction amount",
+    ) as HTMLInputElement;
+    expect(amount.value).toBe("10.01");
+    expect(amount.step).toBe("0.10");
+    amount.value = "10";
+    amount.stepUp();
+    expect(amount.value).toBe("10.1");
+    amount.stepDown();
+    expect(amount.value).toBe("10");
   });
 
   it("lets the direction and duration controls update the proposed prediction", async () => {
