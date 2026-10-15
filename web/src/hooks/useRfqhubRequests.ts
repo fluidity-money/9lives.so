@@ -39,6 +39,10 @@ const mergeRequests = (
 
 export default function useRfqhubRequests() {
   const [requests, setRequests] = useState<RfqhubIncomingRequest[]>([]);
+  // Keep observed geometry after bidding closes. This is not a filled-position
+  // ledger: reconnect snapshots may omit closed requests, and old local orders
+  // do not contain authoritative targets or creation times.
+  const [chartRequests, setChartRequests] = useState<RfqhubIncomingRequest[]>([]);
   const [connectionStatus, setConnectionStatus] =
     useState<RfqhubConnectionStatus>("connecting");
 
@@ -60,6 +64,16 @@ export default function useRfqhubRequests() {
       };
       socket.onmessage = (event: MessageEvent<string>) => {
         const message = parseRfqhubMessage(event.data);
+        if (message?.type === "snapshot" || message?.type === "takers" || message?.type === "taker") {
+          const incoming = message.type === "taker" ? [message.request] : message.requests;
+          setChartRequests(current => {
+            const byId = new Map(current.map(request => [request.id, request]));
+            for (const request of incoming) byId.set(request.id, request);
+            return [...byId.values()]
+              .sort((a, b) => Date.parse(b.createdBy) - Date.parse(a.createdBy))
+              .slice(0, MAX_REQUESTS);
+          });
+        }
         if (message?.type === "snapshot") {
           // Snapshots replace stale reconnect state, with maker quotes applied atomically.
           setRequests(
