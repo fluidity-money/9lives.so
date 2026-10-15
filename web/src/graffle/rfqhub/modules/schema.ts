@@ -334,8 +334,7 @@ export namespace Schema {
      * the Taker's strategy for choosing. The BundleMaker here will take the opposite
      * position of the BundleTaker.
      */
-    export interface submitBundleMakerServerSig
-      extends $.OutputField {
+    export interface submitBundleMakerServerSig extends $.OutputField {
       name: "submitBundleMakerServerSig";
       arguments: {
         /**

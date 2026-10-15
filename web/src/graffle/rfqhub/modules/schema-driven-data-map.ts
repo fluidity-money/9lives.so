@@ -394,8 +394,7 @@ Query.f[`openAuctions`]!.nt = OpenAuctions;
 Mutation.f[`createAuctionServerSig`]!.nt = AuctionCreatedResult;
 Mutation.f[`inspectBundleTakerId`]!.nt = BundleTakerOwnerStatus;
 Mutation.f[`conclude`]!.nt = Aggregate;
-Mutation.f[`submitBundleMakerServerSig`]!.nt =
-  BundleMakerInfo;
+Mutation.f[`submitBundleMakerServerSig`]!.nt = BundleMakerInfo;
 
 //
 //

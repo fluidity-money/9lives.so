@@ -632,9 +632,7 @@ export namespace Mutation {
   export type submitBundleMakerServerSig$Expanded<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    submitBundleMakerServerSig$SelectionSet<_$Scalars>
-  >;
+  > = $$Utilities.Simplify<submitBundleMakerServerSig$SelectionSet<_$Scalars>>;
 }
 
 //

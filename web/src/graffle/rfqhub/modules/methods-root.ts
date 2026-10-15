@@ -286,9 +286,7 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
         $SelectionSet,
-        $$SelectionSets.Mutation.submitBundleMakerServerSig<
-          $Context["scalars"]
-        >
+        $$SelectionSets.Mutation.submitBundleMakerServerSig<$Context["scalars"]>
       >,
     ) => Promise<
       (null | {}) &
