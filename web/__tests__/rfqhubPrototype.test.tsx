@@ -541,37 +541,58 @@ describe("RfqhubPrototype", () => {
     expect(requests[1]?.textContent).toContain("Down");
   });
 
-  it("renders a red countdown line that drains until the taker deadline", async () => {
+  it("anchors remaining position time to creation and expiry across remounts", async () => {
+    jest.useFakeTimers();
     const now = Date.now();
-    mockedUseRfqhubRequests.mockReturnValue({
-      requests: [
-        {
-          id: "12",
-          accountAddress: "0x1234",
-          asset: "BTC",
-          isUp: true,
-          priceTarget: "65000000000",
-          amount: "25000000",
-          minOffer: "5000000",
-          outcome: "BTC settles above $65,000",
-          deadline: new Date(now + 30_000).toISOString(),
-          expiry: new Date(now + 60_000).toISOString(),
-          structure: { args: {}, sig: [] },
-          createdBy: "2026-10-14T11:00:00Z",
-          decayRate: 0,
-        },
-      ],
-      chartRequests: [],
-      connectionStatus: "connected",
-    });
+    jest.setSystemTime(now);
+    try {
+      mockedUseRfqhubRequests.mockReturnValue({
+        requests: [
+          {
+            id: "12",
+            accountAddress: "0x1234",
+            asset: "BTC",
+            isUp: true,
+            priceTarget: "65000000000",
+            amount: "25000000",
+            minOffer: "5000000",
+            outcome: "BTC settles above $65,000",
+            deadline: new Date(now + 30_000).toISOString(),
+            expiry: new Date(now + 60_000).toISOString(),
+            structure: { args: {}, sig: [] },
+            createdBy: new Date(now - 60_000).toISOString(),
+            decayRate: 0,
+          },
+        ],
+        chartRequests: [],
+        connectionStatus: "connected",
+      });
 
-    render(<RfqhubPrototype />);
-    await screen.findAllByDisplayValue("100");
-
-    const line = screen.getByTestId("rfqhub-deadline-progress");
-    expect(line.className).toContain("bg-red");
-    expect(line.style.animationName).toBe("rfqhubDeadlineCountdown");
-    expect(line.style.animationDuration).toMatch(/^(29|30)\d{3}ms$/);
+      const view = render(<RfqhubPrototype />);
+      await screen.findAllByDisplayValue("100");
+      const progress = () => screen.getByTestId("rfqhub-deadline-progress");
+      expect(progress().style.transform).toBe("scaleX(0.5)");
+      act(() => jest.advanceTimersByTime(30_000));
+      expect(progress().style.transform).toBe("scaleX(0.25)");
+      const feed = mockedUseRfqhubRequests.mock.results.at(-1)!.value;
+      mockedUseRfqhubRequests.mockReturnValue({
+        ...feed,
+        requests: feed.requests.map((request: { matchVersion?: number }) => ({
+          ...request,
+          matchVersion: 1,
+        })),
+      });
+      view.rerender(<RfqhubPrototype />);
+      expect(progress().style.transform).toBe("scaleX(0.25)");
+      view.unmount();
+      jest.setSystemTime(now + 30_000);
+      render(<RfqhubPrototype />);
+      expect(progress().style.transform).toBe("scaleX(0.25)");
+      act(() => jest.advanceTimersByTime(30_000));
+      expect(progress().style.transform).toBe("scaleX(0)");
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it("flashes a taker card after its minimum offer is matched", async () => {

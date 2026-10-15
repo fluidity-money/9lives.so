@@ -86,12 +86,20 @@ const requestPriceStatus = (
   return quote > target === request.isUp ? "Winning" : "Losing";
 };
 
-function RequestDeadlineProgress({ deadline }: { deadline: string }) {
-  const [mountedAtMs] = useState(() => Date.now());
-  const deadlineMs = Date.parse(deadline);
-  const remainingMs = deadlineMs - mountedAtMs;
-
-  if (!Number.isFinite(deadlineMs) || remainingMs <= 0) return null;
+function RequestDeadlineProgress({
+  createdBy,
+  expiry,
+  nowMs,
+}: {
+  createdBy: string;
+  expiry: string;
+  nowMs: number;
+}) {
+  const start = Date.parse(createdBy);
+  const end = Date.parse(expiry);
+  const duration = end - start;
+  if (!Number.isFinite(duration) || duration <= 0) return null;
+  const remaining = Math.max(0, Math.min(1, (end - nowMs) / duration));
 
   return (
     <span
@@ -100,13 +108,8 @@ function RequestDeadlineProgress({ deadline }: { deadline: string }) {
     >
       <span
         data-testid="rfqhub-deadline-progress"
-        className="block h-full origin-left bg-red-500 motion-reduce:animate-none"
-        style={{
-          animationName: "rfqhubDeadlineCountdown",
-          animationDuration: `${remainingMs}ms`,
-          animationTimingFunction: "linear",
-          animationFillMode: "forwards",
-        }}
+        className="block h-full origin-left bg-red-500"
+        style={{ transform: `scaleX(${remaining})` }}
       />
     </span>
   );
@@ -599,8 +602,9 @@ export default function RfqhubPrototype() {
                       Offer minimum →
                     </p>
                     <RequestDeadlineProgress
-                      key={request.deadline}
-                      deadline={request.deadline}
+                      createdBy={request.createdBy}
+                      expiry={request.expiry}
+                      nowMs={nowMs}
                     />
                   </button>
                 );
