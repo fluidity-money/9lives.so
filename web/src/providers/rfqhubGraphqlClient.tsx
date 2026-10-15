@@ -8,7 +8,7 @@ import { rfqhubRootData } from "@/lib/rfqhub";
  * The Rfqhub (request-for-quote) hub re-uses the Superposition account secret
  * system: the same `accounts_secrets_2` table that backs `accounts.superposition.so`
  * authorises these graph calls. Operations that spend onramped liquidity use
- * the `Authorization: <eoa>:<secret>` header; public reads and `conclude` do not.
+ * the `Authorization: <eoa>:<secret>` header; public reads do not.
  */
 const graphRfqhub = Rfqhub.create({ output: { envelope: true } }).transport({
   url: config.NEXT_PUBLIC_RFQHUB_URL,
@@ -195,7 +195,18 @@ export const rfqhubOfframp = ({
       ids: true,
     }),
     "offramp",
-  );
+  ).then((result) => {
+    if (
+      !result ||
+      !/^(?:0x)?(?:[0-9a-fA-F]{2})+$/.test(result.cd) ||
+      !result.ids?.length ||
+      result.ids.some((id) => !Number.isSafeInteger(id) || id <= 0)
+    )
+      throw new Error(
+        "RFQHub returned unusable withdrawal preparation; check the request before retrying",
+      );
+    return result;
+  });
 
 export type RfqhubOfframpResult = Awaited<ReturnType<typeof rfqhubOfframp>>;
 

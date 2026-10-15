@@ -38,7 +38,7 @@ export type RfqhubMessage =
   | { type: "takers"; requests: RfqhubIncomingRequest[] }
   | { type: "makers"; matches: RfqhubMakerMatch[] };
 
-const ONE_USDC = BigInt(1_000_000);
+const OFFER_INCREMENT = BigInt(100_000); // $0.10 in six-decimal USDC units.
 
 export const filterActiveRfqhubRequests = (
   requests: RfqhubIncomingRequest[],
@@ -239,7 +239,7 @@ export const minimumRfqhubOffer = (
   const nextMakerOffer =
     request.makerOffer === undefined
       ? BigInt(0)
-      : BigInt(request.makerOffer) + ONE_USDC;
+      : BigInt(request.makerOffer) + OFFER_INCREMENT;
   return minimum > nextMakerOffer ? minimum : nextMakerOffer;
 };
 

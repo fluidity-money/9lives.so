@@ -88,13 +88,13 @@ describe("RFQHub combined snapshots", () => {
       makerOffer: "5000000",
     });
     expect(minimumRfqhubOffer(result.current.requests[0]!)).toBe(
-      BigInt(6_000_000),
+      BigInt(5_100_000),
     );
     expect(observedOffers.length).toBeGreaterThan(0);
     expect(observedOffers.every((offer) => offer === "5000000")).toBe(true);
     act(() => socket.receive({ BundleMaker: { ...maker, amt: 7_000_000 } }));
     expect(minimumRfqhubOffer(result.current.requests[0]!)).toBe(
-      BigInt(8_000_000),
+      BigInt(7_100_000),
     );
     unmount();
   });

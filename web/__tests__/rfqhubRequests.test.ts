@@ -138,7 +138,7 @@ describe("RFQHub websocket taker advertisements", () => {
       makerOffer: "7000000",
       matchVersion: 2,
     });
-    expect(minimumRfqhubOffer(updated[0]!)).toBe(BigInt(6000000));
+    expect(minimumRfqhubOffer(updated[0]!)).toBe(BigInt(5100000));
   });
 
   it("uses the dedicated RFQHub websocket endpoint", () => {

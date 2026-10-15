@@ -34,9 +34,9 @@ import {
  * `useAccount`: the secret stored under the shared account key authorises
  * rfqhub graph calls via the `Authorization: <eoa>:<secret>` header.
  *
- * Every authenticated operation ensures an account exists through RFQ and
- * retrieves its secret without generic creation, then hands that secret to
- * the graph call. The underlying request functions live in
+ * Authenticated spending ensures an account exists through RFQ and retrieves
+ * its secret without generic creation. Withdrawal preparation instead requires
+ * an existing account and never creates one. The request functions live in
  * `providers/rfqhubGraphqlClient`.
  */
 export default function useRfqhub() {

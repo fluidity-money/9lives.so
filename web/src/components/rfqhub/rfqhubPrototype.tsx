@@ -173,7 +173,7 @@ export default function RfqhubPrototype() {
 
   const [asset, setAsset] = useState("BTC");
   const [direction, setDirection] = useState<"up" | "down">("up");
-  const [duration, setDuration] = useState("5");
+  const [durationSeconds, setDurationSeconds] = useState(300);
   const [predictionAmount, setPredictionAmount] = useState("");
   const [orders, setOrders] = useState<RfqhubOrder[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -234,7 +234,6 @@ export default function RfqhubPrototype() {
         await addFunds((requestedAmount - availableBalance).toString());
       }
 
-      const durationSeconds = Number(duration) * 60;
       const requestedReward = requestedAmount.toString();
       // Funding may take time: take the latest oracle quote at submission,
       // not the price captured when Execute was clicked. RFQ uses 6 decimals.
@@ -271,7 +270,13 @@ export default function RfqhubPrototype() {
   };
 
   const submitOffer = async (request: RfqhubIncomingRequest) => {
-    if (isSubmittingOffer) return;
+    // Do not fund or bid until the derived account identity is known.
+    if (
+      isSubmittingOffer ||
+      !ownerAddress ||
+      normalizeAddress(request.accountAddress) === ownerAddress
+    )
+      return;
     const assertBiddingOpen = () => {
       if (Date.parse(request.deadline) <= Date.now()) {
         throw new Error("Bidding has closed for this taker");
@@ -416,11 +421,15 @@ export default function RfqhubPrototype() {
               <select
                 id="rfqhub-duration"
                 className={inlineControl}
-                value={duration}
-                onChange={(event) => setDuration(event.target.value)}
+                value={durationSeconds}
+                onChange={(event) =>
+                  setDurationSeconds(Number(event.target.value))
+                }
               >
-                <option value="5">5 mins</option>
-                <option value="15">15 mins</option>
+                <option value="10">10 seconds</option>
+                <option value="120">2 mins</option>
+                <option value="300">5 mins</option>
+                <option value="900">15 mins</option>
               </select>
               <span>.</span>
             </div>
@@ -502,7 +511,7 @@ export default function RfqhubPrototype() {
                     key={`${request.id}:${request.matchVersion ?? 0}`}
                     data-testid="rfqhub-request"
                     aria-label={`Offer minimum for Taker #${request.id}`}
-                    disabled={isSubmittingOffer}
+                    disabled={isSubmittingOffer || !ownerAddress || isOwner}
                     aria-describedby={`rfqhub-request-status-${request.id}`}
                     className={`relative w-full overflow-hidden rounded-xl border p-3 text-left text-sm text-2black transition focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60 ${background} ${isOwner ? "border-[#b5a36a] hover:border-[#a39159]" : "border-neutral-300 hover:border-neutral-500"}`}
                     style={

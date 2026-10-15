@@ -104,7 +104,7 @@ it("parses both snapshots and keeps maker quotes separate from the decay anchor"
     matchVersion: 1,
   });
   expect(minimumRfqhubOffer(updated!, start)).toBe(BigInt(8000001));
-  expect(minimumRfqhubOffer(updated!, start + 1000)).toBe(BigInt(6000000));
+  expect(minimumRfqhubOffer(updated!, start + 1000)).toBe(BigInt(5100000));
 });
 
 it("merges initial takers and makers in the hook and removes rows at the deadline", () => {

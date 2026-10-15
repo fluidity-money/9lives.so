@@ -19,6 +19,21 @@ jest.mock("../src/graffle/rfqhub/__", () => ({
     }),
   },
 }));
+it.each([
+  { cd: "", ids: [1] },
+  { cd: "00", ids: [] },
+  { cd: "zz", ids: [1] },
+])(
+  "rejects unusable preparation instead of presenting false success: %j",
+  async (prepared) => {
+    mockOfframp.mockResolvedValue({ data: { offramp: prepared } });
+    await expect(
+      rfqhubOfframp({ eoaAddress: "0xabc", secret: "secret", minAmt: "1" }),
+    ).rejects.toThrow("unusable withdrawal preparation");
+    expect(mockOfframp).toHaveBeenCalledTimes(1);
+  },
+);
+
 beforeEach(() => jest.clearAllMocks());
 it("selects calldata and IDs, sends exact minAmt with account authorization and unwraps the root", async () => {
   const prepared = { cd: "aabb", ids: [3, 7] };

@@ -191,6 +191,116 @@ describe("RfqhubPrototype", () => {
       render(<RfqhubPrototype />);
       await screen.findByText("Yours");
       expect(requestEoaForAddress).toHaveBeenCalledWith("0x1234");
+      const card = screen.getByTestId("rfqhub-request") as HTMLButtonElement;
+      expect(card.disabled).toBe(true);
+      requestBalance.mockClear();
+      fireEvent.click(card);
+      expect(requestBalance).not.toHaveBeenCalled();
+      expect(addFunds).not.toHaveBeenCalled();
+      expect(submitBundleMaker).not.toHaveBeenCalled();
+    },
+  );
+
+  it("guards the offer handler even when invoked without the disabled UI", async () => {
+    showRequest();
+    render(<RfqhubPrototype />);
+    await screen.findByText("Yours");
+    const card = screen.getByTestId("rfqhub-request");
+    // Invoke React's handler directly to exercise defense beyond native disabled.
+    const propsKey = Object.keys(card).find((key) =>
+      key.startsWith("__reactProps$"),
+    )!;
+    const props = (card as unknown as Record<string, { onClick: () => void }>)[
+      propsKey
+    ]!;
+    requestBalance.mockClear();
+    await act(async () => props.onClick());
+    expect(requestBalance).not.toHaveBeenCalled();
+    expect(addFunds).not.toHaveBeenCalled();
+    expect(submitBundleMaker).not.toHaveBeenCalled();
+  });
+
+  it.each(["pending", "failed"])(
+    "blocks offers while derived identity is %s",
+    async (state) => {
+      jest
+        .mocked(requestEoaForAddress)
+        .mockImplementation(() =>
+          state === "failed"
+            ? Promise.reject(new Error("Offline"))
+            : new Promise(() => {}),
+        );
+      showRequest();
+      render(<RfqhubPrototype />);
+      await act(async () => {});
+      const card = screen.getByTestId("rfqhub-request") as HTMLButtonElement;
+      expect(card.disabled).toBe(true);
+      fireEvent.click(card);
+      expect(addFunds).not.toHaveBeenCalled();
+      expect(submitBundleMaker).not.toHaveBeenCalled();
+    },
+  );
+
+  it("offers ten cents over an existing maker rather than one dollar", async () => {
+    showRequest({
+      accountAddress: `0x${"cd".repeat(20)}`,
+      makerOffer: "9000000",
+    });
+    render(<RfqhubPrototype />);
+    const card = screen.getByTestId("rfqhub-request") as HTMLButtonElement;
+    await waitFor(() => expect(card.disabled).toBe(false));
+    expect(card.textContent).toContain("$9.1");
+    fireEvent.click(card);
+    await waitFor(() =>
+      expect(submitBundleMaker).toHaveBeenCalledWith({
+        bundleTakerId: 7,
+        minAmount: "9100000",
+        maxAmount: "9100000",
+      }),
+    );
+  });
+
+  it.each([
+    ["10 seconds", 10],
+    ["2 mins", 120],
+    ["5 mins", 300],
+    ["15 mins", 900],
+  ])(
+    "submits %s in seconds and persists the matching expiry",
+    async (label, seconds) => {
+      render(<RfqhubPrototype />);
+      await waitFor(() =>
+        expect(
+          (screen.getByLabelText("Prediction amount") as HTMLInputElement)
+            .value,
+        ).toBe("100"),
+      );
+      const option = screen.getByRole("option", {
+        name: label,
+      }) as HTMLOptionElement;
+      fireEvent.change(screen.getByLabelText("Duration"), {
+        target: { value: option.value },
+      });
+      const before = Date.now();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Execute prediction" }),
+      );
+      await screen.findByText("Prediction #7 is open");
+      expect(createSuggestion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          durationSeconds: seconds,
+          biddingWindowSeconds: seconds,
+        }),
+      );
+      const [order] = JSON.parse(
+        window.localStorage.getItem("rfqhub-taker-orders:0x1234")!,
+      );
+      expect(order.expiryMs).toBeGreaterThanOrEqual(
+        before + Number(seconds) * 1000,
+      );
+      expect(order.expiryMs).toBeLessThanOrEqual(
+        Date.now() + Number(seconds) * 1000,
+      );
     },
   );
 
@@ -372,7 +482,7 @@ describe("RfqhubPrototype", () => {
       (screen.getByLabelText("Direction") as HTMLSelectElement).value,
     ).toBe("up");
     expect((screen.getByLabelText("Duration") as HTMLSelectElement).value).toBe(
-      "5",
+      "300",
     );
     expect(screen.queryByLabelText("Winnings amount")).toBeNull();
     expect(screen.getByTestId("prediction-sentence").textContent).toContain(
@@ -835,6 +945,15 @@ describe("RfqhubPrototype", () => {
     });
     render(<RfqhubPrototype />);
 
+    await waitFor(() =>
+      expect(
+        (
+          screen.getByRole("button", {
+            name: "Offer minimum for Taker #12",
+          }) as HTMLButtonElement
+        ).disabled,
+      ).toBe(false),
+    );
     fireEvent.click(
       screen.getByRole("button", { name: "Offer minimum for Taker #12" }),
     );
@@ -883,14 +1002,14 @@ describe("RfqhubPrototype", () => {
       target: { value: "down" },
     });
     fireEvent.change(screen.getByLabelText("Duration"), {
-      target: { value: "15" },
+      target: { value: "900" },
     });
 
     expect(
       (screen.getByLabelText("Direction") as HTMLSelectElement).value,
     ).toBe("down");
     expect((screen.getByLabelText("Duration") as HTMLSelectElement).value).toBe(
-      "15",
+      "900",
     );
     fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
     await waitFor(() =>
