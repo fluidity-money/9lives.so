@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { usePublicClient, useSignMessage } from "wagmi";
 import { maxUint256, parseSignature } from "viem";
@@ -42,7 +42,9 @@ import {
 export default function useRfqhub() {
   const account = useAppKitAccount();
   const walletRef = useRef(account.address);
-  walletRef.current = account.address;
+  useLayoutEffect(() => {
+    walletRef.current = account.address;
+  }, [account.address]);
   const { mutateAsync: signMessage } = useSignMessage();
   const publicClient = usePublicClient({ chainId: destinationChain.id });
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
