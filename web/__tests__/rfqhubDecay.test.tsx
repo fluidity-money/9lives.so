@@ -28,8 +28,16 @@ const taker = {
 const maker = { acc_addr: "0x5678", amt: "5000000", bundle_taker_id: 7 };
 const start = Date.parse(taker.created_by);
 
-it("preserves null versus explicit zero, but both have a zero floor", () => {
-  for (const min_offer of [null, "0", 0]) {
+it("starts nullable minimums at the prediction amount and decays each second", () => {
+  const request = parseRfqhubRequest({ ...taker, min_offer: null })!;
+  expect(request.minOffer).toBeNull();
+  expect(estimateRfqhubFloor(request, start)).toBe(BigInt(10000000));
+  expect(estimateRfqhubFloor(request, start + 1000)).toBe(BigInt(5000000));
+  expect(estimateRfqhubFloor(request, start + 2000)).toBe(BigInt(2500000));
+});
+
+it("preserves explicit zero as a zero floor", () => {
+  for (const min_offer of ["0", 0]) {
     const request = parseRfqhubRequest({ ...taker, min_offer })!;
     expect(request.minOffer).toBe(min_offer === null ? null : "0");
     expect(estimateRfqhubFloor(request, start)).toBe(BigInt(0));

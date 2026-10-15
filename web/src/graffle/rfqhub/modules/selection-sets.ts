@@ -236,13 +236,13 @@ export interface Mutation<
     | $Select.SelectAlias.SelectAlias<Mutation.cancelAuction<_$Scalars>>;
   /**
    *
-   * Select the `submitBundleMakerFromOnrampedAmountServerSig` field on the `Mutation` object. Its type is `BundleMakerInfo` (a `OutputObject` kind of type).
+   * Select the `submitBundleMakerServerSig` field on the `Mutation` object. Its type is `BundleMakerInfo` (a `OutputObject` kind of type).
    *
    */
-  submitBundleMakerFromOnrampedAmountServerSig?:
-    | Mutation.submitBundleMakerFromOnrampedAmountServerSig<_$Scalars>
+  submitBundleMakerServerSig?:
+    | Mutation.submitBundleMakerServerSig<_$Scalars>
     | $Select.SelectAlias.SelectAlias<
-        Mutation.submitBundleMakerFromOnrampedAmountServerSig<_$Scalars>
+        Mutation.submitBundleMakerServerSig<_$Scalars>
       >;
 
   /**
@@ -585,23 +585,23 @@ export namespace Mutation {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type submitBundleMakerFromOnrampedAmountServerSig<
+  export type submitBundleMakerServerSig<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = submitBundleMakerFromOnrampedAmountServerSig$SelectionSet<_$Scalars>;
+  > = submitBundleMakerServerSig$SelectionSet<_$Scalars>;
 
-  export interface submitBundleMakerFromOnrampedAmountServerSig$SelectionSet<
+  export interface submitBundleMakerServerSig$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   >
     extends $Select.Bases.Base, $NamedTypes.$BundleMakerInfo<_$Scalars> {
     /**
-     * Arguments for `submitBundleMakerFromOnrampedAmountServerSig` field. All arguments are required so you must include this.
+     * Arguments for `submitBundleMakerServerSig` field. All arguments are required so you must include this.
      */
-    $: submitBundleMakerFromOnrampedAmountServerSig$Arguments<_$Scalars>;
+    $: submitBundleMakerServerSig$Arguments<_$Scalars>;
   }
 
-  export interface submitBundleMakerFromOnrampedAmountServerSig$Arguments<
+  export interface submitBundleMakerServerSig$Arguments<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > {
@@ -624,16 +624,16 @@ export namespace Mutation {
 
   /**
    *
-   * This is the "expanded" version of the `submitBundleMakerFromOnrampedAmountServerSig` type. It is identical except for the fact
+   * This is the "expanded" version of the `submitBundleMakerServerSig` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type submitBundleMakerFromOnrampedAmountServerSig$Expanded<
+  export type submitBundleMakerServerSig$Expanded<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<
-    submitBundleMakerFromOnrampedAmountServerSig$SelectionSet<_$Scalars>
+    submitBundleMakerServerSig$SelectionSet<_$Scalars>
   >;
 }
 

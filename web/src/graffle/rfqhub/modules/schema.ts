@@ -87,7 +87,7 @@ export namespace Schema {
       conclude: Mutation.conclude;
       concludedCalldata: Mutation.concludedCalldata;
       cancelAuction: Mutation.cancelAuction;
-      submitBundleMakerFromOnrampedAmountServerSig: Mutation.submitBundleMakerFromOnrampedAmountServerSig;
+      submitBundleMakerServerSig: Mutation.submitBundleMakerServerSig;
     };
   }
 
@@ -334,9 +334,9 @@ export namespace Schema {
      * the Taker's strategy for choosing. The BundleMaker here will take the opposite
      * position of the BundleTaker.
      */
-    export interface submitBundleMakerFromOnrampedAmountServerSig
+    export interface submitBundleMakerServerSig
       extends $.OutputField {
-      name: "submitBundleMakerFromOnrampedAmountServerSig";
+      name: "submitBundleMakerServerSig";
       arguments: {
         /**
          * The bundle taker to point to to make this interaction work.

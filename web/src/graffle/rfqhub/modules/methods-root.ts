@@ -281,12 +281,12 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
    * the Taker's strategy for choosing. The BundleMaker here will take the opposite
    * position of the BundleTaker.
    */
-  submitBundleMakerFromOnrampedAmountServerSig: $$Utilities.ClientTransports.PreflightCheck<
+  submitBundleMakerServerSig: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
         $SelectionSet,
-        $$SelectionSets.Mutation.submitBundleMakerFromOnrampedAmountServerSig<
+        $$SelectionSets.Mutation.submitBundleMakerServerSig<
           $Context["scalars"]
         >
       >,
@@ -295,10 +295,10 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
         $$Utilities.HandleOutputGraffleRootField<
           $Context,
           InferResult.OperationMutation<
-            { submitBundleMakerFromOnrampedAmountServerSig: $SelectionSet },
+            { submitBundleMakerServerSig: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
-          "submitBundleMakerFromOnrampedAmountServerSig"
+          "submitBundleMakerServerSig"
         >
     >
   >;

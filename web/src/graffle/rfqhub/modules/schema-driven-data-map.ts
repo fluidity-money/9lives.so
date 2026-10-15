@@ -352,7 +352,7 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         },
       },
     },
-    submitBundleMakerFromOnrampedAmountServerSig: {
+    submitBundleMakerServerSig: {
       a: {
         bundleTakerId: {
           nt: Int,
@@ -394,7 +394,7 @@ Query.f[`openAuctions`]!.nt = OpenAuctions;
 Mutation.f[`createAuctionServerSig`]!.nt = AuctionCreatedResult;
 Mutation.f[`inspectBundleTakerId`]!.nt = BundleTakerOwnerStatus;
 Mutation.f[`conclude`]!.nt = Aggregate;
-Mutation.f[`submitBundleMakerFromOnrampedAmountServerSig`]!.nt =
+Mutation.f[`submitBundleMakerServerSig`]!.nt =
   BundleMakerInfo;
 
 //

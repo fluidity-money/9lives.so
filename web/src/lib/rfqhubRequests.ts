@@ -215,7 +215,7 @@ export const estimateRfqhubFloor = (
   request: RfqhubIncomingRequest,
   nowMs = Date.now(),
 ): bigint => {
-  const base = BigInt(request.minOffer ?? "0");
+  const base = BigInt(request.minOffer ?? request.amount);
   const elapsed = Math.max(
     0,
     Math.floor(

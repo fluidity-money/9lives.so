@@ -174,12 +174,12 @@ export const rfqhubSubmitBundleMakerFromOnrampedAmountServerSig = ({
     withAuth(
       eoaAddress,
       secret,
-    ).mutation.submitBundleMakerFromOnrampedAmountServerSig({
+    ).mutation.submitBundleMakerServerSig({
       $: { bundleTakerId, minAmount, maxAmount },
       id: true,
       bundleMakerId: true,
     }),
-    "submitBundleMakerFromOnrampedAmountServerSig",
+    "submitBundleMakerServerSig",
   );
 
 /**
