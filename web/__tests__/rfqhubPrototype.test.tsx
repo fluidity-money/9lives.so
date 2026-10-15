@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import RfqhubPrototype from "@/components/rfqhub/rfqhubPrototype";
 import NavigationMenu from "@/components/v2/navigationMenu";
 import useFeatureFlag from "../src/hooks/useFeatureFlag";
@@ -73,6 +79,55 @@ beforeEach(() => {
 });
 
 describe("RfqhubPrototype", () => {
+  it("refreshes the estimated offer every second and submits the current floor plus one unit", async () => {
+    jest.useFakeTimers().setSystemTime(new Date("2026-10-14T12:00:00Z"));
+    try {
+      mockedUseRfqhubRequests.mockReturnValue({
+        connectionStatus: "connected",
+        requests: [
+          {
+            id: "7",
+            accountAddress: "0x1234",
+            asset: "BTC",
+            amount: "10000000",
+            minOffer: "8000000",
+            createdBy: "2026-10-14T12:00:00Z",
+            decayRate: 0.5,
+            isUp: true,
+            priceTarget: "65000000000",
+            outcome: "BitcoinPrice",
+            deadline: "2026-10-14T12:05:00Z",
+            expiry: "2026-10-14T12:05:00Z",
+            structure: { args: {}, sig: [] },
+          },
+        ],
+      });
+      const { unmount } = render(
+        <RfqhubPrototype campaignData={campaignData} />,
+      );
+      await act(async () => {});
+      expect(screen.getByTestId("rfqhub-request").textContent).toContain(
+        "$8.000001",
+      );
+      act(() => jest.advanceTimersByTime(1000));
+      expect(screen.getByTestId("rfqhub-request").textContent).toContain(
+        "$4.000001",
+      );
+      await act(async () =>
+        fireEvent.click(
+          screen.getByRole("button", { name: "Offer minimum for Taker #7" }),
+        ),
+      );
+      expect(submitBundleMaker).toHaveBeenCalledWith({
+        bundleTakerId: 7,
+        minAmount: "4000001",
+        maxAmount: "4000001",
+      });
+      unmount();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
   it("prefills the stake from the combined RFQHub and wallet balances", async () => {
     requestBalance.mockResolvedValue("10000000");
     render(<RfqhubPrototype campaignData={campaignData} />);
@@ -123,7 +178,7 @@ describe("RfqhubPrototype", () => {
 
     await waitFor(() => {
       expect(createSuggestion).toHaveBeenCalledWith({
-        biddingWindowSeconds: 60,
+        biddingWindowSeconds: 300,
         durationSeconds: 300,
         isUp: true,
         maxAmount: "100000000",
@@ -227,6 +282,8 @@ describe("RfqhubPrototype", () => {
           accountAddress: "0x1234",
           asset: "0xabcd",
           structure: { args: {}, sig: [] },
+          createdBy: "2026-10-14T11:00:00Z",
+          decayRate: 0,
         },
         {
           id: "11",
@@ -240,6 +297,8 @@ describe("RfqhubPrototype", () => {
           accountAddress: "0x5678",
           asset: "0xef01",
           structure: { args: {}, sig: [] },
+          createdBy: "2026-10-14T11:00:00Z",
+          decayRate: 0,
         },
       ],
     });
@@ -280,6 +339,8 @@ describe("RfqhubPrototype", () => {
           deadline: new Date(now + 30_000).toISOString(),
           expiry: new Date(now + 60_000).toISOString(),
           structure: { args: {}, sig: [] },
+          createdBy: "2026-10-14T11:00:00Z",
+          decayRate: 0,
         },
       ],
       connectionStatus: "connected",
@@ -312,6 +373,8 @@ describe("RfqhubPrototype", () => {
           deadline: new Date(now + 30_000).toISOString(),
           expiry: new Date(now + 60_000).toISOString(),
           structure: { args: {}, sig: [] },
+          createdBy: "2026-10-14T11:00:00Z",
+          decayRate: 0,
         },
       ],
     });
@@ -339,6 +402,8 @@ describe("RfqhubPrototype", () => {
           accountAddress: "0x1234",
           asset: "0xabcd",
           structure: { args: {}, sig: [] },
+          createdBy: "2026-10-14T11:00:00Z",
+          decayRate: 0,
         },
       ],
     });
@@ -350,14 +415,14 @@ describe("RfqhubPrototype", () => {
 
     expect(screen.queryByRole("dialog")).toBeNull();
     await waitFor(() => expect(submitBundleMaker).toHaveBeenCalled());
-    expect(addFunds).toHaveBeenCalledWith("10000000");
+    expect(addFunds).toHaveBeenCalledWith("10000001");
     expect(addFunds.mock.invocationCallOrder[0]).toBeLessThan(
       submitBundleMaker.mock.invocationCallOrder[0]!,
     );
     expect(submitBundleMaker).toHaveBeenCalledWith({
       bundleTakerId: 12,
-      minAmount: "60000000",
-      maxAmount: "60000000",
+      minAmount: "60000001",
+      maxAmount: "60000001",
     });
     expect(screen.getByText("Offer submitted for Taker #12")).not.toBeNull();
   });
@@ -393,6 +458,15 @@ describe("RfqhubPrototype", () => {
     ).toBe("down");
     expect((screen.getByLabelText("Duration") as HTMLSelectElement).value).toBe(
       "15",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Execute prediction" }));
+    await waitFor(() =>
+      expect(createSuggestion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          durationSeconds: 900,
+          biddingWindowSeconds: 900,
+        }),
+      ),
     );
   });
 });

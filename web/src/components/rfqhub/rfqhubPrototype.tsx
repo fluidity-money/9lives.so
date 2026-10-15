@@ -4,7 +4,10 @@ import Button from "@/components/v2/button";
 import PriceChartWrapper from "@/components/v2/chartWrapper";
 import useRfqhub from "@/hooks/useRfqhub";
 import useRfqhubRequests from "@/hooks/useRfqhubRequests";
-import type { RfqhubIncomingRequest } from "@/lib/rfqhubRequests";
+import {
+  minimumRfqhubOffer,
+  type RfqhubIncomingRequest,
+} from "@/lib/rfqhubRequests";
 import type { SimpleCampaignDetail } from "@/types";
 import { formatUnits, parseUnits } from "viem";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -116,6 +119,11 @@ export default function RfqhubPrototype({
   const requestOnchainBalanceRef = useRef(requestOnchainBalance);
   requestOnchainBalanceRef.current = requestOnchainBalance;
   const { requests, connectionStatus } = useRfqhubRequests();
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const [asset, setAsset] = useState("BTC");
   const [direction, setDirection] = useState<"up" | "down">("up");
@@ -203,7 +211,7 @@ export default function RfqhubPrototype({
         isUp: direction === "up",
         priceTarget,
         durationSeconds,
-        biddingWindowSeconds: Math.min(60, durationSeconds - 1),
+        biddingWindowSeconds: durationSeconds,
       });
       const order: RfqhubOrder = {
         bundleId: result.bundleId,
@@ -260,7 +268,7 @@ export default function RfqhubPrototype({
     setIsSubmittingOffer(true);
     try {
       assertBiddingOpen();
-      const amount = BigInt(request.minOffer);
+      const amount = minimumRfqhubOffer(request);
 
       const availableBalance = BigInt(await requestBalance());
       assertBiddingOpen();
@@ -480,9 +488,12 @@ export default function RfqhubPrototype({
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">
-                    <span>Minimum offer</span>
+                    <span>Minimum offer (estimated)</span>
                     <span className="font-medium text-2black">
-                      ${displayUsdc(request.minOffer)}
+                      $
+                      {displayUsdc(
+                        minimumRfqhubOffer(request, nowMs).toString(),
+                      )}
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-3 text-neutral-600">

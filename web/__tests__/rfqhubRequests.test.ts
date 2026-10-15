@@ -1,5 +1,6 @@
 import {
   applyRfqhubMakerMatch,
+  minimumRfqhubOffer,
   filterActiveRfqhubRequests,
   parseRfqhubMessage,
   parseRfqhubRequestMessage,
@@ -17,6 +18,8 @@ describe("RFQHub websocket taker advertisements", () => {
             asset: "0xabcd",
             amt: 1_000_000,
             min_offer: 100_000,
+            created_by: "2026-10-14T11:00:00Z",
+            decay_rate: 0,
             is_up: true,
             price_target: 9_999_999,
             outcome: "BitcoinPrice",
@@ -36,6 +39,8 @@ describe("RFQHub websocket taker advertisements", () => {
         asset: "0xabcd",
         amount: "1000000",
         minOffer: "100000",
+        createdBy: "2026-10-14T11:00:00Z",
+        decayRate: 0,
         isUp: true,
         priceTarget: "9999999",
         outcome: "BitcoinPrice",
@@ -60,6 +65,8 @@ describe("RFQHub websocket taker advertisements", () => {
             asset: "0xabcd",
             amt: 1_000_000,
             min_offer: 100_000,
+            created_by: "2026-10-14T11:00:00Z",
+            decay_rate: 0,
             is_up: "true",
             price_target: 9_999_999,
             outcome: "BitcoinPrice",
@@ -100,6 +107,8 @@ describe("RFQHub websocket taker advertisements", () => {
           asset: "0xabcd",
           amt: 10_000_000,
           min_offer: 100_000,
+          created_by: "2026-10-14T11:00:00Z",
+          decay_rate: 0,
           is_up: true,
           price_target: 9_999_999,
           outcome: "BitcoinPrice",
@@ -114,7 +123,8 @@ describe("RFQHub websocket taker advertisements", () => {
     const updated = applyRfqhubMakerMatch(requests, makerMessage.match);
     expect(updated[0]).toMatchObject({
       id: "7",
-      minOffer: "6000000",
+      minOffer: "100000",
+      makerOffer: "5000000",
       matchVersion: 1,
     });
 
@@ -123,7 +133,12 @@ describe("RFQHub websocket taker advertisements", () => {
         ...makerMessage.match,
         amount: "7000000",
       })[0],
-    ).toMatchObject({ minOffer: "8000000", matchVersion: 2 });
+    ).toMatchObject({
+      minOffer: "100000",
+      makerOffer: "7000000",
+      matchVersion: 2,
+    });
+    expect(minimumRfqhubOffer(updated[0]!)).toBe(BigInt(6000000));
   });
 
   it("uses the dedicated RFQHub websocket endpoint", () => {
@@ -142,6 +157,8 @@ describe("RFQHub websocket taker advertisements", () => {
           asset: "0xabcd",
           amt: 1_000_000,
           min_offer: 100_000,
+          created_by: "2026-10-14T11:00:00Z",
+          decay_rate: 0,
           is_up: true,
           price_target: 9_999_999,
           outcome: "BitcoinPrice",

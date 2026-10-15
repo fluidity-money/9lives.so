@@ -60,13 +60,25 @@ export default function useRfqhubRequests() {
       };
       socket.onmessage = (event: MessageEvent<string>) => {
         const message = parseRfqhubMessage(event.data);
-        if (message?.type === "taker") {
-          setRequests((current) => mergeRequests(current, [message.request]));
-        } else if (message?.type === "maker") {
+        if (message?.type === "snapshot") {
+          // Snapshots replace stale reconnect state, with maker quotes applied atomically.
+          setRequests(
+            message.matches.reduce(
+              applyRfqhubMakerMatch,
+              mergeRequests([], message.requests),
+            ),
+          );
+        } else if (message?.type === "taker" || message?.type === "takers") {
+          const incoming =
+            message.type === "taker" ? [message.request] : message.requests;
+          setRequests((current) => mergeRequests(current, incoming));
+        } else if (message?.type === "maker" || message?.type === "makers") {
+          const matches =
+            message.type === "maker" ? [message.match] : message.matches;
           setRequests((current) =>
-            applyRfqhubMakerMatch(
+            matches.reduce(
+              applyRfqhubMakerMatch,
               filterActiveRfqhubRequests(current),
-              message.match,
             ),
           );
         }

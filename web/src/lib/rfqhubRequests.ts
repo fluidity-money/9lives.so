@@ -5,7 +5,10 @@ export type RfqhubIncomingRequest = {
   accountAddress: string;
   asset: string;
   amount: string;
-  minOffer: string;
+  minOffer: string | null;
+  createdBy: string;
+  decayRate: number;
+  makerOffer?: string;
   isUp: boolean;
   priceTarget: string;
   outcome: string;
@@ -25,8 +28,15 @@ export type RfqhubMakerMatch = {
 };
 
 export type RfqhubMessage =
+  | {
+      type: "snapshot";
+      requests: RfqhubIncomingRequest[];
+      matches: RfqhubMakerMatch[];
+    }
   | { type: "taker"; request: RfqhubIncomingRequest }
-  | { type: "maker"; match: RfqhubMakerMatch };
+  | { type: "maker"; match: RfqhubMakerMatch }
+  | { type: "takers"; requests: RfqhubIncomingRequest[] }
+  | { type: "makers"; matches: RfqhubMakerMatch[] };
 
 const ONE_USDC = BigInt(1_000_000);
 
@@ -72,7 +82,10 @@ export const parseRfqhubRequest = (
   const accountAddress = nonEmptyString(content.acc_addr);
   const asset = nonEmptyString(content.asset);
   const amount = integerString(content.amt);
-  const minOffer = integerString(content.min_offer);
+  const minOffer =
+    content.min_offer === null ? null : integerString(content.min_offer);
+  const createdBy = timestamp(content.created_by);
+  const decayRate = content.decay_rate;
   const priceTarget = integerString(content.price_target);
   const outcome = nonEmptyString(content.outcome);
   const deadline = timestamp(content.deadline);
@@ -83,7 +96,12 @@ export const parseRfqhubRequest = (
     !accountAddress ||
     !asset ||
     !amount ||
-    !minOffer ||
+    minOffer === undefined ||
+    !createdBy ||
+    typeof decayRate !== "number" ||
+    !Number.isFinite(decayRate) ||
+    decayRate < 0 ||
+    decayRate > 1 ||
     typeof content.is_up !== "boolean" ||
     !priceTarget ||
     !outcome ||
@@ -99,6 +117,8 @@ export const parseRfqhubRequest = (
     asset,
     amount,
     minOffer,
+    createdBy,
+    decayRate,
     isUp: content.is_up,
     priceTarget,
     outcome,
@@ -112,7 +132,11 @@ export const parseRfqhubRequestMessage = (
   raw: string,
 ): RfqhubIncomingRequest[] => {
   const message = parseRfqhubMessage(raw);
-  return message?.type === "taker" ? [message.request] : [];
+  return message?.type === "taker"
+    ? [message.request]
+    : message?.type === "takers" || message?.type === "snapshot"
+      ? message.requests
+      : [];
 };
 
 export const parseRfqhubMessage = (raw: string): RfqhubMessage | undefined => {
@@ -124,18 +148,51 @@ export const parseRfqhubMessage = (raw: string): RfqhubMessage | undefined => {
   }
 
   const root = asRecord(decoded);
+  if (Array.isArray(root?.BundleTakers) && Array.isArray(root?.BundleMakers)) {
+    return {
+      type: "snapshot",
+      requests: root.BundleTakers.flatMap((row) => {
+        const request = parseRfqhubRequest(row);
+        return request ? [request] : [];
+      }),
+      matches: root.BundleMakers.flatMap((row) => {
+        const match = parseRfqhubMaker(row);
+        return match ? [match] : [];
+      }),
+    };
+  }
+  if (Array.isArray(root?.BundleTakers)) {
+    return {
+      type: "takers",
+      requests: root.BundleTakers.flatMap((row) => {
+        const request = parseRfqhubRequest(row);
+        return request ? [request] : [];
+      }),
+    };
+  }
+  if (Array.isArray(root?.BundleMakers)) {
+    return {
+      type: "makers",
+      matches: root.BundleMakers.flatMap((row) => {
+        const match = parseRfqhubMaker(row);
+        return match ? [match] : [];
+      }),
+    };
+  }
   const request = parseRfqhubRequest(root?.BundleTaker);
   if (request) return { type: "taker", request };
 
-  const maker = asRecord(root?.BundleMaker);
+  const match = parseRfqhubMaker(root?.BundleMaker);
+  return match ? { type: "maker", match } : undefined;
+};
+
+const parseRfqhubMaker = (value: unknown): RfqhubMakerMatch | undefined => {
+  const maker = asRecord(value);
   const accountAddress = nonEmptyString(maker?.acc_addr);
   const amount = integerString(maker?.amt);
   const bundleTakerId = integerString(maker?.bundle_taker_id);
   return accountAddress && amount && bundleTakerId
-    ? {
-        type: "maker",
-        match: { accountAddress, amount, bundleTakerId },
-      }
+    ? { accountAddress, amount, bundleTakerId }
     : undefined;
 };
 
@@ -147,11 +204,44 @@ export const applyRfqhubMakerMatch = (
     request.id === match.bundleTakerId
       ? {
           ...request,
-          minOffer: (BigInt(match.amount) + ONE_USDC).toString(),
+          makerOffer: match.amount,
           matchVersion: (request.matchVersion ?? 0) + 1,
         }
       : request,
   );
+
+// Integer base-unit estimate only: the database's numeric calculation is authoritative.
+export const estimateRfqhubFloor = (
+  request: RfqhubIncomingRequest,
+  nowMs = Date.now(),
+): bigint => {
+  const base = BigInt(request.minOffer ?? "0");
+  const elapsed = Math.max(
+    0,
+    Math.floor(
+      (Math.min(nowMs, Date.parse(request.deadline)) -
+        Date.parse(request.createdBy)) /
+        1000,
+    ),
+  );
+  if (base === BigInt(0) || elapsed === 0 || request.decayRate === 0)
+    return base;
+  if (request.decayRate === 1) return BigInt(0);
+  return BigInt(Math.floor(Number(base) * (1 - request.decayRate) ** elapsed));
+};
+
+export const minimumRfqhubOffer = (
+  request: RfqhubIncomingRequest,
+  nowMs = Date.now(),
+): bigint => {
+  // Offers must be strictly greater than the decayed floor, including a zero floor.
+  const minimum = estimateRfqhubFloor(request, nowMs) + BigInt(1);
+  const nextMakerOffer =
+    request.makerOffer === undefined
+      ? BigInt(0)
+      : BigInt(request.makerOffer) + ONE_USDC;
+  return minimum > nextMakerOffer ? minimum : nextMakerOffer;
+};
 
 export const resolveRfqhubWebsocketUrl = (configuredUrl?: string): string => {
   const url = new URL(configuredUrl ?? DEFAULT_RFQHUB_WEBSOCKET_URL);
