@@ -69,6 +69,12 @@ export namespace Select {
       $$Schema.Schema,
       $$Schema.Schema["allTypes"]["OpenAuctions"]
     >;
+  export type Offramp<$SelectionSet extends $$SelectionSets.Offramp> =
+    InferResult.OutputObjectLike<
+      $SelectionSet,
+      $$Schema.Schema,
+      $$Schema.Schema["allTypes"]["Offramp"]
+    >;
   export type AuctionCreatedResult<
     $SelectionSet extends $$SelectionSets.AuctionCreatedResult,
   > = InferResult.OutputObjectLike<

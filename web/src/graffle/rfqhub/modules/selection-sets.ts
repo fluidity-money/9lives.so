@@ -212,20 +212,12 @@ export interface Mutation<
     | $Select.SelectAlias.SelectAlias<Mutation.inspectBundleTakerId<_$Scalars>>;
   /**
    *
-   * Select the `conclude` field on the `Mutation` object. Its type is `Aggregate` (a `OutputObject` kind of type).
+   * Select the `offramp` field on the `Mutation` object. Its type is `Offramp` (a `OutputObject` kind of type).
    *
    */
-  conclude?:
-    | Mutation.conclude<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.conclude<_$Scalars>>;
-  /**
-   *
-   * Select the `concludedCalldata` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  concludedCalldata?:
-    | Mutation.concludedCalldata<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.concludedCalldata<_$Scalars>>;
+  offramp?:
+    | Mutation.offramp<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Mutation.offramp<_$Scalars>>;
   /**
    *
    * Select the `cancelAuction` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -376,7 +368,7 @@ export namespace Mutation {
   >
     extends $Select.Bases.Base, $NamedTypes.$AuctionCreatedResult<_$Scalars> {
     /**
-     * Arguments for `createAuctionServerSig` field. All arguments are required so you must include this.
+     * Arguments for `createAuctionServerSig` field. Some (7/8) arguments are required so you must include this.
      */
     $: createAuctionServerSig$Arguments<_$Scalars>;
   }
@@ -395,6 +387,9 @@ export namespace Mutation {
      */
     maxAmount: string;
     isUp: boolean;
+    /**
+     * Price target that this is up or down for.
+     */
     priceTarget: string;
     $outcome: $NamedTypes.$Outcome;
     /**
@@ -467,82 +462,42 @@ export namespace Mutation {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type conclude<
+  export type offramp<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = conclude$SelectionSet<_$Scalars>;
+  > = offramp$SelectionSet<_$Scalars>;
 
-  export interface conclude$SelectionSet<
+  export interface offramp$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   >
-    extends $Select.Bases.Base, $NamedTypes.$Aggregate<_$Scalars> {
+    extends $Select.Bases.Base, $NamedTypes.$Offramp<_$Scalars> {
     /**
-     * Arguments for `conclude` field. All arguments are required so you must include this.
+     * Arguments for `offramp` field. All arguments are required so you must include this.
      */
-    $: conclude$Arguments<_$Scalars>;
+    $: offramp$Arguments<_$Scalars>;
   }
 
-  export interface conclude$Arguments<
+  export interface offramp$Arguments<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > {
-    bundleTakerId: number;
+    minAmt: string;
   }
 
   // --- expanded ---
 
   /**
    *
-   * This is the "expanded" version of the `conclude` type. It is identical except for the fact
+   * This is the "expanded" version of the `offramp` type. It is identical except for the fact
    * that IDEs will display its contents (a union type) directly, rather than the name of this type.
    * In some cases, this is a preferable DX, making the types easier to read for users.
    *
    */
-  export type conclude$Expanded<
+  export type offramp$Expanded<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<conclude$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type concludedCalldata<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = concludedCalldata$SelectionSet<_$Scalars>;
-
-  export interface concludedCalldata$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `concludedCalldata` field. All arguments are required so you must include this.
-     */
-    $: concludedCalldata$Arguments<_$Scalars>;
-  }
-
-  export interface concludedCalldata$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    bundleTakerId: number;
-    isTaker: boolean;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `concludedCalldata` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type concludedCalldata$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<concludedCalldata$SelectionSet<_$Scalars>>;
+  > = $$Utilities.Simplify<offramp$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -1205,6 +1160,124 @@ export namespace OpenAuctions {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<openAuctions$SelectionSet<_$Scalars>>;
+}
+
+//                                              Offramp
+// --------------------------------------------------------------------------------------------------
+//
+
+// ----------------------------------------| Entrypoint Interface |
+
+export interface Offramp<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends $Select.Bases.ObjectLike {
+  /**
+   *
+   * Select the `cd` field on the `Offramp` object. Its type is `String` (a `ScalarStandard` kind of type).
+   *
+   */
+  cd?:
+    | Offramp.cd$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Offramp.cd<_$Scalars>>;
+  /**
+   *
+   * Select the `ids` field on the `Offramp` object. Its type is `Int` (a `ScalarStandard` kind of type).
+   *
+   */
+  ids?:
+    | Offramp.ids$Expanded<_$Scalars>
+    | $Select.SelectAlias.SelectAlias<Offramp.ids<_$Scalars>>;
+
+  /**
+   *
+   * Inline fragments for field groups.
+   *
+   * Generally a niche feature. This can be useful for example to apply an `@include` directive to a subset of the
+   * selection set in turn allowing you to pass a variable to opt in/out of that selection during execution on the server.
+   *
+   * @see https://spec.graphql.org/draft/#sec-Inline-Fragments
+   *
+   */
+  ___?: Offramp$FragmentInline<_$Scalars> | Offramp$FragmentInline<_$Scalars>[];
+
+  /**
+   *
+   * A meta field. Is the name of the type being selected.
+   *
+   * @see https://graphql.org/learn/queries/#meta-fields
+   *
+   */
+  __typename?:
+    | $Select.Indicator.NoArgsIndicator$Expanded
+    | $Select.SelectAlias.SelectAlias<$Select.Indicator.NoArgsIndicator>;
+}
+
+export interface Offramp$FragmentInline<
+  _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+    $$Utilities.Schema.Scalar.Registry.Empty,
+>
+  extends Offramp<_$Scalars>, $Select.Directive.$Groups.InlineFragment.Fields {}
+
+// ----------------------------------------| Fields |
+
+export namespace Offramp {
+  export type cd<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | cd$SelectionSet<_$Scalars>;
+
+  export interface cd$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `cd` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type cd$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | cd$SelectionSet<_$Scalars>
+  >;
+
+  // --------------------------------------------------------------------------------------------------
+
+  export type ids<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $Select.Indicator.NoArgsIndicator | ids$SelectionSet<_$Scalars>;
+
+  export interface ids$SelectionSet<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  >
+    extends $Select.Bases.Base {}
+
+  // --- expanded ---
+
+  /**
+   *
+   * This is the "expanded" version of the `ids` type. It is identical except for the fact
+   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
+   * In some cases, this is a preferable DX, making the types easier to read for users.
+   *
+   */
+  export type ids$Expanded<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = $$Utilities.Simplify<
+    $Select.Indicator.NoArgsIndicator | ids$SelectionSet<_$Scalars>
+  >;
 }
 
 //                                        AuctionCreatedResult
@@ -1884,6 +1957,10 @@ export namespace $NamedTypes {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = OpenAuctions<_$Scalars>;
+  export type $Offramp<
+    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
+      $$Utilities.Schema.Scalar.Registry.Empty,
+  > = Offramp<_$Scalars>;
   export type $AuctionCreatedResult<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,

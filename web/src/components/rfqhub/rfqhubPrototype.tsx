@@ -128,6 +128,7 @@ export default function RfqhubPrototype() {
     createSuggestion,
     submitBundleMaker,
     addFunds,
+    offramp,
   } = useRfqhub();
   const [ownerAccount, setOwnerAccount] = useState<{
     wallet: string;
@@ -349,6 +350,7 @@ export default function RfqhubPrototype() {
                   key={accountAddress ?? "disconnected"}
                   accountAddress={accountAddress}
                   requestBalance={requestBalance}
+                  offramp={offramp}
                 />
               </div>
             </div>

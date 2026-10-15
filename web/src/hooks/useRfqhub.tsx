@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { usePublicClient, useSignMessage } from "wagmi";
 import { maxUint256, parseSignature } from "viem";
@@ -11,8 +12,7 @@ import useCheckAndSwitchChain from "./useCheckAndSwitchChain";
 import useSignForPermit from "./useSignForPermit";
 import { checkAndSetSecret, create, getSecret, isCreated } from "./useAccount";
 import {
-  rfqhubConclude,
-  rfqhubConcludedCalldata,
+  rfqhubOfframp,
   rfqhubCreateAccountExec,
   rfqhubCreateAuctionServerSig,
   rfqhubOnramp,
@@ -41,6 +41,8 @@ import {
  */
 export default function useRfqhub() {
   const account = useAppKitAccount();
+  const walletRef = useRef(account.address);
+  walletRef.current = account.address;
   const { mutateAsync: signMessage } = useSignMessage();
   const publicClient = usePublicClient({ chainId: destinationChain.id });
   const { checkAndSwitchChain } = useCheckAndSwitchChain();
@@ -263,17 +265,41 @@ export default function useRfqhub() {
       }),
     );
 
-  const conclude = (bundleTakerId: number) => rfqhubConclude(bundleTakerId);
-
-  const concludedCalldata = async (bundleTakerId: number, isTaker: boolean) =>
-    authenticated(({ eoaAddress, secret }) =>
-      rfqhubConcludedCalldata({
-        eoaAddress,
-        secret,
-        bundleTakerId,
-        isTaker,
-      }),
-    );
+  const offramp = async (minAmt: string) => {
+    const eoaAddress = account.address;
+    if (!eoaAddress) throw new Error("No wallet is connected");
+    if (
+      !/^\d+$/.test(minAmt) ||
+      BigInt(minAmt) <= BigInt(0) ||
+      BigInt(minAmt) > BigInt("18446744073709551615")
+    )
+      throw new Error("Invalid withdrawal amount");
+    const assertWallet = () => {
+      if (walletRef.current?.toLowerCase() !== eoaAddress.toLowerCase())
+        throw new Error(
+          "Wallet changed; reopen withdrawal for the connected wallet",
+        );
+    };
+    // Withdrawals must never create an empty account.
+    if (!(await isCreated(eoaAddress)))
+      throw new Error("No RFQHub account exists");
+    assertWallet();
+    const secret = await checkAndSetSecret(eoaAddress, signMessage, false);
+    assertWallet();
+    if (!secret) throw new Error("No secret is set");
+    return executeRfqhubAuthenticated({
+      eoaAddress,
+      secret,
+      refreshSecret: () => {
+        assertWallet();
+        return getSecret(eoaAddress, signMessage);
+      },
+      request: (credentials) => {
+        assertWallet();
+        return rfqhubOfframp({ ...credentials, minAmt });
+      },
+    });
+  };
 
   const requestBalance = async (addr?: string) => {
     const address = addr ?? account.address;
@@ -296,8 +322,7 @@ export default function useRfqhub() {
     createAuction,
     createSuggestion,
     submitBundleMaker,
-    conclude,
-    concludedCalldata,
+    offramp,
     requestBalance,
     requestOnchainBalance,
     requestOpenAuctions: rfqhubRequestOpenAuctions,

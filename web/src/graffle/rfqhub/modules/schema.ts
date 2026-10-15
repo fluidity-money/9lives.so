@@ -84,8 +84,7 @@ export namespace Schema {
       onrampAmount: Mutation.onrampAmount;
       createAuctionServerSig: Mutation.createAuctionServerSig;
       inspectBundleTakerId: Mutation.inspectBundleTakerId;
-      conclude: Mutation.conclude;
-      concludedCalldata: Mutation.concludedCalldata;
+      offramp: Mutation.offramp;
       cancelAuction: Mutation.cancelAuction;
       submitBundleMakerServerSig: Mutation.submitBundleMakerServerSig;
     };
@@ -200,6 +199,9 @@ export namespace Schema {
           inlineType: [1];
           namedType: $$NamedTypes.$$Boolean;
         };
+        /**
+         * Price target that this is up or down for.
+         */
         priceTarget: {
           kind: "InputField";
           name: "priceTarget";
@@ -265,47 +267,22 @@ export namespace Schema {
     }
 
     /**
-     * Conclude a bundle that's been outstanding to be resolved (the expiry date has passed).
-     * Anyone can call this. `produceOfframpCdTaker` needs to be called by the taker and
-     * `produceOfframpCdMaker` needs to be called by the maker to get calldata to offramp,
-     * and also to offramp.
-     */
-    export interface conclude extends $.OutputField {
-      name: "conclude";
-      arguments: {
-        bundleTakerId: {
-          kind: "InputField";
-          name: "bundleTakerId";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$Int;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Aggregate;
-    }
-
-    /**
      * Get the calldata to perform an offramping from the Rfqhub engine. Marks the aggregate
-     * bundle as being unable to be consumed.
+     * bundles included here as being consumed. Needs a call to `offrampMarkDone` to not
+     * return some bundled calldata anymore.
      */
-    export interface concludedCalldata extends $.OutputField {
-      name: "concludedCalldata";
+    export interface offramp extends $.OutputField {
+      name: "offramp";
       arguments: {
-        bundleTakerId: {
+        minAmt: {
           kind: "InputField";
-          name: "bundleTakerId";
+          name: "minAmt";
           inlineType: [1];
-          namedType: $$NamedTypes.$$Int;
-        };
-        isTaker: {
-          kind: "InputField";
-          name: "isTaker";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$Boolean;
+          namedType: $$NamedTypes.$$String;
         };
       };
       inlineType: [1];
-      namedType: $$NamedTypes.$$String;
+      namedType: $$NamedTypes.$$Offramp;
     }
 
     /**
@@ -328,11 +305,10 @@ export namespace Schema {
     }
 
     /**
-     * Submit a BundleMaker from the liquidity we have here using a server signature and an
-     * onramped amount. The BundleMaker is not necessarily consumed unless it's chosen at
-     * the end of the BundleTaker's life by the server or by the end user, depending on
-     * the Taker's strategy for choosing. The BundleMaker here will take the opposite
-     * position of the BundleTaker.
+     * Submit a BundleMaker. The BundleMaker is not necessarily consumed unless it's chosen at
+     * the end of the BundleTaker's life by the server or by the end user, depending on the
+     * Taker's strategy for choosing. The BundleMaker here will take the opposite position of
+     * the BundleTaker.
      */
     export interface submitBundleMakerServerSig extends $.OutputField {
       name: "submitBundleMakerServerSig";
@@ -542,6 +518,51 @@ export namespace Schema {
       arguments: {};
       inlineType: [1, [1]];
       namedType: $$NamedTypes.$$OpenAuction;
+    }
+  }
+
+  //                                              Offramp
+  // --------------------------------------------------------------------------------------------------
+  //
+
+  export interface Offramp extends $.OutputObject {
+    name: "Offramp";
+    fields: {
+      __typename: Offramp.__typename;
+      cd: Offramp.cd;
+      ids: Offramp.ids;
+    };
+  }
+
+  export namespace Offramp {
+    export interface __typename extends $.OutputField {
+      name: "__typename";
+      arguments: {};
+      inlineType: [1];
+      namedType: {
+        kind: "__typename";
+        value: "Offramp";
+      };
+    }
+
+    /**
+     * Calldata that needs to be provided on-chain to get withdraw open positions.
+     */
+    export interface cd extends $.OutputField {
+      name: "cd";
+      arguments: {};
+      inlineType: [1];
+      namedType: $$NamedTypes.$$String;
+    }
+
+    /**
+     * Bundles that need to be confirmed to prevent the UI from displaying them for claiming.
+     */
+    export interface ids extends $.OutputField {
+      name: "ids";
+      arguments: {};
+      inlineType: [1, [1]];
+      namedType: $$NamedTypes.$$Int;
     }
   }
 
@@ -1006,6 +1027,7 @@ export namespace Schema {
     export type $$Mutation = Mutation;
     export type $$OpenAuction = OpenAuction;
     export type $$OpenAuctions = OpenAuctions;
+    export type $$Offramp = Offramp;
     export type $$AuctionCreatedResult = AuctionCreatedResult;
     export type $$BundleMakerInfo = BundleMakerInfo;
     export type $$BundleTakerOwnerStatus = BundleTakerOwnerStatus;
@@ -1053,6 +1075,7 @@ export interface Schema<
     Outcome: Schema.Outcome;
     OpenAuction: Schema.OpenAuction;
     OpenAuctions: Schema.OpenAuctions;
+    Offramp: Schema.Offramp;
     AuctionCreatedResult: Schema.AuctionCreatedResult;
     BundleMakerInfo: Schema.BundleMakerInfo;
     BundleTakerOwnerStatus: Schema.BundleTakerOwnerStatus;
@@ -1061,6 +1084,7 @@ export interface Schema<
   objects: {
     OpenAuction: Schema.OpenAuction;
     OpenAuctions: Schema.OpenAuctions;
+    Offramp: Schema.Offramp;
     AuctionCreatedResult: Schema.AuctionCreatedResult;
     BundleMakerInfo: Schema.BundleMakerInfo;
     BundleTakerOwnerStatus: Schema.BundleTakerOwnerStatus;

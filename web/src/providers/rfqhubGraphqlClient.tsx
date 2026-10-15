@@ -178,42 +178,26 @@ export const rfqhubSubmitBundleMakerFromOnrampedAmountServerSig = ({
     "submitBundleMakerServerSig",
   );
 
-/**
- * Resolve an expired auction and return its winning side and amount. This is
- * intentionally public in the RFQ Hub API so a keeper can call it.
- */
-export const rfqhubConclude = (bundleTakerId: number) =>
-  data(
-    graphRfqhub.mutation.conclude({
-      $: { bundleTakerId },
-      id: true,
-      takerWon: true,
-      winningAmount: true,
-    }),
-    "conclude",
-  );
-
-/**
- * Get calldata for consuming the concluded bundle on-chain. The server marks
- * the selected side as consumed while producing this calldata.
- */
-export const rfqhubConcludedCalldata = ({
+/** Prepare whole winning bundles covering minAmt (micro-USDC), not a transaction. */
+export const rfqhubOfframp = ({
   eoaAddress,
   secret,
-  bundleTakerId,
-  isTaker,
+  minAmt,
 }: {
   eoaAddress: string;
   secret: string;
-  bundleTakerId: number;
-  isTaker: boolean;
+  minAmt: string;
 }) =>
   data(
-    withAuth(eoaAddress, secret).mutation.concludedCalldata({
-      $: { bundleTakerId, isTaker },
+    withAuth(eoaAddress, secret).mutation.offramp({
+      $: { minAmt },
+      cd: true,
+      ids: true,
     }),
-    "concludedCalldata",
+    "offramp",
   );
+
+export type RfqhubOfframpResult = Awaited<ReturnType<typeof rfqhubOfframp>>;
 
 /**
  * Get the spendable onramped balance for an account address. Public.

@@ -139,6 +139,13 @@ const OpenAuctions: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   },
 };
 
+const Offramp: $$Utilities.SchemaDrivenDataMap.OutputObject = {
+  f: {
+    cd: {},
+    ids: {},
+  },
+};
+
 const AuctionCreatedResult: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
     leftoverBal: {},
@@ -323,26 +330,14 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: BundleTakerOwnerStatus, <-- Assigned later to avoid potential circular dependency.
     },
-    conclude: {
+    offramp: {
       a: {
-        bundleTakerId: {
-          nt: Int,
+        minAmt: {
+          nt: String,
           it: [1],
         },
       },
-      // nt: Aggregate, <-- Assigned later to avoid potential circular dependency.
-    },
-    concludedCalldata: {
-      a: {
-        bundleTakerId: {
-          nt: Int,
-          it: [1],
-        },
-        isTaker: {
-          nt: Boolean,
-          it: [1],
-        },
-      },
+      // nt: Offramp, <-- Assigned later to avoid potential circular dependency.
     },
     cancelAuction: {
       a: {
@@ -393,7 +388,7 @@ OpenAuctions.f[`openAuctions`]!.nt = OpenAuction;
 Query.f[`openAuctions`]!.nt = OpenAuctions;
 Mutation.f[`createAuctionServerSig`]!.nt = AuctionCreatedResult;
 Mutation.f[`inspectBundleTakerId`]!.nt = BundleTakerOwnerStatus;
-Mutation.f[`conclude`]!.nt = Aggregate;
+Mutation.f[`offramp`]!.nt = Offramp;
 Mutation.f[`submitBundleMakerServerSig`]!.nt = BundleMakerInfo;
 
 //
@@ -428,6 +423,7 @@ const $schemaDrivenDataMap: $$Utilities.SchemaDrivenDataMap = {
     Permit,
     OpenAuction,
     OpenAuctions,
+    Offramp,
     AuctionCreatedResult,
     BundleMakerInfo,
     BundleTakerOwnerStatus,

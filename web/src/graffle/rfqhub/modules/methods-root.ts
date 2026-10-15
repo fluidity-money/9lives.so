@@ -203,50 +203,26 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Conclude a bundle that's been outstanding to be resolved (the expiry date has passed).
-   * Anyone can call this. `produceOfframpCdTaker` needs to be called by the taker and
-   * `produceOfframpCdMaker` needs to be called by the maker to get calldata to offramp,
-   * and also to offramp.
-   */
-  conclude: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.conclude<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { conclude: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "conclude"
-        >
-    >
-  >;
-  /**
    * Get the calldata to perform an offramping from the Rfqhub engine. Marks the aggregate
-   * bundle as being unable to be consumed.
+   * bundles included here as being consumed. Needs a call to `offrampMarkDone` to not
+   * return some bundled calldata anymore.
    */
-  concludedCalldata: $$Utilities.ClientTransports.PreflightCheck<
+  offramp: $$Utilities.ClientTransports.PreflightCheck<
     $Context,
     <$SelectionSet>(
       selectionSet: $$Utilities.Exact<
         $SelectionSet,
-        $$SelectionSets.Mutation.concludedCalldata<$Context["scalars"]>
+        $$SelectionSets.Mutation.offramp<$Context["scalars"]>
       >,
     ) => Promise<
       (null | {}) &
         $$Utilities.HandleOutputGraffleRootField<
           $Context,
           InferResult.OperationMutation<
-            { concludedCalldata: $SelectionSet },
+            { offramp: $SelectionSet },
             $$Schema.Schema<$Context["scalars"]>
           >,
-          "concludedCalldata"
+          "offramp"
         >
     >
   >;
@@ -275,11 +251,10 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Submit a BundleMaker from the liquidity we have here using a server signature and an
-   * onramped amount. The BundleMaker is not necessarily consumed unless it's chosen at
-   * the end of the BundleTaker's life by the server or by the end user, depending on
-   * the Taker's strategy for choosing. The BundleMaker here will take the opposite
-   * position of the BundleTaker.
+   * Submit a BundleMaker. The BundleMaker is not necessarily consumed unless it's chosen at
+   * the end of the BundleTaker's life by the server or by the end user, depending on the
+   * Taker's strategy for choosing. The BundleMaker here will take the opposite position of
+   * the BundleTaker.
    */
   submitBundleMakerServerSig: $$Utilities.ClientTransports.PreflightCheck<
     $Context,

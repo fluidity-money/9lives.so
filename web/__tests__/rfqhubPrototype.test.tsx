@@ -416,7 +416,9 @@ describe("RfqhubPrototype", () => {
     )!;
     expect(submit.disabled).toBe(true);
     fireEvent.click(submit);
-    expect(screen.getByText(/Withdrawals are coming soon/)).not.toBeNull();
+    expect(
+      screen.getByText(/This does not send an onchain transaction/),
+    ).not.toBeNull();
     expect(screen.queryByText("Claim rewards")).toBeNull();
     expect(screen.queryByText("Request calldata")).toBeNull();
     expect(concludedCalldata).not.toHaveBeenCalled();

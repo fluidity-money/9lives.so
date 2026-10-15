@@ -22,6 +22,7 @@ export interface $MethodsSelect {
   Mutation: Mutation;
   OpenAuction: OpenAuction;
   OpenAuctions: OpenAuctions;
+  Offramp: Offramp;
   AuctionCreatedResult: AuctionCreatedResult;
   BundleMakerInfo: BundleMakerInfo;
   BundleTakerOwnerStatus: BundleTakerOwnerStatus;
@@ -84,6 +85,12 @@ export interface OpenAuctions {
       $SelectionSet,
       $$SelectionSets.OpenAuctions
     >,
+  ): $SelectionSet;
+}
+
+export interface Offramp {
+  <$SelectionSet>(
+    selectionSet: $$Utilities.Exact<$SelectionSet, $$SelectionSets.Offramp>,
   ): $SelectionSet;
 }
 

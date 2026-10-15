@@ -48,6 +48,7 @@ jest.mock("../src/providers/graphqlClient", () => ({
 }));
 jest.mock("../src/providers/rfqhubGraphqlClient", () => ({
   rfqhubCreateAccountExec: jest.fn(),
+  rfqhubOfframp: jest.fn(),
   rfqhubOnramp: jest.fn(),
   rfqhubCreateAuctionServerSig: jest.fn(),
   rfqhubRequestBalance: jest.fn(),
@@ -67,6 +68,36 @@ beforeEach(() => {
   jest.mocked(accounts.requestSecret).mockResolvedValue("test-secret");
   jest.mocked(rfq.rfqhubCreateAccountExec).mockResolvedValue(true);
   jest.mocked(rfq.rfqhubOnramp).mockResolvedValue("0xfunding");
+});
+
+it("prepares an authenticated offramp without funding or creating an account", async () => {
+  const prepared = { cd: "ab", ids: [1] };
+  jest.mocked(rfq.rfqhubOfframp).mockResolvedValue(prepared);
+  const { result } = renderHook(() => useRfqhub());
+  await expect(result.current.offramp("1234567")).resolves.toEqual(prepared);
+  expect(rfq.rfqhubOfframp).toHaveBeenCalledWith({
+    eoaAddress: wallet,
+    secret: "test-secret",
+    minAmt: "1234567",
+  });
+  expect(rfq.rfqhubCreateAccountExec).not.toHaveBeenCalled();
+  expect(rfq.rfqhubOnramp).not.toHaveBeenCalled();
+});
+
+it("does not create an account for withdrawal and rejects invalid amounts", async () => {
+  jest.mocked(accounts.hasCreated).mockResolvedValue(false);
+  const { result } = renderHook(() => useRfqhub());
+  await expect(result.current.offramp("1")).rejects.toThrow(
+    "No RFQHub account",
+  );
+  for (const amount of ["0", "-1", "1.1", "18446744073709551616"]) {
+    await expect(result.current.offramp(amount)).rejects.toThrow(
+      "Invalid withdrawal",
+    );
+  }
+  expect(rfq.rfqhubCreateAccountExec).not.toHaveBeenCalled();
+  expect(accounts.createAccount).not.toHaveBeenCalled();
+  expect(rfq.rfqhubOfframp).not.toHaveBeenCalled();
 });
 
 const suggestion = {
