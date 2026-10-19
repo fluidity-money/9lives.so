@@ -94,30 +94,27 @@ export const checkAndSetSecret = async (
   signMessage: SignMessage,
   allowCreate = true,
 ) => {
-  const secretObj = window.localStorage.getItem(
-    `${SECRET_KEY}-${address.toLowerCase()}`,
-  );
-  let secret: null | string = null;
-  if (!secretObj) {
-    const isAccountCreated = await isCreated(address);
-    if (isAccountCreated) {
-      secret = await getSecret(address, signMessage);
-    } else {
-      if (!allowCreate) throw new Error("Superposition account does not exist");
-      secret = await create(address, signMessage);
-    }
-  } else {
-    const secretParsed = JSON.parse(secretObj) as {
-      secret: string;
-      expireAt: string;
-    };
-    if (new Date() > new Date(secretParsed.expireAt)) {
-      secret = await getSecret(address, signMessage);
-    } else {
-      secret = secretParsed.secret;
-    }
+  const secretKey = `${SECRET_KEY}-${address.toLowerCase()}`;
+  const isAccountCreated = await isCreated(address);
+  if (!isAccountCreated) {
+    // The graph is authoritative. A locally cached secret may outlive an
+    // account reset and must never make a wallet appear to have an account.
+    window.localStorage.removeItem(secretKey);
+    if (!allowCreate) throw new Error("Superposition account does not exist");
+    return create(address, signMessage);
   }
-  return secret;
+
+  const secretObj = window.localStorage.getItem(secretKey);
+  if (!secretObj) return getSecret(address, signMessage);
+
+  const secretParsed = JSON.parse(secretObj) as {
+    secret: string;
+    expireAt: string;
+  };
+  if (new Date() > new Date(secretParsed.expireAt)) {
+    return getSecret(address, signMessage);
+  }
+  return secretParsed.secret;
 };
 
 export default function useAccount({

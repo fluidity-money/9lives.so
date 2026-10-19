@@ -72,6 +72,45 @@ beforeEach(() => {
   jest.mocked(rfq.rfqhubOnramp).mockResolvedValue("0xfunding");
 });
 
+it("discards a cached secret and creates from scratch when the graph says the account does not exist", async () => {
+  jest
+    .mocked(accounts.hasCreated)
+    .mockResolvedValueOnce(true)
+    .mockResolvedValueOnce(false);
+  jest.mocked(accounts.requestSecret).mockResolvedValueOnce("stale-secret");
+  jest.mocked(accounts.createAccount).mockResolvedValueOnce({
+    secret: "new-secret",
+    hash: "0xaccount",
+  });
+
+  await expect(checkAndSetSecret(wallet, mockSign)).resolves.toBe(
+    "stale-secret",
+  );
+  await expect(checkAndSetSecret(wallet, mockSign)).resolves.toBe("new-secret");
+
+  expect(accounts.createAccount).toHaveBeenCalledTimes(1);
+  expect(window.localStorage.length).toBe(1);
+  jest.mocked(accounts.hasCreated).mockResolvedValueOnce(true);
+  await expect(checkAndSetSecret(wallet, mockSign)).resolves.toBe("new-secret");
+  expect(accounts.requestSecret).toHaveBeenCalledTimes(1);
+});
+
+it("clears a cached secret when creation is disabled and the graph says the account does not exist", async () => {
+  jest
+    .mocked(accounts.hasCreated)
+    .mockResolvedValueOnce(true)
+    .mockResolvedValueOnce(false);
+  jest.mocked(accounts.requestSecret).mockResolvedValueOnce("stale-secret");
+
+  await checkAndSetSecret(wallet, mockSign);
+  await expect(checkAndSetSecret(wallet, mockSign, false)).rejects.toThrow(
+    "does not exist",
+  );
+
+  expect(window.localStorage.length).toBe(0);
+  expect(accounts.createAccount).not.toHaveBeenCalled();
+});
+
 it("prepares an authenticated offramp without funding or creating an account", async () => {
   const prepared = { cd: "ab", ids: [1] };
   jest.mocked(rfq.rfqhubOfframp).mockResolvedValue(prepared);
@@ -254,7 +293,7 @@ it.each(["false", "reject", "secret"])(
 );
 
 it("creates through RFQ without an extra deposit when hub balance covers the prediction", async () => {
-  jest.mocked(accounts.hasCreated).mockResolvedValue(false);
+  jest.mocked(accounts.hasCreated).mockResolvedValueOnce(false);
   jest.mocked(rfq.rfqhubRequestBalance).mockResolvedValue("100");
   const { result } = renderHook(() => useRfqhub());
   expect(await result.current.requestBalance()).toBe("100");
