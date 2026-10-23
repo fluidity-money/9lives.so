@@ -17,10 +17,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version-file: web/.nvmrc
           
-      - name: Enable pnpm
-        run: corepack enable pnpm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

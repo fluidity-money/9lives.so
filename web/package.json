@@ -2,6 +2,9 @@
   "name": "web",
   "version": "0.1.0",
   "packageManager": "pnpm@10.28.0+sha256.9b0b04e6e79945566917f8411bb6f65fd2f3e1590426904e8500e1acc4b33561",
+  "engines": {
+    "node": "26.12.1"
+  },
   "type": "module",
   "private": true,
   "scripts": {
@@ -70,7 +73,7 @@
     "@types/gtag.js": "^0.0.20",
     "@types/jest": "^30.0.0",
     "@types/keccak": "^3.0.5",
-    "@types/node": "^25.0.7",
+    "@types/node": "^26.6.5",
     "@types/node-fetch": "^3.0.2",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",

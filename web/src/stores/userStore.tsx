@@ -3,8 +3,6 @@ import { Context } from "@farcaster/miniapp-sdk";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Whitespace
-
 type WatchlistItem = Omit<Campaign, "totalVolume" | "winner"> & {
   totalVolume: 0;
   winner: null;
