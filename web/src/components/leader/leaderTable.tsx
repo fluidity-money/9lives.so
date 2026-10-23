@@ -33,7 +33,7 @@ export default function LeaderTable() {
               {columns.map((column, index) => (
                 <th
                   key={column}
-                  className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider text-neutral-400 ${
+                  className={`px-4 py-3 text-xs font-semibold tracking-wider text-neutral-400 uppercase ${
                     index < 2 ? "text-left" : "text-right"
                   }`}
                 >

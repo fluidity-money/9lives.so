@@ -59,7 +59,7 @@ export default function CommentList({
               onClick={() => fetchNextPage()}
             />
           ) : (
-            <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+            <span className="font-geneva text-[10px] leading-3 tracking-wide text-[#808080] uppercase">
               End of results
             </span>
           )}

@@ -98,7 +98,7 @@ export default function AssetSelector({
             disabled={!token.balance}
             className={combineClass(
               !token.balance && "opacity-50",
-              "group flex cursor-default select-none items-center justify-between gap-2 rounded-lg px-3 py-1.5 data-[focus]:bg-2black/10",
+              "group flex cursor-default items-center justify-between gap-2 rounded-lg px-3 py-1.5 select-none data-[focus]:bg-2black/10",
             )}
           >
             <div className="flex items-center gap-2">

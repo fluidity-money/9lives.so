@@ -11,7 +11,7 @@ export default function CloseButton({
     <div
       className={combineClass(
         size ?? "size-10",
-        "absolute right-2 top-2 z-10 flex cursor-pointer items-center justify-center rounded-full bg-2white/20 hover:bg-2black/10",
+        "absolute top-2 right-2 z-10 flex cursor-pointer items-center justify-center rounded-full bg-2white/20 hover:bg-2black/10",
       )}
       onClick={close}
     >

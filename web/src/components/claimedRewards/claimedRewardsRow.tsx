@@ -37,7 +37,7 @@ export default function ClaimedCampaignRow({
               target="_blank"
               href={`https://arbiscan.io/tx/${data.txHash}`}
             >
-              <span className="font-geneva text-xs uppercase text-[#808080]">
+              <span className="font-geneva text-xs text-[#808080] uppercase">
                 Tx Hash:
               </span>{" "}
               <span className="font-geneva text-xs uppercase underline">

@@ -63,8 +63,8 @@ export default function AssetNav({
         callback: () => router.push(`/campaign/${mins15Markets[0]}/15mins`),
       },
     ];
-  const orderedButtons = periodOrder.map(
-    (slug) => buttons.find((b) => b.slug === slug)!,
+  const orderedButtons = periodOrder.map((slug) =>
+    buttons.find((b) => b.slug === slug)!,
   );
   const orderIdx = periodOrder.findIndex((p) => p === period.toLowerCase());
   const { data } = useAssetsHourlyDelta();

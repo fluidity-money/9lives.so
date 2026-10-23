@@ -320,7 +320,7 @@ export default function RfqhubPrototype() {
           <div className="rounded-xl border border-neutral-400 bg-2white p-4">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
+                <p className="text-xs font-medium tracking-wider text-neutral-400 uppercase">
                   Live oracle price
                 </p>
                 <h2 className="text-xl font-semibold text-2black">BTC / USD</h2>
@@ -343,10 +343,10 @@ export default function RfqhubPrototype() {
           <div className="rounded-xl border border-neutral-400 bg-2white p-4 md:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-400">
+                <p className="mb-2 text-xs font-medium tracking-wider text-neutral-400 uppercase">
                   Rfqhub
                 </p>
-                <h1 className="mb-6 text-2xl font-semibold leading-tight text-2black md:text-3xl">
+                <h1 className="mb-6 text-2xl leading-tight font-semibold text-2black md:text-3xl">
                   Make a prediction
                 </h1>
               </div>
@@ -361,7 +361,7 @@ export default function RfqhubPrototype() {
             </div>
 
             <div
-              className="text-xl font-medium leading-[2.3] text-2black md:text-2xl"
+              className="text-xl leading-[2.3] font-medium text-2black md:text-2xl"
               data-testid="prediction-sentence"
             >
               <span>I predict with $</span>
@@ -466,12 +466,12 @@ export default function RfqhubPrototype() {
         <aside className="h-fit rounded-xl border border-neutral-400 bg-2white p-4 lg:sticky lg:top-4">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
+              <p className="text-xs font-medium tracking-wider text-neutral-400 uppercase">
                 Live RFQHub
               </p>
               <h2 className="text-xl font-semibold text-2black">Takers</h2>
             </div>
-            <span className="flex items-center gap-2 text-xs capitalize text-neutral-500">
+            <span className="flex items-center gap-2 text-xs text-neutral-500 capitalize">
               <span
                 className={`size-2 rounded-full ${
                   connectionStatus === "connected"
@@ -513,7 +513,7 @@ export default function RfqhubPrototype() {
                     aria-label={`Offer minimum for Taker #${request.id}`}
                     disabled={isSubmittingOffer || !ownerAddress || isOwner}
                     aria-describedby={`rfqhub-request-status-${request.id}`}
-                    className={`relative w-full overflow-hidden rounded-xl border p-3 text-left text-sm text-2black transition focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-60 ${background} ${isOwner ? "border-[#b5a36a] hover:border-[#a39159]" : "border-neutral-300 hover:border-neutral-500"}`}
+                    className={`relative w-full overflow-hidden rounded-xl border p-3 text-left text-sm text-2black transition focus:ring-2 focus:ring-neutral-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 ${background} ${isOwner ? "border-[#b5a36a] hover:border-[#a39159]" : "border-neutral-300 hover:border-neutral-500"}`}
                     style={
                       request.matchVersion
                         ? {

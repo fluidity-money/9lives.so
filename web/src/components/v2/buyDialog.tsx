@@ -75,7 +75,7 @@ export default function SimpleBuyDialog({
       supply: z.string(),
       toChain: z.number().min(0),
       toToken: z.string(),
-      usdValue: z.coerce.number().gt(0, "usd value > 0$"),
+      usdValue: z.coerce.number<number>().gt(0, "usd value > 0$"),
       fromChain: z
         .number({ message: "You need to select a chain to pay from" })
         .min(0),

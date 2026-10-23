@@ -173,7 +173,7 @@ export default function PositionRow({
       <tr
         className={
           modern
-            ? "text-2black [&>td:first-child]:rounded-l-xl [&>td:last-child]:rounded-r-xl [&>td]:border-y [&>td]:border-neutral-200 [&>td]:bg-neutral-100 [&>td]:px-3 [&>td]:py-2 [&_p]:font-sans [&_span]:font-sans"
+            ? "text-2black [&_p]:font-sans [&_span]:font-sans [&>td]:border-y [&>td]:border-neutral-200 [&>td]:bg-neutral-100 [&>td]:px-3 [&>td]:py-2 [&>td:first-child]:rounded-l-xl [&>td:last-child]:rounded-r-xl"
             : undefined
         }
       >
@@ -222,18 +222,18 @@ export default function PositionRow({
                       {campaignContent.name}
                     </Link>{" "}
                     {campaignContent.winner && (
-                      <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                      <span className="bg-9yellow p-0.5 font-geneva text-[10px] tracking-wide uppercase">
                         Concluded
                       </span>
                     )}
                     {isWinner && (
-                      <span className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
+                      <span className="ml-1 bg-9green p-0.5 font-geneva text-[10px] font-normal tracking-wide uppercase">
                         Winner
                       </span>
                     )}
                     {campaignContent.winner &&
                       campaignContent.winner !== data.id && (
-                        <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
+                        <span className="ml-1 bg-9red p-0.5 font-geneva text-[10px] font-normal tracking-wide uppercase">
                           Lost
                         </span>
                       )}
@@ -241,7 +241,7 @@ export default function PositionRow({
                 ) : null}
                 <p
                   className={combineClass(
-                    "self-start px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black",
+                    "self-start px-1 py-0.5 font-geneva text-xs tracking-wide text-9black uppercase",
                     data.name === "Yes" || data.name === "Up"
                       ? "bg-9green"
                       : data.name === "No" || data.name === "Down"
@@ -253,7 +253,7 @@ export default function PositionRow({
                 </p>
                 <div className="flex items-center gap-1">
                   {!detailPage ? (
-                    <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                    <span className="font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
                       Share Addr:
                     </span>
                   ) : null}
@@ -265,7 +265,7 @@ export default function PositionRow({
                     target="_blank"
                     className="inline self-start"
                   >
-                    <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080] underline">
+                    <span className="font-geneva text-[10px] tracking-wide text-[#808080] uppercase underline">
                       {data.shareAddress.slice(0, 4)}...
                       {data.shareAddress.slice(-4)}
                     </span>
@@ -305,7 +305,7 @@ export default function PositionRow({
               </span>
             </span>
             {history && history.length > 0 && Number(data.balance) ? (
-              <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+              <span className="font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
                 AVG ${averageShareCost.toFixed(2)}/Share
               </span>
             ) : null}
@@ -323,7 +323,7 @@ export default function PositionRow({
                   : formatFusdc(estimationOfBurn ?? BigInt(0), 2)}
               </span>
             )}
-            <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+            <span className="font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
               COST ${formatFusdc(historicalValue, 2)}
             </span>
           </div>
@@ -347,7 +347,7 @@ export default function PositionRow({
                       reward - +formatFusdc(historicalValue, 2),
                     ).toFixed(2)}
                   </span>
-                  <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                  <span className="font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
                     {reward - +formatFusdc(historicalValue, 2) >= 0 ? "+" : "-"}
                     {Math.abs(
                       ((reward - +formatFusdc(historicalValue, 2)) /
@@ -399,7 +399,7 @@ export default function PositionRow({
                 </span>
               )}
               {campaignContent.isDppm && !campaignContent.winner ? null : (
-                <span className="font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                <span className="font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
                   {PnL >= 0 ? "+" : "-"}
                   {percentageChange}
                   {"%"}
@@ -415,7 +415,7 @@ export default function PositionRow({
                 {isLoading ? null : (
                   <>
                     {!detailPage ? (
-                      <p className="flex flex-col items-start gap-0.5 text-wrap font-chicago text-xs">
+                      <p className="flex flex-col items-start gap-0.5 font-chicago text-xs text-wrap">
                         <span>
                           <span className="font-geneva text-[#808080]">
                             Reward:
@@ -471,14 +471,14 @@ export default function PositionRow({
               key={h.txHash}
               className={combineClass(
                 modern
-                  ? "text-2black [&>td]:border-y [&>td]:border-neutral-200 [&>td]:bg-neutral-50 [&>td]:px-3 [&_span]:font-sans"
+                  ? "text-2black [&_span]:font-sans [&>td]:border-y [&>td]:border-neutral-200 [&>td]:bg-neutral-50 [&>td]:px-3"
                   : h.type === "buy"
                     ? "bg-9green/20"
                     : "bg-9red/20",
               )}
             >
               <td>
-                <span className="pl-2 font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                <span className="pl-2 font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
                   {h.type} tx
                 </span>
               </td>
@@ -528,7 +528,7 @@ export default function PositionRow({
                   >
                     {PnL >= 0 ? "+" : "-"} ${Math.abs(PnL).toFixed(2)}
                   </span>
-                  <span className="ml-1 font-geneva text-[10px] uppercase tracking-wide text-[#808080]">
+                  <span className="ml-1 font-geneva text-[10px] tracking-wide text-[#808080] uppercase">
                     {PnL >= 0 ? "+" : "-"}
                     {percentageChange}
                     {"%"}

@@ -83,7 +83,7 @@ export default function PositionBody({
                   className={
                     modern
                       ? "text-xs text-neutral-400"
-                      : "font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]"
+                      : "font-geneva text-[10px] leading-3 tracking-wide text-[#808080] uppercase"
                   }
                 >
                   End of results

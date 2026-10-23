@@ -19,7 +19,7 @@ export default function CampaignItemFooter({ data }: { data: Campaign }) {
   const inThisWeek = config.weekDuration >= left && left > 0;
 
   return (
-    <div className="flex items-center justify-between gap-2 font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+    <div className="flex items-center justify-between gap-2 font-geneva text-[10px] leading-3 tracking-wide text-[#808080] uppercase">
       {data.totalVolume !== 0 && (
         <span>{formatFusdc(data.totalVolume)} USDC Vol.</span>
       )}

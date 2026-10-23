@@ -248,8 +248,7 @@ export interface Mutation<
    *
    */
   ___?:
-    | Mutation$FragmentInline<_$Scalars>
-    | Mutation$FragmentInline<_$Scalars>[];
+    Mutation$FragmentInline<_$Scalars> | Mutation$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -1812,8 +1811,7 @@ export interface Aggregate<
    *
    */
   ___?:
-    | Aggregate$FragmentInline<_$Scalars>
-    | Aggregate$FragmentInline<_$Scalars>[];
+    Aggregate$FragmentInline<_$Scalars> | Aggregate$FragmentInline<_$Scalars>[];
 
   /**
    *

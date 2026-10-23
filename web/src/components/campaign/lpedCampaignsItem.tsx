@@ -47,13 +47,13 @@ export default function UserLpedCampaignsListItem({
               <div className="flex flex-row gap-1">
                 <p
                   className={
-                    "self-start bg-9layer px-1 py-0.5 font-geneva text-xs uppercase tracking-wide text-9black"
+                    "self-start bg-9layer px-1 py-0.5 font-geneva text-xs tracking-wide text-9black uppercase"
                   }
                 >
                   {data?.name}
                 </p>
                 {data?.winner ? (
-                  <span className="bg-9yellow p-0.5 font-geneva text-[10px] uppercase tracking-wide">
+                  <span className="bg-9yellow p-0.5 font-geneva text-[10px] tracking-wide uppercase">
                     Concluded
                   </span>
                 ) : null}

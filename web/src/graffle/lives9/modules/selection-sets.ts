@@ -1418,8 +1418,7 @@ export interface Mutation<
    *
    */
   ___?:
-    | Mutation$FragmentInline<_$Scalars>
-    | Mutation$FragmentInline<_$Scalars>[];
+    Mutation$FragmentInline<_$Scalars> | Mutation$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -1741,9 +1740,7 @@ export namespace Mutation {
      * The admin secret is needed for this.
      */
     priceMetadata?:
-      | $NamedTypes.$PriceMetadataInput<_$Scalars>
-      | undefined
-      | null;
+      $NamedTypes.$PriceMetadataInput<_$Scalars> | undefined | null;
   }
 
   // --- expanded ---
@@ -2058,11 +2055,7 @@ export namespace Mutation {
 //
 
 export type PaymasterOperation =
-  | "MINT"
-  | "SELL"
-  | "ADD_LIQUIDITY"
-  | "REMOVE_LIQUIDITY"
-  | "WITHDRAW_USDC";
+  "MINT" | "SELL" | "ADD_LIQUIDITY" | "REMOVE_LIQUIDITY" | "WITHDRAW_USDC";
 
 /**
  * HTTP-like interface for mutation. Either a delete, a logical update, or a put for the
@@ -2317,8 +2310,7 @@ export namespace AssetMetadata {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > =
-    | $Select.Indicator.NoArgsIndicator
-    | priceCreatedAt$SelectionSet<_$Scalars>;
+    $Select.Indicator.NoArgsIndicator | priceCreatedAt$SelectionSet<_$Scalars>;
 
   export interface priceCreatedAt$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
@@ -3421,8 +3413,7 @@ export interface Settings<
    *
    */
   ___?:
-    | Settings$FragmentInline<_$Scalars>
-    | Settings$FragmentInline<_$Scalars>[];
+    Settings$FragmentInline<_$Scalars> | Settings$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -4003,8 +3994,7 @@ export interface Position<
    *
    */
   ___?:
-    | Position$FragmentInline<_$Scalars>
-    | Position$FragmentInline<_$Scalars>[];
+    Position$FragmentInline<_$Scalars> | Position$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -4326,8 +4316,7 @@ export interface Campaign<
    *
    */
   ___?:
-    | Campaign$FragmentInline<_$Scalars>
-    | Campaign$FragmentInline<_$Scalars>[];
+    Campaign$FragmentInline<_$Scalars> | Campaign$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -4877,8 +4866,7 @@ export namespace Campaign {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > =
-    | $Select.Indicator.NoArgsIndicator
-    | liquidityVested$SelectionSet<_$Scalars>;
+    $Select.Indicator.NoArgsIndicator | liquidityVested$SelectionSet<_$Scalars>;
 
   export interface liquidityVested$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
@@ -6122,8 +6110,7 @@ export interface Changelog<
    *
    */
   ___?:
-    | Changelog$FragmentInline<_$Scalars>
-    | Changelog$FragmentInline<_$Scalars>[];
+    Changelog$FragmentInline<_$Scalars> | Changelog$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -6417,8 +6404,7 @@ export interface Activity<
    *
    */
   ___?:
-    | Activity$FragmentInline<_$Scalars>
-    | Activity$FragmentInline<_$Scalars>[];
+    Activity$FragmentInline<_$Scalars> | Activity$FragmentInline<_$Scalars>[];
 
   /**
    *

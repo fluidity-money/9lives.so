@@ -42,7 +42,7 @@ export default function DetailOutcomes({
                 key={index}
                 className={combineClass(
                   index === 0 && "py-3",
-                  "border-y border-y-gray-200 text-left font-chicago text-xs font-normal uppercase text-gray-400",
+                  "border-y border-y-gray-200 text-left font-chicago text-xs font-normal text-gray-400 uppercase",
                 )}
               >
                 {title}

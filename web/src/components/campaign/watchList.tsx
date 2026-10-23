@@ -5,7 +5,7 @@ export default function WatchList() {
   const watchlist = useUserStore((s) => s.watchlist);
   return watchlist?.length === 0 ? (
     <div className="flex items-center justify-center">
-      <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+      <span className="font-geneva text-[10px] leading-3 tracking-wide text-[#808080] uppercase">
         No campaigns in your watchlist
       </span>
     </div>

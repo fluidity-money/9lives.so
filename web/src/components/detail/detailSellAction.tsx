@@ -50,8 +50,8 @@ export default function DetailSellAction({
     : data.outcomes[0];
   const [isSelling, setIsSelling] = useState(false);
   const formSchema = z.object({
-    shareToBurn: z.preprocess((val) => Number(val), z.number().gt(0)),
-    minUsdcToGet: z.preprocess((val) => Number(val), z.number().min(0)),
+    shareToBurn: z.preprocess((val: number) => Number(val), z.number().gt(0)),
+    minUsdcToGet: z.preprocess((val: number) => Number(val), z.number().min(0)),
   });
   const { data: balance } = useBalance(account.address, outcome.share.address);
   const chance = Number(price) * 100;
@@ -173,7 +173,7 @@ export default function DetailSellAction({
         )}
       >
         <div
-          className="absolute right-4 top-[-41px] rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
+          className="absolute top-[-41px] right-4 rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
           onClick={() => setMinimized(!minimized)}
         >
           <Image

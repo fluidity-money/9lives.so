@@ -14,7 +14,7 @@ function NotActiveMask({
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-9layer/60 font-chicago">
       <div className="mb-36 min-w-[232px] rounded-lg border border-neutral-400 bg-2white/70 p-3 shadow-[2px_2px_8px_0px_rgba(178,178,178,0.50)]">
         {desc ? (
-          <span className="block text-center text-base font-medium leading-5">
+          <span className="block text-center text-base leading-5 font-medium">
             {desc}
           </span>
         ) : null}

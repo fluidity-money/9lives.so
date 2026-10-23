@@ -17,7 +17,7 @@ export default function DetailCreatedBy({
       <span
         className={combineClass(
           isCreator ? "text-9blueDark" : "text-[#808080]",
-          "font-geneva text-xs uppercase leading-3 tracking-wide",
+          "font-geneva text-xs leading-3 tracking-wide uppercase",
         )}
       >
         <a
@@ -32,7 +32,7 @@ export default function DetailCreatedBy({
         </a>
       </span>
       {isCreator ? (
-        <span className="ml-1 bg-9blueDark p-0.5 font-geneva text-[10px] font-normal uppercase tracking-wide">
+        <span className="ml-1 bg-9blueDark p-0.5 font-geneva text-[10px] font-normal tracking-wide uppercase">
           Creator
         </span>
       ) : null}

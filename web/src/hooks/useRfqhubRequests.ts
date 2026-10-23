@@ -14,9 +14,7 @@ const MAX_REQUESTS = 50;
 const MAX_TIMEOUT_MS = 2_147_000_000;
 
 export type RfqhubConnectionStatus =
-  | "connecting"
-  | "connected"
-  | "disconnected";
+  "connecting" | "connected" | "disconnected";
 
 const mergeRequests = (
   current: RfqhubIncomingRequest[],

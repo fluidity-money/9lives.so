@@ -132,7 +132,7 @@ export default function MobileMenuButton() {
   return (
     <div className="relative md:hidden">
       {!isOpen ? null : (
-        <div className="absolute bottom-[64px] right-0 z-[9999] flex h-[254px] w-40 flex-col items-end justify-end gap-2">
+        <div className="absolute right-0 bottom-[64px] z-[9999] flex h-[254px] w-40 flex-col items-end justify-end gap-2">
           <SimpleClaimAllButton />
           <ReferralButton />
           <Link href={"/leaderboard"}>
@@ -147,7 +147,7 @@ export default function MobileMenuButton() {
         </div>
       )}
       {haveRewards && !isOpen ? (
-        <div className="absolute -right-1 -top-1 size-4 rounded-full bg-red-500" />
+        <div className="absolute -top-1 -right-1 size-4 rounded-full bg-red-500" />
       ) : null}
       <Button
         intent={isOpen ? "cta" : haveRewards ? "reward" : "inverted"}

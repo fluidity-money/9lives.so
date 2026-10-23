@@ -11,7 +11,7 @@ export default function useTokensWithBalances(
   const account = useAppKitAccount();
 
   return useQuery<(Token & { balance: bigint })[]>({
-    queryKey: ["tokensWithBalances", account?.address, tokens],
+    queryKey: ["tokensWithBalances", account?.address, chainId, tokens],
     queryFn: async () => {
       if (!tokens) return [];
       if (!account.address)

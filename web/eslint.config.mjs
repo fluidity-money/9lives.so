@@ -1,11 +1,11 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
-import nextVitals from 'eslint-config-next/core-web-vitals'
-import prettier from 'eslint-config-prettier/flat'
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import prettier from "eslint-config-prettier/flat";
 import jest from "eslint-plugin-jest";
 import playwright from "eslint-plugin-playwright";
 import tailwind from "eslint-plugin-tailwindcss";
-import pluginQuery from '@tanstack/eslint-plugin-query'
-import nextTs from 'eslint-config-next/typescript'
+import pluginQuery from "@tanstack/eslint-plugin-query";
+import nextTs from "eslint-config-next/typescript";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -13,21 +13,36 @@ const eslintConfig = defineConfig([
   prettier,
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      // These compiler-oriented rules were added to eslint-config-next after
+      // the application was written. Enabling them is a separate React
+      // refactor rather than part of keeping the existing lint contract.
+      "react-hooks/purity": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/static-components": "off",
     },
   },
-  ...tailwind.configs["flat/recommended"],
-  ...pluginQuery.configs['flat/recommended'],
+  {
+    ...tailwind.configs.recommended,
+    settings: {
+      ...tailwind.configs.recommended.settings,
+      tailwindcss: {
+        cssConfigPath: "./src/app/globals.css",
+      },
+    },
+  },
+  ...pluginQuery.configs["flat/recommended"],
   // ======================
   // Jest (__tests__)
   // ======================
   {
     files: ["__tests__/**/*.{js,jsx,ts,tsx}"],
-    ...jest.configs['flat/recommended'],
+    ...jest.configs["flat/recommended"],
     rules: {
-      ...jest.configs['flat/recommended'].rules,
-      'jest/prefer-expect-assertions': 'off',
+      ...jest.configs["flat/recommended"].rules,
+      "jest/prefer-expect-assertions": "off",
     },
   },
   // ======================
@@ -35,7 +50,7 @@ const eslintConfig = defineConfig([
   // ======================
   {
     files: ["e2e/**/*.{js,jsx,ts,tsx}"],
-    extends: [playwright.configs['flat/recommended']]
+    extends: [playwright.configs["flat/recommended"]],
   },
   globalIgnores([
     "out",
@@ -52,8 +67,8 @@ const eslintConfig = defineConfig([
     "src/graffle/accounts/*/**",
     "src/graffle/lives9/*/**",
     "src/graffle/points/*/**",
-    "src/graffle/rfqhub/*/**"
+    "src/graffle/rfqhub/*/**",
   ]),
-])
+]);
 
-export default eslintConfig
+export default eslintConfig;

@@ -10,7 +10,7 @@ export default function LeaderboardPage() {
   return (
     <section className="flex flex-col gap-5 py-4 md:py-8">
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
+        <p className="text-xs font-semibold tracking-[0.18em] text-neutral-400 uppercase">
           Rankings
         </p>
         <h1 className="text-3xl font-bold tracking-tight text-2black">

@@ -741,8 +741,7 @@ export interface Mutation<
    *
    */
   ___?:
-    | Mutation$FragmentInline<_$Scalars>
-    | Mutation$FragmentInline<_$Scalars>[];
+    Mutation$FragmentInline<_$Scalars> | Mutation$FragmentInline<_$Scalars>[];
 
   /**
    *

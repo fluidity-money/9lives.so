@@ -3172,11 +3172,7 @@ export namespace Schema {
       "WITHDRAW_USDC",
     ];
     membersUnion:
-      | "MINT"
-      | "SELL"
-      | "ADD_LIQUIDITY"
-      | "REMOVE_LIQUIDITY"
-      | "WITHDRAW_USDC";
+      "MINT" | "SELL" | "ADD_LIQUIDITY" | "REMOVE_LIQUIDITY" | "WITHDRAW_USDC";
   }
 
   //                                            Modification

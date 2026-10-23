@@ -78,10 +78,14 @@ export default function DetailBuyAction({
   const [isMinting, setIsMinting] = useState(false);
   const formSchema = z
     .object({
-      supply: z.coerce.number().gt(0, { message: "Invalid amount to spend" }),
+      supply: z.coerce
+        .number<number>()
+        .gt(0, { message: "Invalid amount to spend" }),
       toChain: z.number().min(0),
       toToken: z.string(),
-      usdValue: z.coerce.number().gt(0, "Usd value need to higher than 0"),
+      usdValue: z.coerce
+        .number<number>()
+        .gt(0, "Usd value need to higher than 0"),
       fromChain: z
         .number({ message: "You need to select a chain to pay from" })
         .min(0),
@@ -365,7 +369,7 @@ export default function DetailBuyAction({
         )}
       >
         <div
-          className="absolute right-4 top-[-41px] rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
+          className="absolute top-[-41px] right-4 rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
           onClick={() => setMinimized(!minimized)}
         >
           <Image
@@ -491,7 +495,7 @@ export default function DetailBuyAction({
               ) : (
                 <div
                   className={combineClass(
-                    "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pl-2.5 pr-8 shadow-9btnSecondaryIdle",
+                    "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pr-8 pl-2.5 shadow-9btnSecondaryIdle",
                     "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
                   )}
                 >

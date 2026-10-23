@@ -186,14 +186,14 @@ export default function DetailHeader({
           Number(data.totalVolume) > 0 ? (
             <div className="flex items-center justify-center gap-[5px] self-center bg-9yellow px-2.5 py-[5px]">
               <Image src={UsdIcon} alt="" width={20} />
-              <span className="font-geneva text-xs uppercase text-9black">
+              <span className="font-geneva text-xs text-9black uppercase">
                 rewards available
               </span>
             </div>
           ) : (
             <div className="flex gap-[5px] bg-[#CCC] px-2.5 py-[5px]">
               <Image src={SadFaceIcon} alt="" width={15} />
-              <span className="font-geneva text-xs uppercase text-[#808080]">
+              <span className="font-geneva text-xs text-[#808080] uppercase">
                 No available rewards
               </span>
             </div>
@@ -207,7 +207,7 @@ export default function DetailHeader({
             <span
               className={combineClass(
                 isEnded ? "bg-[#CCC]" : "bg-9yellow",
-                "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
+                "px-1 py-0.5 font-geneva text-[10px] text-9black uppercase md:text-xs",
               )}
             >
               {"Will start on: "}
@@ -229,7 +229,7 @@ export default function DetailHeader({
                 <span
                   className={combineClass(
                     isEnded ? "bg-[#CCC]" : "bg-9yellow",
-                    "px-1 py-0.5 font-geneva text-[10px] uppercase text-9black md:text-xs",
+                    "px-1 py-0.5 font-geneva text-[10px] text-9black uppercase md:text-xs",
                   )}
                 >
                   {isEnded ? "Ended" : "End Date"}:{" "}

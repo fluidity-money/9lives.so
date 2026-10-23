@@ -98,7 +98,7 @@ export default async function SimpleDetailPage({ params }: { params: Params }) {
                       })}{" "}
                       UTC
                     </h1>
-                    <span className="font-geneva text-xs uppercase text-[#808080]">
+                    <span className="font-geneva text-xs text-[#808080] uppercase">
                       {now.toLocaleString("default", {
                         hour: "numeric",
                         timeZone: "UTC",

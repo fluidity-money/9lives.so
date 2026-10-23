@@ -11,6 +11,7 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
+import type { DotProps } from "recharts";
 
 export default function AssetPriceChart({
   symbol,
@@ -113,7 +114,7 @@ export default function AssetPriceChart({
     }
   }
 
-  const PulseDot = ({ cx, cy }: { cx: number; cy: number }) => {
+  const PulseDot = ({ cx = 0, cy = 0 }: DotProps) => {
     return (
       <circle
         cx={cx}
@@ -133,7 +134,7 @@ export default function AssetPriceChart({
     );
   };
 
-  const Dot = ({ cx, cy }: { cx: number; cy: number }) => {
+  const Dot = ({ cx = 0, cy = 0 }: DotProps) => {
     return (
       <circle
         cx={cx}
@@ -146,7 +147,7 @@ export default function AssetPriceChart({
     );
   };
 
-  const PriceInd = ({ cx, cy }: { cx: number; cy: number }) => (
+  const PriceInd = ({ cx = 0, cy = 0 }: DotProps) => (
     <g transform="translate(0,-32)">
       <rect
         x={cx - 45}
@@ -280,6 +281,7 @@ export default function AssetPriceChart({
         <ReferenceDot x={latestTimestamp} y={latestPrice} shape={PriceInd} />
         <Tooltip
           labelFormatter={(ts) => {
+            if (typeof ts !== "number") return "";
             const date = new Date(ts);
             return date.toLocaleString("default", {
               day: "numeric",

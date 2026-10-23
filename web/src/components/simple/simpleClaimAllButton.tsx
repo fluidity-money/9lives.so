@@ -24,7 +24,7 @@ export default function SimpleClaimAllButton({
           size={variant === "fixed" ? "xlarge" : "medium"}
           intent={"reward"}
           className={combineClass(
-            variant === "fixed" ? "bottom-4 right-4 md:fixed" : "flex-auto",
+            variant === "fixed" ? "right-4 bottom-4 md:fixed" : "flex-auto",
           )}
           onClick={() => setIsModalOpen(true)}
           title={`🔔 ${data.length} Rewards Unclaimed`}

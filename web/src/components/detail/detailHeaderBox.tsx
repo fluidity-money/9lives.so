@@ -18,7 +18,7 @@ export const HeaderBox = ({
     )}
   >
     <div className="flex flex-col gap-1">
-      <span className="font-geneva text-[10px] uppercase text-[#808080] md:text-xs">
+      <span className="font-geneva text-[10px] text-[#808080] uppercase md:text-xs">
         {title}
       </span>
       <span className="font-chicago text-xs md:text-lg">{value}</span>

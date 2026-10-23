@@ -64,7 +64,7 @@ function SimpleRewardItem({
         {isLoading ? null : (
           <span
             className={combineClass(
-              "self-start text-nowrap rounded-lg p-0.5 text-xs",
+              "self-start rounded-lg p-0.5 text-xs text-nowrap",
               PnL >= 0 ? "bg-green-300" : "bg-red-300",
             )}
           >

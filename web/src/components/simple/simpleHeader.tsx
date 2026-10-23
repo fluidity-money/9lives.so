@@ -27,7 +27,7 @@ export default function SimpleHeader({
     <div className="flex flex-col gap-1">
       <h1 className="font-chicago text-xl md:text-2xl">{data.name}</h1>
       <div className="flex items-center gap-1 text-xs">
-        <span className="font-geneva uppercase text-[#808080]">
+        <span className="font-geneva text-[#808080] uppercase">
           {new Date(data.starting).toLocaleString("default", {
             hour: "numeric",
             minute: isHourlyMarket ? undefined : "2-digit",

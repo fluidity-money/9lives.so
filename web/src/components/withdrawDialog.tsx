@@ -27,7 +27,7 @@ export default function WithdrawDialog() {
   const maxBalance = Number(formatFusdc(balance, 6));
   const formSchema = z.object({
     amount: z.preprocess(
-      (val) => Number(val),
+      (val: number) => Number(val),
       z.number().gt(0, "You can't witdraw zero amount").max(maxBalance),
     ),
     toChain: z.number().min(0),

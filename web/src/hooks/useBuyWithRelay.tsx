@@ -9,7 +9,7 @@ import {
 } from "@/types";
 import { track, EVENTS } from "@/utils/analytics";
 import { getClient, adaptViemWallet } from "@reservoir0x/relay-sdk";
-import { encodeFunctionData, maxUint256 } from "viem";
+import { encodeFunctionData, maxUint256, type Chain } from "viem";
 import RelayTxToaster from "@/components/relayTxToaster";
 import getPeriodOfCampaign from "@/utils/getPeriodOfCampaign";
 import useFeatureFlag from "./useFeatureFlag";
@@ -158,7 +158,9 @@ const useBuyWithRelay = ({
 
           const viemWalletClient = createWalletClient({
             account: address as `0x${string}`,
-            chain: Object.values(config.chains).find((i) => i.id === fromChain),
+            chain: Object.values(config.chains).find(
+              (i) => i.id === fromChain,
+            ) as Chain | undefined,
             transport: custom(walletProvider as any),
           });
 
@@ -262,12 +264,9 @@ const useBuyWithRelay = ({
             queryKey: ["prices", data.poolAddress, data.outcomes],
           });
         } catch (e) {
-          if (
-            !(
-              e instanceof Error &&
-              (e.cause as { code?: number })?.code === 4001
-            )
-          ) {
+          if (!(
+            e instanceof Error && (e.cause as { code?: number })?.code === 4001
+          )) {
             // dont track if user rejects
             track(EVENTS.MINT, {
               fromChain,

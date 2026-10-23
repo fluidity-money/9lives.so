@@ -122,7 +122,7 @@ export default function DetailOutcomeRow({
             "rounded-r-sm border-r border-r-9black",
         )}
       >
-        <p className="min-h-[50px] font-chicago text-xs font-normal leading-[50px]">
+        <p className="min-h-[50px] font-chicago text-xs leading-[50px] font-normal">
           {`$ ${Number(price).toFixed(2)}/Share`}
         </p>
         {/* <Button

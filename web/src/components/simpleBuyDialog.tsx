@@ -70,7 +70,7 @@ export default function SimpleBuyDialog({
       supply: z.string(),
       toChain: z.number().min(0),
       toToken: z.string(),
-      usdValue: z.coerce.number().gt(0, "usd value > 0$"),
+      usdValue: z.coerce.number<number>().gt(0, "usd value > 0$"),
       fromChain: z
         .number({ message: "You need to select a chain to pay from" })
         .min(0),
@@ -315,7 +315,7 @@ export default function SimpleBuyDialog({
         </div>
 
         <div className="flex-1 space-y-1 text-center">
-          <div className="font-geneva text-sm uppercase text-gray-500">
+          <div className="font-geneva text-sm text-gray-500 uppercase">
             Amount
           </div>
           <p
@@ -368,7 +368,7 @@ export default function SimpleBuyDialog({
         <div className={combineClass(usdValue > 0 ? "visible" : "invisible")}>
           <div className="mx-4 flex items-center justify-between">
             <div className="text-center">
-              <div className="font-geneva text-sm font-medium uppercase text-gray-500">
+              <div className="font-geneva text-sm font-medium text-gray-500 uppercase">
                 If you&apos;re right
               </div>
               <div className="text-3xl font-semibold text-green-500">
@@ -376,7 +376,7 @@ export default function SimpleBuyDialog({
               </div>
             </div>
             <div className="text-center">
-              <div className="font-geneva text-sm font-medium uppercase text-gray-500">
+              <div className="font-geneva text-sm font-medium text-gray-500 uppercase">
                 If you&apos;re wrong
               </div>
               <div className="text-3xl font-semibold text-green-500">

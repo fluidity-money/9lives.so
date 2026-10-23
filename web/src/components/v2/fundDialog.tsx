@@ -25,7 +25,7 @@ export default function Funding({
         {`You need to have at least $0.1 in order to mint a position. You don't have $${fundToBuy}, do you want to supply?`}
       </p>
       <div className="flex gap-4">
-        <div className="relative flex items-center gap-1 py-2 pl-2.5 pr-8">
+        <div className="relative flex items-center gap-1 py-2 pr-8 pl-2.5">
           <Image src={USDCImg} alt="fusdc" width={20} />
           <span className="font-chicago">{"USDC"}</span>
         </div>

@@ -79,7 +79,7 @@ export default function LeaderRow({
             {compactAddress(data.wallet)}
           </span>
           {highlightUser ? (
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+            <span className="text-[11px] font-semibold tracking-wide text-neutral-400 uppercase">
               Your position
             </span>
           ) : null}

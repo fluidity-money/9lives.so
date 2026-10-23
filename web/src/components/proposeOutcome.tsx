@@ -98,7 +98,7 @@ export default function ProposeOutcome({
           <Image src={LinkIcon} alt="" width={14} />
           <Link
             href={`${config.destinationChain.blockExplorers.default.url}/tx/${txHash}`}
-            className="font-geneva text-xs uppercase text-9black underline"
+            className="font-geneva text-xs text-9black uppercase underline"
           >
             Tx Hash:{txHash!.slice(0, 6)}...{txHash!.slice(-6)}
           </Link>
@@ -124,14 +124,14 @@ export default function ProposeOutcome({
       <div className="flex items-center justify-between">
         <span
           className={
-            "bg-9yellow px-1 py-0.5 font-geneva text-xs uppercase text-9black"
+            "bg-9yellow px-1 py-0.5 font-geneva text-xs text-9black uppercase"
           }
         >
           End Date: {new Date(ending).toDateString()}
         </span>
         <span
           className={
-            "bg-9yellow px-1 py-0.5 font-geneva text-xs uppercase text-9black"
+            "bg-9yellow px-1 py-0.5 font-geneva text-xs text-9black uppercase"
           }
         >
           Time left for action: {timeLeft}
@@ -139,7 +139,7 @@ export default function ProposeOutcome({
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
         {propesedOutcome && !!BigInt(propesedOutcome) ? (
-          <h6 className="font-geneva text-xs uppercase text-9black">
+          <h6 className="font-geneva text-xs text-9black uppercase">
             Outcome{" "}
             {outcomes.find((o) => o.identifier === propesedOutcome)?.name ??
               propesedOutcome}{" "}
@@ -147,7 +147,7 @@ export default function ProposeOutcome({
           </h6>
         ) : null}
         {disputedOutcome && !!BigInt(disputedOutcome) ? (
-          <h6 className="font-geneva text-xs uppercase text-9black">
+          <h6 className="font-geneva text-xs text-9black uppercase">
             Disputed with:{" "}
             {outcomes.find((o) => o.identifier === disputedOutcome)?.name ??
               disputedOutcome}
@@ -156,7 +156,7 @@ export default function ProposeOutcome({
         <h5
           className={combineClass(
             config.infraMarket.colors[infraState ?? InfraMarketState.Loading],
-            "px-5 py-1 text-center font-chicago text-xl uppercase text-9black",
+            "px-5 py-1 text-center font-chicago text-xl text-9black uppercase",
           )}
         >
           {config.infraMarket.titles[infraState ?? InfraMarketState.Loading]}
@@ -199,7 +199,7 @@ export default function ProposeOutcome({
                   alt=""
                   width={16}
                   src={DownIcon}
-                  className="group pointer-events-none absolute right-2.5 top-2.5 size-4"
+                  className="group pointer-events-none absolute top-2.5 right-2.5 size-4"
                   aria-hidden="true"
                 />
               </div>

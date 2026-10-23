@@ -129,7 +129,7 @@ function RfqhubPriceChart({
             type="button"
             aria-pressed={range === value}
             onClick={() => setRange(value)}
-            className={`rounded px-3 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${range === value ? "bg-neutral-200 text-neutral-900" : "text-neutral-600 hover:bg-neutral-100"}`}
+            className={`rounded px-3 py-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 ${range === value ? "bg-neutral-200 text-neutral-900" : "text-neutral-600 hover:bg-neutral-100"}`}
           >
             {value}
           </button>

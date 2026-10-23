@@ -134,7 +134,7 @@ export default function DetailResults({ data }: DetailResultsProps) {
   return (
     <ShadowCard className="fixed inset-x-0 bottom-0 z-10 flex flex-col gap-4 p-4 md:relative">
       <div
-        className="absolute right-4 top-[-41px] rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
+        className="absolute top-[-41px] right-4 rounded-t-sm border border-b-0 border-9black bg-9layer p-2 md:hidden"
         onClick={() => setMinimized(!minimized)}
       >
         <Image

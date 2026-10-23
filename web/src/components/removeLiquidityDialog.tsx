@@ -41,7 +41,7 @@ export default function RemoveLiquidityDialog({
   );
   const formSchema = z.object({
     liquidity: z.preprocess(
-      (val) => Number(val),
+      (val: number) => Number(val),
       z.number().gt(0).max(maxLiquidity),
     ),
   });

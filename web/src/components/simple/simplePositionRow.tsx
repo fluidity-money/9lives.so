@@ -45,7 +45,7 @@ export default function SimplePositionRow({
         "flex justify-between gap-4 bg-white p-4 text-xs shadow-9orderSummary",
       )}
     >
-      <span className="font-chicago uppercase text-9black">
+      <span className="font-chicago text-9black uppercase">
         My Position: {position.name}
         <br />
         <br />

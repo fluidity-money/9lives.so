@@ -27,7 +27,7 @@ export default function ChartPointsIndicator({ starting, ending }: Props) {
         />
       </svg>
 
-      <span className="text-nowrap text-[9px] font-medium text-purple-600">
+      <span className="text-[9px] font-medium text-nowrap text-purple-600">
         EARN x{points.toFixed(2)} POINTS
       </span>
     </div>

@@ -29,7 +29,7 @@ export default function Placeholder({
         className={
           modern
             ? "text-xs text-neutral-400"
-            : "font-geneva text-[10px] uppercase text-[#808080]"
+            : "font-geneva text-[10px] text-[#808080] uppercase"
         }
       >
         {subtitle}

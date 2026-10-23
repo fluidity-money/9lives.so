@@ -134,6 +134,7 @@ export default function PriceChart({
         />
         <Tooltip
           labelFormatter={(ts) => {
+            if (typeof ts !== "number") return "";
             const date = new Date(ts * 1000);
             return date.toLocaleString("default", {
               day: "numeric",

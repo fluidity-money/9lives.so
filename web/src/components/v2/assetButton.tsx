@@ -33,7 +33,7 @@ export default function AssetButton({
       <span
         className={combineClass(
           isLive ? "text-green-600" : "text-neutral-400",
-          "hidden text-[9px] font-bold leading-[20px] tracking-tight md:block",
+          "hidden text-[9px] leading-[20px] font-bold tracking-tight md:block",
         )}
       >
         {isLive ? "LIVE" : "END"}

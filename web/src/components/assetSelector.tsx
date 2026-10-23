@@ -56,7 +56,7 @@ export default function AssetSelector({
     <Listbox value={fromToken} onChange={(selected) => setValue(selected)}>
       <ListboxButton
         className={combineClass(
-          variant === "default" ? "py-2 pl-2.5 pr-8" : "py-1 pl-1 pr-6 text-xs",
+          variant === "default" ? "py-2 pr-8 pl-2.5" : "py-1 pr-6 pl-1 text-xs",
           "relative flex items-center gap-1 rounded-[3px] border border-9black shadow-9btnSecondaryIdle",
           "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
         )}
@@ -80,7 +80,7 @@ export default function AssetSelector({
           width={variant === "default" ? 16 : 10}
           className={combineClass(
             variant === "default" ? "size-4" : "size-2.5",
-            "group pointer-events-none absolute right-2.5 top-2.5 fill-white/60",
+            "group pointer-events-none absolute top-2.5 right-2.5 fill-white/60",
           )}
           aria-hidden="true"
         />
@@ -101,7 +101,7 @@ export default function AssetSelector({
             disabled={!token.balance}
             className={combineClass(
               !token.balance && "opacity-50",
-              "group flex cursor-default select-none items-center justify-between gap-2 px-3 py-1.5 data-[focus]:bg-9blueLight",
+              "group flex cursor-default items-center justify-between gap-2 px-3 py-1.5 select-none data-[focus]:bg-9blueLight",
             )}
           >
             <div className="flex items-center gap-2">

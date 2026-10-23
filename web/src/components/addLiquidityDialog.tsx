@@ -36,7 +36,7 @@ export default function AddLiquidityDialog({
   const enabledRelay = useFeatureFlag("enable relay add liquidity");
   const isInMiniApp = useUserStore((s) => s.isInMiniApp);
   const formSchema = z.object({
-    amount: z.preprocess((val) => Number(val), z.number().gt(0)),
+    amount: z.preprocess((val: number) => Number(val), z.number().gt(0)),
     toChain: z.number().min(0),
     toToken: z.string(),
     fromChain: z
@@ -191,7 +191,7 @@ export default function AddLiquidityDialog({
           ) : (
             <div
               className={combineClass(
-                "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pl-2.5 pr-8 shadow-9btnSecondaryIdle",
+                "relative flex items-center gap-1 rounded-[3px] border border-9black py-2 pr-8 pl-2.5 shadow-9btnSecondaryIdle",
                 "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
               )}
             >

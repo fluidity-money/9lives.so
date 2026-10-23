@@ -304,8 +304,7 @@ export interface Mutation<
    *
    */
   ___?:
-    | Mutation$FragmentInline<_$Scalars>
-    | Mutation$FragmentInline<_$Scalars>[];
+    Mutation$FragmentInline<_$Scalars> | Mutation$FragmentInline<_$Scalars>[];
 
   /**
    *
@@ -878,8 +877,7 @@ export namespace Statistics {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > =
-    | $Select.Indicator.NoArgsIndicator
-    | avgGasLimitWeek$SelectionSet<_$Scalars>;
+    $Select.Indicator.NoArgsIndicator | avgGasLimitWeek$SelectionSet<_$Scalars>;
 
   export interface avgGasLimitWeek$SelectionSet<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =

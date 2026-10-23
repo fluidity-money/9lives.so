@@ -31,14 +31,14 @@ export default function ActivityRow({
               </p>
             </Link>
           ) : null}
-          <p className="font-geneva text-xs uppercase tracking-wide text-[#808080]">
+          <p className="font-geneva text-xs tracking-wide text-[#808080] uppercase">
             {data.outcomeName}
           </p>
           <Link
             href={`${config.destinationChain.blockExplorers.default.url}/tx/${data.txHash}`}
             target="_blank"
           >
-            <span className="font-geneva text-[10px] uppercase text-[#808080] underline">
+            <span className="font-geneva text-[10px] text-[#808080] uppercase underline">
               {data.txHash.slice(0, 4)}...{data.txHash.slice(-4)}
             </span>
           </Link>

@@ -100,7 +100,7 @@ export default function CampaignList({
         <LoadingIndicator />
       ) : campaigns?.length === 0 ? (
         <div className="flex items-center justify-center">
-          <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+          <span className="font-geneva text-[10px] leading-3 tracking-wide text-[#808080] uppercase">
             No results found
           </span>
         </div>
@@ -124,7 +124,7 @@ export default function CampaignList({
                 onClick={() => fetchNextPage()}
               />
             ) : (
-              <span className="font-geneva text-[10px] uppercase leading-3 tracking-wide text-[#808080]">
+              <span className="font-geneva text-[10px] leading-3 tracking-wide text-[#808080] uppercase">
                 End of results
               </span>
             )}
