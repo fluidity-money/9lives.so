@@ -1,13 +1,22 @@
 [Unit]
 Description=9lives Websocket
+Requires=ninelives-websocket.socket
+After=network-online.target ninelives-websocket.socket
+Wants=network-online.target
 
-[Socket]
-SocketUser=ninelives
-SocketGroup=www-data
-SocketMode=0660
-DirectoryMode=0755
-RemoveOnStop=yes
-ListenStream=/run/www/9lives-websocket.sock
+[Service]
+Type=simple
+User=ninelives
+Group=database-users
+EnvironmentFile=/etc/websocket9lives.so/config
+ExecStart=/usr/local/bin/ninelives-websocket
+Restart=on-failure
+RestartSec=3s
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
 
 [Install]
-WantedBy=sockets.target
+WantedBy=multi-user.target
