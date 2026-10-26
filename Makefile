@@ -101,7 +101,7 @@ ninelives-graph: ${GO_FILES}
 ninelives-websocket: ${GO_FILES}
 	@go build -o ninelives-websocket ./cmd/websocket.database
 
-install: cli
+install:
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@install -m755 ${CLIS} ${DESTDIR}${PREFIX}/bin/
 	@chmod +x ${DESTDIR}${PREFIX}/bin/${CLIS}
