@@ -1,0 +1,13 @@
+[Unit]
+Description=9lives Websocket
+
+[Socket]
+SocketUser=ninelives
+SocketGroup=www-data
+SocketMode=0660
+DirectoryMode=0755
+RemoveOnStop=yes
+ListenStream=/run/www/9lives-websocket.sock
+
+[Install]
+WantedBy=sockets.target
