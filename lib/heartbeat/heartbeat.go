@@ -11,10 +11,18 @@ import (
 	"time"
 )
 
-// EnvHeartbeatUrl to optionally send a GET to on request.
-const EnvHeartbeatUrl = "SPN_HEARTBEAT_URL"
+const (
+	// EnvHeartbeatUrl to optionally send a GET to on request.
+	EnvHeartbeatUrl = "SPN_HEARTBEAT_URL"
 
-var urls = make(chan string)
+	// EnvHeartbeatAlarmUrl to alarm an early death.
+	EnvHeartbeatAlarmUrl = "SPN_HEARTBEAT_ALARM_URL"
+)
+
+var (
+	urls      = make(chan string)
+	urlAlarms = make(chan string)
+)
 
 // client bounds the heartbeat request. The default client has no
 // timeout, so a hung request wedges the caller's pulse loop forever:
@@ -37,6 +45,21 @@ func Pulse() {
 	resp.Body.Close()
 }
 
+func Alarm() {
+	u := <-urlAlarms
+	if u == "" {
+		slog.Debug("skipping request to send message to heartbeat alarm url")
+		return
+	}
+	slog.Debug("sending a heartbeat message")
+	resp, err := client.Get(u)
+	if err != nil {
+		slog.Error("error reporting to heartbeat alarm", "err", err)
+		return
+	}
+	resp.Body.Close()
+}
+
 func init() {
 	s := os.Getenv(EnvHeartbeatUrl)
 	if s == "" {
@@ -45,6 +68,12 @@ func init() {
 	go func() {
 		for {
 			urls <- s
+		}
+	}()
+	sAlarm := os.Getenv(EnvHeartbeatAlarmUrl)
+	go func() {
+		for {
+			urlAlarms <- sAlarm
 		}
 	}()
 }

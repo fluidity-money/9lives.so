@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/fluidity-money/9lives.so/lib/config"
 	"github.com/fluidity-money/9lives.so/lib/features"
@@ -21,21 +22,14 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 
+	"github.com/coreos/go-systemd/v22/activation"
+
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	gormSlog "github.com/orandin/slog-gorm"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"github.com/aws/aws-lambda-go/lambda"
-
-	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
-
-	awsConfig "github.com/aws/aws-sdk-go-v2/config"
-	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	lambdaService "github.com/aws/aws-sdk-go-v2/service/lambda"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 const (
@@ -47,18 +41,6 @@ const (
 )
 
 const (
-	// EnvBackendType to use to listen the server with, (http|lambda).
-	EnvBackendType = "SPN_LISTEN_BACKEND"
-
-	// EnvKeyFile to use as the cert when listening with tls.
-	EnvCertFile = "SPN_CERT_FILE"
-
-	// EnvKeyFile to use as the key when listening with tls.
-	EnvKeyFile = "SPN_KEY_FILE"
-
-	// EnvListenAddr to listen the HTTP server on.
-	EnvListenAddr = "SPN_LISTEN_ADDR"
-
 	// EnvLambdaMiscAiBackend to use for frontend-related requests where
 	// existing infra is inappropriate.
 	EnvLambdaMiscAiBackend = "SPN_MISC_AI_FUNCTION_NAME"
@@ -112,12 +94,6 @@ func main() {
 		setup.Exitf("geth open: %v", err)
 	}
 	defer geth.Close()
-	awsConf, err := awsConfig.LoadDefaultConfig(context.Background())
-	if err != nil {
-		setup.Exitf("aws config: %v", err)
-	}
-	s3Client := s3.NewFromConfig(awsConf)
-	lambdaClient := lambdaService.NewFromConfig(awsConf)
 	f := features.Get()
 	adminSecret := os.Getenv(EnvAdminSecret)
 	if f.Is(features.FeatureAdminFeaturesEnabled) && adminSecret == "" {
@@ -133,23 +109,15 @@ func main() {
 	}
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			DB:                 db,
-			F:                  features.Get(),
-			Geth:               geth,
-			C:                  config,
-			FactoryAddr:        ethCommon.HexToAddress(config.FactoryAddress),
-			InfraMarketAddr:    ethCommon.HexToAddress(config.InfraMarketAddress),
-			BeautyContestAddr:  ethCommon.HexToAddress(config.BeautyContestAddress),
-			SarpAiAddr:         ethCommon.HexToAddress(config.SarpAiAddress),
-			PaymasterAddr:      ethCommon.HexToAddress(config.PaymasterAddress),
-			ChangelogItems:     Changelog[:min(ChangelogLen, len(Changelog))],
-			S3UploadBucketName: S3UploadBucketName,
-			S3UploadManager: s3manager.NewUploader(s3Client, func(u *s3manager.Uploader) {
-				u.PartSize = 10 * 1024 * 1024
-			}),
-			PicturesUriBase:         UploadTradingPicsUrl,
-			LambdaClient:            lambdaClient,
-			LambdaMiscAiBackendName: os.Getenv(EnvLambdaMiscAiBackend),
+			DB:                      db,
+			F:                       features.Get(),
+			Geth:                    geth,
+			C:                       config,
+			FactoryAddr:             ethCommon.HexToAddress(config.FactoryAddress),
+			InfraMarketAddr:         ethCommon.HexToAddress(config.InfraMarketAddress),
+			BeautyContestAddr:       ethCommon.HexToAddress(config.BeautyContestAddress),
+			SarpAiAddr:              ethCommon.HexToAddress(config.SarpAiAddress),
+			PaymasterAddr:           ethCommon.HexToAddress(config.PaymasterAddress),
 			AdminSecret:             adminSecret,
 			PaymasterMinimumUSDCGas: paymasterMinFee,
 			PaymasterSenderAddr:     ethCommon.HexToAddress(paymasterSenderAddr),
@@ -166,32 +134,15 @@ func main() {
 	})
 	http.Handle("/", corsMiddleware{srv})
 	http.Handle("/playground", playground.Handler("9lives.so playground", "/"))
-	switch typ := os.Getenv(EnvBackendType); typ {
-	case "lambda":
-		lambda.Start(httpadapter.NewV2(http.DefaultServeMux).ProxyWithContext)
-	case "http":
-		err := http.ListenAndServe(os.Getenv(EnvListenAddr), nil)
-		setup.Exitf( // This should only return if there's an error.
-			"err listening, %#v not set?: %v",
-			EnvListenAddr,
-			err,
-		)
-	case "https":
-		err := http.ListenAndServeTLS(
-			os.Getenv(EnvListenAddr),
-			os.Getenv(EnvCertFile),
-			os.Getenv(EnvKeyFile),
-			nil,
-		)
-		setup.Exitf( // This should only return if there's an error.
-			"err listening, %#v not set?: %v",
-			EnvListenAddr,
-			err,
-		)
-	default:
-		setup.Exitf(
-			"unexpected listen type: %#v, use either (lambda|http|https) for SPN_LISTEN_BACKEND",
-			typ,
-		)
+	l, err := activation.Listeners()
+	if err != nil {
+		setup.Exitf("listeners: %v", err)
 	}
+	var wg sync.WaitGroup
+	for _, l := range l {
+		wg.Go(func() {
+			panic(http.Serve(l, nil))
+		})
+	}
+	wg.Wait()
 }

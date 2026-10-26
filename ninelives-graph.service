@@ -1,0 +1,22 @@
+[Unit]
+Description=9lives Graph
+Requires=ninelives-graph.socket
+After=network-online.target ninelives-graph.socket
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ninelives
+Group=database-users
+EnvironmentFile=/etc/9lives.so/config
+ExecStart=/usr/local/bin/ninelives-graph
+Restart=on-failure
+RestartSec=3s
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target

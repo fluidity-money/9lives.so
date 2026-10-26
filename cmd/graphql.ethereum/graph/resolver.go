@@ -12,8 +12,6 @@ import (
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	s3manager "github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
 )
 
@@ -29,11 +27,7 @@ type Resolver struct {
 	PaymasterAddr           ethCommon.Address     // address of the Paymaster
 	PaymasterSenderAddr     ethCommon.Address     // public key address of the Paymaster sender
 	ChangelogItems          []changelog.Changelog // the changelog for this.
-	S3UploadBucketName      string                // bucket for s3 images
-	S3UploadManager         *s3manager.Uploader   // uploader for S3
-	PicturesUriBase         string                // base URL for image hosting domain
 	LambdaClient            *lambda.Client        // Lambda client
-	LambdaMiscAiBackendName string                // Lambda function name
 	AdminSecret             string                // administrative secret needed for some admin paths
 	PaymasterMinimumUSDCGas *big.Int              // minimum to ask user for in maximum gas
 	PriceResolverAddr       ethCommon.Address     // price resolver oracle address

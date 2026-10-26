@@ -16,3 +16,5 @@ insert-env.*
 foundry.lock
 *.wasm-opt
 *.wat
+ninelives-websocket
+ninelives-graph

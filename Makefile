@@ -1,4 +1,7 @@
 
+PREFIX ?= /usr/local
+SYSTEMD_DIR ?= /usr/lib/systemd/system
+
 .DELETE_ON_ERROR:
 
 comma=,
@@ -15,12 +18,11 @@ CARGO_BUILD_STYLUS := \
 
 RELEASE_WASM_POST := ./wasm-post.sh
 
-.PHONY: build clean docs factory trading solidity
+.PHONY: build clean docs factory trading solidity cli install
 
 OUT_SHARE := out/Share.sol/Share.json
 
-build: \
-	${OUT_SHARE} \
+WASMS := \
 	contract-trading-dppm-mint \
 	contract-trading-dppm-extras \
 	contract-trading-dppm-quotes \
@@ -29,6 +31,12 @@ build: \
 	contract-trading-amm-extras \
 	contract-trading-amm-quotes \
 	contract-trading-amm-price
+
+CLIS := ninelives-graph ninelives-websocket
+
+cli: ${CLIS}
+
+build: ${OUT_SHARE} ${WASMS} ${CLIS}
 
 solidity: ${OUT_SHARE}
 
@@ -87,6 +95,18 @@ contract-trading-amm-extras-admin.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-trading-extras-admin,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_POST} contract-trading-amm-extras-admin.wasm
 
+ninelives-graph: ${GO_FILES}
+	@go build -o ninelives-graph ./cmd/graphql.ethereum
+
+ninelives-websocket: ${GO_FILES}
+	@go build -o ninelives-websocket ./cmd/websocket.database
+
+install: cli
+	@mkdir -p ${DESTDIR}${PREFIX}/bin
+	@install -m755 ${CLIS} ${DESTDIR}${PREFIX}/bin/
+	@chmod +x ${DESTDIR}${PREFIX}/bin/${CLIS}
+	@install -m644 ${UNITS} ${DESTDIR}${SYSTEMD_DIR}/
+
 clean:
 	@rm -rf \
 		contract-trading-amm-extras.wasm \
@@ -112,4 +132,6 @@ clean:
 		contract-trading-dppm-trading-mint.wasm.wat \
 		liblib9lives.rlib \
 		ninelives.wasm \
+		ninelives-graph \
+		ninelives-websocket \
 		target

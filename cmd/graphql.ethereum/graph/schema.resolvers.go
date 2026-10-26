@@ -20,7 +20,6 @@ import (
 
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fluidity-money/9lives.so/cmd/graphql.ethereum/graph/model"
-	"github.com/fluidity-money/9lives.so/lib/ai"
 	"github.com/fluidity-money/9lives.so/lib/crypto"
 	"github.com/fluidity-money/9lives.so/lib/features"
 	"github.com/fluidity-money/9lives.so/lib/setup"
@@ -760,26 +759,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 	if settlement == "PRICE_ORACLE" && !isDppm {
 		return nil, fmt.Errorf("DPPM only for price oracle markets")
 	}
-	err = r.F.On(features.FeatureUseAiForCheckingIfCampaignMakesSense, func() error {
-		_, err = ai.RequestFromAi(
-			r.LambdaClient,
-			ctx,
-			r.LambdaMiscAiBackendName,
-			"is legit",
-			name,
-		)
-		if err != nil {
-			slog.Error("Failed to look up a request for if a campaign is legit",
-				"name", name,
-				"err", err,
-			)
-			return fmt.Errorf("failed to look up request: %v", err)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
 	// Create the campaign object
 	campaignId, _ := crypto.GetCampaignId(name, description, uint64(seed))
 	hexCampaignId := "0x" + hex.EncodeToString(campaignId)
@@ -855,29 +834,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 			shareAddrStr = strings.ToLower(shareAddr.Hex())
 		}
 		var outcomePicUrl *string
-		if pic := outcome.Picture; pic != nil && *pic != "" {
-			var img string
-			picKey := fmt.Sprintf("%v-%v", tradingAddr, shareAddrStr)
-			img, err = uploadTradingPicMaybePrecommit(
-				ctx,
-				r.S3UploadBucketName,
-				r.PicturesUriBase,
-				r.S3UploadManager,
-				*pic,
-				picKey,
-				isNotPrecommit,
-			)
-			if err != nil {
-				slog.Error("Failed to work with a image",
-					"trading addr", tradingAddr,
-					"creator", creator,
-					"err", err,
-					"is not precommit", isNotPrecommit,
-				)
-				return nil, fmt.Errorf("image server error")
-			}
-			outcomePicUrl = &img
-		}
 		campaignOutcomes[i] = types.Outcome{
 			Name:       outcome.Name,
 			Picture:    outcomePicUrl,
@@ -889,60 +845,6 @@ func (r *mutationResolver) ExplainCampaign(ctx context.Context, typeArg model.Mo
 		}
 	}
 	var tradingPicUrl *string
-	if picture != nil {
-		var img string
-		img, err = uploadTradingPicMaybePrecommit(
-			ctx,
-			r.S3UploadBucketName,
-			r.PicturesUriBase,
-			r.S3UploadManager,
-			*picture,
-			tradingAddrStr,
-			isNotPrecommit,
-		)
-		if err != nil {
-			slog.Error("Failed to work with a image",
-				"trading addr", tradingAddr,
-				"creator", creator,
-				"err", err,
-				"is not precommit", isNotPrecommit,
-			)
-			return nil, fmt.Errorf("image server error")
-		}
-		tradingPicUrl = &img
-	}
-	if categories != nil {
-		err = r.F.On(features.FeatureCategoryOverridesShouldBeMadeByAdmin, func() error {
-			if !hasValidAdminSecret {
-				return fmt.Errorf("invalid secret for category override")
-			}
-			return nil
-		})
-		if err != nil {
-			return nil, fmt.Errorf("bad feature use for category override: %v", err)
-		}
-	} else {
-		err = r.F.On(features.FeatureUseAIForCategories, func() error {
-			categories, err = ai.RequestFromAi(
-				r.LambdaClient,
-				ctx,
-				r.LambdaMiscAiBackendName,
-				"categories",
-				name,
-			)
-			if err != nil {
-				slog.Error("Failed to look up a request for categories",
-					"name", name,
-					"err", err,
-				)
-				return fmt.Errorf("failed to look up request: %v", err)
-			}
-			return nil
-		})
-		if err != nil {
-			return nil, fmt.Errorf("bad feature use for ai: %v", err)
-		}
-	}
 	var priceMetadataField *types.PriceMetadata
 	if priceMetadata != nil {
 		if !hasValidAdminSecret {
