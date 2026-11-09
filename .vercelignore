@@ -2,3 +2,4 @@
 .env.local
 .git
 .DS_Store
+.vercel
