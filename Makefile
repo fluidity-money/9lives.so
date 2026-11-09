@@ -34,6 +34,8 @@ WASMS := \
 
 CLIS := ninelives-graph ninelives-websocket
 
+UNITS := ninelives-graph@.service ninelives-graph@.socket
+
 cli: ${CLIS}
 
 build: ${OUT_SHARE} ${WASMS} ${CLIS}
