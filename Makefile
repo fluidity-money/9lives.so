@@ -95,7 +95,10 @@ contract-trading-amm-extras-admin.wasm: $(shell find src -type f -name '*.rs')
 	@${CARGO_BUILD_STYLUS} contract-trading-extras-admin,trading-backend-amm${CARGO_EXTRA_FEATURES}
 	@${RELEASE_WASM_POST} contract-trading-amm-extras-admin.wasm
 
-ninelives-graph: ${GO_FILES}
+cmd/graphql.ethereum/CHANGELOG.md: CHANGELOG.md
+	@cp CHANGELOG.md cmd/graphql.ethereum/CHANGELOG.md
+
+ninelives-graph: ${GO_FILES} cmd/graphql.ethereum/CHANGELOG.md
 	@go build -o ninelives-graph ./cmd/graphql.ethereum
 
 ninelives-websocket: ${GO_FILES}
