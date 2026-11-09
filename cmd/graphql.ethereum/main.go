@@ -20,7 +20,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/99designs/gqlgen/graphql/playground"
 
 	"github.com/coreos/go-systemd/v22/activation"
 
@@ -133,7 +132,6 @@ func main() {
 		Cache: lru.New(100),
 	})
 	http.Handle("/", corsMiddleware{srv})
-	http.Handle("/playground", playground.Handler("9lives.so playground", "/"))
 	l, err := activation.Listeners()
 	if err != nil {
 		setup.Exitf("listeners: %v", err)
