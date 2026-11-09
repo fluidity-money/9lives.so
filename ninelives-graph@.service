@@ -7,7 +7,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=ninelives
-Group=database-users
+Group=fluidity_apps
 EnvironmentFile=/etc/fluidity-apps/%i.conf
 ExecStart=/usr/local/bin/ninelives-graph
 Restart=on-failure
