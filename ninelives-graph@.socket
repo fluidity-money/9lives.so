@@ -1,5 +1,5 @@
 [Unit]
-Description=9lives Graph
+Description=9lives graph socket for %i
 
 [Socket]
 SocketUser=ninelives
@@ -7,7 +7,7 @@ SocketGroup=www-data
 SocketMode=0660
 DirectoryMode=0755
 RemoveOnStop=yes
-ListenStream=/run/www/9lives-graph.sock
+ListenStream=/run/www/9lives-graph-%i.sock
 
 [Install]
 WantedBy=sockets.target

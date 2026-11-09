@@ -1,18 +1,17 @@
 [Unit]
-Description=9lives Websocket
-Requires=ninelives-websocket.socket
-After=network-online.target ninelives-websocket.socket
+Description=9lives websocket for %i
+Requires=ninelives-websocket@%i.socket
+After=network-online.target ninelives-websocket@%i.socket
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=ninelives
 Group=database-users
-EnvironmentFile=/etc/websocket-9lives.so/config
+EnvironmentFile=/etc/fluidity-apps/%i.conf
 ExecStart=/usr/local/bin/ninelives-websocket
 Restart=on-failure
 RestartSec=3s
-
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectHome=yes
