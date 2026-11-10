@@ -137,18 +137,6 @@ export const requestLeaderboard = (season?: number) =>
     })
     .run()
     .then((data) => requireData(data).leaderboards);
-export const requestTotalUserCount = graphPoints
-  .document({
-    query: {
-      ProductUserCount: {
-        productUserCount: {
-          $: { product: "9lives" },
-        },
-      },
-    },
-  })
-  .run()
-  .then((data) => requireData(data).productUserCount);
 
 export const requestCampaignById = (id: string) =>
   graph9Lives

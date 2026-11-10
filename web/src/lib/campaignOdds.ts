@@ -1,11 +1,11 @@
-type CampaignWithOdds = { odds: string | null };
+type CampaignWithOdds = { odds: unknown };
 type DecodedCampaign<T> = Omit<T, "odds"> & {
   odds: Record<string, string> | null;
 };
 
-// Decode at the API boundary: Graffle's generated types describe Odds as a
-// string. Keeping this conversion here avoids runtime-only scalar overrides
-// whose decoded types are not reflected in document results.
+// Normalize at the API boundary: generated types describe Odds as a string,
+// but responses can contain either JSON text or an already-decoded object.
+// Validate both forms here without modifying generated code.
 export function decodeCampaignOdds<T extends CampaignWithOdds>(
   campaign: T,
 ): DecodedCampaign<T>;
@@ -17,7 +17,9 @@ export function decodeCampaignOdds<T extends CampaignWithOdds>(
 ): DecodedCampaign<T> | null {
   if (campaign === null) return null;
   const odds: unknown =
-    campaign.odds === null ? null : JSON.parse(campaign.odds);
+    typeof campaign.odds === "string"
+      ? JSON.parse(campaign.odds)
+      : campaign.odds;
   if (
     odds !== null &&
     (typeof odds !== "object" ||
