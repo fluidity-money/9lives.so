@@ -1,5 +1,7 @@
 "use client";
 
+// Whitespace commit
+
 import { wagmiAdapter } from "@/config/wagmi";
 import { createAppKit } from "@reown/appkit/react";
 import { type ReactNode } from "react";
