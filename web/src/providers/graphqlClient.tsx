@@ -36,159 +36,231 @@ const graphAccountsWithStatus = Accounts.create({
   url: appConfig.NEXT_PUBLIC_ACCOUNTS_URL,
 });
 export const requestCampaignList = (filterParams: CampaignFilters) =>
-  graph9Lives.query.campaigns({
-    $: { ...filterParams },
-    name: true,
-    identifier: true,
-    description: true,
-    picture: true,
-    oracleDescription: true,
-    oracleUrls: true,
-    settlement: true,
-    poolAddress: true,
-    isDppm: true,
-    odds: true,
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-    creator: {
-      address: true,
-    },
-    shares: {
-      identifier: true,
-      shares: true,
-    },
-    outcomes: {
-      identifier: true,
-      name: true,
-      picture: true,
-      share: {
-        address: true,
+  graph9Lives
+    .document({
+      query: {
+        Campaigns: {
+          campaigns: {
+            $: { ...filterParams },
+            name: true,
+            identifier: true,
+            description: true,
+            picture: true,
+            oracleDescription: true,
+            oracleUrls: true,
+            settlement: true,
+            poolAddress: true,
+            isDppm: true,
+            odds: true,
+            priceMetadata: {
+              baseAsset: true,
+              priceTargetForUp: true,
+            },
+            creator: {
+              address: true,
+            },
+            shares: {
+              identifier: true,
+              shares: true,
+            },
+            outcomes: {
+              identifier: true,
+              name: true,
+              picture: true,
+              share: {
+                address: true,
+              },
+            },
+            ending: true,
+            starting: true,
+            winner: true,
+            totalVolume: true,
+          },
+        },
+      },
+    })
+    .run("Campaigns")
+    .then((data) => data.campaigns);
+export const requestAchievments = (wallet?: string) =>
+  graphPoints
+    .document({
+      query: {
+        Achievements: {
+          achievements: {
+            $: { wallet },
+            id: true,
+            name: true,
+            count: true,
+            description: true,
+            shouldCountMatter: true,
+            product: true,
+          },
+        },
+      },
+    })
+    .run("Achievements")
+    .then((data) => data.achievements);
+export const requestAchievmentCount = (wallet: string) =>
+  graphPoints
+    .document({
+      query: {
+        AchievementCount: {
+          achievements: {
+            $: { wallet },
+            id: true,
+          },
+        },
+      },
+    })
+    .run("AchievementCount")
+    .then((data) => data.achievements);
+export const requestLeaderboard = (season?: number) =>
+  graphPoints
+    .document({
+      query: {
+        PointsLeaderboard: {
+          leaderboards: {
+            $: { product: "9lives", season },
+            items: {
+              wallet: true,
+              ranking: true,
+              scoring: true,
+            },
+          },
+        },
+      },
+    })
+    .run("PointsLeaderboard")
+    .then((data) => data.leaderboards);
+export const requestTotalUserCount = graphPoints
+  .document({
+    query: {
+      ProductUserCount: {
+        productUserCount: {
+          $: { product: "9lives" },
+        },
       },
     },
-    ending: true,
-    starting: true,
-    winner: true,
-    totalVolume: true,
-  });
-export const requestAchievments = (wallet?: string) =>
-  graphPoints.query.achievements({
-    $: { wallet },
-    id: true,
-    name: true,
-    count: true,
-    description: true,
-    shouldCountMatter: true,
-    product: true,
-  });
-export const requestAchievmentCount = (wallet: string) =>
-  graphPoints.query.achievements({
-    $: { wallet },
-    id: true,
-  });
-export const requestLeaderboard = (season?: number) =>
-  graphPoints.query.leaderboards({
-    $: { product: "9lives", season },
-    items: {
-      wallet: true,
-      ranking: true,
-      scoring: true,
-    },
-  });
-export const requestTotalUserCount = graphPoints.query.productUserCount({
-  $: { product: "9lives" },
-});
+  })
+  .run("ProductUserCount")
+  .then((data) => data.productUserCount);
 
 export const requestCampaignById = (id: string) =>
-  graph9Lives.query.campaignById({
-    $: { id },
-    name: true,
-    identifier: true,
-    description: true,
-    picture: true,
-    oracleDescription: true,
-    categories: true,
-    oracleUrls: true,
-    settlement: true,
-    poolAddress: true,
-    odds: true,
-    isDpm: true,
-    creator: {
-      address: true,
-    },
-    shares: {
-      identifier: true,
-      shares: true,
-    },
-    outcomes: {
-      identifier: true,
-      name: true,
-      picture: true,
-      share: {
-        address: true,
+  graph9Lives
+    .document({
+      query: {
+        CampaignById: {
+          campaignById: {
+            $: { id },
+            name: true,
+            identifier: true,
+            description: true,
+            picture: true,
+            oracleDescription: true,
+            categories: true,
+            oracleUrls: true,
+            settlement: true,
+            poolAddress: true,
+            odds: true,
+            isDpm: true,
+            creator: {
+              address: true,
+            },
+            shares: {
+              identifier: true,
+              shares: true,
+            },
+            outcomes: {
+              identifier: true,
+              name: true,
+              picture: true,
+              share: {
+                address: true,
+              },
+            },
+            liquidityVested: true,
+            ending: true,
+            starting: true,
+            winner: true,
+            totalVolume: true,
+            investmentAmounts: {
+              id: true,
+              share: true,
+              usdc: true,
+            },
+            isDppm: true,
+            priceMetadata: {
+              baseAsset: true,
+              priceTargetForUp: true,
+            },
+          },
+        },
       },
-    },
-    liquidityVested: true,
-    ending: true,
-    starting: true,
-    winner: true,
-    totalVolume: true,
-    investmentAmounts: {
-      id: true,
-      share: true,
-      usdc: true,
-    },
-    isDppm: true,
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-  });
+    })
+    .run("CampaignById")
+    .then((data) => data.campaignById);
 
 export const requestUserParticipated = (
   address: string,
   page: number = 0,
   pageSize: number,
 ) =>
-  graph9Lives.query.userParticipatedCampaigns({
-    $: { address, page, pageSize },
-    campaignId: true,
-    content: {
-      isDpm: true,
-      isDppm: true,
-      identifier: true,
-      odds: true,
-      shares: {
-        identifier: true,
-        shares: true,
-      },
-      starting: true,
-      ending: true,
-      totalVolume: true,
-      priceMetadata: {
-        baseAsset: true,
-        priceTargetForUp: true,
-      },
-      name: true,
-      picture: true,
-      poolAddress: true,
-      winner: true,
-      outcomes: {
-        name: true,
-        identifier: true,
-        picture: true,
-        share: {
-          address: true,
+  graph9Lives
+    .document({
+      query: {
+        UserParticipatedCampaigns: {
+          userParticipatedCampaigns: {
+            $: { address, page, pageSize },
+            campaignId: true,
+            content: {
+              isDpm: true,
+              isDppm: true,
+              identifier: true,
+              odds: true,
+              shares: {
+                identifier: true,
+                shares: true,
+              },
+              starting: true,
+              ending: true,
+              totalVolume: true,
+              priceMetadata: {
+                baseAsset: true,
+                priceTargetForUp: true,
+              },
+              name: true,
+              picture: true,
+              poolAddress: true,
+              winner: true,
+              outcomes: {
+                name: true,
+                identifier: true,
+                picture: true,
+                share: {
+                  address: true,
+                },
+              },
+            },
+          },
         },
       },
-    },
-  });
+    })
+    .run("UserParticipatedCampaigns")
+    .then((data) => data.userParticipatedCampaigns);
 
 export const requestTotalVolume = (address: string) =>
-  graph9Lives.query.userTotalVolume({
-    $: { address },
-  });
+  graph9Lives
+    .document({
+      query: {
+        UserTotalVolume: {
+          userTotalVolume: {
+            $: { address },
+          },
+        },
+      },
+    })
+    .run("UserTotalVolume")
+    .then((data) => data.userTotalVolume);
 
 export const requestUserActivities = ({
   address,
@@ -201,40 +273,58 @@ export const requestUserActivities = ({
   page?: number;
   pageSize?: number;
 }) =>
-  graph9Lives.query.userActivity({
-    $: { address, campaignId, page, pageSize },
-    campaignId: true,
-    campaignName: true,
-    outcomeId: true,
-    outcomeName: true,
-    outcomePic: true,
-    type: true,
-    fromSymbol: true,
-    fromAmount: true,
-    createdAt: true,
-    toAmount: true,
-    toSymbol: true,
-    poolAddress: true,
-    txHash: true,
-    campaignContent: {
-      isDppm: true,
-      ending: true,
-      priceMetadata: {
-        baseAsset: true,
-        priceTargetForUp: true,
+  graph9Lives
+    .document({
+      query: {
+        UserActivity: {
+          userActivity: {
+            $: { address, campaignId, page, pageSize },
+            campaignId: true,
+            campaignName: true,
+            outcomeId: true,
+            outcomeName: true,
+            outcomePic: true,
+            type: true,
+            fromSymbol: true,
+            fromAmount: true,
+            createdAt: true,
+            toAmount: true,
+            toSymbol: true,
+            poolAddress: true,
+            txHash: true,
+            campaignContent: {
+              isDppm: true,
+              ending: true,
+              priceMetadata: {
+                baseAsset: true,
+                priceTargetForUp: true,
+              },
+            },
+          },
+        },
       },
-    },
-  });
+    })
+    .run("UserActivity")
+    .then((data) => data.userActivity);
 
 export const requestPositionHistory = (address: string, outcomeIds: string[]) =>
-  graph9Lives.query.positionsHistory({
-    $: { outcomeIds, address },
-    fromAmount: true,
-    toAmount: true,
-    outcomeId: true,
-    txHash: true,
-    type: true,
-  });
+  graph9Lives
+    .document({
+      query: {
+        PositionsHistory: {
+          positionsHistory: {
+            $: { outcomeIds, address },
+            fromAmount: true,
+            toAmount: true,
+            outcomeId: true,
+            txHash: true,
+            type: true,
+          },
+        },
+      },
+    })
+    .run("PositionsHistory")
+    .then((data) => data.positionsHistory);
 
 export const requestUserClaims = ({
   address,
@@ -247,41 +337,59 @@ export const requestUserClaims = ({
   page?: number;
   pageSize?: number;
 }) =>
-  graph9Lives.query.userClaims({
-    $: { address, campaignId, page, pageSize },
-    fusdcReceived: true,
-    sharesSpent: true,
-    winner: true,
-    txHash: true,
-    createdAt: true,
-    pnl: true,
-    content: {
-      identifier: true,
-      isDppm: true,
-      priceMetadata: {
-        baseAsset: true,
-        priceTargetForUp: true,
+  graph9Lives
+    .document({
+      query: {
+        UserClaims: {
+          userClaims: {
+            $: { address, campaignId, page, pageSize },
+            fusdcReceived: true,
+            sharesSpent: true,
+            winner: true,
+            txHash: true,
+            createdAt: true,
+            pnl: true,
+            content: {
+              identifier: true,
+              isDppm: true,
+              priceMetadata: {
+                baseAsset: true,
+                priceTargetForUp: true,
+              },
+              starting: true,
+              ending: true,
+              name: true,
+              picture: true,
+              outcomes: {
+                identifier: true,
+                name: true,
+                picture: true,
+              },
+            },
+          },
+        },
       },
-      starting: true,
-      ending: true,
-      name: true,
-      picture: true,
-      outcomes: {
-        identifier: true,
-        name: true,
-        picture: true,
-      },
-    },
-  });
+    })
+    .run("UserClaims")
+    .then((data) => data.userClaims);
 
 export const requestProfile = (address: string) =>
-  graph9Lives.query.userProfile({
-    $: { address },
-    email: true,
-    settings: {
-      refererr: true,
-    },
-  });
+  graph9Lives
+    .document({
+      query: {
+        UserProfile: {
+          userProfile: {
+            $: { address },
+            email: true,
+            settings: {
+              refererr: true,
+            },
+          },
+        },
+      },
+    })
+    .run("UserProfile")
+    .then((data) => data.userProfile);
 
 export const synchProfile = (address: string, email: string) =>
   graph9Lives.mutation.synchProfile({
@@ -310,30 +418,57 @@ export const requestUserLiquidity = ({
   address: string;
   tradingAddr?: string;
 }) =>
-  graph9Lives.query.userLiquidity({
-    $: { address, tradingAddr },
-  });
+  graph9Lives
+    .document({
+      query: {
+        UserLiquidity: {
+          userLiquidity: {
+            $: { address, tradingAddr },
+          },
+        },
+      },
+    })
+    .run("UserLiquidity")
+    .then((data) => data.userLiquidity);
 
 export const requestLeaderboardCategories = () =>
-  graph9Lives.query.leaderboards({
-    referrers: {
-      address: true,
-      volume: true,
-    },
-    creators: {
-      address: true,
-      volume: true,
-    },
-    volume: {
-      address: true,
-      volume: true,
-    },
-  });
+  graph9Lives
+    .document({
+      query: {
+        LeaderboardCategories: {
+          leaderboards: {
+            referrers: {
+              address: true,
+              volume: true,
+            },
+            creators: {
+              address: true,
+              volume: true,
+            },
+            volume: {
+              address: true,
+              volume: true,
+            },
+          },
+        },
+      },
+    })
+    .run("LeaderboardCategories")
+    .then((data) => data.leaderboards);
 
 export const requestReferrersForAddress = (address: string) =>
-  graph9Lives.query.referrersForAddress({
-    $: { address },
-  });
+  graph9Lives
+    .document({
+      query: {
+        ReferrersForAddress: {
+          referrersForAddress: {
+            $: { address },
+          },
+        },
+      },
+    })
+    .run("ReferrersForAddress")
+    .then((data) => data.referrersForAddress);
 
 export const genReferrer = ({
   address,
@@ -370,71 +505,107 @@ export const associateReferral = ({
   });
 
 export const requestSenderByCode = (code: string) =>
-  graph9Lives.query.referrerByCode({
-    $: { code },
-  });
+  graph9Lives
+    .document({
+      query: {
+        ReferrerByCode: {
+          referrerByCode: {
+            $: { code },
+          },
+        },
+      },
+    })
+    .run("ReferrerByCode")
+    .then((data) => data.referrerByCode);
 
 export const requestChangelog = () =>
-  graph9Lives.query.changelog({
-    afterTs: true,
-    html: true,
-  });
+  graph9Lives
+    .document({
+      query: {
+        Changelog: {
+          changelog: {
+            afterTs: true,
+            html: true,
+          },
+        },
+      },
+    })
+    .run("Changelog")
+    .then((data) => data.changelog);
 
 export const requestFeaturedCampaigns = (
   props: { limit: number } = {
     limit: 32,
   },
 ) =>
-  graph9Lives.query.featuredCampaign({
-    $: { limit: props.limit },
-    name: true,
-    identifier: true,
-    description: true,
-    picture: true,
-    oracleDescription: true,
-    oracleUrls: true,
-    odds: true,
-    settlement: true,
-    isDppm: true,
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-    poolAddress: true,
-    creator: {
-      address: true,
-    },
-    shares: {
-      identifier: true,
-      shares: true,
-    },
-    outcomes: {
-      identifier: true,
-      name: true,
-      picture: true,
-      share: {
-        address: true,
+  graph9Lives
+    .document({
+      query: {
+        FeaturedCampaign: {
+          featuredCampaign: {
+            $: { limit: props.limit },
+            name: true,
+            identifier: true,
+            description: true,
+            picture: true,
+            oracleDescription: true,
+            oracleUrls: true,
+            odds: true,
+            settlement: true,
+            isDppm: true,
+            priceMetadata: {
+              baseAsset: true,
+              priceTargetForUp: true,
+            },
+            poolAddress: true,
+            creator: {
+              address: true,
+            },
+            shares: {
+              identifier: true,
+              shares: true,
+            },
+            outcomes: {
+              identifier: true,
+              name: true,
+              picture: true,
+              share: {
+                address: true,
+              },
+            },
+            ending: true,
+            starting: true,
+            winner: true,
+            totalVolume: true,
+          },
+        },
       },
-    },
-    ending: true,
-    starting: true,
-    winner: true,
-    totalVolume: true,
-  });
+    })
+    .run("FeaturedCampaign")
+    .then((data) => data.featuredCampaign);
 
 export const requestUserLPs = (address: string) =>
-  graph9Lives.query.userLPs({
-    $: { address },
-    liquidity: true,
-    campaign: {
-      identifier: true,
-      name: true,
-      picture: true,
-      poolAddress: true,
-      winner: true,
-      ending: true,
-    },
-  });
+  graph9Lives
+    .document({
+      query: {
+        UserLPs: {
+          userLPs: {
+            $: { address },
+            liquidity: true,
+            campaign: {
+              identifier: true,
+              name: true,
+              picture: true,
+              poolAddress: true,
+              winner: true,
+              ending: true,
+            },
+          },
+        },
+      },
+    })
+    .run("UserLPs")
+    .then((data) => data.userLPs);
 
 export const requestPaymaster = ({
   opType,
@@ -499,9 +670,18 @@ export const requestPaymaster = ({
   });
 
 export const requestCountReferees = (referrerAddress: string) =>
-  graph9Lives.query.countReferees({
-    $: { referrerAddress },
-  });
+  graph9Lives
+    .document({
+      query: {
+        CountReferees: {
+          countReferees: {
+            $: { referrerAddress },
+          },
+        },
+      },
+    })
+    .run("CountReferees")
+    .then((data) => data.countReferees);
 
 export const requestComments = ({
   campaignId,
@@ -514,17 +694,26 @@ export const requestComments = ({
   page?: number;
   pageSize?: number;
 }) =>
-  graph9Lives.query.campaignComments({
-    $: { campaignId, page, pageSize, onlyHolders },
-    id: true,
-    content: true,
-    walletAddress: true,
-    createdAt: true,
-    investments: {
-      id: true,
-      amount: true,
-    },
-  });
+  graph9Lives
+    .document({
+      query: {
+        CampaignComments: {
+          campaignComments: {
+            $: { campaignId, page, pageSize, onlyHolders },
+            id: true,
+            content: true,
+            walletAddress: true,
+            createdAt: true,
+            investments: {
+              id: true,
+              amount: true,
+            },
+          },
+        },
+      },
+    })
+    .run("CampaignComments")
+    .then((data) => data.campaignComments);
 
 export const postComment = ({
   campaignId,
@@ -567,14 +756,30 @@ export const deleteComment = ({
   });
 
 export const requestPriceChanges = (poolAddress: string) =>
-  graph9Lives.query.campaignPriceEvents({
-    $: { poolAddress },
-    createdAt: true,
-    shares: { shares: true, identifier: true },
-  });
+  graph9Lives
+    .document({
+      query: {
+        CampaignPriceEvents: {
+          campaignPriceEvents: {
+            $: { poolAddress },
+            createdAt: true,
+            shares: { shares: true, identifier: true },
+          },
+        },
+      },
+    })
+    .run("CampaignPriceEvents")
+    .then((data) => data.campaignPriceEvents);
 
 export const requestWeeklyVolume = (poolAddress: string) =>
-  graph9Lives.query.campaignWeeklyVolume({ $: { poolAddress } });
+  graph9Lives
+    .document({
+      query: {
+        CampaignWeeklyVolume: { campaignWeeklyVolume: { $: { poolAddress } } },
+      },
+    })
+    .run("CampaignWeeklyVolume")
+    .then((data) => data.campaignWeeklyVolume);
 
 export const requestSimpleMarket = (
   symbol: string,
@@ -585,109 +790,144 @@ export const requestSimpleMarket = (
     .transport({
       headers: noCache ? { "9lives-bypass-cache": "1" } : undefined,
     })
-    .query.campaignBySymbol({
-      $: {
-        symbol: symbol.toUpperCase(),
-        category: period[0].toUpperCase() + period.slice(1).toLowerCase(),
+    .document({
+      query: {
+        CampaignBySymbol: {
+          campaignBySymbol: {
+            $: {
+              symbol: symbol.toUpperCase(),
+              category: period[0].toUpperCase() + period.slice(1).toLowerCase(),
+            },
+            categories: true,
+            identifier: true,
+            isDppm: true,
+            starting: true,
+            odds: true,
+            ending: true,
+            poolAddress: true,
+            outcomes: {
+              identifier: true,
+              name: true,
+              picture: true,
+              share: { address: true },
+            },
+            totalVolume: true,
+            creator: { address: true },
+            winner: true,
+            investmentAmounts: { usdc: true, share: true, id: true },
+            priceMetadata: {
+              baseAsset: true,
+              priceTargetForUp: true,
+            },
+            name: true,
+          },
+        },
       },
-      categories: true,
-      identifier: true,
-      isDppm: true,
-      starting: true,
-      odds: true,
-      ending: true,
-      poolAddress: true,
-      outcomes: {
-        identifier: true,
-        name: true,
-        picture: true,
-        share: { address: true },
-      },
-      totalVolume: true,
-      creator: { address: true },
-      winner: true,
-      investmentAmounts: { usdc: true, share: true, id: true },
-      priceMetadata: {
-        baseAsset: true,
-        priceTargetForUp: true,
-      },
-      name: true,
-    });
+    })
+    .run("CampaignBySymbol")
+    .then((data) => data.campaignBySymbol);
 
 export const requestTimebasedCampaigns = (
   categories: string[],
   tokens: string[],
 ) =>
-  graph9Lives.query.timebasedCampaigns({
-    $: { categories, tokens },
-    name: true,
-    identifier: true,
-    description: true,
-    picture: true,
-    oracleDescription: true,
-    oracleUrls: true,
-    settlement: true,
-    odds: true,
-    poolAddress: true,
-    isDppm: true,
-    priceMetadata: {
-      baseAsset: true,
-      priceTargetForUp: true,
-    },
-    creator: {
-      address: true,
-    },
-    shares: {
-      identifier: true,
-      shares: true,
-    },
-    outcomes: {
-      identifier: true,
-      name: true,
-      picture: true,
-      share: {
-        address: true,
-      },
-    },
-    ending: true,
-    starting: true,
-    winner: true,
-    totalVolume: true,
-  });
-
-export const requestUnclaimedCampaigns = (address: string, token?: string) =>
-  graph9Lives.query.unclaimedCampaigns({
-    $: { address, token },
-    totalSpent: true,
-    campaign: {
-      identifier: true,
-      priceMetadata: {
-        baseAsset: true,
-        priceTargetForUp: true,
-      },
-      isDppm: true,
-      starting: true,
-      poolAddress: true,
-      ending: true,
-      winner: true,
-      outcomes: {
-        name: true,
-        picture: true,
-        identifier: true,
-        share: {
-          address: true,
+  graph9Lives
+    .document({
+      query: {
+        TimebasedCampaigns: {
+          timebasedCampaigns: {
+            $: { categories, tokens },
+            name: true,
+            identifier: true,
+            description: true,
+            picture: true,
+            oracleDescription: true,
+            oracleUrls: true,
+            settlement: true,
+            odds: true,
+            poolAddress: true,
+            isDppm: true,
+            priceMetadata: {
+              baseAsset: true,
+              priceTargetForUp: true,
+            },
+            creator: {
+              address: true,
+            },
+            shares: {
+              identifier: true,
+              shares: true,
+            },
+            outcomes: {
+              identifier: true,
+              name: true,
+              picture: true,
+              share: {
+                address: true,
+              },
+            },
+            ending: true,
+            starting: true,
+            winner: true,
+            totalVolume: true,
+          },
         },
       },
-    },
-  });
+    })
+    .run("TimebasedCampaigns")
+    .then((data) => data.timebasedCampaigns);
+
+export const requestUnclaimedCampaigns = (address: string, token?: string) =>
+  graph9Lives
+    .document({
+      query: {
+        UnclaimedCampaigns: {
+          unclaimedCampaigns: {
+            $: { address, token },
+            totalSpent: true,
+            campaign: {
+              identifier: true,
+              priceMetadata: {
+                baseAsset: true,
+                priceTargetForUp: true,
+              },
+              isDppm: true,
+              starting: true,
+              poolAddress: true,
+              ending: true,
+              winner: true,
+              outcomes: {
+                name: true,
+                picture: true,
+                identifier: true,
+                share: {
+                  address: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    .run("UnclaimedCampaigns")
+    .then((data) => data.unclaimedCampaigns);
 
 export const request9LivesPoints = (address?: string) =>
-  graphPoints.query.ninelivesPoints({
-    $: { wallet: address },
-    amount: true,
-    wallet: true,
-    rank: true,
-  });
+  graphPoints
+    .document({
+      query: {
+        NinelivesPoints: {
+          ninelivesPoints: {
+            $: { wallet: address },
+            amount: true,
+            wallet: true,
+            rank: true,
+          },
+        },
+      },
+    })
+    .run("NinelivesPoints")
+    .then((data) => data.ninelivesPoints);
 
 export const createAccount = ({
   eoaAddr,
@@ -738,14 +978,30 @@ export const requestSecret = ({
     },
   });
 export const hasCreated = (address: string) =>
-  graphAccounts.query.hasCreated({ $: { address } });
-export const requestPublicKey = () => graphAccounts.query.publickey();
+  graphAccounts
+    .document({ query: { HasCreated: { hasCreated: { $: { address } } } } })
+    .run("HasCreated")
+    .then((data) => data.hasCreated);
+export const requestPublicKey = () =>
+  graphAccounts
+    .document({ query: { PublicKey: { publickey: true } } })
+    .run("PublicKey")
+    .then((data) => data.publickey);
 export const requestEoaForAddress = (address: string) =>
-  graphAccounts.query.eoaForAddress({
-    $: {
-      address,
-    },
-  });
+  graphAccounts
+    .document({
+      query: {
+        EoaForAddress: {
+          eoaForAddress: {
+            $: {
+              address,
+            },
+          },
+        },
+      },
+    })
+    .run("EoaForAddress")
+    .then((data) => data.eoaForAddress);
 export const ninelivesMint = ({
   amount,
   outcome,
@@ -786,10 +1042,19 @@ export const ninelivesMint = ({
     });
 
 export const requestAssets = async () =>
-  graph9Lives.query.assets({
-    totalSpent: true,
-    name: true,
-  });
+  graph9Lives
+    .document({
+      query: {
+        Assets: {
+          assets: {
+            totalSpent: true,
+            name: true,
+          },
+        },
+      },
+    })
+    .run("Assets")
+    .then((data) => data.assets);
 
 export const ninelivesClaimAll = async ({
   eoaAddress,
@@ -807,16 +1072,40 @@ export const ninelivesClaimAll = async ({
     .mutation.claimRewards({ $: { msTs: Date.now().toString(), markets } });
 
 export const requestTotalPnL = async (address: string) =>
-  graph9Lives.query.totalPnL({ $: { address }, totalPnl: true, volume: true });
+  graph9Lives
+    .document({
+      query: {
+        TotalPnL: {
+          totalPnL: { $: { address }, totalPnl: true, volume: true },
+        },
+      },
+    })
+    .run("TotalPnL")
+    .then((data) => data.totalPnL);
 
 export const requestFinalPrice = async (
   symbol: SimpleMarketKey,
   ending: number,
-) => graph9Lives.query.getFinalPrice({ $: { symbol, ending } });
+) =>
+  graph9Lives
+    .document({
+      query: { GetFinalPrice: { getFinalPrice: { $: { symbol, ending } } } },
+    })
+    .run("GetFinalPrice")
+    .then((data) => data.getFinalPrice);
 
 export const requestAssetsHourlyDelta = async () =>
-  graph9Lives.query.assetsDeltaHour({
-    name: true,
-    price: true,
-    hourAgoPrice: true,
-  });
+  graph9Lives
+    .document({
+      query: {
+        AssetsDeltaHour: {
+          assetsDeltaHour: {
+            name: true,
+            price: true,
+            hourAgoPrice: true,
+          },
+        },
+      },
+    })
+    .run("AssetsDeltaHour")
+    .then((data) => data.assetsDeltaHour);

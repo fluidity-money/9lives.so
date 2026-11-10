@@ -214,7 +214,12 @@ export type RfqhubOfframpResult = Awaited<ReturnType<typeof rfqhubOfframp>>;
  * Get the spendable onramped balance for an account address. Public.
  */
 export const rfqhubRequestBalance = (addr: string) =>
-  data(graphRfqhub.query.balance({ $: { addr } }), "balance");
+  data(
+    graphRfqhub
+      .document({ query: { RfqhubBalance: { balance: { $: { addr } } } } })
+      .run("RfqhubBalance"),
+    "balance",
+  );
 
 /**
  * Get the currently outstanding auctions needing BundleMaker submissions.
@@ -222,19 +227,27 @@ export const rfqhubRequestBalance = (addr: string) =>
  */
 export const rfqhubRequestOpenAuctions = () =>
   data(
-    graphRfqhub.query.openAuctions({
-      id: true,
-      openAuctions: {
-        id: true,
-        openToBeWon: true,
-        accAddr: true,
-        deadlineTs: true,
-        outcome: true,
-        expiryTs: true,
-        priceTarget: true,
-        isUp: true,
-        bundleTakerId: true,
-      },
-    }),
+    graphRfqhub
+      .document({
+        query: {
+          RfqhubOpenAuctions: {
+            openAuctions: {
+              id: true,
+              openAuctions: {
+                id: true,
+                openToBeWon: true,
+                accAddr: true,
+                deadlineTs: true,
+                outcome: true,
+                expiryTs: true,
+                priceTarget: true,
+                isUp: true,
+                bundleTakerId: true,
+              },
+            },
+          },
+        },
+      })
+      .run("RfqhubOpenAuctions"),
     "openAuctions",
   );
