@@ -1,4 +1,5 @@
 import appConfig from "@/config";
+import { decodeCampaignOdds } from "@/lib/campaignOdds";
 import { Lives9 } from "@/graffle/lives9/__";
 import { Points } from "@/graffle/points/__";
 import { Accounts } from "@/graffle/accounts/__";
@@ -14,18 +15,9 @@ const requireData = <T,>(data: T | null): T => {
   return data;
 };
 
-const graph9Lives = Lives9.create()
-  .scalar("Odds", {
-    decode(value) {
-      return JSON.parse(value) as Record<string, string>;
-    },
-    encode(value) {
-      return JSON.stringify(value);
-    },
-  })
-  .transport({
-    url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
-  });
+const graph9Lives = Lives9.create().transport({
+  url: appConfig.NEXT_PUBLIC_GRAPHQL_URL,
+});
 const graphPoints = Points.create().transport({
   url: appConfig.NEXT_PUBLIC_POINTS_URL,
 });
@@ -89,7 +81,11 @@ export const requestCampaignList = (filterParams: CampaignFilters) =>
       },
     })
     .run()
-    .then((data) => requireData(data).campaigns);
+    .then((data) =>
+      requireData(data).campaigns.map((campaign) =>
+        decodeCampaignOdds(campaign),
+      ),
+    );
 export const requestAchievments = (wallet?: string) =>
   graphPoints
     .document({
@@ -207,7 +203,7 @@ export const requestCampaignById = (id: string) =>
       },
     })
     .run()
-    .then((data) => requireData(data).campaignById);
+    .then((data) => decodeCampaignOdds(requireData(data).campaignById));
 
 export const requestUserParticipated = (
   address: string,
@@ -255,7 +251,16 @@ export const requestUserParticipated = (
       },
     })
     .run()
-    .then((data) => requireData(data).userParticipatedCampaigns);
+    .then((data) =>
+      requireData(data).userParticipatedCampaigns.map((entry) =>
+        entry === null
+          ? null
+          : {
+              ...entry,
+              content: decodeCampaignOdds(entry.content),
+            },
+      ),
+    );
 
 export const requestTotalVolume = (address: string) =>
   graph9Lives
@@ -591,7 +596,11 @@ export const requestFeaturedCampaigns = (
       },
     })
     .run()
-    .then((data) => requireData(data).featuredCampaign);
+    .then((data) =>
+      requireData(data).featuredCampaign.map((campaign) =>
+        decodeCampaignOdds(campaign),
+      ),
+    );
 
 export const requestUserLPs = (address: string) =>
   graph9Lives
@@ -834,7 +843,7 @@ export const requestSimpleMarket = (
       },
     })
     .run()
-    .then((data) => requireData(data).campaignBySymbol);
+    .then((data) => decodeCampaignOdds(requireData(data).campaignBySymbol));
 
 export const requestTimebasedCampaigns = (
   categories: string[],
@@ -884,7 +893,11 @@ export const requestTimebasedCampaigns = (
       },
     })
     .run()
-    .then((data) => requireData(data).timebasedCampaigns);
+    .then((data) =>
+      requireData(data).timebasedCampaigns.map((campaign) =>
+        decodeCampaignOdds(campaign),
+      ),
+    );
 
 export const requestUnclaimedCampaigns = (address: string, token?: string) =>
   graph9Lives
