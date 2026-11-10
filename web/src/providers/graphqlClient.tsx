@@ -5,6 +5,15 @@ import { Accounts } from "@/graffle/accounts/__";
 import { CampaignFilters, SimpleMarketKey } from "@/types";
 import { maxUint256 } from "viem";
 
+// A null response is a failed request, not an empty result. Keep nullable
+// fields inside a successful response unchanged.
+const requireData = <T,>(data: T | null): T => {
+  if (data === null) {
+    throw new Error("GraphQL response returned null data");
+  }
+  return data;
+};
+
 const graph9Lives = Lives9.create()
   .scalar("Odds", {
     decode(value) {
@@ -79,8 +88,8 @@ export const requestCampaignList = (filterParams: CampaignFilters) =>
         },
       },
     })
-    .run("Campaigns")
-    .then((data) => data.campaigns);
+    .run()
+    .then((data) => requireData(data).campaigns);
 export const requestAchievments = (wallet?: string) =>
   graphPoints
     .document({
@@ -98,8 +107,8 @@ export const requestAchievments = (wallet?: string) =>
         },
       },
     })
-    .run("Achievements")
-    .then((data) => data.achievements);
+    .run()
+    .then((data) => requireData(data).achievements);
 export const requestAchievmentCount = (wallet: string) =>
   graphPoints
     .document({
@@ -112,8 +121,8 @@ export const requestAchievmentCount = (wallet: string) =>
         },
       },
     })
-    .run("AchievementCount")
-    .then((data) => data.achievements);
+    .run()
+    .then((data) => requireData(data).achievements);
 export const requestLeaderboard = (season?: number) =>
   graphPoints
     .document({
@@ -130,8 +139,8 @@ export const requestLeaderboard = (season?: number) =>
         },
       },
     })
-    .run("PointsLeaderboard")
-    .then((data) => data.leaderboards);
+    .run()
+    .then((data) => requireData(data).leaderboards);
 export const requestTotalUserCount = graphPoints
   .document({
     query: {
@@ -142,8 +151,8 @@ export const requestTotalUserCount = graphPoints
       },
     },
   })
-  .run("ProductUserCount")
-  .then((data) => data.productUserCount);
+  .run()
+  .then((data) => requireData(data).productUserCount);
 
 export const requestCampaignById = (id: string) =>
   graph9Lives
@@ -197,8 +206,8 @@ export const requestCampaignById = (id: string) =>
         },
       },
     })
-    .run("CampaignById")
-    .then((data) => data.campaignById);
+    .run()
+    .then((data) => requireData(data).campaignById);
 
 export const requestUserParticipated = (
   address: string,
@@ -245,8 +254,8 @@ export const requestUserParticipated = (
         },
       },
     })
-    .run("UserParticipatedCampaigns")
-    .then((data) => data.userParticipatedCampaigns);
+    .run()
+    .then((data) => requireData(data).userParticipatedCampaigns);
 
 export const requestTotalVolume = (address: string) =>
   graph9Lives
@@ -259,8 +268,8 @@ export const requestTotalVolume = (address: string) =>
         },
       },
     })
-    .run("UserTotalVolume")
-    .then((data) => data.userTotalVolume);
+    .run()
+    .then((data) => requireData(data).userTotalVolume);
 
 export const requestUserActivities = ({
   address,
@@ -304,8 +313,8 @@ export const requestUserActivities = ({
         },
       },
     })
-    .run("UserActivity")
-    .then((data) => data.userActivity);
+    .run()
+    .then((data) => requireData(data).userActivity);
 
 export const requestPositionHistory = (address: string, outcomeIds: string[]) =>
   graph9Lives
@@ -323,8 +332,8 @@ export const requestPositionHistory = (address: string, outcomeIds: string[]) =>
         },
       },
     })
-    .run("PositionsHistory")
-    .then((data) => data.positionsHistory);
+    .run()
+    .then((data) => requireData(data).positionsHistory);
 
 export const requestUserClaims = ({
   address,
@@ -370,8 +379,8 @@ export const requestUserClaims = ({
         },
       },
     })
-    .run("UserClaims")
-    .then((data) => data.userClaims);
+    .run()
+    .then((data) => requireData(data).userClaims);
 
 export const requestProfile = (address: string) =>
   graph9Lives
@@ -388,8 +397,8 @@ export const requestProfile = (address: string) =>
         },
       },
     })
-    .run("UserProfile")
-    .then((data) => data.userProfile);
+    .run()
+    .then((data) => requireData(data).userProfile);
 
 export const synchProfile = (address: string, email: string) =>
   graph9Lives.mutation.synchProfile({
@@ -428,8 +437,8 @@ export const requestUserLiquidity = ({
         },
       },
     })
-    .run("UserLiquidity")
-    .then((data) => data.userLiquidity);
+    .run()
+    .then((data) => requireData(data).userLiquidity);
 
 export const requestLeaderboardCategories = () =>
   graph9Lives
@@ -453,8 +462,8 @@ export const requestLeaderboardCategories = () =>
         },
       },
     })
-    .run("LeaderboardCategories")
-    .then((data) => data.leaderboards);
+    .run()
+    .then((data) => requireData(data).leaderboards);
 
 export const requestReferrersForAddress = (address: string) =>
   graph9Lives
@@ -467,8 +476,8 @@ export const requestReferrersForAddress = (address: string) =>
         },
       },
     })
-    .run("ReferrersForAddress")
-    .then((data) => data.referrersForAddress);
+    .run()
+    .then((data) => requireData(data).referrersForAddress);
 
 export const genReferrer = ({
   address,
@@ -515,8 +524,8 @@ export const requestSenderByCode = (code: string) =>
         },
       },
     })
-    .run("ReferrerByCode")
-    .then((data) => data.referrerByCode);
+    .run()
+    .then((data) => requireData(data).referrerByCode);
 
 export const requestChangelog = () =>
   graph9Lives
@@ -530,8 +539,8 @@ export const requestChangelog = () =>
         },
       },
     })
-    .run("Changelog")
-    .then((data) => data.changelog);
+    .run()
+    .then((data) => requireData(data).changelog);
 
 export const requestFeaturedCampaigns = (
   props: { limit: number } = {
@@ -581,8 +590,8 @@ export const requestFeaturedCampaigns = (
         },
       },
     })
-    .run("FeaturedCampaign")
-    .then((data) => data.featuredCampaign);
+    .run()
+    .then((data) => requireData(data).featuredCampaign);
 
 export const requestUserLPs = (address: string) =>
   graph9Lives
@@ -604,8 +613,8 @@ export const requestUserLPs = (address: string) =>
         },
       },
     })
-    .run("UserLPs")
-    .then((data) => data.userLPs);
+    .run()
+    .then((data) => requireData(data).userLPs);
 
 export const requestPaymaster = ({
   opType,
@@ -680,8 +689,8 @@ export const requestCountReferees = (referrerAddress: string) =>
         },
       },
     })
-    .run("CountReferees")
-    .then((data) => data.countReferees);
+    .run()
+    .then((data) => requireData(data).countReferees);
 
 export const requestComments = ({
   campaignId,
@@ -712,8 +721,8 @@ export const requestComments = ({
         },
       },
     })
-    .run("CampaignComments")
-    .then((data) => data.campaignComments);
+    .run()
+    .then((data) => requireData(data).campaignComments);
 
 export const postComment = ({
   campaignId,
@@ -768,8 +777,8 @@ export const requestPriceChanges = (poolAddress: string) =>
         },
       },
     })
-    .run("CampaignPriceEvents")
-    .then((data) => data.campaignPriceEvents);
+    .run()
+    .then((data) => requireData(data).campaignPriceEvents);
 
 export const requestWeeklyVolume = (poolAddress: string) =>
   graph9Lives
@@ -778,8 +787,8 @@ export const requestWeeklyVolume = (poolAddress: string) =>
         CampaignWeeklyVolume: { campaignWeeklyVolume: { $: { poolAddress } } },
       },
     })
-    .run("CampaignWeeklyVolume")
-    .then((data) => data.campaignWeeklyVolume);
+    .run()
+    .then((data) => requireData(data).campaignWeeklyVolume);
 
 export const requestSimpleMarket = (
   symbol: string,
@@ -824,8 +833,8 @@ export const requestSimpleMarket = (
         },
       },
     })
-    .run("CampaignBySymbol")
-    .then((data) => data.campaignBySymbol);
+    .run()
+    .then((data) => requireData(data).campaignBySymbol);
 
 export const requestTimebasedCampaigns = (
   categories: string[],
@@ -874,8 +883,8 @@ export const requestTimebasedCampaigns = (
         },
       },
     })
-    .run("TimebasedCampaigns")
-    .then((data) => data.timebasedCampaigns);
+    .run()
+    .then((data) => requireData(data).timebasedCampaigns);
 
 export const requestUnclaimedCampaigns = (address: string, token?: string) =>
   graph9Lives
@@ -909,8 +918,8 @@ export const requestUnclaimedCampaigns = (address: string, token?: string) =>
         },
       },
     })
-    .run("UnclaimedCampaigns")
-    .then((data) => data.unclaimedCampaigns);
+    .run()
+    .then((data) => requireData(data).unclaimedCampaigns);
 
 export const request9LivesPoints = (address?: string) =>
   graphPoints
@@ -926,8 +935,8 @@ export const request9LivesPoints = (address?: string) =>
         },
       },
     })
-    .run("NinelivesPoints")
-    .then((data) => data.ninelivesPoints);
+    .run()
+    .then((data) => requireData(data).ninelivesPoints);
 
 export const createAccount = ({
   eoaAddr,
@@ -980,13 +989,13 @@ export const requestSecret = ({
 export const hasCreated = (address: string) =>
   graphAccounts
     .document({ query: { HasCreated: { hasCreated: { $: { address } } } } })
-    .run("HasCreated")
-    .then((data) => data.hasCreated);
+    .run()
+    .then((data) => requireData(data).hasCreated);
 export const requestPublicKey = () =>
   graphAccounts
     .document({ query: { PublicKey: { publickey: true } } })
-    .run("PublicKey")
-    .then((data) => data.publickey);
+    .run()
+    .then((data) => requireData(data).publickey);
 export const requestEoaForAddress = (address: string) =>
   graphAccounts
     .document({
@@ -1000,8 +1009,8 @@ export const requestEoaForAddress = (address: string) =>
         },
       },
     })
-    .run("EoaForAddress")
-    .then((data) => data.eoaForAddress);
+    .run()
+    .then((data) => requireData(data).eoaForAddress);
 export const ninelivesMint = ({
   amount,
   outcome,
@@ -1053,8 +1062,8 @@ export const requestAssets = async () =>
         },
       },
     })
-    .run("Assets")
-    .then((data) => data.assets);
+    .run()
+    .then((data) => requireData(data).assets);
 
 export const ninelivesClaimAll = async ({
   eoaAddress,
@@ -1080,8 +1089,8 @@ export const requestTotalPnL = async (address: string) =>
         },
       },
     })
-    .run("TotalPnL")
-    .then((data) => data.totalPnL);
+    .run()
+    .then((data) => requireData(data).totalPnL);
 
 export const requestFinalPrice = async (
   symbol: SimpleMarketKey,
@@ -1091,8 +1100,8 @@ export const requestFinalPrice = async (
     .document({
       query: { GetFinalPrice: { getFinalPrice: { $: { symbol, ending } } } },
     })
-    .run("GetFinalPrice")
-    .then((data) => data.getFinalPrice);
+    .run()
+    .then((data) => requireData(data).getFinalPrice);
 
 export const requestAssetsHourlyDelta = async () =>
   graph9Lives
@@ -1107,5 +1116,5 @@ export const requestAssetsHourlyDelta = async () =>
         },
       },
     })
-    .run("AssetsDeltaHour")
-    .then((data) => data.assetsDeltaHour);
+    .run()
+    .then((data) => requireData(data).assetsDeltaHour);

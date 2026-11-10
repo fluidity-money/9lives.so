@@ -217,7 +217,7 @@ export const rfqhubRequestBalance = (addr: string) =>
   data(
     graphRfqhub
       .document({ query: { RfqhubBalance: { balance: { $: { addr } } } } })
-      .run("RfqhubBalance"),
+      .run(),
     "balance",
   );
 
@@ -248,6 +248,6 @@ export const rfqhubRequestOpenAuctions = () =>
           },
         },
       })
-      .run("RfqhubOpenAuctions"),
+      .run(),
     "openAuctions",
   );
