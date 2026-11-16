@@ -262,35 +262,11 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: Leaderboard, <-- Assigned later to avoid potential circular dependency.
     },
-    productUserCount: {
-      a: {
-        product: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
     getPointsComponent: {
       a: {
         wallet: {
           nt: String,
           it: [0],
-        },
-      },
-    },
-    getAddressByDiscord: {
-      a: {
-        addr: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
-    getDiscordName: {
-      a: {
-        handle: {
-          nt: String,
-          it: [1],
         },
       },
     },
@@ -303,83 +279,15 @@ const Query: $$Utilities.SchemaDrivenDataMap.OutputObject = {
       },
       // nt: TokenHolding, <-- Assigned later to avoid potential circular dependency.
     },
-    hasBought5SimgleModeCampaigns: {
-      a: {
-        addr: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
-    hasBoughtAmm: {
-      a: {
-        addr: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
   },
 };
 
 const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
   f: {
-    auth: {
-      a: {
-        key: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
-    addAchievement: {
-      a: {
-        address: {
-          nt: String,
-          it: [0],
-        },
-        discordUsername: {
-          nt: String,
-          it: [0],
-        },
-        name: {
-          nt: String,
-          it: [1],
-        },
-        count: {
-          nt: Int,
-          it: [0],
-        },
-      },
-    },
-    registerDiscord: {
-      a: {
-        address: {
-          nt: String,
-          it: [1],
-        },
-        snowflake: {
-          nt: String,
-          it: [1],
-        },
-        username: {
-          nt: String,
-          it: [1],
-        },
-      },
-    },
     calculatePoints: {
       a: {
         yes: {
           nt: Boolean,
-          it: [1],
-        },
-      },
-    },
-    hideCampaign: {
-      a: {
-        id: {
-          nt: String,
           it: [1],
         },
       },
@@ -393,26 +301,6 @@ const Mutation: $$Utilities.SchemaDrivenDataMap.OutputObject = {
         categories: {
           nt: String,
           it: [1, [1]],
-        },
-      },
-    },
-    requestTokensHackathon: {
-      a: {
-        telegram: {
-          nt: String,
-          it: [1],
-        },
-        projectName: {
-          nt: String,
-          it: [1],
-        },
-        recipientAddress: {
-          nt: String,
-          it: [1],
-        },
-        turnstileToken: {
-          nt: String,
-          it: [1],
         },
       },
     },

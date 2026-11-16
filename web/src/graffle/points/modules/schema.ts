@@ -33,13 +33,8 @@ export namespace Schema {
       leaderboard: Query.leaderboard;
       achievements: Query.achievements;
       leaderboards: Query.leaderboards;
-      productUserCount: Query.productUserCount;
       getPointsComponent: Query.getPointsComponent;
-      getAddressByDiscord: Query.getAddressByDiscord;
-      getDiscordName: Query.getDiscordName;
       getTokenLeaderboard: Query.getTokenLeaderboard;
-      hasBought5SimgleModeCampaigns: Query.hasBought5SimgleModeCampaigns;
-      hasBoughtAmm: Query.hasBoughtAmm;
     };
   }
 
@@ -156,23 +151,6 @@ export namespace Schema {
     }
 
     /**
-     * Number of users who used this product.
-     */
-    export interface productUserCount extends $.OutputField {
-      name: "productUserCount";
-      arguments: {
-        product: {
-          kind: "InputField";
-          name: "product";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Int;
-    }
-
-    /**
      * Returns html string with embded points data for the wallet.
      * This is a common points component to be used in every products.
      */
@@ -183,41 +161,6 @@ export namespace Schema {
           kind: "InputField";
           name: "wallet";
           inlineType: [0];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * Get a user's address using their wallet address.
-     */
-    export interface getAddressByDiscord extends $.OutputField {
-      name: "getAddressByDiscord";
-      arguments: {
-        addr: {
-          kind: "InputField";
-          name: "addr";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * Return the address associated with a Discord handle.
-     * Authenticated user only.
-     */
-    export interface getDiscordName extends $.OutputField {
-      name: "getDiscordName";
-      arguments: {
-        handle: {
-          kind: "InputField";
-          name: "handle";
-          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };
@@ -241,40 +184,6 @@ export namespace Schema {
       inlineType: [0, [1]];
       namedType: $$NamedTypes.$$TokenHolding;
     }
-
-    /**
-     * Has this address bought 5 simple mode dppm campaigns?
-     */
-    export interface hasBought5SimgleModeCampaigns extends $.OutputField {
-      name: "hasBought5SimgleModeCampaigns";
-      arguments: {
-        addr: {
-          kind: "InputField";
-          name: "addr";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Boolean;
-    }
-
-    /**
-     * Has this address bought a amm campaign?
-     */
-    export interface hasBoughtAmm extends $.OutputField {
-      name: "hasBoughtAmm";
-      arguments: {
-        addr: {
-          kind: "InputField";
-          name: "addr";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Boolean;
-    }
   }
 
   //                                              Mutation
@@ -285,13 +194,8 @@ export namespace Schema {
     name: "Mutation";
     fields: {
       __typename: Mutation.__typename;
-      auth: Mutation.auth;
-      addAchievement: Mutation.addAchievement;
-      registerDiscord: Mutation.registerDiscord;
       calculatePoints: Mutation.calculatePoints;
-      hideCampaign: Mutation.hideCampaign;
       setCampaignCategories: Mutation.setCampaignCategories;
-      requestTokensHackathon: Mutation.requestTokensHackathon;
     };
   }
 
@@ -307,110 +211,6 @@ export namespace Schema {
     }
 
     /**
-     * Authenticate with the info service using the key given. Secret string that should be set
-     * with Authorization.
-     */
-    export interface auth extends $.OutputField {
-      name: "auth";
-      arguments: {
-        key: {
-          kind: "InputField";
-          name: "key";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [0];
-      namedType: $$NamedTypes.$$String;
-    }
-
-    /**
-     * Add achievement for an address or Discord handle given.
-     */
-    export interface addAchievement extends $.OutputField {
-      name: "addAchievement";
-      arguments: {
-        /**
-         * Wallet address to associate this achievement with.
-         */
-        address: {
-          kind: "InputField";
-          name: "address";
-          inlineType: [0];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Discord username to associate this achievement with. Must be address or this.
-         */
-        discordUsername: {
-          kind: "InputField";
-          name: "discordUsername";
-          inlineType: [0];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Name of the achievement to give.
-         */
-        name: {
-          kind: "InputField";
-          name: "name";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Amount of the achievement that was won.
-         */
-        count: {
-          kind: "InputField";
-          name: "count";
-          inlineType: [0];
-          namedType: $$NamedTypes.$$Int;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Boolean;
-    }
-
-    /**
-     * Register a Discord username with an address given. Does verification
-     * to see if a trusted user is making this association.
-     */
-    export interface registerDiscord extends $.OutputField {
-      name: "registerDiscord";
-      arguments: {
-        /**
-         * Address owned by the Discord handle given.
-         */
-        address: {
-          kind: "InputField";
-          name: "address";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Discord snowflake to associate the address with.
-         */
-        snowflake: {
-          kind: "InputField";
-          name: "snowflake";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Discord username to use for display from now on.
-         */
-        username: {
-          kind: "InputField";
-          name: "username";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Boolean;
-    }
-
-    /**
      * Calculate points based on the data lake available. Does so using a function with an
      * advisory lock. Can only be used by an authenticated user sending a Authentication token.
      */
@@ -422,23 +222,6 @@ export namespace Schema {
           name: "yes";
           inlineType: [1];
           namedType: $$NamedTypes.$$Boolean;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Boolean;
-    }
-
-    /**
-     * Remove a campaign using special powers from the frontpage.
-     */
-    export interface hideCampaign extends $.OutputField {
-      name: "hideCampaign";
-      arguments: {
-        id: {
-          kind: "InputField";
-          name: "id";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
         };
       };
       inlineType: [1];
@@ -461,54 +244,6 @@ export namespace Schema {
           kind: "InputField";
           name: "categories";
           inlineType: [1, [1]];
-          namedType: $$NamedTypes.$$String;
-        };
-      };
-      inlineType: [1];
-      namedType: $$NamedTypes.$$Boolean;
-    }
-
-    /**
-     * Request tokens, but only for hackathons participants. Should be manually disabled in
-     * the database if not taking place.
-     */
-    export interface requestTokensHackathon extends $.OutputField {
-      name: "requestTokensHackathon";
-      arguments: {
-        /**
-         * The Telegram associated with this participant.
-         */
-        telegram: {
-          kind: "InputField";
-          name: "telegram";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * The name of the submitter's project, if any.
-         */
-        projectName: {
-          kind: "InputField";
-          name: "projectName";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Recipient address of the tokens.
-         */
-        recipientAddress: {
-          kind: "InputField";
-          name: "recipientAddress";
-          inlineType: [1];
-          namedType: $$NamedTypes.$$String;
-        };
-        /**
-         * Turnstile token that must be used to request from the faucet.
-         */
-        turnstileToken: {
-          kind: "InputField";
-          name: "turnstileToken";
-          inlineType: [1];
           namedType: $$NamedTypes.$$String;
         };
       };

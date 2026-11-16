@@ -148,28 +148,6 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Number of users who used this product.
-   */
-  productUserCount: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.productUserCount<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { productUserCount: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "productUserCount"
-        >
-    >
-  >;
-  /**
    * Returns html string with embded points data for the wallet.
    * This is a common points component to be used in every products.
    */
@@ -193,51 +171,6 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Get a user's address using their wallet address.
-   */
-  getAddressByDiscord: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.getAddressByDiscord<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { getAddressByDiscord: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "getAddressByDiscord"
-        >
-    >
-  >;
-  /**
-   * Return the address associated with a Discord handle.
-   * Authenticated user only.
-   */
-  getDiscordName: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.getDiscordName<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { getDiscordName: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "getDiscordName"
-        >
-    >
-  >;
-  /**
    * Get a leaderboard of the top holders of a token given.
    */
   getTokenLeaderboard: $$Utilities.ClientTransports.PreflightCheck<
@@ -256,50 +189,6 @@ export interface QueryMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "getTokenLeaderboard"
-        >
-    >
-  >;
-  /**
-   * Has this address bought 5 simple mode dppm campaigns?
-   */
-  hasBought5SimgleModeCampaigns: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.hasBought5SimgleModeCampaigns<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { hasBought5SimgleModeCampaigns: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "hasBought5SimgleModeCampaigns"
-        >
-    >
-  >;
-  /**
-   * Has this address bought a amm campaign?
-   */
-  hasBoughtAmm: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Query.hasBoughtAmm<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationQuery<
-            { hasBoughtAmm: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "hasBoughtAmm"
         >
     >
   >;
@@ -336,74 +225,6 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Authenticate with the info service using the key given. Secret string that should be set
-   * with Authorization.
-   */
-  auth: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.auth<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { auth: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "auth"
-        >
-    >
-  >;
-  /**
-   * Add achievement for an address or Discord handle given.
-   */
-  addAchievement: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.addAchievement<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { addAchievement: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "addAchievement"
-        >
-    >
-  >;
-  /**
-   * Register a Discord username with an address given. Does verification
-   * to see if a trusted user is making this association.
-   */
-  registerDiscord: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.registerDiscord<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { registerDiscord: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "registerDiscord"
-        >
-    >
-  >;
-  /**
    * Calculate points based on the data lake available. Does so using a function with an
    * advisory lock. Can only be used by an authenticated user sending a Authentication token.
    */
@@ -427,28 +248,6 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
     >
   >;
   /**
-   * Remove a campaign using special powers from the frontpage.
-   */
-  hideCampaign: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.hideCampaign<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { hideCampaign: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "hideCampaign"
-        >
-    >
-  >;
-  /**
    * Adjust a campaign's categories based on its id.
    */
   setCampaignCategories: $$Utilities.ClientTransports.PreflightCheck<
@@ -467,29 +266,6 @@ export interface MutationMethods<$Context extends $$Utilities.Context> {
             $$Schema.Schema<$Context["scalars"]>
           >,
           "setCampaignCategories"
-        >
-    >
-  >;
-  /**
-   * Request tokens, but only for hackathons participants. Should be manually disabled in
-   * the database if not taking place.
-   */
-  requestTokensHackathon: $$Utilities.ClientTransports.PreflightCheck<
-    $Context,
-    <$SelectionSet>(
-      selectionSet: $$Utilities.Exact<
-        $SelectionSet,
-        $$SelectionSets.Mutation.requestTokensHackathon<$Context["scalars"]>
-      >,
-    ) => Promise<
-      (null | {}) &
-        $$Utilities.HandleOutputGraffleRootField<
-          $Context,
-          InferResult.OperationMutation<
-            { requestTokensHackathon: $SelectionSet },
-            $$Schema.Schema<$Context["scalars"]>
-          >,
-          "requestTokensHackathon"
         >
     >
   >;

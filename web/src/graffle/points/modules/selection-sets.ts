@@ -93,14 +93,6 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.leaderboards<_$Scalars>>;
   /**
    *
-   * Select the `productUserCount` field on the `Query` object. Its type is `Int` (a `ScalarStandard` kind of type).
-   *
-   */
-  productUserCount?:
-    | Query.productUserCount<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.productUserCount<_$Scalars>>;
-  /**
-   *
    * Select the `getPointsComponent` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
    *
    */
@@ -109,46 +101,12 @@ export interface Query<
     | $Select.SelectAlias.SelectAlias<Query.getPointsComponent<_$Scalars>>;
   /**
    *
-   * Select the `getAddressByDiscord` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  getAddressByDiscord?:
-    | Query.getAddressByDiscord<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.getAddressByDiscord<_$Scalars>>;
-  /**
-   *
-   * Select the `getDiscordName` field on the `Query` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  getDiscordName?:
-    | Query.getDiscordName<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.getDiscordName<_$Scalars>>;
-  /**
-   *
    * Select the `getTokenLeaderboard` field on the `Query` object. Its type is `TokenHolding` (a `OutputObject` kind of type).
    *
    */
   getTokenLeaderboard?:
     | Query.getTokenLeaderboard<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Query.getTokenLeaderboard<_$Scalars>>;
-  /**
-   *
-   * Select the `hasBought5SimgleModeCampaigns` field on the `Query` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  hasBought5SimgleModeCampaigns?:
-    | Query.hasBought5SimgleModeCampaigns<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<
-        Query.hasBought5SimgleModeCampaigns<_$Scalars>
-      >;
-  /**
-   *
-   * Select the `hasBoughtAmm` field on the `Query` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  hasBoughtAmm?:
-    | Query.hasBoughtAmm<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Query.hasBoughtAmm<_$Scalars>>;
 
   /**
    *
@@ -380,45 +338,6 @@ export namespace Query {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type productUserCount<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = productUserCount$SelectionSet<_$Scalars>;
-
-  export interface productUserCount$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `productUserCount` field. All arguments are required so you must include this.
-     */
-    $: productUserCount$Arguments<_$Scalars>;
-  }
-
-  export interface productUserCount$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    product: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `productUserCount` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type productUserCount$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<productUserCount$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
   export type getPointsComponent<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
@@ -463,84 +382,6 @@ export namespace Query {
 
   // --------------------------------------------------------------------------------------------------
 
-  export type getAddressByDiscord<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = getAddressByDiscord$SelectionSet<_$Scalars>;
-
-  export interface getAddressByDiscord$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `getAddressByDiscord` field. All arguments are required so you must include this.
-     */
-    $: getAddressByDiscord$Arguments<_$Scalars>;
-  }
-
-  export interface getAddressByDiscord$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    addr: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `getAddressByDiscord` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type getAddressByDiscord$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<getAddressByDiscord$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type getDiscordName<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = getDiscordName$SelectionSet<_$Scalars>;
-
-  export interface getDiscordName$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `getDiscordName` field. All arguments are required so you must include this.
-     */
-    $: getDiscordName$Arguments<_$Scalars>;
-  }
-
-  export interface getDiscordName$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    handle: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `getDiscordName` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type getDiscordName$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<getDiscordName$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
   export type getTokenLeaderboard<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
@@ -577,86 +418,6 @@ export namespace Query {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<getTokenLeaderboard$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type hasBought5SimgleModeCampaigns<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = hasBought5SimgleModeCampaigns$SelectionSet<_$Scalars>;
-
-  export interface hasBought5SimgleModeCampaigns$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `hasBought5SimgleModeCampaigns` field. All arguments are required so you must include this.
-     */
-    $: hasBought5SimgleModeCampaigns$Arguments<_$Scalars>;
-  }
-
-  export interface hasBought5SimgleModeCampaigns$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    addr: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `hasBought5SimgleModeCampaigns` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type hasBought5SimgleModeCampaigns$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<
-    hasBought5SimgleModeCampaigns$SelectionSet<_$Scalars>
-  >;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type hasBoughtAmm<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = hasBoughtAmm$SelectionSet<_$Scalars>;
-
-  export interface hasBoughtAmm$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `hasBoughtAmm` field. All arguments are required so you must include this.
-     */
-    $: hasBoughtAmm$Arguments<_$Scalars>;
-  }
-
-  export interface hasBoughtAmm$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    addr: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `hasBoughtAmm` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type hasBoughtAmm$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<hasBoughtAmm$SelectionSet<_$Scalars>>;
 }
 
 //                                              Mutation
@@ -671,44 +432,12 @@ export interface Mutation<
 > {
   /**
    *
-   * Select the `auth` field on the `Mutation` object. Its type is `String` (a `ScalarStandard` kind of type).
-   *
-   */
-  auth?:
-    | Mutation.auth<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.auth<_$Scalars>>;
-  /**
-   *
-   * Select the `addAchievement` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  addAchievement?:
-    | Mutation.addAchievement<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.addAchievement<_$Scalars>>;
-  /**
-   *
-   * Select the `registerDiscord` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  registerDiscord?:
-    | Mutation.registerDiscord<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.registerDiscord<_$Scalars>>;
-  /**
-   *
    * Select the `calculatePoints` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
    *
    */
   calculatePoints?:
     | Mutation.calculatePoints<_$Scalars>
     | $Select.SelectAlias.SelectAlias<Mutation.calculatePoints<_$Scalars>>;
-  /**
-   *
-   * Select the `hideCampaign` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  hideCampaign?:
-    | Mutation.hideCampaign<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<Mutation.hideCampaign<_$Scalars>>;
   /**
    *
    * Select the `setCampaignCategories` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
@@ -718,16 +447,6 @@ export interface Mutation<
     | Mutation.setCampaignCategories<_$Scalars>
     | $Select.SelectAlias.SelectAlias<
         Mutation.setCampaignCategories<_$Scalars>
-      >;
-  /**
-   *
-   * Select the `requestTokensHackathon` field on the `Mutation` object. Its type is `Boolean` (a `ScalarStandard` kind of type).
-   *
-   */
-  requestTokensHackathon?:
-    | Mutation.requestTokensHackathon<_$Scalars>
-    | $Select.SelectAlias.SelectAlias<
-        Mutation.requestTokensHackathon<_$Scalars>
       >;
 
   /**
@@ -766,149 +485,6 @@ export interface Mutation$FragmentInline<
 // ----------------------------------------| Fields |
 
 export namespace Mutation {
-  export type auth<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = auth$SelectionSet<_$Scalars>;
-
-  export interface auth$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `auth` field. All arguments are required so you must include this.
-     */
-    $: auth$Arguments<_$Scalars>;
-  }
-
-  export interface auth$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    key: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `auth` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type auth$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<auth$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type addAchievement<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = addAchievement$SelectionSet<_$Scalars>;
-
-  export interface addAchievement$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `addAchievement` field. Some (1/4) arguments are required so you must include this.
-     */
-    $: addAchievement$Arguments<_$Scalars>;
-  }
-
-  export interface addAchievement$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    /**
-     * Wallet address to associate this achievement with.
-     */
-    address?: string | undefined | null;
-    /**
-     * Discord username to associate this achievement with. Must be address or this.
-     */
-    discordUsername?: string | undefined | null;
-    /**
-     * Name of the achievement to give.
-     */
-    name: string;
-    /**
-     * Amount of the achievement that was won.
-     */
-    count?: number | undefined | null;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `addAchievement` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type addAchievement$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<addAchievement$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type registerDiscord<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = registerDiscord$SelectionSet<_$Scalars>;
-
-  export interface registerDiscord$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `registerDiscord` field. All arguments are required so you must include this.
-     */
-    $: registerDiscord$Arguments<_$Scalars>;
-  }
-
-  export interface registerDiscord$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    /**
-     * Address owned by the Discord handle given.
-     */
-    address: string;
-    /**
-     * Discord snowflake to associate the address with.
-     */
-    snowflake: string;
-    /**
-     * Discord username to use for display from now on.
-     */
-    username: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `registerDiscord` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type registerDiscord$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<registerDiscord$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
   export type calculatePoints<
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
@@ -945,45 +521,6 @@ export namespace Mutation {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<calculatePoints$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type hideCampaign<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = hideCampaign$SelectionSet<_$Scalars>;
-
-  export interface hideCampaign$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `hideCampaign` field. All arguments are required so you must include this.
-     */
-    $: hideCampaign$Arguments<_$Scalars>;
-  }
-
-  export interface hideCampaign$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    id: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `hideCampaign` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type hideCampaign$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<hideCampaign$SelectionSet<_$Scalars>>;
 
   // --------------------------------------------------------------------------------------------------
 
@@ -1024,60 +561,6 @@ export namespace Mutation {
     _$Scalars extends $$Utilities.Schema.Scalar.Registry =
       $$Utilities.Schema.Scalar.Registry.Empty,
   > = $$Utilities.Simplify<setCampaignCategories$SelectionSet<_$Scalars>>;
-
-  // --------------------------------------------------------------------------------------------------
-
-  export type requestTokensHackathon<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = requestTokensHackathon$SelectionSet<_$Scalars>;
-
-  export interface requestTokensHackathon$SelectionSet<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  >
-    extends $Select.Bases.Base {
-    /**
-     * Arguments for `requestTokensHackathon` field. All arguments are required so you must include this.
-     */
-    $: requestTokensHackathon$Arguments<_$Scalars>;
-  }
-
-  export interface requestTokensHackathon$Arguments<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > {
-    /**
-     * The Telegram associated with this participant.
-     */
-    telegram: string;
-    /**
-     * The name of the submitter's project, if any.
-     */
-    projectName: string;
-    /**
-     * Recipient address of the tokens.
-     */
-    recipientAddress: string;
-    /**
-     * Turnstile token that must be used to request from the faucet.
-     */
-    turnstileToken: string;
-  }
-
-  // --- expanded ---
-
-  /**
-   *
-   * This is the "expanded" version of the `requestTokensHackathon` type. It is identical except for the fact
-   * that IDEs will display its contents (a union type) directly, rather than the name of this type.
-   * In some cases, this is a preferable DX, making the types easier to read for users.
-   *
-   */
-  export type requestTokensHackathon$Expanded<
-    _$Scalars extends $$Utilities.Schema.Scalar.Registry =
-      $$Utilities.Schema.Scalar.Registry.Empty,
-  > = $$Utilities.Simplify<requestTokensHackathon$SelectionSet<_$Scalars>>;
 }
 
 //
